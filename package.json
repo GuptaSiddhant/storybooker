@@ -1,0 +1,13 @@
+{
+  "name": "storybooker",
+  "private": true,
+  "description": "Self hosted Storybooks management.",
+  "repository": "git@github.com:GuptaSiddhant/storybooker.git",
+  "author": "Siddhant Gupta <guptasiddhant@icloud.com>",
+  "license": "MIT",
+  "packageManager": "yarn@4.1.1",
+  "workspaces": [
+    "./apps/*",
+    "./packages/**/*"
+  ]
+}
