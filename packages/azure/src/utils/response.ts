@@ -64,34 +64,11 @@ export function responseError(
     const headers = new Headers(typeof init === "number" ? {} : init?.headers);
 
     if (checkIsHXRequest()) {
-      try {
-        headers.set("HXToaster-Type", "error");
-        headers.set("HXToaster-Body", errorMessage);
-      } catch {
-        // Ignore the errors if error message is not serialisable
-      }
-      return { body: errorMessage, headers, status };
+      return handleErrorResponseForHxRequest(errorMessage, headers, status);
     }
 
     if (checkIsHTMLRequest()) {
-      headers.set("Content-Type", CONTENT_TYPES.HTML);
-
-      return {
-        body: renderToStream(
-          createElement(
-            "div",
-            {
-              breadcrumbs: [
-                { href: "javascript:history.back()", label: "< Back" },
-              ],
-              title: `Error ${status}`,
-            },
-            createElement("div", {}, errorMessage),
-          ),
-        ),
-        headers,
-        status,
-      };
+      return handleErrorResponseForHTMLRequest(errorMessage, headers, status);
     }
 
     headers.set("Content-Type", "application/json");
@@ -106,4 +83,41 @@ export function responseError(
       status: 500,
     };
   }
+}
+
+function handleErrorResponseForHxRequest(
+  errorMessage: string,
+  headers: Headers,
+  status: number,
+): HttpResponseInit {
+  try {
+    headers.set("HXToaster-Type", "error");
+    headers.set("HXToaster-Body", errorMessage);
+  } catch {
+    // Ignore the errors if error message is not serialisable
+  }
+  return { body: errorMessage, headers, status };
+}
+
+function handleErrorResponseForHTMLRequest(
+  errorMessage: string,
+  headers: Headers,
+  status: number,
+): HttpResponseInit {
+  headers.set("Content-Type", CONTENT_TYPES.HTML);
+
+  return {
+    body: renderToStream(
+      createElement(
+        "div",
+        {
+          breadcrumbs: [{ href: "javascript:history.back()", label: "< Back" }],
+          title: `Error ${status}`,
+        },
+        createElement("div", {}, errorMessage),
+      ),
+    ),
+    headers,
+    status,
+  };
 }
