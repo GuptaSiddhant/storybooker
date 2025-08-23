@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/turbo/schema.json",
+  "tasks": {
+    "check": {
+      "dependsOn": ["^check"],
+      "outputs": ["tsconfig.tsbuildinfo"],
+      "outputLogs": "new-only"
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "outputLogs": "new-only"
+    }
+  }
+}

@@ -37,4 +37,3 @@ public/sprite*
 !app/*.d.ts
 
 .azurite
-local.settings.json
