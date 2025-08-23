@@ -15,12 +15,21 @@
   },
   "rules": {
     "func-style": ["warn", "declaration"],
+    "max-lines-per-function": [
+      "warn",
+      { "max": 100, "skipBlankLines": true, "skipComments": true }
+    ],
     "sort-imports": "allow",
     "no-async-await": "allow",
     "no-continue": "allow",
     "no-magic-numbers": "allow",
     "no-null": "allow",
     "no-optional-chaining": "allow",
-    "no-ternary": "allow"
+    "no-rest-spread-properties": "allow",
+    "no-script-url": "allow",
+    "no-ternary": "allow",
+    "no-undefined": "allow",
+    "no-unsafe-type-assertion": "allow",
+    "only-throw-error": "allow"
   }
 }

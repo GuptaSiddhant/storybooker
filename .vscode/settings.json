@@ -17,5 +17,6 @@
     "turborepo",
     "vite"
   ],
-  "oxc.enable": true
+  "oxc.enable": true,
+  "oxc.lint.run": "onType"
 }

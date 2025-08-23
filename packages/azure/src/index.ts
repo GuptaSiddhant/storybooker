@@ -1,12 +1,4 @@
-import {
-  app,
-  type HttpRequest,
-  type HttpResponse,
-  type HttpResponseInit,
-  type InvocationContext,
-  type Timer,
-} from "@azure/functions";
-import { urlJoin } from "#utils/url-utils";
+import { app } from "@azure/functions";
 import {
   DEFAULT_CHECK_PERMISSIONS_CALLBACK,
   DEFAULT_PURGE_SCHEDULE_CRON,
@@ -14,12 +6,16 @@ import {
   DEFAULT_STORAGE_CONN_STR_ENV_VAR,
   SERVICE_NAME,
   SUPPORTED_HTTP_METHODS,
-} from "./constants";
-import type {
-  CheckPermissionsCallback,
-  Permission,
-  RegisterStorybookerRouterOptions,
-} from "./types";
+} from "#constants";
+import {
+  wrapHttpHandlerWithStore,
+  wrapTimerHandlerWithStore,
+  type RouterHandlerOptions,
+} from "#store";
+import type { RegisterStorybookerRouterOptions } from "#types";
+import { urlJoin } from "#utils/url";
+import { mainHandler } from "./handlers/main";
+import { timerPurgeHandler } from "./handlers/timer-purge";
 
 export type {
   CheckPermissionsCallback,
@@ -28,7 +24,7 @@ export type {
   PermissionAction,
   PermissionResource,
   RegisterStorybookerRouterOptions,
-} from "./types.ts";
+} from "#types";
 
 export function registerStoryBookerRouter(
   options: RegisterStorybookerRouterOptions = {},
@@ -47,7 +43,6 @@ export function registerStoryBookerRouter(
   console.log(
     "Registering Storybooker Router (%s OpenAPI), StaticDirs: %s",
     openAPI === null ? "without" : "with",
-    staticDirs,
   );
 
   const storageConnectionString = process.env[storageConnectionStringEnvVar];
@@ -58,55 +53,28 @@ It is required to connect with Azure Storage resource.`,
     );
   }
 
+  const routerOptions: RouterHandlerOptions = {
+    baseRoute: route,
+    checkPermissions,
+    connectionString: storageConnectionString,
+    openAPI,
+    staticDirs,
+  };
+
   app.setup({ enableHttpStream: true });
 
   app.http(SERVICE_NAME, {
     authLevel,
-    handler: mainHandler.bind(null, {
-      checkPermissions,
-      storageConnectionString,
-    }),
+    handler: wrapHttpHandlerWithStore(routerOptions, mainHandler),
     methods: SUPPORTED_HTTP_METHODS,
     route: urlJoin(route, "{**path}"),
   });
 
   if (purgeScheduleCron !== null) {
     app.timer(`${SERVICE_NAME}-timer_purge`, {
-      handler: timerPurgeHandler,
+      handler: wrapTimerHandlerWithStore(routerOptions, timerPurgeHandler),
       runOnStartup: false,
       schedule: purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON,
     });
   }
-}
-
-async function mainHandler(
-  options: {
-    checkPermissions: CheckPermissionsCallback;
-    storageConnectionString: string;
-  },
-  request: HttpRequest,
-  context: InvocationContext,
-): Promise<HttpResponse | HttpResponseInit> {
-  const { checkPermissions } = options;
-  const projectId = "";
-  context.log(`[%s] %s`, request.method, request.url);
-  const permissions: Permission[] = [{ action: "read", resource: "ui" }];
-  const permitted = await checkPermissions(permissions, request, context);
-
-  if (permitted === true) {
-    return { status: 200 };
-  }
-
-  const message = `Permission denied [${permissions
-    .map((permission) => `'${permission.resource}:${permission.action}'`)
-    .join(", ")}] (project: ${projectId})`;
-  context.warn(message);
-  if (permitted === false) {
-    return { body: message, status: 403 };
-  }
-  return permitted;
-}
-
-function timerPurgeHandler(timer: Timer, context: InvocationContext): void {
-  context.log(timer.schedule);
 }

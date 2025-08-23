@@ -56,10 +56,13 @@
   "main": "./start.js",
   "imports": {
     "#components/*": "./src/components/*.tsx",
+    "#constants": "./src/constants.ts",
     "#builds/*": "./src/resources/builds/*.ts",
     "#handlers/*": "./src/handlers/*.tsx",
     "#labels/*": "./src/resources/labels/*.ts",
     "#projects/*": "./src/resources/projects/*.ts",
+    "#store": "./src/store.ts",
+    "#types": "./src/types.ts",
     "#utils/*": "./src/utils/*.ts"
   },
   "scripts": {
@@ -68,7 +71,7 @@
     "check": "tsgo --noEmit",
     "clear": "rm -rf coverage dist & true",
     "dev": "tsdown -w ./src",
-    "lint": "oxlint -c ../../oxlintrc.json --type-aware ./src",
+    "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
     "start": "func start",
     "verify": "yarn clear; yarn check; yarn lint; yarn build",
