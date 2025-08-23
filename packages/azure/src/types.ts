@@ -8,20 +8,7 @@ import type {
 /**
  * Options to register the storybooker router
  */
-export type RegisterStorybookerRouterOptions = {
-  /**
-   * Name of the service. @default "storybooker"
-   */
-  serviceName?: string;
-
-  /**
-   * Define the route on which all router is placed.
-   * Can be a sub-path of the main API route.
-   *
-   * @default ''
-   */
-  route?: string;
-
+export interface RegisterStorybookerRouterOptions {
   /**
    * Set the Azure Functions authentication level for all routes.
    *
@@ -32,6 +19,14 @@ export type RegisterStorybookerRouterOptions = {
    * This setting does not affect health-check route.
    */
   authLevel?: "admin" | "function" | "anonymous";
+
+  /**
+   * Define the route on which all router is placed.
+   * Can be a sub-path of the main API route.
+   *
+   * @default ''
+   */
+  route?: string;
 
   /**
    * Name of the Environment variable which stores
@@ -51,9 +46,10 @@ export type RegisterStorybookerRouterOptions = {
   purgeScheduleCron?: string | null;
 
   /**
-   * Options to configure OpenAPI schema
+   * Options to configure OpenAPI schema.
+   * Set it to null, to disable OpenAPI schema generation.
    */
-  openapi?: OpenAPIOptions;
+  openAPI?: OpenAPIOptions | null;
 
   /**
    * Directories to serve static files from relative to project root (package.json)
@@ -72,28 +68,13 @@ export type RegisterStorybookerRouterOptions = {
    * - `HttpResponse` - returns the specified HTTP response
    */
   checkPermissions?: CheckPermissionsCallback;
-};
+}
 
 export interface OpenAPIOptions {
   /**
-   * Enable or disable openAPI schema endpoint.
-   * @default false
-   */
-  disabled?: boolean;
-  /**
-   * Title of the OpenAPI schema
-   * @default SERVICE_NAME (storybooks)
-   */
-  title?: string;
-  /**
-   * A version visible in the OpenAPI schema.
-   * @default process.env['NODE_ENV']
-   */
-  version?: string;
-  /**
    * Servers to be included in the OpenAPI schema.
    */
-  servers?: Array<{
+  servers?: {
     url: string;
     description?: string;
     variables?: Record<
@@ -104,7 +85,7 @@ export interface OpenAPIOptions {
         description?: string;
       }
     >;
-  }>;
+  }[];
 }
 
 /**
@@ -117,7 +98,7 @@ export interface OpenAPIOptions {
 export type CheckPermissionsCallback = (
   permissions: Permission[],
   request: HttpRequest,
-  context: InvocationContext
+  context: InvocationContext,
 ) =>
   | boolean
   | HttpResponse
@@ -126,11 +107,11 @@ export type CheckPermissionsCallback = (
 /**
  * Type of permission to check
  */
-export type Permission = {
+export interface Permission {
   resource: PermissionResource;
   action: PermissionAction;
   projectId?: string;
-};
+}
 /**
  * Type of possible resources to check permissions for
  */

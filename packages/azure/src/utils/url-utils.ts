@@ -1,9 +1,9 @@
 import type { FormData } from "undici";
 
 export function urlSearchParamsToObject(
-  query: URLSearchParams | FormData
-): Record<string, any> {
-  const result: Record<string, any> = {};
+  query: URLSearchParams | FormData,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
 
   for (const key of query.keys()) {
     const values = query.getAll(key);
@@ -14,24 +14,26 @@ export function urlSearchParamsToObject(
   return result;
 }
 
-export function joinUrl(...parts: string[]): string {
-  if (parts.length === 0) return "";
+export function urlJoin(...parts: string[]): string {
+  if (parts.length === 0) {
+    return "";
+  }
   let protocol = "";
   let host = "";
-
   // Detect protocol + host in the first argument if present
-  const match = parts[0]?.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*:)?(\/\/[^\/?#]*)?/);
+  const match = parts[0]?.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*:)?(\/\/[^/?#]*)?/);
   if (match && (match[1] || match[2])) {
     protocol = match[1] || ""; // e.g. "https:"
     host = match[2] || ""; // e.g. "//example.com"
     const remainder = parts[0]?.slice((match[0] || "").length);
     parts = remainder ? [remainder, ...parts.slice(1)] : parts.slice(1);
   }
-
   const segments: string[] = [];
   for (const part of parts) {
     for (const seg of part.split("/")) {
-      if (!seg || seg === ".") continue;
+      if (!seg || seg === ".") {
+        continue;
+      }
       if (seg === "..") {
         // Don't pop past the beginning
         if (segments.length > 0) {
@@ -42,7 +44,6 @@ export function joinUrl(...parts: string[]): string {
       }
     }
   }
-
   // Build the final URL
   let result = "";
   if (protocol || host) {
@@ -52,11 +53,10 @@ export function joinUrl(...parts: string[]): string {
       result +=
         segments[0]?.startsWith("?") || segments[0]?.startsWith("#")
           ? ""
-          : "/" + segments.join("/");
+          : `/${segments.join("/")}`;
     }
   } else {
-    result = "/" + segments.join("/");
+    result = `/${segments.join("/")}`;
   }
-
   return result;
 }

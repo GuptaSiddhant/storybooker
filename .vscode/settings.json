@@ -9,5 +9,13 @@
     "*.cjs": "${capture}.cjs.map, ${capture}.d.ts",
     "*.mjs": "${capture}.mjs.map, ${capture}.d.ts, ${capture}.cjs, ${capture}.cjs.map"
   },
-  "cSpell.words": ["normalised", "rolldown", "turborepo", "vite", "storybooker"]
+  "cSpell.words": [
+    "normalised",
+    "oxlint",
+    "rolldown",
+    "storybooker",
+    "turborepo",
+    "vite"
+  ],
+  "oxc.enable": true
 }

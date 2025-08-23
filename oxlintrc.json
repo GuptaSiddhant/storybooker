@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "nursery": "error",
+    "pedantic": "error",
+    "perf": "error",
+    "restriction": "error",
+    "style": "warn",
+    "suspicious": "error"
+  },
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "rules": {
+    "func-style": ["warn", "declaration"],
+    "sort-imports": "allow",
+    "no-async-await": "allow",
+    "no-continue": "allow",
+    "no-magic-numbers": "allow",
+    "no-null": "allow",
+    "no-optional-chaining": "allow",
+    "no-ternary": "allow"
+  }
+}
