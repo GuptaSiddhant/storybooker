@@ -31,12 +31,14 @@ export const CONTENT_TYPES = {
   JSON: "application/json",
   ZIP: "application/zip",
 } as const;
-
 export const QUERY_PARAMS = {
   editResource: "edit",
   labelSlug: "labelSlug",
   mode: "mode",
   newResource: "new",
+};
+export const HEADERS = {
+  contentType: "Content-Type",
 };
 
 export function DEFAULT_CHECK_PERMISSIONS_CALLBACK(): ReturnType<CheckPermissionsCallback> {

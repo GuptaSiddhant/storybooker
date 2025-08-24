@@ -1,4 +1,4 @@
-import { HttpResponse, type HttpResponseInit } from "@azure/functions";
+import type { HttpResponse, HttpResponseInit } from "@azure/functions";
 import { createElement } from "@kitajs/html";
 import { renderToStream } from "@kitajs/html/suspense";
 import { CONTENT_TYPES } from "#constants";
@@ -42,8 +42,8 @@ export function responseError(
   error: unknown,
   init?: ResponseInit | number,
 ): HttpResponseInit | HttpResponse {
-  if (error instanceof HttpResponse) {
-    return error;
+  if (error instanceof Response) {
+    return error as unknown as HttpResponse;
   }
   if (error && typeof error === "object" && "status" in error) {
     return error as unknown as HttpResponseInit;

@@ -14,8 +14,8 @@ import {
 } from "#store";
 import type { RegisterStorybookerRouterOptions } from "#types";
 import { urlJoin } from "#utils/url";
-import { mainHandler } from "./handlers/main";
 import { timerPurgeHandler } from "./handlers/timer-purge";
+import { mainHandler } from "./handlers/main";
 
 export type {
   CheckPermissionsCallback,
@@ -29,22 +29,43 @@ export type {
 export function registerStoryBookerRouter(
   options: RegisterStorybookerRouterOptions = {},
 ): void {
-  const {
-    authLevel,
-    checkPermissions = DEFAULT_CHECK_PERMISSIONS_CALLBACK,
-    openAPI,
-    purgeScheduleCron,
-    route = "",
-    staticDirs = DEFAULT_STATIC_DIRS,
-    storageConnectionStringEnvVar = DEFAULT_STORAGE_CONN_STR_ENV_VAR,
-  } = options;
-
+  const route = options.route || "";
   // oxlint-disable-next-line no-console
-  console.log(
-    "Registering Storybooker Router (%s OpenAPI), StaticDirs: %s",
-    openAPI === null ? "without" : "with",
-  );
+  console.log("Registering Storybooker Router (route: %s)", route || "/");
 
+  const { storageConnectionString } = validateRegisterOptions(options);
+  const routerOptions: RouterHandlerOptions = {
+    baseRoute: route,
+    checkPermissions:
+      options.checkPermissions || DEFAULT_CHECK_PERMISSIONS_CALLBACK,
+    openAPI: options.openAPI,
+    staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
+    storageConnectionString,
+  };
+
+  app.setup({ enableHttpStream: true });
+
+  app.http(SERVICE_NAME, {
+    authLevel: options.authLevel,
+    handler: wrapHttpHandlerWithStore(routerOptions, mainHandler),
+    methods: SUPPORTED_HTTP_METHODS,
+    route: urlJoin(route, "{**path}"),
+  });
+
+  if (options.purgeScheduleCron !== null) {
+    app.timer(`${SERVICE_NAME}-timer_purge`, {
+      handler: wrapTimerHandlerWithStore(routerOptions, timerPurgeHandler),
+      runOnStartup: false,
+      schedule: options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON,
+    });
+  }
+}
+
+function validateRegisterOptions(options: RegisterStorybookerRouterOptions): {
+  storageConnectionString: string;
+} {
+  const storageConnectionStringEnvVar =
+    options.storageConnectionStringEnvVar || DEFAULT_STORAGE_CONN_STR_ENV_VAR;
   const storageConnectionString = process.env[storageConnectionStringEnvVar];
   if (!storageConnectionString) {
     throw new Error(
@@ -53,28 +74,5 @@ It is required to connect with Azure Storage resource.`,
     );
   }
 
-  const routerOptions: RouterHandlerOptions = {
-    baseRoute: route,
-    checkPermissions,
-    connectionString: storageConnectionString,
-    openAPI,
-    staticDirs,
-  };
-
-  app.setup({ enableHttpStream: true });
-
-  app.http(SERVICE_NAME, {
-    authLevel,
-    handler: wrapHttpHandlerWithStore(routerOptions, mainHandler),
-    methods: SUPPORTED_HTTP_METHODS,
-    route: urlJoin(route, "{**path}"),
-  });
-
-  if (purgeScheduleCron !== null) {
-    app.timer(`${SERVICE_NAME}-timer_purge`, {
-      handler: wrapTimerHandlerWithStore(routerOptions, timerPurgeHandler),
-      runOnStartup: false,
-      schedule: purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON,
-    });
-  }
+  return { storageConnectionString };
 }

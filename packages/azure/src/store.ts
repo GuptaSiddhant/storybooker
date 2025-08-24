@@ -1,11 +1,11 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import {
+import type {
   HttpRequest,
-  type HttpHandler,
-  type HttpResponse,
-  type HttpResponseInit,
-  type InvocationContext,
-  type TimerHandler,
+  HttpHandler,
+  HttpResponse,
+  HttpResponseInit,
+  InvocationContext,
+  TimerHandler,
 } from "@azure/functions";
 import { CONTENT_TYPES, DEFAULT_LOCALE } from "#constants";
 import type { CheckPermissionsCallback, OpenAPIOptions } from "#types";
@@ -15,7 +15,7 @@ import type { CheckPermissionsCallback, OpenAPIOptions } from "#types";
  * Options for linking with Azure Blob Storage
  */
 export interface RouterHandlerOptions {
-  connectionString: string;
+  storageConnectionString: string;
   baseRoute: string;
   staticDirs: readonly string[];
   openAPI: OpenAPIOptions | undefined | null;
@@ -74,7 +74,7 @@ export function wrapTimerHandlerWithStore(
       accept,
       context,
       locale,
-      request: new HttpRequest({}),
+      request: {} as unknown as HttpRequest,
     };
 
     await localStore.run(store, callback);

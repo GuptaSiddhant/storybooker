@@ -5,7 +5,7 @@ const isWatchMode = argv.includes("-w") || argv.includes("--watch");
 
 export default defineConfig({
   clean: !isWatchMode,
-  dts: true,
+  dts: { tsgo: true },
   entry: ["./src/index.ts"],
   format: isWatchMode ? ["esm"] : ["esm", "cjs"],
   inputOptions: {

@@ -14,7 +14,8 @@
     "node": true
   },
   "rules": {
-    "func-style": ["warn", "declaration"],
+    "id-length": ["warn", { "exceptions": ["z"] }],
+    "func-style": ["allow"],
     "max-lines-per-function": [
       "warn",
       { "max": 50, "skipBlankLines": true, "skipComments": true }

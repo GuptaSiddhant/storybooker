@@ -82,6 +82,9 @@
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
     "@kitajs/html": "^4.0.0",
+    "@orpc/openapi": "^1.8.4",
+    "@orpc/server": "^1.8.4",
+    "@orpc/zod": "^1.8.4",
     "decompress": "^4.0.0",
     "zod": "^4.0.0",
     "zod-openapi": "^5.0.0"

@@ -79,11 +79,7 @@ export interface OpenAPIOptions {
     description?: string;
     variables?: Record<
       string,
-      {
-        enum?: string[] | boolean[] | number[];
-        default: string | boolean | number;
-        description?: string;
-      }
+      { enum?: [string, ...string[]]; default: string; description?: string }
     >;
   }[];
 }

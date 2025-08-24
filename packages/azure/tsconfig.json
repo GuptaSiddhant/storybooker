@@ -34,7 +34,7 @@
     "skipLibCheck": true,
     "noEmitOnError": true,
     "erasableSyntaxOnly": true,
-    "isolatedDeclarations": true,
+    "isolatedDeclarations": false,
     "verbatimModuleSyntax": true,
 
     "outDir": "dist",
