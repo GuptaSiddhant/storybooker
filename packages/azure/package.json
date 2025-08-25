@@ -59,7 +59,7 @@
     "build": "tsdown",
     "check": "tsgo --noEmit",
     "clear": "rm -rf coverage dist & true",
-    "dev": "tsdown -w ./src",
+    "dev": "tsdown -w ./src -w ../router/src",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
     "start": "func start",

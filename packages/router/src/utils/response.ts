@@ -1,10 +1,10 @@
-import type { HttpResponse, HttpResponseInit } from "@azure/functions";
 import { createElement } from "@kitajs/html";
 import { renderToStream } from "@kitajs/html/suspense";
-import { CONTENT_TYPES } from "#constants";
+import { CONTENT_TYPES } from "#utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { parseErrorMessage } from "./error";
+import { getStore } from "#store";
 
 export const commonErrorResponses: ZodOpenApiResponsesObject = {
   400: { description: "Invalid request data" },
@@ -13,18 +13,17 @@ export const commonErrorResponses: ZodOpenApiResponsesObject = {
   500: { description: "An unexpected server-error occurred." },
 };
 
-export function responseHTML(html: JSX.Element): HttpResponseInit {
-  return {
-    body: renderToStream(html),
+export function responseHTML(html: JSX.Element): Response {
+  return new Response(renderToStream(html) as unknown as BodyInit, {
     headers: { "Content-Type": CONTENT_TYPES.HTML },
     status: 200,
-  };
+  });
 }
 
 export function responseRedirect(
   location: string,
   init: ResponseInit | number,
-): HttpResponseInit {
+): Response {
   const status = typeof init === "number" ? init : (init?.status ?? 303);
   const headers = new Headers(typeof init === "number" ? {} : init?.headers);
 
@@ -34,33 +33,26 @@ export function responseRedirect(
     headers.set("Location", location);
   }
 
-  return { headers, status };
+  return new Response(null, { headers, status });
 }
 
 export function responseError(
   error: unknown,
   init?: ResponseInit | number,
-): HttpResponseInit | HttpResponse {
+): Response {
   if (error instanceof Response) {
-    return error as unknown as HttpResponse;
-  }
-  if (error && typeof error === "object" && "status" in error) {
-    return error as unknown as HttpResponseInit;
+    return error;
   }
 
-  // const { context } = getStore();
+  const { logger } = getStore();
 
   try {
-    const {
+    const { errorMessage, errorStatus, errorType } = parseErrorMessage(error);
+    logger.error(
+      `[${errorType}]`,
       errorMessage,
-      errorStatus,
-      errorType: _errorType,
-    } = parseErrorMessage(error);
-    // context.error(
-    //   `[${errorType}]`,
-    //   errorMessage,
-    //   error instanceof Error ? error.stack : "",
-    // );
+      error instanceof Error ? error.stack : "",
+    );
 
     const status =
       errorStatus ?? (typeof init === "number" ? init : (init?.status ?? 500));
@@ -76,15 +68,12 @@ export function responseError(
 
     headers.set("Content-Type", "application/json");
 
-    return { headers, jsonBody: { errorMessage }, status };
+    return Response.json({ errorMessage }, { headers, status });
   } catch (error) {
-    // context.error(`[ErrOnErr]`, error);
-
-    return {
-      body: typeof error === "string" ? error : undefined,
-      jsonBody: typeof error === "string" ? undefined : error,
-      status: 500,
-    };
+    logger.error(`[ErrOnErr]`, error);
+    return typeof error === "string"
+      ? new Response(error, { status: 500 })
+      : Response.json(error, { status: 500 });
   }
 }
 
@@ -92,25 +81,24 @@ function handleErrorResponseForHxRequest(
   errorMessage: string,
   headers: Headers,
   status: number,
-): HttpResponseInit {
+): Response {
   try {
     headers.set("HXToaster-Type", "error");
     headers.set("HXToaster-Body", errorMessage);
   } catch {
     // Ignore the errors if error message is not serialisable
   }
-  return { body: errorMessage, headers, status };
+  return new Response(errorMessage, { headers, status });
 }
 
 function handleErrorResponseForHTMLRequest(
   errorMessage: string,
   headers: Headers,
   status: number,
-): HttpResponseInit {
+): Response {
   headers.set("Content-Type", CONTENT_TYPES.HTML);
-
-  return {
-    body: renderToStream(
+  return new Response(
+    renderToStream(
       createElement(
         "div",
         {
@@ -119,8 +107,10 @@ function handleErrorResponseForHTMLRequest(
         },
         createElement("div", {}, errorMessage),
       ),
-    ),
-    headers,
-    status,
-  };
+    ) as unknown as BodyInit,
+    {
+      headers,
+      status,
+    },
+  );
 }

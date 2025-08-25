@@ -1,32 +1,55 @@
-import { CONTENT_TYPES, HEADERS, SERVICE_NAME } from "#constants";
+import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { getStore } from "#store";
 import { checkIsHTMLRequest } from "#utils/request";
-import { generatePrefixFromBaseRoute } from "#utils/url";
+import { OpenApiRouter, createRoute } from "#utils/api-router";
+import { createDocument } from "zod-openapi";
+import { responseHTML } from "#utils/response";
 
-export function openApiHandler(): Response {
-  const { baseRoute, request } = getStore();
-  // const { servers } = openAPI || {};
-  const spec = {
-    // components: { securitySchemes: { bearerAuth: {scheme: "bearer", type: "http", }, }, },
-    commonSchemas: {},
+export const openapi = createRoute(
+  "get",
+  "/",
+  {
+    responses: {
+      200: {
+        content: {
+          [CONTENT_TYPES.JSON]: {
+            example: { info: { title: SERVICE_NAME }, openapi: "3.1.0" },
+          },
+          [CONTENT_TYPES.HTML]: {
+            encoding: "utf8",
+            example: "<!DOCTYPE html>",
+            schema: { type: "string" },
+          },
+        },
+      },
+    },
+    summary: "OpenAPI spec",
+  },
+  openApiHandler,
+);
+
+function openApiHandler(): Response {
+  const { prefix, request } = getStore();
+
+  const openAPISpec = createDocument({
     info: { title: SERVICE_NAME, version: "" },
-    // security: [{ bearerAuth: [] }],
-    servers: [{ url: generatePrefixFromBaseRoute(baseRoute) || "/" }],
-  };
+    openapi: "3.1.0",
+    paths: OpenApiRouter.paths,
+    security: [],
+    servers: [{ url: prefix }],
+    tags: [],
+  });
 
   const { searchParams } = new URL(request.url);
   if (searchParams.has("json")) {
-    return Response.json(spec);
+    return Response.json(openAPISpec);
   }
 
   if (checkIsHTMLRequest()) {
-    return new Response(generateOpenApiHTML({ content: spec }), {
-      headers: { [HEADERS.contentType]: CONTENT_TYPES.HTML },
-      status: 200,
-    });
+    return responseHTML(generateOpenApiHTML({ content: openAPISpec }));
   }
 
-  return Response.json(spec);
+  return Response.json(openAPISpec);
 }
 
 function generateOpenApiHTML(

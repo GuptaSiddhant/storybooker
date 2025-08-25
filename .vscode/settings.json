@@ -9,6 +9,7 @@
     "*.cjs": "${capture}.cjs.map, ${capture}.d.ts",
     "*.mjs": "${capture}.mjs.map, ${capture}.d.ts, ${capture}.cjs, ${capture}.cjs.map"
   },
+  "cSpell.language": "en-GB",
   "cSpell.words": [
     "normalised",
     "oxlint",

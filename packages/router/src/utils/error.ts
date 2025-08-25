@@ -1,17 +1,22 @@
-import { RestError } from "@azure/data-tables";
+import { getStore } from "#store";
 import { z } from "zod";
 
-export function parseErrorMessage(error: unknown): {
+export type CustomErrorParser = (error: unknown) => ParsedError | undefined;
+export interface ParsedError {
   errorMessage: string;
   errorStatus?: number;
   errorType: string;
-} {
-  if (typeof error === "string") {
-    return { errorMessage: error, errorType: "string" };
+}
+
+export function parseErrorMessage(error: unknown): ParsedError {
+  const { customErrorParser } = getStore();
+  const customResult = customErrorParser?.(error);
+  if (customResult !== undefined) {
+    return customResult;
   }
 
-  if (error instanceof RestError) {
-    return parseAzureRestError(error);
+  if (typeof error === "string") {
+    return { errorMessage: error, errorType: "string" };
   }
 
   if (error instanceof z.core.$ZodError) {
@@ -30,21 +35,4 @@ export function parseErrorMessage(error: unknown): {
   }
 
   return { errorMessage: String(error), errorType: "unknown" };
-}
-
-function parseAzureRestError(error: RestError): {
-  errorMessage: string;
-  errorStatus?: number;
-  errorType: string;
-} {
-  const details = (error.details ?? {}) as Record<string, string>;
-  const message: string = details["errorMessage"] ?? error.message;
-
-  return {
-    errorMessage: `${details["errorCode"] ?? error.name} (${
-      error.code ?? error.statusCode
-    }): ${message}`,
-    errorStatus: error.statusCode,
-    errorType: "AzureRest",
-  };
 }

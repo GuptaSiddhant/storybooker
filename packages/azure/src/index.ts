@@ -16,6 +16,8 @@ import type {
   CheckPermissionsCallback,
   OpenAPIOptions,
 } from "@storybooker/router/types";
+import { AzureFunctionLogger } from "./logger";
+import { parseAzureRestError } from "./error-parser";
 
 const DEFAULT_STORAGE_CONN_STR_ENV_VAR = "AzureWebJobsStorage";
 // const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
@@ -41,6 +43,11 @@ export interface RegisterStorybookerRouterOptions {
    * This setting does not affect health-check route.
    */
   authLevel?: "admin" | "function" | "anonymous";
+
+  /**
+   * Enable headless mode to disable all UI/HTML responses
+   */
+  headless?: boolean;
 
   /**
    * Define the route on which all router is placed.
@@ -107,6 +114,7 @@ export function registerStoryBookerRouter(
     authLevel: options.authLevel,
     handler: serviceHandler.bind(null, {
       baseRoute: route,
+      headless: options.headless,
       staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
       storageConnectionString,
     }),
@@ -151,6 +159,7 @@ It is required to connect with Azure Storage resource.`,
 async function serviceHandler(
   options: {
     baseRoute: string;
+    headless?: boolean;
     staticDirs: readonly string[];
     storageConnectionString: string;
   },
@@ -158,6 +167,7 @@ async function serviceHandler(
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
   const { baseRoute } = options;
+  const logger = new AzureFunctionLogger(context);
 
   try {
     const fetchRequest = new Request(httpRequest.url, {
@@ -170,8 +180,11 @@ async function serviceHandler(
     });
 
     const response = await router(fetchRequest, {
-      logger: (...args) => context.log(...args),
-      prefix: generatePrefixFromBaseRoute(baseRoute),
+      customErrorParser: parseAzureRestError,
+      headless: options.headless,
+      logger,
+      prefix: generatePrefixFromBaseRoute(baseRoute) || "/",
+      staticDirs: options.staticDirs,
     });
 
     return {
@@ -180,8 +193,10 @@ async function serviceHandler(
       status: response.status,
     };
   } catch (error) {
+    const { errorMessage, errorType } = parseErrorMessage(error);
+    logger.error(errorType, errorMessage);
     return {
-      body: parseErrorMessage(error).errorMessage,
+      body: errorMessage,
       headers: { "Content-Type": "text/plain" },
       status: 500,
     };

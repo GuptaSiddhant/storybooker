@@ -1,3 +1,12 @@
+export interface Logger {
+  error: (...args: unknown[]) => void;
+  log: (...args: unknown[]) => void;
+  debug?: (...args: unknown[]) => void;
+  info?: (...args: unknown[]) => void;
+  trace?: (...args: unknown[]) => void;
+  warn?: (...args: unknown[]) => void;
+}
+
 export interface OpenAPIOptions {
   /**
    * Servers to be included in the OpenAPI schema.
