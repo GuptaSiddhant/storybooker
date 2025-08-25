@@ -32,8 +32,4 @@ public/sprite*
 *storybook.log
 .npmrc
 
-*.d.ts
-
-!app/*.d.ts
-
 .azurite

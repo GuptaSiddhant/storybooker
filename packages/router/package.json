@@ -1,0 +1,53 @@
+{
+  "name": "@storybooker/router",
+  "private": true,
+  "type": "module",
+  "description": "Storybooker platform agnostic router.",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guptasiddhant/storybooker",
+    "directory": "packages/router"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": "./src/index.ts",
+    "./constants": "./src/constants.ts",
+    "./error-utils": "./src/utils/error.ts",
+    "./url-utils": "./src/utils/url.ts",
+    "./types": "./src/types.d.ts"
+  },
+  "scripts": {
+    "check": "tsgo --noEmit",
+    "lint": "oxlint --type-aware ./src",
+    "lint:fix": "yarn lint --fix",
+    "xss": "xss-scan"
+  },
+  "imports": {
+    "#components/*": "./src/components/*.tsx",
+    "#constants": "./src/constants.ts",
+    "#store": "./src/store.ts",
+    "#types": "./src/types.d.ts",
+    "#utils/*": "./src/utils/*.ts"
+  },
+  "dependencies": {
+    "@kitajs/html": "^4.0.0",
+    "decompress": "^4.0.0",
+    "zod": "^4.0.0",
+    "zod-openapi": "^5.0.0"
+  },
+  "devDependencies": {
+    "@kitajs/ts-html-plugin": "^4.0.0",
+    "@types/decompress": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20250823.8",
+    "glob": "^10.0.0",
+    "oxlint": "^1.12.0",
+    "oxlint-tsgolint": "^0.0.4"
+  }
+}

@@ -14,6 +14,18 @@ export function urlSearchParamsToObject(
   return result;
 }
 
+export function generatePrefixFromBaseRoute(
+  baseRoute: string,
+): `/${string}` | undefined {
+  if (!baseRoute) {
+    return undefined;
+  }
+  if (baseRoute.startsWith("/")) {
+    return baseRoute as `/${string}`;
+  }
+  return `/${baseRoute}` as const;
+}
+
 export function urlJoin(...parts: string[]): string {
   if (parts.length === 0) {
     return "";

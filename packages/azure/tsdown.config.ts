@@ -8,9 +8,7 @@ export default defineConfig({
   dts: { tsgo: true },
   entry: ["./src/index.ts"],
   format: isWatchMode ? ["esm"] : ["esm", "cjs"],
-  inputOptions: {
-    jsx: "react-jsx",
-  },
+  inputOptions: { jsx: "react-jsx" },
   name: "Azure",
   platform: "node",
   sourcemap: true,

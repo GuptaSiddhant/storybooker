@@ -5,17 +5,15 @@ import { responseError } from "./response";
 export async function authenticateOrThrow(
   permissions: Permission[],
 ): Promise<void> {
-  const { checkPermissions, context, request } = getStore();
+  const { checkPermissions, request } = getStore();
   try {
-    const response = await checkPermissions(permissions, request, context);
+    const response = await checkPermissions(permissions, request);
     if (response === true) {
       return;
     }
 
-    const message = `Permission denied [${permissions
-      .map((permission) => `'${permission.resource}:${permission.action}'`)
-      .join(", ")}]`;
-    context.warn(message);
+    const message = `Permission denied [${permissions.join(", ")}]`;
+    // context.warn(message);
     if (response === false) {
       throw responseError(message, 403);
     }

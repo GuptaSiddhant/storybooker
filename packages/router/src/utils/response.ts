@@ -2,7 +2,6 @@ import type { HttpResponse, HttpResponseInit } from "@azure/functions";
 import { createElement } from "@kitajs/html";
 import { renderToStream } from "@kitajs/html/suspense";
 import { CONTENT_TYPES } from "#constants";
-import { getStore } from "#store";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { parseErrorMessage } from "./error";
@@ -49,15 +48,19 @@ export function responseError(
     return error as unknown as HttpResponseInit;
   }
 
-  const { context } = getStore();
+  // const { context } = getStore();
 
   try {
-    const { errorMessage, errorStatus, errorType } = parseErrorMessage(error);
-    context.error(
-      `[${errorType}]`,
+    const {
       errorMessage,
-      error instanceof Error ? error.stack : "",
-    );
+      errorStatus,
+      errorType: _errorType,
+    } = parseErrorMessage(error);
+    // context.error(
+    //   `[${errorType}]`,
+    //   errorMessage,
+    //   error instanceof Error ? error.stack : "",
+    // );
 
     const status =
       errorStatus ?? (typeof init === "number" ? init : (init?.status ?? 500));
@@ -75,7 +78,7 @@ export function responseError(
 
     return { headers, jsonBody: { errorMessage }, status };
   } catch (error) {
-    context.error(`[ErrOnErr]`, error);
+    // context.error(`[ErrOnErr]`, error);
 
     return {
       body: typeof error === "string" ? error : undefined,

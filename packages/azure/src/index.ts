@@ -1,30 +1,96 @@
-import { app } from "@azure/functions";
+import type { BodyInit } from "undici";
 import {
-  DEFAULT_CHECK_PERMISSIONS_CALLBACK,
-  DEFAULT_PURGE_SCHEDULE_CRON,
-  DEFAULT_STATIC_DIRS,
-  DEFAULT_STORAGE_CONN_STR_ENV_VAR,
-  SERVICE_NAME,
-  SUPPORTED_HTTP_METHODS,
-} from "#constants";
+  app,
+  type HttpRequest,
+  type InvocationContext,
+  type HttpResponseInit,
+} from "@azure/functions";
 import {
-  wrapHttpHandlerWithStore,
-  wrapTimerHandlerWithStore,
-  type RouterHandlerOptions,
-} from "#store";
-import type { RegisterStorybookerRouterOptions } from "#types";
-import { urlJoin } from "#utils/url";
-import { timerPurgeHandler } from "./handlers/timer-purge";
-import { mainHandler } from "./handlers/main";
+  generatePrefixFromBaseRoute,
+  urlJoin,
+} from "@storybooker/router/url-utils";
+import { parseErrorMessage } from "@storybooker/router/error-utils";
+import { SERVICE_NAME } from "@storybooker/router/constants";
+import { router } from "@storybooker/router";
+import type {
+  CheckPermissionsCallback,
+  OpenAPIOptions,
+} from "@storybooker/router/types";
+
+const DEFAULT_STORAGE_CONN_STR_ENV_VAR = "AzureWebJobsStorage";
+// const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
+const DEFAULT_STATIC_DIRS = ["./public"] as const;
 
 export type {
   CheckPermissionsCallback,
-  OpenAPIOptions,
   Permission,
-  PermissionAction,
-  PermissionResource,
-  RegisterStorybookerRouterOptions,
-} from "#types";
+  OpenAPIOptions,
+} from "@storybooker/router/types";
+
+/**
+ * Options to register the storybooker router
+ */
+export interface RegisterStorybookerRouterOptions {
+  /**
+   * Set the Azure Functions authentication level for all routes.
+   *
+   * This is a good option to set if the service is used in
+   * Headless mode and requires single token authentication
+   * for all the requests.
+   *
+   * This setting does not affect health-check route.
+   */
+  authLevel?: "admin" | "function" | "anonymous";
+
+  /**
+   * Define the route on which all router is placed.
+   * Can be a sub-path of the main API route.
+   *
+   * @default ''
+   */
+  route?: string;
+
+  /**
+   * Name of the Environment variable which stores
+   * the connection string to the Azure Storage resource.
+   * @default 'AzureWebJobsStorage'
+   */
+  storageConnectionStringEnvVar?: string;
+
+  /**
+   * Modify the cron-schedule of timer function
+   * which purge outdated storybooks.
+   *
+   * Pass `null` to disable auto-purge functionality.
+   *
+   * @default "0 0 0 * * *" // Every midnight
+   */
+  purgeScheduleCron?: string | null;
+
+  /**
+   * Options to configure OpenAPI schema.
+   * Set it to null, to disable OpenAPI schema generation.
+   */
+  openAPI?: OpenAPIOptions | null;
+
+  /**
+   * Directories to serve static files from relative to project root (package.json)
+   * @default './public'
+   */
+  staticDirs?: string[];
+
+  /**
+   * Callback function to check permissions. The function receives following params
+   * @param permission - object containing resource and action to permit
+   * @param context - Invocation context of Azure Function
+   * @param request - the HTTP request object
+   *
+   * @return `true` to allow access, or following to deny:
+   * - `false` - returns 403 response
+   * - `HttpResponse` - returns the specified HTTP response
+   */
+  checkPermissions?: CheckPermissionsCallback;
+}
 
 export function registerStoryBookerRouter(
   options: RegisterStorybookerRouterOptions = {},
@@ -34,31 +100,36 @@ export function registerStoryBookerRouter(
   console.log("Registering Storybooker Router (route: %s)", route || "/");
 
   const { storageConnectionString } = validateRegisterOptions(options);
-  const routerOptions: RouterHandlerOptions = {
-    baseRoute: route,
-    checkPermissions:
-      options.checkPermissions || DEFAULT_CHECK_PERMISSIONS_CALLBACK,
-    openAPI: options.openAPI,
-    staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
-    storageConnectionString,
-  };
 
   app.setup({ enableHttpStream: true });
 
   app.http(SERVICE_NAME, {
     authLevel: options.authLevel,
-    handler: wrapHttpHandlerWithStore(routerOptions, mainHandler),
-    methods: SUPPORTED_HTTP_METHODS,
+    handler: serviceHandler.bind(null, {
+      baseRoute: route,
+      staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
+      storageConnectionString,
+    }),
+    methods: [
+      "DELETE",
+      "GET",
+      "HEAD",
+      "OPTIONS",
+      "PATCH",
+      "POST",
+      "PUT",
+      "TRACE",
+    ],
     route: urlJoin(route, "{**path}"),
   });
 
-  if (options.purgeScheduleCron !== null) {
-    app.timer(`${SERVICE_NAME}-timer_purge`, {
-      handler: wrapTimerHandlerWithStore(routerOptions, timerPurgeHandler),
-      runOnStartup: false,
-      schedule: options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON,
-    });
-  }
+  // if (options.purgeScheduleCron !== null) {
+  //   app.timer(`${SERVICE_NAME}-timer_purge`, {
+  //     handler: wrapTimerHandlerWithStore(routerOptions, timerPurgeHandler),
+  //     runOnStartup: false,
+  //     schedule: options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON,
+  //   });
+  // }
 }
 
 function validateRegisterOptions(options: RegisterStorybookerRouterOptions): {
@@ -75,4 +146,44 @@ It is required to connect with Azure Storage resource.`,
   }
 
   return { storageConnectionString };
+}
+
+async function serviceHandler(
+  options: {
+    baseRoute: string;
+    staticDirs: readonly string[];
+    storageConnectionString: string;
+  },
+  httpRequest: HttpRequest,
+  context: InvocationContext,
+): Promise<HttpResponseInit> {
+  const { baseRoute } = options;
+
+  try {
+    const fetchRequest = new Request(httpRequest.url, {
+      // oxlint-disable-next-line no-invalid-fetch-options
+      body: httpRequest.body as ReadableStream | null,
+      // @ts-expect-error - Duplex is required for streaming but not supported in TS
+      duplex: "half",
+      headers: new Headers(httpRequest.headers as Headers),
+      method: httpRequest.method,
+    });
+
+    const response = await router(fetchRequest, {
+      logger: (...args) => context.log(...args),
+      prefix: generatePrefixFromBaseRoute(baseRoute),
+    });
+
+    return {
+      body: response.body as BodyInit | null,
+      headers: new Headers(response.headers),
+      status: response.status,
+    };
+  } catch (error) {
+    return {
+      body: parseErrorMessage(error).errorMessage,
+      headers: { "Content-Type": "text/plain" },
+      status: 500,
+    };
+  }
 }

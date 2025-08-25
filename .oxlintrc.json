@@ -14,6 +14,7 @@
     "node": true
   },
   "rules": {
+    "arrow-body-style": "allow",
     "id-length": ["warn", { "exceptions": ["z"] }],
     "func-style": ["allow"],
     "max-lines-per-function": [
