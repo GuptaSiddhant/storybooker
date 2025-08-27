@@ -1,3 +1,5 @@
+import type { Readable } from "node:stream";
+
 export interface Logger {
   error: (...args: unknown[]) => void;
   log: (...args: unknown[]) => void;
@@ -5,6 +7,65 @@ export interface Logger {
   info?: (...args: unknown[]) => void;
   trace?: (...args: unknown[]) => void;
   warn?: (...args: unknown[]) => void;
+}
+
+export type DatabaseDocumentListOptions<Item extends { id: string }> = {
+  limit?: number;
+  filter?: string | ((item: Item) => boolean);
+  select?: string[];
+  sort?: "latest" | ((a: Item, b: Item) => number);
+};
+export interface DatabaseService {
+  listCollections: () => Promise<string[]>;
+  createCollection: (name: string) => Promise<void>;
+  deleteCollection: (name: string) => Promise<void>;
+
+  listDocuments: <Item extends { id: string }>(
+    collectionName: string,
+    options?: DatabaseDocumentListOptions,
+  ) => Promise<Item[]>;
+  createDocument: <Item extends { id: string }>(
+    collectionName: string,
+    document: Item,
+  ) => Promise<Item>;
+  getDocument: <Item extends { id: string }>(
+    collectionName: string,
+    id: string,
+    partitionKey?: string,
+  ) => Promise<Item>;
+  updateDocument: <Item extends { id: string }>(
+    collectionName: string,
+    id: string,
+    document: Partial<Omit<Item, "id">>,
+    partitionKey?: string,
+  ) => Promise<void>;
+  deleteDocument: (
+    collectionName: string,
+    id: string,
+    partitionKey?: string,
+  ) => Promise<void>;
+}
+
+export interface StorageService {
+  listContainers: () => Promise<string[]>;
+  createContainer: (name: string) => Promise<void>;
+  deleteContainer: (name: string) => Promise<void>;
+
+  uploadFile: (
+    containerName: string,
+    file: Blob | string | Readable,
+    options: { mimeType: string; destinationPath: string },
+  ) => Promise<void>;
+  uploadDir: (
+    containerName: string,
+    dirpath: string,
+    fileOptions?: (filepath: string) => {
+      newFilepath: string;
+      mimeType: string;
+    },
+  ) => Promise<void>;
+  deleteFile: (containerName: string, destinationPath: string) => Promise<void>;
+  deleteFiles: (containerName: string, prefix: string) => Promise<void>;
 }
 
 export interface OpenAPIOptions {
@@ -19,6 +80,12 @@ export interface OpenAPIOptions {
       { enum?: [string, ...string[]]; default: string; description?: string }
     >;
   }[];
+
+  /**
+   * Which UI to load when OpenAPI endpoint is requested from browsers.
+   * @default swagger
+   */
+  ui?: "swagger" | "scalar";
 }
 
 /**
@@ -34,7 +101,7 @@ export type CheckPermissionsCallback = (
 ) => boolean | Response | Promise<boolean | Response>;
 
 /**  Type of permission to check */
-export type Permission = `${PermissionResource}:${PermissionAction}`;
+export type Permission = `${PermissionResource}:${PermissionAction}:${string}`;
 
 /** Type of possible resources to check permissions for */
 export type PermissionResource =

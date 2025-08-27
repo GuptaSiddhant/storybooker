@@ -4,6 +4,7 @@ import type {
   ZodOpenApiPathsObject,
 } from "zod-openapi";
 import { urlJoin } from "./url";
+import { responseError } from "./response";
 
 // @ts-expect-error: Property 'UrlPattern' does not exist
 if (!globalThis.URLPattern) {
@@ -56,6 +57,7 @@ export interface RegisterRouteOptions<
   pathname: Path;
   handler: Handler<Path>;
   input: ZodOpenApiPathItemObject[Method] | undefined;
+  overriddenPath?: string;
 }
 
 export class OpenApiRouter {
@@ -66,7 +68,7 @@ export class OpenApiRouter {
   register<Method extends Methods, Path extends string>(
     options: RegisterRouteOptions<Method, Path>,
   ): OpenApiRouter {
-    const { handler, input, method, pathname } = options;
+    const { handler, input, method, overriddenPath, pathname } = options;
     const pattern = new URLPattern({ pathname });
     this.routes.push({
       handler,
@@ -75,10 +77,11 @@ export class OpenApiRouter {
     });
 
     if (input) {
-      if (OpenApiRouter.paths[pathname]) {
-        OpenApiRouter.paths[pathname][method] = input;
+      const path = overriddenPath ?? pathname;
+      if (OpenApiRouter.paths[path]) {
+        OpenApiRouter.paths[path][method] = input;
       } else {
-        OpenApiRouter.paths[pathname] = { [method]: input };
+        OpenApiRouter.paths[path] = { [method]: input };
       }
     }
 
@@ -90,7 +93,13 @@ export class OpenApiRouter {
     group: Record<string, RegisterRouteOptions<Methods, string>>,
   ): OpenApiRouter {
     for (const route of Object.values(group)) {
-      this.register({ ...route, pathname: urlJoin(prefix, route.pathname) });
+      this.register({
+        ...route,
+        overriddenPath: route.overriddenPath
+          ? urlJoin(prefix, route.overriddenPath)
+          : undefined,
+        pathname: urlJoin(prefix, route.pathname),
+      });
     }
 
     return this;
@@ -103,8 +112,6 @@ export class OpenApiRouter {
     logger.log(`[${method}] ${url}`);
 
     for (const route of this.routes) {
-      logger.log(`Matching ${route.pattern}`);
-
       if (route.method !== method) {
         continue;
       }
@@ -114,11 +121,15 @@ export class OpenApiRouter {
         continue;
       }
 
-      // oxlint-disable-next-line no-await-in-loop
-      return await route.handler({
-        params: match.pathname.groups,
-        request,
-      });
+      try {
+        // oxlint-disable-next-line no-await-in-loop
+        return await route.handler({
+          params: match.pathname.groups,
+          request,
+        });
+      } catch (error) {
+        return responseError(error, 500);
+      }
     }
 
     return undefined;
@@ -126,11 +137,22 @@ export class OpenApiRouter {
 }
 
 // oxlint-disable-next-line max-params
-export function createRoute<Method extends Methods, Path extends string>(
+export function defineRoute<Method extends Methods, Path extends string>(
   method: Method,
   pathname: Path,
-  input: ZodOpenApiPathItemObject[Method] | undefined,
+  input:
+    | (ZodOpenApiPathItemObject[Method] & { overridePath?: string })
+    | undefined,
   handler: Handler<Path>,
 ): RegisterRouteOptions<Method, Path> {
-  return { handler, input, method, pathname };
+  const overriddenPath = input?.overridePath;
+  delete input?.overridePath;
+
+  return {
+    handler,
+    input,
+    method,
+    overriddenPath,
+    pathname,
+  };
 }

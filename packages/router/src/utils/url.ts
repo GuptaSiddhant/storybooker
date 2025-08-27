@@ -1,5 +1,3 @@
-import type { FormData } from "undici";
-
 export function urlSearchParamsToObject(
   query: URLSearchParams | FormData,
 ): Record<string, unknown> {

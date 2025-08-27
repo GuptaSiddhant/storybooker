@@ -1,0 +1,106 @@
+import {
+  generateProjectCollectionName,
+  type BaseModel,
+  type ListOptions,
+} from "#utils/shared-model";
+import {
+  LabelCreateSchema,
+  LabelSchema,
+  type LabelType,
+  LabelUpdateSchema,
+} from "./schema";
+import { getStore } from "#utils/store";
+import { ProjectsModel } from "#projects/model";
+
+export class LabelsModel implements BaseModel<LabelType> {
+  projectId: string;
+  #collectionName: string;
+
+  constructor(projectId: string) {
+    this.projectId = projectId;
+    this.#collectionName = generateProjectCollectionName(projectId, "Labels");
+  }
+
+  #log(...args: unknown[]): void {
+    getStore().logger.log(`[${this.projectId}]`, ...args);
+  }
+
+  async list(options?: ListOptions<LabelType>): Promise<LabelType[]> {
+    this.#log("List labels...");
+    const { database } = getStore();
+    const items = await database.listDocuments(this.#collectionName, options);
+
+    return LabelSchema.array().parse(items);
+  }
+
+  async create(data: unknown): Promise<LabelType> {
+    const { database } = getStore();
+    const parsedData = LabelCreateSchema.parse(data);
+    this.#log("Create label '%s''...", parsedData.value);
+
+    const slug = LabelsModel.createSlug(parsedData.value);
+    const label = await database.createDocument(this.#collectionName, {
+      ...parsedData,
+      id: slug,
+    });
+
+    return label;
+  }
+
+  async get(id: string): Promise<LabelType> {
+    this.#log("Get label '%s''...", id);
+    const { database } = getStore();
+    const item = await database.getDocument(this.#collectionName, id);
+
+    return LabelSchema.parse(item);
+  }
+
+  async has(id: string): Promise<boolean> {
+    return await this.get(id)
+      .then(() => true)
+      .catch(() => false);
+  }
+
+  async update(id: string, data: unknown): Promise<void> {
+    this.#log("Update label '%s''...", id);
+    const parsedData = LabelUpdateSchema.parse(data);
+    const { database } = getStore();
+    await database.updateDocument(this.#collectionName, id, parsedData);
+
+    return;
+  }
+
+  async delete(id: string): Promise<void> {
+    this.#log("Delete label '%s''...", id);
+    const { gitHubDefaultBranch } = await new ProjectsModel().get(
+      this.projectId,
+    );
+    if (id === LabelsModel.createSlug(gitHubDefaultBranch)) {
+      const message = `Cannot delete the label associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
+      this.#log("[ERROR]", message);
+      throw new Error(message);
+    }
+
+    const { database } = getStore();
+    await database.deleteDocument(this.#collectionName, id);
+
+    // @TODO
+    // await new BuildsModel(this.projectModel.id).deleteByLabel(this.slug);
+
+    return;
+  }
+
+  id: BaseModel<LabelType>["id"] = (id: string) => {
+    return {
+      delete: this.delete.bind(this, id),
+      get: this.get.bind(this, id),
+      has: this.has.bind(this, id),
+      id,
+      update: this.update.bind(this, id),
+    };
+  };
+
+  static createSlug(value: string): string {
+    return value.trim().toLowerCase().replace(/\W+/, "-");
+  }
+}

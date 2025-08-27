@@ -1,9 +1,12 @@
 import { localStore } from "#store";
-import type { Logger } from "#types";
+import type { DatabaseService, Logger, StorageService } from "#types";
 import { OpenApiRouter } from "#utils/api-router";
-import type { CustomErrorParser } from "#utils/error";
+import { parseErrorMessage, type CustomErrorParser } from "#utils/error";
 import * as rootRoutes from "./root";
 import * as openapiRoutes from "./openapi";
+import * as serveRoutes from "./serve";
+import * as projectsRoutes from "#projects/routes";
+import * as labelsRoutes from "#labels/routes";
 import path from "node:path";
 import fs from "node:fs";
 import { CACHE_CONTROL_PUBLIC_WEEK, SERVICE_NAME } from "#constants";
@@ -11,17 +14,22 @@ import { getMimeType } from "#utils/mime-utils";
 import { Readable } from "node:stream";
 
 export interface RouterContext {
+  database: DatabaseService;
   logger: Logger;
   customErrorParser?: CustomErrorParser;
   prefix: string;
   headless: boolean | undefined;
   staticDirs: readonly string[];
+  storage: StorageService;
 }
 
 const openApiRouter = new OpenApiRouter();
 openApiRouter.register(rootRoutes.root);
 openApiRouter.register(rootRoutes.health);
 openApiRouter.registerGroup("openapi", openapiRoutes);
+openApiRouter.registerGroup("_", serveRoutes);
+openApiRouter.registerGroup("projects", projectsRoutes);
+openApiRouter.registerGroup("projects", labelsRoutes);
 
 export async function router(
   request: Request,
@@ -29,24 +37,38 @@ export async function router(
 ): Promise<Response> {
   const { logger, prefix, customErrorParser, staticDirs } = context;
 
-  const response = await localStore.run(
-    {
-      checkPermissions: () => true,
-      customErrorParser,
-      headless: !!context.headless,
-      logger,
-      prefix,
-      request,
-    },
-    () => openApiRouter.handleRequest(request),
-  );
+  try {
+    const response = await localStore.run(
+      {
+        checkPermissions: () => true,
+        customErrorParser,
+        database: context.database,
+        headless: !!context.headless,
+        logger,
+        prefix,
+        request,
+        storage: context.storage,
+      },
+      () => openApiRouter.handleRequest(request),
+    );
 
-  if (response) {
-    return response;
+    if (response) {
+      return response;
+    }
+
+    const { pathname } = new URL(request.url);
+    const filepath = pathname.replace(prefix, "");
+    return handleStaticFileRoute(filepath, staticDirs, logger);
+  } catch (error) {
+    return new Response(parseErrorMessage(error).errorMessage, { status: 500 });
   }
+}
 
-  const { pathname } = new URL(request.url);
-  const filepath = pathname.replace(prefix, "");
+function handleStaticFileRoute(
+  filepath: string,
+  staticDirs: readonly string[],
+  logger: Logger,
+): Response {
   logger.log(
     "Serving static file '%s' from '%s' dirs...",
     filepath,

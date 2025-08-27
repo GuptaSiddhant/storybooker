@@ -1,11 +1,11 @@
 import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { getStore } from "#store";
 import { checkIsHTMLRequest } from "#utils/request";
-import { OpenApiRouter, createRoute } from "#utils/api-router";
+import { OpenApiRouter, defineRoute } from "#utils/api-router";
 import { createDocument } from "zod-openapi";
 import { responseHTML } from "#utils/response";
 
-export const openapi = createRoute(
+export const openapi = defineRoute(
   "get",
   "/",
   {
@@ -29,7 +29,7 @@ export const openapi = createRoute(
 );
 
 function openApiHandler(): Response {
-  const { prefix, request } = getStore();
+  const { prefix, request, openAPI } = getStore();
 
   const openAPISpec = createDocument({
     info: { title: SERVICE_NAME, version: "" },
@@ -46,13 +46,19 @@ function openApiHandler(): Response {
   }
 
   if (checkIsHTMLRequest()) {
-    return responseHTML(generateOpenApiHTML({ content: openAPISpec }));
+    const paramsUI = new URL(request.url).searchParams.get("ui");
+    const ui = paramsUI ?? openAPI?.ui;
+    if (ui === "scalar") {
+      return responseHTML(generateOpenApiScalar({ content: openAPISpec }));
+    }
+
+    return responseHTML(generateOpenApiSwagger(openAPISpec));
   }
 
   return Response.json(openAPISpec);
 }
 
-function generateOpenApiHTML(
+function generateOpenApiScalar(
   options: {
     authentication?: { securitySchemes: object };
     content: object;
@@ -80,10 +86,36 @@ function generateOpenApiHTML(
   return html;
 }
 
-/**
-  securitySchemes: {
-    bearerAuth: {
-      token: 'default-token',
-    },
-  },
- */
+function generateOpenApiSwagger(
+  spec: object,
+  title: string = SERVICE_NAME,
+): string {
+  return /* html */ `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="${title} SwaggerUI" />
+    <title>${title}</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+    <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js" crossorigin></script>
+</head>
+<body style="position: relative;">
+  <div id="swagger-ui"></div>
+  <div style="position: absolute; top: 0; right: 0; padding-right: 16px; display: flex; gap: 0.5rem;">
+    <form>
+      <input type="hidden" name="download" value="json" />
+      <button type="submit">Download</button>
+    </form>
+    <button type="button" onClick="window.location.reload();">Refresh</button>
+  </div>
+  <script async defer>
+      window.swaggerUI = SwaggerUIBundle(${JSON.stringify({
+        dom_id: "#swagger-ui",
+        spec,
+      })});
+  </script>
+</body>
+</html>`;
+}

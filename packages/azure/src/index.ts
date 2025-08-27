@@ -14,10 +14,14 @@ import { SERVICE_NAME } from "@storybooker/router/constants";
 import { router } from "@storybooker/router";
 import type {
   CheckPermissionsCallback,
+  DatabaseService,
   OpenAPIOptions,
+  StorageService,
 } from "@storybooker/router/types";
 import { AzureFunctionLogger } from "./logger";
 import { parseAzureRestError } from "./error-parser";
+import { AzureStorage } from "./storage";
+import { AzureTables } from "./database";
 
 const DEFAULT_STORAGE_CONN_STR_ENV_VAR = "AzureWebJobsStorage";
 // const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
@@ -114,9 +118,10 @@ export function registerStoryBookerRouter(
     authLevel: options.authLevel,
     handler: serviceHandler.bind(null, {
       baseRoute: route,
+      database: new AzureTables(storageConnectionString),
       headless: options.headless,
       staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
-      storageConnectionString,
+      storage: new AzureStorage(storageConnectionString),
     }),
     methods: [
       "DELETE",
@@ -161,12 +166,13 @@ async function serviceHandler(
     baseRoute: string;
     headless?: boolean;
     staticDirs: readonly string[];
-    storageConnectionString: string;
+    database: DatabaseService;
+    storage: StorageService;
   },
   httpRequest: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const { baseRoute } = options;
+  const { baseRoute, database, storage, staticDirs, headless } = options;
   const logger = new AzureFunctionLogger(context);
 
   try {
@@ -181,10 +187,12 @@ async function serviceHandler(
 
     const response = await router(fetchRequest, {
       customErrorParser: parseAzureRestError,
-      headless: options.headless,
+      database,
+      headless,
       logger,
       prefix: generatePrefixFromBaseRoute(baseRoute) || "/",
-      staticDirs: options.staticDirs,
+      staticDirs,
+      storage,
     });
 
     return {

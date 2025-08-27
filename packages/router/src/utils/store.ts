@@ -1,5 +1,11 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { CheckPermissionsCallback, Logger, OpenAPIOptions } from "#types";
+import type {
+  CheckPermissionsCallback,
+  DatabaseService,
+  Logger,
+  OpenAPIOptions,
+  StorageService,
+} from "#types";
 import type { CustomErrorParser } from "#utils/error";
 
 export interface Store {
@@ -13,6 +19,8 @@ export interface Store {
   request: Request;
   logger: Logger;
   headless: boolean;
+  database: DatabaseService;
+  storage: StorageService;
 }
 
 export const localStore = new AsyncLocalStorage<Store>();

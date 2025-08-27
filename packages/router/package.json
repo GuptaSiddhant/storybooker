@@ -30,7 +30,10 @@
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",
+    "#builds/*": "./src/resources/builds/*.ts",
     "#constants": "./src/utils/constants.ts",
+    "#labels/*": "./src/resources/labels/*.ts",
+    "#projects/*": "./src/resources/projects/*.ts",
     "#store": "./src/utils/store.ts",
     "#types": "./src/types.d.ts",
     "#utils/*": "./src/utils/*.ts"

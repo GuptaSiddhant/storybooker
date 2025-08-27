@@ -71,9 +71,8 @@ export function responseError(
     return Response.json({ errorMessage }, { headers, status });
   } catch (error) {
     logger.error(`[ErrOnErr]`, error);
-    return typeof error === "string"
-      ? new Response(error, { status: 500 })
-      : Response.json(error, { status: 500 });
+    const { errorMessage } = parseErrorMessage(error);
+    return new Response(errorMessage, { status: 500 });
   }
 }
 

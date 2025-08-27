@@ -23,3 +23,17 @@ export const QUERY_PARAMS = {
 export const HEADERS = {
   contentType: "Content-Type",
 } as const;
+
+export const PATTERNS = {
+  projectId: {
+    message: "Should contain only lowercase alphabets, numbers and hyphen.",
+    pattern: "^[a-z0-9][a-z0-9-]{0,60}$",
+  },
+} satisfies Record<
+  string,
+  {
+    pattern: string | RegExp;
+    patternGlobal?: string | RegExp;
+    message?: string;
+  }
+>;
