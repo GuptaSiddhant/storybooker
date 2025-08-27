@@ -1,16 +1,16 @@
+import { ProjectsModel } from "#projects/model";
 import {
   generateProjectCollectionName,
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
+import { getStore } from "#utils/store";
 import {
   LabelCreateSchema,
   LabelSchema,
-  type LabelType,
   LabelUpdateSchema,
+  type LabelType,
 } from "./schema";
-import { getStore } from "#utils/store";
-import { ProjectsModel } from "#projects/model";
 
 export class LabelsModel implements BaseModel<LabelType> {
   projectId: string;

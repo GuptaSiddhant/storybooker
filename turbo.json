@@ -10,6 +10,10 @@
       "outputs": ["tsconfig.tsbuildinfo"],
       "outputLogs": "new-only"
     },
+    "fmt": {
+      "dependsOn": ["^fmt"],
+      "outputLogs": "new-only"
+    },
     "lint": {
       "dependsOn": ["^lint"],
       "outputLogs": "new-only"

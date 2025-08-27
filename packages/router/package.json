@@ -24,16 +24,17 @@
   },
   "scripts": {
     "check": "tsgo --noEmit",
+    "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
     "xss": "xss-scan"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",
-    "#builds/*": "./src/resources/builds/*.ts",
+    "#builds/*": "./src/builds/*.ts",
     "#constants": "./src/utils/constants.ts",
-    "#labels/*": "./src/resources/labels/*.ts",
-    "#projects/*": "./src/resources/projects/*.ts",
+    "#labels/*": "./src/labels/*.ts",
+    "#projects/*": "./src/projects/*.ts",
     "#store": "./src/utils/store.ts",
     "#types": "./src/types.d.ts",
     "#utils/*": "./src/utils/*.ts"
@@ -52,6 +53,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",
     "glob": "^10.0.0",
     "oxlint": "^1.12.0",
-    "oxlint-tsgolint": "^0.0.4"
+    "oxlint-tsgolint": "^0.0.4",
+    "prettier": "^3.6.2"
   }
 }

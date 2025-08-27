@@ -1,5 +1,5 @@
-import z from "zod";
 import { BuildSHASchema, LabelSlugSchema } from "#utils/shared-model";
+import z from "zod";
 
 export const labelTypes = ["branch", "pr", "jira"] as const;
 

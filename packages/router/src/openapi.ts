@@ -1,9 +1,9 @@
-import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { getStore } from "#store";
+import { defineRoute, OpenApiRouter } from "#utils/api-router";
+import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { checkIsHTMLRequest } from "#utils/request";
-import { OpenApiRouter, defineRoute } from "#utils/api-router";
-import { createDocument } from "zod-openapi";
 import { responseHTML } from "#utils/response";
+import { createDocument } from "zod-openapi";
 
 export const openapi = defineRoute(
   "get",

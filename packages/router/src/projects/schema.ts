@@ -2,12 +2,12 @@ import {
   DEFAULT_GITHUB_BRANCH,
   DEFAULT_PURGE_AFTER_DAYS,
 } from "#utils/constants";
-import z from "zod";
 import {
   BuildSHASchema,
   LabelSlugSchema,
   ProjectIdSchema,
 } from "#utils/shared-model";
+import z from "zod";
 
 export type ProjectType = z.infer<typeof ProjectSchema>;
 /** @private */

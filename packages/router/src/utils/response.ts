@@ -1,10 +1,10 @@
 import { createElement } from "@kitajs/html";
 import { renderToStream } from "@kitajs/html/suspense";
+import { getStore } from "#store";
 import { CONTENT_TYPES } from "#utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { parseErrorMessage } from "./error";
-import { getStore } from "#store";
 
 export const commonErrorResponses: ZodOpenApiResponsesObject = {
   400: { description: "Invalid request data" },

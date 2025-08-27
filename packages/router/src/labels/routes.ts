@@ -1,11 +1,15 @@
 import { CONTENT_TYPES } from "#constants";
+import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
+import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import {
   commonErrorResponses,
   responseError,
   responseRedirect,
 } from "#utils/response";
+import { LabelSlugSchema, ProjectIdSchema } from "#utils/shared-model";
+import { urlSearchParamsToObject } from "#utils/url";
 import z from "zod";
 import { LabelsModel } from "./model";
 import {
@@ -16,10 +20,6 @@ import {
   type LabelsGetResultType,
   type LabelsListResultType,
 } from "./schema";
-import { LabelSlugSchema, ProjectIdSchema } from "#utils/shared-model";
-import { ProjectsModel } from "#projects/model";
-import { urlSearchParamsToObject } from "#utils/url";
-import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 
 const tag = "Labels";
 

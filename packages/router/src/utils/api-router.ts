@@ -3,8 +3,8 @@ import type {
   ZodOpenApiPathItemObject,
   ZodOpenApiPathsObject,
 } from "zod-openapi";
-import { urlJoin } from "./url";
 import { responseError } from "./response";
+import { urlJoin } from "./url";
 
 // @ts-expect-error: Property 'UrlPattern' does not exist
 if (!globalThis.URLPattern) {

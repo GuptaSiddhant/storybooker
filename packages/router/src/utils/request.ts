@@ -1,5 +1,5 @@
-import { CONTENT_TYPES, QUERY_PARAMS } from "#utils/constants";
 import { getStore } from "#store";
+import { CONTENT_TYPES, QUERY_PARAMS } from "#utils/constants";
 
 export function checkIsHXRequest(request?: Request): boolean {
   const req = request || getStore().request;
