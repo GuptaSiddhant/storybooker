@@ -1,3 +1,4 @@
+import { BuildsModel } from "#builds/model";
 import { ProjectsModel } from "#projects/model";
 import {
   generateProjectCollectionName,
@@ -39,10 +40,15 @@ export class LabelsModel implements BaseModel<LabelType> {
     this.#log("Create label '%s''...", parsedData.value);
 
     const slug = LabelsModel.createSlug(parsedData.value);
-    const label = await database.createDocument(this.#collectionName, {
+    const now = new Date().toISOString();
+    const label: LabelType = {
       ...parsedData,
+      createdAt: now,
       id: slug,
-    });
+      slug,
+      updatedAt: now,
+    };
+    await database.createDocument<LabelType>(this.#collectionName, label);
 
     return label;
   }
@@ -65,27 +71,28 @@ export class LabelsModel implements BaseModel<LabelType> {
     this.#log("Update label '%s''...", id);
     const parsedData = LabelUpdateSchema.parse(data);
     const { database } = getStore();
-    await database.updateDocument(this.#collectionName, id, parsedData);
+    await database.updateDocument(this.#collectionName, id, {
+      ...parsedData,
+      updatedAt: new Date().toISOString(),
+    });
 
     return;
   }
 
-  async delete(id: string): Promise<void> {
-    this.#log("Delete label '%s''...", id);
+  async delete(slug: string): Promise<void> {
+    this.#log("Delete label '%s''...", slug);
     const { gitHubDefaultBranch } = await new ProjectsModel().get(
       this.projectId,
     );
-    if (id === LabelsModel.createSlug(gitHubDefaultBranch)) {
+    if (slug === LabelsModel.createSlug(gitHubDefaultBranch)) {
       const message = `Cannot delete the label associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
       this.#log("[ERROR]", message);
       throw new Error(message);
     }
 
     const { database } = getStore();
-    await database.deleteDocument(this.#collectionName, id);
-
-    // @TODO
-    // await new BuildsModel(this.projectModel.id).deleteByLabel(this.slug);
+    await database.deleteDocument(this.#collectionName, slug);
+    await new BuildsModel(this.projectId).deleteByLabel(slug);
 
     return;
   }
@@ -102,5 +109,15 @@ export class LabelsModel implements BaseModel<LabelType> {
 
   static createSlug(value: string): string {
     return value.trim().toLowerCase().replace(/\W+/, "-");
+  }
+
+  static guessType(slug: string): LabelType["type"] {
+    if (/^\d+$/.test(slug)) {
+      return "pr";
+    }
+    if (/^\w+-\d+$/.test(slug)) {
+      return "jira";
+    }
+    return "branch";
   }
 }

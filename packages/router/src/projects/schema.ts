@@ -2,20 +2,15 @@ import {
   DEFAULT_GITHUB_BRANCH,
   DEFAULT_PURGE_AFTER_DAYS,
 } from "#utils/constants";
-import {
-  BuildSHASchema,
-  LabelSlugSchema,
-  ProjectIdSchema,
-} from "#utils/shared-model";
+import { BuildSHASchema, ProjectIdSchema } from "#utils/shared-model";
 import z from "zod";
 
 export type ProjectType = z.infer<typeof ProjectSchema>;
 /** @private */
 export const ProjectSchema = z
-  // oxlint-disable-next-line sort-keys
+
   .object({
-    id: ProjectIdSchema,
-    name: z.string().meta({ description: "Name of the project." }),
+    createdAt: z.iso.datetime().default(new Date().toISOString()),
 
     gitHubDefaultBranch: z
       .string()
@@ -33,8 +28,11 @@ export const ProjectSchema = z
       ),
     ),
 
-    latestBuildLabels: LabelSlugSchema.array().optional(),
+    id: ProjectIdSchema,
+
     latestBuildSHA: BuildSHASchema.optional(),
+
+    name: z.string().meta({ description: "Name of the project." }),
 
     purgeBuildsAfterDays: z.coerce
       .number()
@@ -44,7 +42,8 @@ export const ProjectSchema = z
         description:
           "Days after which the builds in the project should be purged.",
       }),
-    timestamp: z.string().optional(),
+
+    updatedAt: z.iso.datetime().default(new Date().toISOString()),
   })
   .meta({
     description: "StoryBooker project",
@@ -53,15 +52,16 @@ export const ProjectSchema = z
 
 export type ProjectCreateType = z.infer<typeof ProjectCreateSchema>;
 export const ProjectCreateSchema = ProjectSchema.omit({
-  latestBuildLabels: true,
+  createdAt: true,
   latestBuildSHA: true,
-  timestamp: true,
+  updatedAt: true,
 });
 
 export type ProjectUpdateType = z.infer<typeof ProjectUpdateSchema>;
 export const ProjectUpdateSchema = ProjectSchema.omit({
+  createdAt: true,
   id: true,
-  timestamp: true,
+  updatedAt: true,
 }).partial();
 
 export type ProjectsListResultType = z.infer<typeof ProjectsListResultSchema>;

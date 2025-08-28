@@ -1,7 +1,11 @@
 import { CONTENT_TYPES } from "#constants";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
-import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
+import {
+  checkIsHTMLRequest,
+  checkIsHXRequest,
+  validateIsFormEncodedRequest,
+} from "#utils/request";
 import {
   commonErrorResponses,
   responseError,
@@ -79,15 +83,9 @@ export const createProject = defineRoute(
   async ({ request }) => {
     await authenticateOrThrow([`project:create:`]);
 
-    const contentType = request.headers.get("content-type");
-    if (!contentType) {
-      return responseError("Content-Type header is required", 400);
-    }
-    if (!contentType.includes(CONTENT_TYPES.FORM_ENCODED)) {
-      return responseError(
-        `Invalid Content-Type, expected ${CONTENT_TYPES.FORM_ENCODED}`,
-        415,
-      );
+    const validFormError = validateIsFormEncodedRequest(request);
+    if (validFormError) {
+      return responseError(validFormError.message, validFormError.status);
     }
 
     const project = await new ProjectsModel().create(
@@ -183,15 +181,9 @@ export const updateProject = defineRoute(
   async ({ params: { projectId }, request }) => {
     await authenticateOrThrow([`project:update:${projectId}`]);
 
-    const contentType = request.headers.get("content-type");
-    if (!contentType) {
-      return responseError("Content-Type header is required", 400);
-    }
-    if (!contentType.includes(CONTENT_TYPES.FORM_ENCODED)) {
-      return responseError(
-        `Invalid Content-Type, expected ${CONTENT_TYPES.FORM_ENCODED}`,
-        415,
-      );
+    const validFormError = validateIsFormEncodedRequest(request);
+    if (validFormError) {
+      return responseError(validFormError.message, validFormError.status);
     }
 
     await new ProjectsModel().update(

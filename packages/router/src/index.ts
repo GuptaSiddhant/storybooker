@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
+import * as buildsRoutes from "#builds/routes";
 import { CACHE_CONTROL_PUBLIC_WEEK, SERVICE_NAME } from "#constants";
 import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
@@ -30,6 +31,7 @@ openApiRouter.registerGroup("openapi", openapiRoutes);
 openApiRouter.registerGroup("_", serveRoutes);
 openApiRouter.registerGroup("projects", projectsRoutes);
 openApiRouter.registerGroup("projects", labelsRoutes);
+openApiRouter.registerGroup("projects", buildsRoutes);
 
 export async function router(
   request: Request,

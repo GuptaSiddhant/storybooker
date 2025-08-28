@@ -22,12 +22,12 @@ export interface DatabaseService {
 
   listDocuments: <Item extends { id: string }>(
     collectionName: string,
-    options?: DatabaseDocumentListOptions,
+    options?: DatabaseDocumentListOptions<Item>,
   ) => Promise<Item[]>;
   createDocument: <Item extends { id: string }>(
     collectionName: string,
     document: Item,
-  ) => Promise<Item>;
+  ) => Promise<void>;
   getDocument: <Item extends { id: string }>(
     collectionName: string,
     id: string,

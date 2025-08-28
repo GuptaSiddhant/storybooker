@@ -61,10 +61,13 @@ export class ProjectsModel implements BaseModel<ProjectType> {
     });
 
     this.#debug(projectId, "Create project entry in collection");
-    const project = await database.createDocument(
-      this.#collectionName,
-      projectData,
-    );
+    const now = new Date().toISOString();
+    const project: ProjectType = {
+      ...projectData,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await database.createDocument<ProjectType>(this.#collectionName, project);
 
     return project;
   }
@@ -87,7 +90,10 @@ export class ProjectsModel implements BaseModel<ProjectType> {
     this.#log(id, "Update project...");
     const { database } = getStore();
     const project = ProjectUpdateSchema.parse(data);
-    await database.updateDocument(this.#collectionName, id, project);
+    await database.updateDocument(this.#collectionName, id, {
+      ...project,
+      updatedAt: new Date().toISOString(),
+    });
 
     if (project.gitHubDefaultBranch) {
       await new LabelsModel(id)

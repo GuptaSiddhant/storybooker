@@ -2,7 +2,11 @@ import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
-import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
+import {
+  checkIsHTMLRequest,
+  checkIsHXRequest,
+  validateIsFormEncodedRequest,
+} from "#utils/request";
 import {
   commonErrorResponses,
   responseError,
@@ -44,7 +48,7 @@ export const listLabels = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([`project:read:${projectId}`]);
+    await authenticateOrThrow([`label:read:${projectId}`]);
     const labels = await new LabelsModel(projectId).list();
     const result: LabelsListResultType = { labels };
 
@@ -85,15 +89,9 @@ export const createLabel = defineRoute(
       return responseError(`The project '${projectId}' does not exist.`, 404);
     }
 
-    const contentType = request.headers.get("content-type");
-    if (!contentType) {
-      return responseError("Content-Type header is required", 400);
-    }
-    if (!contentType.includes(CONTENT_TYPES.FORM_ENCODED)) {
-      return responseError(
-        `Invalid Content-Type, expected ${CONTENT_TYPES.FORM_ENCODED}`,
-        415,
-      );
+    const validFormError = validateIsFormEncodedRequest(request);
+    if (validFormError) {
+      return responseError(validFormError.message, validFormError.status);
     }
 
     await authenticateOrThrow([`label:create:${projectId}`]);
@@ -124,13 +122,8 @@ export const getLabel = defineRoute(
           [CONTENT_TYPES.JSON]: { schema: LabelsGetResultSchema },
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
         },
-        description: "Label created successfully",
+        description: "Label details retrieved successfully",
       },
-      303: {
-        description: "Label created, redirecting...",
-        headers: { Location: z.url() },
-      },
-      415: { description: "Unsupported Media Type" },
     },
     summary: "Get label details",
     tags: [tag],
@@ -141,7 +134,7 @@ export const getLabel = defineRoute(
     const label = await new LabelsModel(projectId).get(labelSlug);
     const result: LabelsGetResultType = { label };
 
-    return Response.json(result, { status: 201 });
+    return Response.json(result);
   },
 );
 
@@ -162,13 +155,13 @@ export const deleteLabel = defineRoute(
         description: "Label deleted, redirecting...",
         headers: { Location: z.url() },
       },
-      415: { description: "Unsupported Media Type" },
+      404: { description: "Label not found" },
     },
     summary: "Delete label",
     tags: [tag],
   },
   async ({ params: { labelSlug, projectId } }) => {
-    await authenticateOrThrow([`label:read:${projectId}`]);
+    await authenticateOrThrow([`label:delete:${projectId}`]);
 
     await new LabelsModel(projectId).delete(labelSlug);
 
@@ -209,15 +202,9 @@ export const updateLabel = defineRoute(
   async ({ params: { labelSlug, projectId }, request }) => {
     await authenticateOrThrow([`label:update:${projectId}`]);
 
-    const contentType = request.headers.get("content-type");
-    if (!contentType) {
-      return responseError("Content-Type header is required", 400);
-    }
-    if (!contentType.includes(CONTENT_TYPES.FORM_ENCODED)) {
-      return responseError(
-        `Invalid Content-Type, expected ${CONTENT_TYPES.FORM_ENCODED}`,
-        415,
-      );
+    const validFormError = validateIsFormEncodedRequest(request);
+    if (validFormError) {
+      return responseError(validFormError.message, validFormError.status);
     }
 
     await new LabelsModel(projectId).update(

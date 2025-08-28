@@ -4,8 +4,8 @@ import {
   type TableEntityResult,
 } from "@azure/data-tables";
 import type {
-  DatabaseService,
   DatabaseDocumentListOptions,
+  DatabaseService,
 } from "@storybooker/router/types";
 
 export class AzureTables implements DatabaseService {
@@ -97,7 +97,7 @@ export class AzureTables implements DatabaseService {
   createDocument = async <Item extends { id: string }>(
     tableName: string,
     item: Item,
-  ): Promise<Item> => {
+  ): Promise<void> => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
       tableName,
@@ -108,7 +108,7 @@ export class AzureTables implements DatabaseService {
       rowKey: item.id,
     });
 
-    return item;
+    return;
   };
 
   deleteDocument = async (

@@ -7,24 +7,30 @@ export type LabelType = z.infer<typeof LabelSchema>;
 /** @private */
 export const LabelSchema = z
   .object({
+    createdAt: z.iso.datetime().default(new Date().toISOString()),
     id: LabelSlugSchema,
     latestBuildSHA: z.optional(BuildSHASchema),
-    timestamp: z.string().optional(),
+    slug: LabelSlugSchema,
     type: z.enum(labelTypes),
+    updatedAt: z.iso.datetime().default(new Date().toISOString()),
     value: z.string().meta({ description: "The value of the label." }),
   })
   .meta({ description: "StoryBooker label.", id: "label" });
 
 export type LabelCreateType = z.infer<typeof LabelCreateSchema>;
 export const LabelCreateSchema = LabelSchema.omit({
+  createdAt: true,
   id: true,
-  timestamp: true,
+  slug: true,
+  updatedAt: true,
 });
 
 export type LabelUpdateType = z.infer<typeof LabelUpdateSchema>;
 export const LabelUpdateSchema = LabelSchema.omit({
+  createdAt: true,
   id: true,
-  timestamp: true,
+  slug: true,
+  updatedAt: true,
 }).partial();
 
 export type LabelsListResultType = z.infer<typeof LabelsListResultSchema>;
