@@ -9,12 +9,12 @@ export interface Logger {
   warn?: (...args: unknown[]) => void;
 }
 
-export type DatabaseDocumentListOptions<Item extends { id: string }> = {
+export interface DatabaseDocumentListOptions<Item extends { id: string }> {
   limit?: number;
   filter?: string | ((item: Item) => boolean);
   select?: string[];
-  sort?: "latest" | ((a: Item, b: Item) => number);
-};
+  sort?: "latest" | ((item1: Item, item2: Item) => number);
+}
 export interface DatabaseService {
   listCollections: () => Promise<string[]>;
   createCollection: (name: string) => Promise<void>;
@@ -66,6 +66,7 @@ export interface StorageService {
   ) => Promise<void>;
   deleteFile: (containerName: string, destinationPath: string) => Promise<void>;
   deleteFiles: (containerName: string, prefix: string) => Promise<void>;
+  downloadFile: (containerName: string, filepath: string) => Promise<Response>;
 }
 
 export interface OpenAPIOptions {

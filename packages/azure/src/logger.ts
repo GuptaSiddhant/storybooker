@@ -1,5 +1,5 @@
-import type { Logger } from "@storybooker/router/types";
 import type { InvocationContext } from "@azure/functions";
+import type { Logger } from "@storybooker/router/types";
 
 const PROPERTIES_TO_SANITISE: RegExp[] = [/x-functions-key/i];
 const PATTERNS_TO_SANITISE: [RegExp, string][] = [

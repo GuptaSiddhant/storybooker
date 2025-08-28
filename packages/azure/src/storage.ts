@@ -1,8 +1,8 @@
-import { type BlobClient, BlobServiceClient } from "@azure/storage-blob";
-import type { StorageService } from "@storybooker/router/types";
-import { Readable } from "node:stream";
 import fs from "node:fs";
 import path from "node:path";
+import { Readable } from "node:stream";
+import { BlobServiceClient, type BlobClient } from "@azure/storage-blob";
+import type { StorageService } from "@storybooker/router/types";
 
 export class AzureStorage implements StorageService {
   #client: BlobServiceClient;
@@ -152,5 +152,45 @@ export class AzureStorage implements StorageService {
     }
 
     return;
+  };
+
+  downloadFile = async (
+    containerName: string,
+    filepath: string,
+  ): Promise<Response> => {
+    const containerClient = this.#client.getContainerClient(containerName);
+    const blockBlobClient = containerClient.getBlockBlobClient(filepath);
+
+    if (!(await blockBlobClient.exists())) {
+      return new Response(
+        `File '${filepath}' not found in container '${containerName}'.`,
+        { status: 404 },
+      );
+    }
+
+    const downloadResponse = await blockBlobClient.download(0);
+
+    if (!downloadResponse.readableStreamBody) {
+      return new Response(
+        `File '${filepath}' in container '${containerName}' is not downloadable.`,
+        { status: 415 },
+      );
+    }
+
+    const headers = new Headers();
+    headers.set(
+      "Content-Type",
+      downloadResponse.contentType || "application/octet-stream",
+    );
+    if (downloadResponse.contentLength) {
+      headers.set("Content-Length", downloadResponse.contentLength.toString());
+    }
+    if (downloadResponse.contentEncoding) {
+      headers.set("Content-Encoding", downloadResponse.contentEncoding);
+    }
+
+    const stream =
+      downloadResponse.readableStreamBody as unknown as ReadableStream;
+    return new Response(stream, { headers, status: 200 });
   };
 }

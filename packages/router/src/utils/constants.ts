@@ -22,6 +22,8 @@ export const QUERY_PARAMS = {
   newResource: "new",
 };
 export const HEADERS = {
+  cacheControl: "Cache-Control",
+  contentLength: "Content-Length",
   contentType: "Content-Type",
 } as const;
 

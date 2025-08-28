@@ -1,27 +1,27 @@
-import type { BodyInit } from "undici";
 import {
   app,
   type HttpRequest,
-  type InvocationContext,
   type HttpResponseInit,
+  type InvocationContext,
 } from "@azure/functions";
-import {
-  generatePrefixFromBaseRoute,
-  urlJoin,
-} from "@storybooker/router/url-utils";
-import { parseErrorMessage } from "@storybooker/router/error-utils";
-import { SERVICE_NAME } from "@storybooker/router/constants";
 import { router } from "@storybooker/router";
+import { SERVICE_NAME } from "@storybooker/router/constants";
+import { parseErrorMessage } from "@storybooker/router/error-utils";
 import type {
   CheckPermissionsCallback,
   DatabaseService,
   OpenAPIOptions,
   StorageService,
 } from "@storybooker/router/types";
-import { AzureFunctionLogger } from "./logger";
-import { parseAzureRestError } from "./error-parser";
-import { AzureStorage } from "./storage";
+import {
+  generatePrefixFromBaseRoute,
+  urlJoin,
+} from "@storybooker/router/url-utils";
+import type { BodyInit } from "undici";
 import { AzureTables } from "./database";
+import { parseAzureRestError } from "./error-parser";
+import { AzureFunctionLogger } from "./logger";
+import { AzureStorage } from "./storage";
 
 const DEFAULT_STORAGE_CONN_STR_ENV_VAR = "AzureWebJobsStorage";
 // const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
