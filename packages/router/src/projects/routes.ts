@@ -44,7 +44,9 @@ export const listProjects = defineRoute(
     tags: [tag],
   },
   async () => {
-    await authenticateOrThrow(["project:read:"]);
+    await authenticateOrThrow([
+      { action: "read", projectId: undefined, resource: "project" },
+    ]);
     const projects = await new ProjectsModel().list();
     const result: ProjectsListResultType = { projects };
 
@@ -81,7 +83,9 @@ export const createProject = defineRoute(
     tags: [tag],
   },
   async ({ request }) => {
-    await authenticateOrThrow([`project:create:`]);
+    await authenticateOrThrow([
+      { action: "create", projectId: undefined, resource: "project" },
+    ]);
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
@@ -119,7 +123,9 @@ export const getProject = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([`project:read:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "read", projectId, resource: "project" },
+    ]);
 
     const project = await new ProjectsModel().get(projectId);
     const result: ProjectGetResultType = { project };
@@ -144,7 +150,9 @@ export const deleteProject = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([`project:delete:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "delete", projectId, resource: "project" },
+    ]);
     await new ProjectsModel().delete(projectId);
 
     return new Response(null, { status: 204 });
@@ -179,7 +187,9 @@ export const updateProject = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId }, request }) => {
-    await authenticateOrThrow([`project:update:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "update", projectId, resource: "project" },
+    ]);
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {

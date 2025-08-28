@@ -98,19 +98,18 @@ export interface OpenAPIOptions {
  */
 export type CheckPermissionsCallback = (
   permissions: Permission[],
-  request: Request,
+  options: { request: Request; logger: Logger },
 ) => boolean | Response | Promise<boolean | Response>;
 
 /**  Type of permission to check */
-export type Permission = `${PermissionResource}:${PermissionAction}:${string}`;
+export interface Permission {
+  action: PermissionAction;
+  projectId: string | undefined;
+  resource: PermissionResource;
+}
 
 /** Type of possible resources to check permissions for */
-export type PermissionResource =
-  | "project"
-  | "build"
-  | "label"
-  | "openapi"
-  | "ui";
+export type PermissionResource = "project" | "build" | "label" | "openapi";
 
 /** Type of possible actions to check permissions for */
 export type PermissionAction = "create" | "read" | "update" | "delete";

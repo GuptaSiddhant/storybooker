@@ -51,7 +51,9 @@ export const listBuilds = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([`build:read:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "read", projectId, resource: "build" },
+    ]);
     const builds = await new BuildsModel(projectId).list();
     const result: BuildsListResultType = { builds };
 
@@ -99,7 +101,9 @@ export const createBuild = defineRoute(
       return responseError(validFormError.message, validFormError.status);
     }
 
-    await authenticateOrThrow([`build:create:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "create", projectId, resource: "build" },
+    ]);
 
     const build = await new BuildsModel(projectId).create(
       urlSearchParamsToObject(await request.formData()),
@@ -135,7 +139,9 @@ export const getBuild = defineRoute(
     tags: [tag],
   },
   async ({ params: { buildSHA, projectId } }) => {
-    await authenticateOrThrow([`build:read:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "read", projectId, resource: "build" },
+    ]);
 
     const build = await new BuildsModel(projectId).get(buildSHA);
     const url = urlBuilder.buildSHA(projectId, buildSHA);
@@ -169,7 +175,9 @@ export const deleteBuild = defineRoute(
     tags: [tag],
   },
   async ({ params: { buildSHA, projectId } }) => {
-    await authenticateOrThrow([`build:delete:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "delete", projectId, resource: "build" },
+    ]);
     await new BuildsModel(projectId).delete(buildSHA);
 
     return new Response(null, { status: 204 });
@@ -220,7 +228,9 @@ export const uploadBuild = defineRoute(
       );
     }
 
-    await authenticateOrThrow([`build:update:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "update", projectId, resource: "build" },
+    ]);
 
     const contentType = request.headers.get("content-type");
     if (!contentType) {

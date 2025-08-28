@@ -30,7 +30,9 @@ export const serveStorybook = defineRoute(
     const filepath = pathname.split(`${buildSHA}/`).at(1) || "index.html";
 
     const containerFilepath = path.posix.join(buildSHA, filepath);
-    await authenticateOrThrow([`build:read:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "read", projectId, resource: "build" },
+    ]);
 
     const response = await storage.downloadFile(
       generateProjectContainerName(projectId),

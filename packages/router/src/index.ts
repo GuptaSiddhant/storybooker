@@ -1,18 +1,18 @@
-import fs from "node:fs";
-import path from "node:path";
-import { Readable } from "node:stream";
 import * as buildsRoutes from "#builds/routes";
-import { CACHE_CONTROL_PUBLIC_WEEK, SERVICE_NAME } from "#constants";
 import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
 import { localStore } from "#store";
 import { OpenApiRouter } from "#utils/api-router";
 import { parseErrorMessage, type CustomErrorParser } from "#utils/error";
-import { getMimeType } from "#utils/mime-utils";
 import * as openapiRoutes from "./openapi";
 import * as rootRoutes from "./root";
 import * as serveRoutes from "./serve";
-import type { DatabaseService, Logger, StorageService } from "./types";
+import type {
+  CheckPermissionsCallback,
+  DatabaseService,
+  Logger,
+  StorageService,
+} from "./types";
 
 export type * from "./types";
 export * from "#constants";
@@ -22,6 +22,7 @@ export * from "#utils/url";
 export interface RouterContext {
   database: DatabaseService;
   logger: Logger;
+  checkPermissions?: CheckPermissionsCallback;
   customErrorParser?: CustomErrorParser;
   prefix: string;
   headless: boolean | undefined;
@@ -38,16 +39,24 @@ openApiRouter.registerGroup("projects", projectsRoutes);
 openApiRouter.registerGroup("projects", labelsRoutes);
 openApiRouter.registerGroup("projects", buildsRoutes);
 
+const DEFAULT_CHECK_PERMISSIONS: CheckPermissionsCallback = () => true;
+
 export async function router(
   request: Request,
   context: RouterContext,
 ): Promise<Response> {
-  const { logger, prefix, customErrorParser, staticDirs } = context;
+  const {
+    logger,
+    prefix,
+    checkPermissions = DEFAULT_CHECK_PERMISSIONS,
+    customErrorParser,
+    staticDirs,
+  } = context;
 
   try {
     const response = await localStore.run(
       {
-        checkPermissions: () => true,
+        checkPermissions,
         customErrorParser,
         database: context.database,
         headless: !!context.headless,
@@ -67,46 +76,8 @@ export async function router(
 
     const { pathname } = new URL(request.url);
     const filepath = pathname.replace(prefix, "");
-    return handleStaticFileRoute(filepath, staticDirs, logger);
+    return rootRoutes.handleStaticFileRoute(filepath, staticDirs, logger);
   } catch (error) {
     return new Response(parseErrorMessage(error).errorMessage, { status: 500 });
   }
-}
-
-function handleStaticFileRoute(
-  filepath: string,
-  staticDirs: readonly string[],
-  logger: Logger,
-): Response {
-  logger.log(
-    "Serving static file '%s' from '%s' dirs...",
-    filepath,
-    staticDirs.join(","),
-  );
-
-  const staticFilepaths = staticDirs.map((dir) =>
-    path.join(path.relative(process.cwd(), dir), filepath),
-  );
-
-  const staticFilepath = staticFilepaths.find(fs.existsSync);
-  if (!staticFilepath) {
-    return new Response(`[${SERVICE_NAME}] No matching route or static file.`, {
-      status: 404,
-    });
-  }
-
-  logger.debug?.("Static file '%s' found.", staticFilepath);
-
-  const stream = fs.createReadStream(staticFilepath, {
-    autoClose: true,
-    encoding: "utf8",
-  });
-
-  return new Response(Readable.toWeb(stream) as BodyInit, {
-    headers: {
-      "Cache-Control": CACHE_CONTROL_PUBLIC_WEEK,
-      "Content-Type": getMimeType(staticFilepath) || "application/octet-stream",
-    },
-    status: 200,
-  });
 }

@@ -1,5 +1,6 @@
 import { getStore } from "#store";
 import { defineRoute, OpenApiRouter } from "#utils/api-router";
+import { authenticateOrThrow } from "#utils/auth";
 import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { checkIsHTMLRequest } from "#utils/request";
 import { responseHTML } from "#utils/response";
@@ -25,38 +26,39 @@ export const openapi = defineRoute(
     },
     summary: "OpenAPI spec",
   },
-  openApiHandler,
-);
+  async () => {
+    const { prefix, request, openAPI } = getStore();
+    await authenticateOrThrow([
+      { action: "read", projectId: undefined, resource: "openapi" },
+    ]);
 
-function openApiHandler(): Response {
-  const { prefix, request, openAPI } = getStore();
+    const openAPISpec = createDocument({
+      info: { title: SERVICE_NAME, version: "" },
+      openapi: "3.1.0",
+      paths: OpenApiRouter.paths,
+      security: [],
+      servers: [{ url: prefix }],
+      tags: [],
+    });
 
-  const openAPISpec = createDocument({
-    info: { title: SERVICE_NAME, version: "" },
-    openapi: "3.1.0",
-    paths: OpenApiRouter.paths,
-    security: [],
-    servers: [{ url: prefix }],
-    tags: [],
-  });
-
-  const { searchParams } = new URL(request.url);
-  if (searchParams.has("json")) {
-    return Response.json(openAPISpec);
-  }
-
-  if (checkIsHTMLRequest()) {
-    const paramsUI = new URL(request.url).searchParams.get("ui");
-    const ui = paramsUI ?? openAPI?.ui;
-    if (ui === "scalar") {
-      return responseHTML(generateOpenApiScalar({ content: openAPISpec }));
+    const { searchParams } = new URL(request.url);
+    if (searchParams.has("json")) {
+      return Response.json(openAPISpec);
     }
 
-    return responseHTML(generateOpenApiSwagger(openAPISpec));
-  }
+    if (checkIsHTMLRequest()) {
+      const paramsUI = new URL(request.url).searchParams.get("ui");
+      const ui = paramsUI ?? openAPI?.ui;
+      if (ui === "scalar") {
+        return responseHTML(generateOpenApiScalar({ content: openAPISpec }));
+      }
 
-  return Response.json(openAPISpec);
-}
+      return responseHTML(generateOpenApiSwagger(openAPISpec));
+    }
+
+    return Response.json(openAPISpec);
+  },
+);
 
 function generateOpenApiScalar(
   options: {

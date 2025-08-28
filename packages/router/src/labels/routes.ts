@@ -48,7 +48,9 @@ export const listLabels = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([`label:read:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "read", projectId, resource: "label" },
+    ]);
     const labels = await new LabelsModel(projectId).list();
     const result: LabelsListResultType = { labels };
 
@@ -94,7 +96,9 @@ export const createLabel = defineRoute(
       return responseError(validFormError.message, validFormError.status);
     }
 
-    await authenticateOrThrow([`label:create:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "create", projectId, resource: "label" },
+    ]);
 
     const label = await new LabelsModel(projectId).create(
       urlSearchParamsToObject(await request.formData()),
@@ -129,7 +133,9 @@ export const getLabel = defineRoute(
     tags: [tag],
   },
   async ({ params: { labelSlug, projectId } }) => {
-    await authenticateOrThrow([`label:read:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "read", projectId, resource: "label" },
+    ]);
 
     const label = await new LabelsModel(projectId).get(labelSlug);
     const result: LabelsGetResultType = { label };
@@ -161,7 +167,9 @@ export const deleteLabel = defineRoute(
     tags: [tag],
   },
   async ({ params: { labelSlug, projectId } }) => {
-    await authenticateOrThrow([`label:delete:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "delete", projectId, resource: "label" },
+    ]);
 
     await new LabelsModel(projectId).delete(labelSlug);
 
@@ -200,7 +208,9 @@ export const updateLabel = defineRoute(
     tags: [tag],
   },
   async ({ params: { labelSlug, projectId }, request }) => {
-    await authenticateOrThrow([`label:update:${projectId}`]);
+    await authenticateOrThrow([
+      { action: "update", projectId, resource: "label" },
+    ]);
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {

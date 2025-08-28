@@ -116,6 +116,7 @@ export function registerStoryBookerRouter(
     authLevel: options.authLevel,
     handler: serviceHandler.bind(null, {
       baseRoute: route,
+      checkPermissions: options.checkPermissions,
       database: new AzureTables(storageConnectionString),
       headless: options.headless,
       staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
@@ -162,6 +163,7 @@ It is required to connect with Azure Storage resource.`,
 async function serviceHandler(
   options: {
     baseRoute: string;
+    checkPermissions?: CheckPermissionsCallback;
     headless?: boolean;
     staticDirs: readonly string[];
     database: DatabaseService;
@@ -170,7 +172,6 @@ async function serviceHandler(
   httpRequest: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const { baseRoute, database, storage, staticDirs, headless } = options;
   const logger = new AzureFunctionLogger(context);
 
   try {
@@ -184,13 +185,14 @@ async function serviceHandler(
     });
 
     const response = await router(fetchRequest, {
+      checkPermissions: options.checkPermissions,
       customErrorParser: parseAzureRestError,
-      database,
-      headless,
+      database: options.database,
+      headless: options.headless,
       logger,
-      prefix: generatePrefixFromBaseRoute(baseRoute) || "/",
-      staticDirs,
-      storage,
+      prefix: generatePrefixFromBaseRoute(options.baseRoute) || "/",
+      staticDirs: options.staticDirs,
+      storage: options.storage,
     });
 
     return {
