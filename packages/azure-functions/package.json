@@ -1,5 +1,5 @@
 {
-  "name": "@storybooker/azure",
+  "name": "@storybooker/azure-functions",
   "version": "0.0.0",
   "type": "module",
   "description": "Utils to upload and manage Storybooks via Azure Functions and storage.",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/guptasiddhant/storybooker",
-    "directory": "packages/azure"
+    "directory": "packages/azure-functions"
   },
   "license": "MIT",
   "bugs": {
@@ -55,16 +55,13 @@
   },
   "main": "./start.js",
   "scripts": {
-    "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
     "build": "tsdown",
     "check": "tsgo --noEmit",
-    "clear": "rm -rf coverage dist & true",
     "dev": "tsdown -w ./src -w ../router/src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
     "start": "func start",
-    "verify": "yarn clear; yarn check; yarn lint; yarn build",
     "xss": "xss-scan"
   },
   "dependencies": {
@@ -72,13 +69,13 @@
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
     "@kitajs/html": "^4.0.0",
+    "@storybooker/router": "workspace:^",
     "decompress": "^4.0.0",
     "zod": "^4.0.0",
     "zod-openapi": "^5.0.0"
   },
   "devDependencies": {
     "@kitajs/ts-html-plugin": "^4.0.0",
-    "@storybooker/router": "workspace:*",
     "@types/decompress": "^4.0.0",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",

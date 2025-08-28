@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/router",
-  "private": true,
+  "version": "0.0.0",
   "type": "module",
   "description": "Storybooker platform agnostic router.",
   "author": {
@@ -14,16 +14,10 @@
   },
   "license": "MIT",
   "sideEffects": false,
-  "exports": {
-    "./package.json": "./package.json",
-    ".": "./src/index.ts",
-    "./constants": "./src/utils/constants.ts",
-    "./error-utils": "./src/utils/error.ts",
-    "./url-utils": "./src/utils/url.ts",
-    "./types": "./src/types.d.ts"
-  },
   "scripts": {
+    "build": "tsdown",
     "check": "tsgo --noEmit",
+    "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
@@ -54,6 +48,14 @@
     "glob": "^10.0.0",
     "oxlint": "^1.12.0",
     "oxlint-tsgolint": "^0.0.4",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "tsdown": "^0.14.1"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
   }
 }

@@ -4,19 +4,17 @@ import {
   type HttpResponseInit,
   type InvocationContext,
 } from "@azure/functions";
-import { router } from "@storybooker/router";
-import { SERVICE_NAME } from "@storybooker/router/constants";
-import { parseErrorMessage } from "@storybooker/router/error-utils";
-import type {
-  CheckPermissionsCallback,
-  DatabaseService,
-  OpenAPIOptions,
-  StorageService,
-} from "@storybooker/router/types";
 import {
   generatePrefixFromBaseRoute,
+  parseErrorMessage,
+  router,
+  SERVICE_NAME,
   urlJoin,
-} from "@storybooker/router/url-utils";
+  type CheckPermissionsCallback,
+  type DatabaseService,
+  type OpenAPIOptions,
+  type StorageService,
+} from "@storybooker/router";
 import type { BodyInit } from "undici";
 import { AzureTables } from "./database";
 import { parseAzureRestError } from "./error-parser";
@@ -31,7 +29,7 @@ export type {
   CheckPermissionsCallback,
   Permission,
   OpenAPIOptions,
-} from "@storybooker/router/types";
+} from "@storybooker/router";
 
 /**
  * Options to register the storybooker router

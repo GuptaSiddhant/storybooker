@@ -6,7 +6,7 @@ import {
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
-} from "@storybooker/router/types";
+} from "@storybooker/router";
 
 export class AzureTables implements DatabaseService {
   #connectionString: string;

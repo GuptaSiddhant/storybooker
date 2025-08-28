@@ -1,12 +1,12 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { CustomErrorParser } from "#utils/error";
 import type {
   CheckPermissionsCallback,
   DatabaseService,
   Logger,
   OpenAPIOptions,
   StorageService,
-} from "#types";
-import type { CustomErrorParser } from "#utils/error";
+} from "../types";
 
 export interface Store {
   prefix: string;

@@ -11,9 +11,12 @@
     "./packages/**/*"
   ],
   "scripts": {
+    "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
     "build": "turbo build",
     "check": "turbo check",
+    "dev": "turbo dev",
     "fmt": "turbo fmt",
+    "functions": "yarn workspace @storybooker/azure-functions start",
     "lint": "turbo lint"
   },
   "devDependencies": {

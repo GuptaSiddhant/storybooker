@@ -1,5 +1,5 @@
 import { getStore } from "#store";
-import type { Permission } from "#types";
+import type { Permission } from "../types";
 import { responseError } from "./response";
 
 export async function authenticateOrThrow(

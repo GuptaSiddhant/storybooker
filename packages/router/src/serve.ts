@@ -1,5 +1,5 @@
 import path from "node:path";
-import { CACHE_CONTROL_PUBLIC_YEAR, HEADERS } from "#constants";
+import { CACHE_CONTROL_PUBLIC_YEAR, HEADERS, SERVICE_NAME } from "#constants";
 import { getStore } from "#store";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
@@ -49,7 +49,7 @@ export const serveStorybook = defineRoute(
       `
       <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
         style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
-        ← View all
+        ← ${SERVICE_NAME}
       </a></div></body>`,
     );
     const headers = new Headers(response.headers);
