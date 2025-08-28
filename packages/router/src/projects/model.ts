@@ -4,7 +4,7 @@ import { getStore } from "#store";
 import { parseErrorMessage } from "#utils/error";
 import {
   generateProjectCollectionName,
-  generateStorageContainerName,
+  generateProjectContainerName,
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
@@ -44,7 +44,7 @@ export class ProjectsModel implements BaseModel<ProjectType> {
     this.#log(projectId, "Create project...");
 
     this.#debug(projectId, "Create project container");
-    await storage.createContainer(generateStorageContainerName(projectId));
+    await storage.createContainer(generateProjectContainerName(projectId));
 
     this.#debug(projectId, "Create project-builds collection");
     await database.createCollection(
@@ -124,7 +124,7 @@ export class ProjectsModel implements BaseModel<ProjectType> {
     await database.deleteCollection(
       generateProjectCollectionName(id, "Labels"),
     );
-    await storage.deleteContainer(generateStorageContainerName(id));
+    await storage.deleteContainer(generateProjectContainerName(id));
 
     return;
   }

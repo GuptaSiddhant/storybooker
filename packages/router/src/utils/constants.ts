@@ -12,6 +12,7 @@ export const CONTENT_TYPES = {
   FORM_MULTIPART: "multipart/form-data",
   HTML: "text/html",
   JSON: "application/json",
+  OCTET: "application/octet-stream",
   ZIP: "application/zip",
 } as const;
 export const QUERY_PARAMS = {

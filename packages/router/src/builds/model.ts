@@ -1,17 +1,30 @@
+// oxlint-disable switch-case-braces
+
+import fs from "node:fs";
+import fsp from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { CONTENT_TYPES } from "#constants";
 import { LabelsModel } from "#labels/model";
 import { ProjectsModel } from "#projects/model";
 import { getStore } from "#store";
+import { writeStreamToFile } from "#utils/file";
+import { getMimeType } from "#utils/mime-utils";
 import {
   generateProjectCollectionName,
-  generateStorageContainerName,
+  generateProjectContainerName,
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
+import { urlSearchParamsToObject } from "#utils/url";
+import decompress from "decompress";
 import {
   BuildCreateSchema,
   BuildSchema,
   BuildUpdateSchema,
+  BuildUploadQueryParamsSchema,
   type BuildType,
+  type BuildUploadVariant,
 } from "./schema";
 
 export class BuildsModel implements BaseModel<BuildType> {
@@ -41,16 +54,7 @@ export class BuildsModel implements BaseModel<BuildType> {
     const items = await database.listDocuments(this.#collectionName, options);
     const builds = BuildSchema.array().parse(items);
 
-    const groupBySHA = Object.groupBy(builds, (build) => build.id);
-    const groupedBuilds: BuildType[] = [];
-
-    for (const group of Object.values(groupBySHA)) {
-      if (group?.[0]) {
-        group[0].labelSlugs = group.map((build) => build.labelSlugs).join(",");
-      }
-    }
-
-    return groupedBuilds;
+    return builds;
   }
 
   async create(data: unknown): Promise<BuildType> {
@@ -126,7 +130,7 @@ export class BuildsModel implements BaseModel<BuildType> {
     // Delete entry and files
     await database.deleteDocument(this.#collectionName, buildId);
     await storage.deleteFiles(
-      generateStorageContainerName(this.projectId),
+      generateProjectContainerName(this.projectId),
       buildId,
     );
 
@@ -153,6 +157,39 @@ export class BuildsModel implements BaseModel<BuildType> {
       this.#error("Error unsetting build SHA from project:", error);
     }
   }
+
+  async upload(buildSHA: string, zipFile?: File): Promise<void> {
+    const { request } = getStore();
+
+    const { searchParams } = new URL(request.url);
+    const { variant } = BuildUploadQueryParamsSchema.parse(
+      urlSearchParamsToObject(searchParams),
+    );
+    this.#log("Upload build '%s'...", buildSHA, variant);
+
+    await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
+
+    switch (variant) {
+      case "coverage":
+        return await this.update(buildSHA, { hasCoverage: true });
+      case "screenshots":
+        return await this.update(buildSHA, { hasScreenshots: true });
+      case "testReport":
+        return await this.update(buildSHA, { hasTestReport: true });
+      default:
+        return await this.update(buildSHA, { hasStorybook: true });
+    }
+  }
+
+  id: BaseModel<BuildType>["id"] = (id: string) => {
+    return {
+      delete: this.delete.bind(this, id),
+      get: this.get.bind(this, id),
+      has: this.has.bind(this, id),
+      id,
+      update: this.update.bind(this, id),
+    };
+  };
 
   // helpers
   async listByLabel(labelSlug: string): Promise<BuildType[]> {
@@ -199,13 +236,46 @@ export class BuildsModel implements BaseModel<BuildType> {
     }
   }
 
-  id: BaseModel<BuildType>["id"] = (id: string) => {
-    return {
-      delete: this.delete.bind(this, id),
-      get: this.get.bind(this, id),
-      has: this.has.bind(this, id),
-      id,
-      update: this.update.bind(this, id),
-    };
-  };
+  async #decompressAndUploadZip(
+    buildSHA: string,
+    variant: BuildUploadVariant = "storybook",
+    zipFile?: File,
+  ): Promise<void> {
+    const { request, storage } = getStore();
+
+    const dirpath = fs.mkdtempSync(
+      path.join(os.tmpdir(), `storybooker-${this.projectId}-${buildSHA}-`),
+    );
+    const zipFilePath = path.join(dirpath, `${variant}.zip`);
+
+    try {
+      if (zipFile) {
+        await writeStreamToFile(zipFilePath, zipFile.stream());
+      } else {
+        if (!request.body) {
+          throw new Error("The body is required for upload.");
+        }
+        await writeStreamToFile(zipFilePath, request.body);
+      }
+
+      await decompress(zipFilePath, path.join(dirpath, variant));
+
+      await storage.uploadDir(
+        generateProjectContainerName(this.projectId),
+        dirpath,
+        (filepath) => ({
+          mimeType: getMimeType(filepath) || CONTENT_TYPES.OCTET,
+          newFilepath: path.join(buildSHA, filepath),
+        }),
+      );
+    } catch (error) {
+      this.#error("Error uploading file:", error);
+    } finally {
+      await fsp
+        .rm(dirpath, { force: true, recursive: true })
+        .catch((error) => this.#error(error));
+    }
+
+    return;
+  }
 }

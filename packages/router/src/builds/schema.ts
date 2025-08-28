@@ -46,6 +46,17 @@ export const BuildUpdateSchema = BuildSchema.omit({
   updatedAt: true,
 }).partial();
 
+export type BuildUploadVariant = z.infer<
+  typeof BuildUploadQueryParamsSchema
+>["variant"];
+export const BuildUploadQueryParamsSchema = z.object({
+  variant: z
+    .enum(["storybook", "testReport", "coverage", "screenshots"])
+    .default("storybook"),
+});
+
+export const BuildUploadFormSchema = z.object({ file: z.file() });
+
 export type BuildsListResultType = z.infer<typeof BuildsListResultSchema>;
 export const BuildsListResultSchema = z.object({
   builds: BuildSchema.array(),

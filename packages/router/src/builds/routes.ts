@@ -2,8 +2,17 @@ import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
-import { validateIsFormEncodedRequest } from "#utils/request";
-import { commonErrorResponses, responseError } from "#utils/response";
+import {
+  checkIsHTMLRequest,
+  checkIsHXRequest,
+  validateBuildUploadZipBody,
+  validateIsFormEncodedRequest,
+} from "#utils/request";
+import {
+  commonErrorResponses,
+  responseError,
+  responseRedirect,
+} from "#utils/response";
 import { BuildSHASchema, ProjectIdSchema } from "#utils/shared-model";
 import { urlSearchParamsToObject } from "#utils/url";
 import { urlBuilder } from "#utils/url-builder";
@@ -13,6 +22,8 @@ import {
   BuildCreateSchema,
   BuildsGetResultSchema,
   BuildsListResultSchema,
+  BuildUploadFormSchema,
+  BuildUploadQueryParamsSchema,
   type BuildsGetResultType,
   type BuildsListResultType,
 } from "./schema";
@@ -169,8 +180,12 @@ export const uploadBuild = defineRoute(
   "put",
   "/:projectId/builds/:buildSHA",
   {
+    description: "Upload build files in a compressed zip",
     requestBody: {
       content: {
+        [CONTENT_TYPES.FORM_MULTIPART]: {
+          schema: z.object({ file: z.file() }),
+        },
         [CONTENT_TYPES.ZIP]: {
           example: "storybook.zip",
           schema: { format: "binary", type: "string" },
@@ -184,21 +199,18 @@ export const uploadBuild = defineRoute(
         buildSHA: BuildSHASchema,
         projectId: ProjectIdSchema,
       }),
-      query: z.object({
-        type: z
-          .enum(["storybook", "testReport", "coverage", "screenshots"])
-          .default("storybook"),
-      }),
+      query: BuildUploadQueryParamsSchema,
     },
     responses: {
       ...commonErrorResponses,
       204: { description: "File uploaded successfully" },
       415: { description: "Unsupported Media Type" },
     },
-    summary: "Upload build files in a compressed zip",
+    summary: "Upload build",
     tags: [tag],
   },
-  async ({ params: { buildSHA, projectId } }) => {
+
+  async ({ params: { buildSHA, projectId }, request }) => {
     const buildsModel = new BuildsModel(projectId);
 
     if (!(await buildsModel.has(buildSHA))) {
@@ -210,7 +222,41 @@ export const uploadBuild = defineRoute(
 
     await authenticateOrThrow([`build:update:${projectId}`]);
 
-    // const contentType = request.headers.get("content-type");
+    const contentType = request.headers.get("content-type");
+    if (!contentType) {
+      return responseError("Content-Type header is required", 400);
+    }
+
+    if (contentType.startsWith(CONTENT_TYPES.FORM_MULTIPART)) {
+      const { file } = BuildUploadFormSchema.parse(
+        urlSearchParamsToObject(await request.formData()),
+      );
+
+      await buildsModel.upload(buildSHA, file);
+
+      const buildUrl = urlBuilder.buildSHA(projectId, buildSHA);
+      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        return responseRedirect(buildUrl, 303);
+      }
+
+      return new Response(null, { status: 204 });
+    }
+
+    if (contentType.startsWith(CONTENT_TYPES.ZIP)) {
+      const bodyError = validateBuildUploadZipBody(request);
+      if (bodyError) {
+        return responseError(bodyError.message, bodyError.status);
+      }
+
+      await buildsModel.upload(buildSHA);
+
+      const buildUrl = urlBuilder.buildSHA(projectId, buildSHA);
+      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        return responseRedirect(buildUrl, 303);
+      }
+
+      return new Response(null, { status: 204 });
+    }
 
     return responseError(
       `Invalid content type, expected ${CONTENT_TYPES.ZIP} or ${CONTENT_TYPES.FORM_MULTIPART}.`,

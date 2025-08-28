@@ -60,8 +60,8 @@ export function generateProjectCollectionName(
     .toUpperCase()}${suffix}`;
 }
 
-export function generateStorageContainerName(id: string): string {
-  return `${SERVICE_NAME}-${id.replaceAll(/[^\w-]+/g, "-")}`
+export function generateProjectContainerName(projectId: string): string {
+  return `${SERVICE_NAME}-${projectId.replaceAll(/[^\w-]+/g, "-")}`
     .slice(0, 60)
     .toLowerCase();
 }
