@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { BlobServiceClient, type BlobClient } from "@azure/storage-blob";
-import type { StorageService } from "@storybooker/router/types";
+import type { StorageService } from "@storybooker/router";
 
 export class AzureStorage implements StorageService {
   #client: BlobServiceClient;
@@ -88,8 +88,7 @@ export class AzureStorage implements StorageService {
       return;
     }
 
-    // oxlint-disable-next-line prefer-template
-    throw new Error("Unknown file type: " + file);
+    throw new Error(`Unknown file type`);
   };
 
   uploadDir: StorageService["uploadDir"] = async (

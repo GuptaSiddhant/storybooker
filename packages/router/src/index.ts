@@ -56,7 +56,9 @@ export async function router(
         request,
         storage: context.storage,
       },
-      () => openApiRouter.handleRequest(request),
+      async () => {
+        return await openApiRouter.handleRequest(request);
+      },
     );
 
     if (response) {

@@ -63,9 +63,9 @@ export class BuildsModel implements BaseModel<BuildType> {
     const { database } = getStore();
 
     const labelSlugs = await Promise.all(
-      labels
-        .filter(Boolean)
-        .map((labelSlug) => this.#updateOrCreateLabel(labelSlug, id)),
+      labels.filter(Boolean).map(async (labelSlug) => {
+        return await this.#updateOrCreateLabel(labelSlug, id);
+      }),
     );
 
     const now = new Date().toISOString();
@@ -86,7 +86,7 @@ export class BuildsModel implements BaseModel<BuildType> {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
       if (labels.includes(project.gitHubDefaultBranch)) {
-        projectsModel.update(this.projectId, { latestBuildSHA: id });
+        await projectsModel.update(this.projectId, { latestBuildSHA: id });
       }
     } catch (error) {
       this.#error(error);
@@ -151,7 +151,9 @@ export class BuildsModel implements BaseModel<BuildType> {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
       if (project.latestBuildSHA === buildId) {
-        projectsModel.update(this.projectId, { latestBuildSHA: undefined });
+        await projectsModel.update(this.projectId, {
+          latestBuildSHA: undefined,
+        });
       }
     } catch (error) {
       this.#error("Error unsetting build SHA from project:", error);
@@ -169,15 +171,22 @@ export class BuildsModel implements BaseModel<BuildType> {
 
     await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
 
+    const variantCopy = variant;
     switch (variant) {
       case "coverage":
-        return await this.update(buildSHA, { hasCoverage: true });
+        await this.update(buildSHA, { hasCoverage: true });
+        return;
       case "screenshots":
-        return await this.update(buildSHA, { hasScreenshots: true });
+        await this.update(buildSHA, { hasScreenshots: true });
+        return;
       case "testReport":
-        return await this.update(buildSHA, { hasTestReport: true });
+        await this.update(buildSHA, { hasTestReport: true });
+        return;
+      case "storybook":
+        await this.update(buildSHA, { hasStorybook: true });
+        return;
       default:
-        return await this.update(buildSHA, { hasStorybook: true });
+        throw new Error(`Unsupported upload variant: ${variantCopy}`);
     }
   }
 
@@ -193,9 +202,11 @@ export class BuildsModel implements BaseModel<BuildType> {
 
   // helpers
   async listByLabel(labelSlug: string): Promise<BuildType[]> {
-    return await this.list({
+    const builds = await this.list({
       filter: (item) => item.labelSlugs.split(",").includes(labelSlug),
     });
+
+    return builds;
   }
 
   async deleteByLabel(labelSlug: string): Promise<void> {
@@ -273,7 +284,9 @@ export class BuildsModel implements BaseModel<BuildType> {
     } finally {
       await fsp
         .rm(dirpath, { force: true, recursive: true })
-        .catch((error) => this.#error(error));
+        .catch((error: unknown) => {
+          this.#error(error);
+        });
     }
 
     return;

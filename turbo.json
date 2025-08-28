@@ -6,7 +6,6 @@
       "outputs": ["dist"]
     },
     "check": {
-      "dependsOn": ["^check"],
       "outputs": ["tsconfig.tsbuildinfo"],
       "outputLogs": "new-only"
     },
@@ -15,12 +14,13 @@
       "cache": false
     },
     "fmt": {
-      "dependsOn": ["^fmt"],
       "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^lint"],
       "outputLogs": "new-only"
+    },
+    "verify": {
+      "dependsOn": ["check", "lint", "build"]
     }
   }
 }

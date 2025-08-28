@@ -101,7 +101,7 @@ export class ProjectsModel implements BaseModel<ProjectType> {
           type: "branch",
           value: project.gitHubDefaultBranch,
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           this.#log(
             id,
             "Failed to create default branch label '%s'. Error: %s",

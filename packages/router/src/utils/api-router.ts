@@ -67,7 +67,7 @@ export class OpenApiRouter {
 
   register<Method extends Methods, Path extends string>(
     options: RegisterRouteOptions<Method, Path>,
-  ): OpenApiRouter {
+  ): this {
     const { handler, input, method, overriddenPath, pathname } = options;
     const pattern = new URLPattern({ pathname });
     this.routes.push({
@@ -91,7 +91,7 @@ export class OpenApiRouter {
   registerGroup(
     prefix: string,
     group: Record<string, RegisterRouteOptions<Methods, string>>,
-  ): OpenApiRouter {
+  ): this {
     for (const route of Object.values(group)) {
       this.register({
         ...route,

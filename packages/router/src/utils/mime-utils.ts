@@ -76,7 +76,9 @@ class Mime {
    * Get mime type associated with an extension
    */
   getType(path: string): string | null {
-    if (typeof path !== "string") return null;
+    if (typeof path !== "string") {
+      return null;
+    }
 
     // Remove chars preceding `/` or `\`
     const last = path.replace(/^.*[/\\]/, "").toLowerCase();
