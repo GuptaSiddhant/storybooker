@@ -1,7 +1,7 @@
 import * as buildsRoutes from "#builds/routes";
 import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
-import { localStore } from "#store";
+import { localStore, type Store } from "#store";
 import { OpenApiRouter } from "#utils/api-router";
 import { parseErrorMessage, type CustomErrorParser } from "#utils/error";
 import { handleStaticFileRoute } from "./root/handlers";
@@ -54,31 +54,32 @@ export async function router(
     staticDirs,
   } = context;
 
-  try {
-    const response = await localStore.run(
-      {
-        checkPermissions,
-        customErrorParser,
-        database: context.database,
-        headless: !!context.headless,
-        logger,
-        prefix,
-        request,
-        storage: context.storage,
-        url: request.url,
-      },
-      async () => {
-        return await openApiRouter.handleRequest(request);
-      },
-    );
+  const store: Store = {
+    checkPermissions,
+    customErrorParser,
+    database: context.database,
+    headless: !!context.headless,
+    logger,
+    prefix,
+    request,
+    storage: context.storage,
+    url: request.url,
+  };
 
+  try {
+    const response = await localStore.run(store, () =>
+      openApiRouter.handleRequest(),
+    );
     if (response) {
       return response;
     }
 
     const { pathname } = new URL(request.url);
     const filepath = pathname.replace(prefix, "");
-    return await handleStaticFileRoute(filepath, staticDirs, logger);
+
+    return await localStore.run(store, () =>
+      handleStaticFileRoute(filepath, staticDirs, logger),
+    );
   } catch (error) {
     return new Response(parseErrorMessage(error).errorMessage, { status: 500 });
   }

@@ -27,6 +27,7 @@ export class ProjectsModel implements BaseModel<ProjectType> {
   async list(options?: ListOptions<ProjectType>): Promise<ProjectType[]> {
     const { database } = getStore();
     this.#log(undefined, "List projects...");
+    await database.createCollection(this.#collectionName);
     return await database.listDocuments<ProjectType>(
       this.#collectionName,
       options,

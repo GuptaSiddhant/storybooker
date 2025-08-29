@@ -37,7 +37,7 @@ export class LabelsModel implements BaseModel<LabelType> {
   async create(data: unknown): Promise<LabelType> {
     const { database } = getStore();
     const parsedData = LabelCreateSchema.parse(data);
-    this.#log("Create label '%s''...", parsedData.value);
+    this.#log("Create label '%s'...", parsedData.value);
 
     const slug = LabelsModel.createSlug(parsedData.value);
     const now = new Date().toISOString();

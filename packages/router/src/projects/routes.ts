@@ -18,6 +18,7 @@ import {
 } from "#utils/response";
 import { ProjectIdSchema } from "#utils/shared-model";
 import { urlSearchParamsToObject } from "#utils/url";
+import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
 import { ProjectsModel } from "./model";
 import {
@@ -118,8 +119,12 @@ export const createProject = defineRoute(
     const project = await new ProjectsModel().create(
       urlSearchParamsToObject(await request.formData()),
     );
-    const result: ProjectGetResultType = { project };
 
+    if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      return responseRedirect(urlBuilder.projectId(project.id), 303);
+    }
+
+    const result: ProjectGetResultType = { project };
     return Response.json(result, { status: 201 });
   },
 );
@@ -194,6 +199,10 @@ export const deleteProject = defineRoute(
       { action: "delete", projectId, resource: "project" },
     ]);
     await new ProjectsModel().delete(projectId);
+
+    if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      return responseRedirect(urlBuilder.allProjects(), 303);
+    }
 
     return new Response(null, { status: 204 });
   },

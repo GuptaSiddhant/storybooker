@@ -4,6 +4,11 @@
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+
+    "jsx": "react-jsx",
+    "jsxImportSource": "@kitajs/html",
+    "plugins": [{ "name": "@kitajs/ts-html-plugin" }],
+    "types": ["node", "@kitajs/html/htmx.d.ts"]
   }
 }

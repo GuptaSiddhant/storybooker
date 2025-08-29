@@ -68,15 +68,10 @@
     "@azure/data-tables": "^13.0.0",
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
-    "@kitajs/html": "^4.0.0",
     "@storybooker/router": "workspace:^",
-    "decompress": "^4.0.0",
-    "zod": "^4.0.0",
-    "zod-openapi": "^5.0.0"
+    "zod": "^4.0.0"
   },
   "devDependencies": {
-    "@kitajs/ts-html-plugin": "^4.0.0",
-    "@types/decompress": "^4.0.0",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",
     "glob": "^10.0.0",

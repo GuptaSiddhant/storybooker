@@ -2,7 +2,11 @@
 
 import { LinkButton } from "#components/button";
 import { ErrorMessage } from "#components/error-message";
-import { DEFAULT_PURGE_AFTER_DAYS, PATTERNS } from "#constants";
+import {
+  DEFAULT_GITHUB_BRANCH,
+  DEFAULT_PURGE_AFTER_DAYS,
+  PATTERNS,
+} from "#constants";
 import { ProjectSchema, type ProjectType } from "#projects/schema";
 import { urlBuilder } from "#utils/url-builder";
 
@@ -48,10 +52,10 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
         <legend>GitHub</legend>
 
         <div class="field">
-          <label for="gitHubRepo">Repo name</label>
+          <label for="gitHubRepository">Repo name</label>
           <input
-            id="gitHubRepo"
-            name="gitHubRepo"
+            id="gitHubRepository"
+            name="gitHubRepository"
             placeholder="owner/repo"
             required
             pattern="^.+\/.+$"
@@ -78,7 +82,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
             id="gitHubDefaultBranch"
             name="gitHubDefaultBranch"
             placeholder="main"
-            value={project?.gitHubDefaultBranch}
+            value={project?.gitHubDefaultBranch || DEFAULT_GITHUB_BRANCH}
           />
           <span class={"description"}>
             Optional. If the default branch is not 'main'.

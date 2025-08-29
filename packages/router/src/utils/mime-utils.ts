@@ -486,6 +486,6 @@ const standardTypes: TypeMap = {
 Object.freeze(standardTypes);
 
 const mime = new Mime(standardTypes)._freeze();
-export function getMimeType(path: string): string | null {
-  return mime.getType(path);
+export function getMimeType(path: string): string {
+  return mime.getType(path) || "application/octet-stream";
 }

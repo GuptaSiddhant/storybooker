@@ -1,6 +1,4 @@
 {
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "target": "ES2020",
     "lib": ["es2024", "DOM", "DOM.Iterable"],
@@ -38,10 +36,6 @@
     "verbatimModuleSyntax": true,
 
     "outDir": "dist",
-    "rootDir": "src",
-    "jsx": "react-jsx",
-    "jsxImportSource": "@kitajs/html",
-    "plugins": [{ "name": "@kitajs/ts-html-plugin" }],
-    "types": ["node", "@kitajs/html/htmx.d.ts"]
+    "rootDir": "src"
   }
 }

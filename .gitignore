@@ -33,3 +33,6 @@ public/sprite*
 .npmrc
 
 .azurite
+
+server/db.json
+server/files

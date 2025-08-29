@@ -116,8 +116,12 @@ export const createBuild = defineRoute(
       urlSearchParamsToObject(await request.formData()),
     );
     const url = urlBuilder.buildSHA(projectId, build.id);
-    const result: BuildsGetResultType = { build, url };
 
+    if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      return responseRedirect(urlBuilder.buildSHA(projectId, build.id), 303);
+    }
+
+    const result: BuildsGetResultType = { build, url };
     return Response.json(result);
   },
 );
@@ -189,6 +193,10 @@ export const deleteBuild = defineRoute(
     ]);
     await new BuildsModel(projectId).delete(buildSHA);
 
+    if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      return responseRedirect(urlBuilder.allBuilds(projectId), 303);
+    }
+
     return new Response(null, { status: 204 });
   },
 );
@@ -253,9 +261,8 @@ export const uploadBuild = defineRoute(
 
       await buildsModel.upload(buildSHA, file);
 
-      const buildUrl = urlBuilder.buildSHA(projectId, buildSHA);
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(buildUrl, 303);
+        return responseRedirect(request.url, 303);
       }
 
       return new Response(null, { status: 204 });
@@ -269,9 +276,8 @@ export const uploadBuild = defineRoute(
 
       await buildsModel.upload(buildSHA);
 
-      const buildUrl = urlBuilder.buildSHA(projectId, buildSHA);
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(buildUrl, 303);
+        return responseRedirect(request.url, 303);
       }
 
       return new Response(null, { status: 204 });

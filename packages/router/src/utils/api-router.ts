@@ -105,10 +105,10 @@ export class OpenApiRouter {
     return this;
   }
 
-  async handleRequest(request: Request): Promise<Response | undefined> {
+  async handleRequest(): Promise<Response | undefined> {
+    const { logger, request } = getStore();
     const url = new URL(request.url);
     const method = request.method.toLowerCase();
-    const { logger } = getStore();
     logger.log(`[${method}] ${url}`);
 
     for (const route of this.routes) {

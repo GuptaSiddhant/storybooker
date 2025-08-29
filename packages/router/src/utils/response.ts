@@ -1,7 +1,7 @@
-import { createElement } from "@kitajs/html";
-import { renderToStream } from "@kitajs/html/suspense";
+import { DocumentLayout } from "#components/document";
+import { ErrorMessage } from "#components/error-message";
 import { getStore } from "#store";
-import { CONTENT_TYPES } from "#utils/constants";
+import { CONTENT_TYPES, HEADERS } from "#utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { parseErrorMessage } from "./error";
@@ -13,10 +13,13 @@ export const commonErrorResponses: ZodOpenApiResponsesObject = {
   500: { description: "An unexpected server-error occurred." },
 };
 
-export function responseHTML(html: JSX.Element): Response {
-  return new Response(renderToStream(html) as unknown as BodyInit, {
-    headers: { "Content-Type": CONTENT_TYPES.HTML },
-    status: 200,
+export function responseHTML(html: JSX.Element, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  headers.set(HEADERS.contentType, CONTENT_TYPES.HTML);
+  return new Response(html as unknown as BodyInit, {
+    ...init,
+    headers,
+    status: init?.status || 200,
   });
 }
 
@@ -63,7 +66,11 @@ export function responseError(
     }
 
     if (checkIsHTMLRequest()) {
-      return handleErrorResponseForHTMLRequest(errorMessage, headers, status);
+      return handleErrorResponseForHTMLRequest(
+        errorType === "string" ? errorMessage : JSON.stringify(errorMessage),
+        headers,
+        status,
+      );
     }
 
     headers.set("Content-Type", "application/json");
@@ -95,21 +102,12 @@ function handleErrorResponseForHTMLRequest(
   headers: Headers,
   status: number,
 ): Response {
-  headers.set("Content-Type", CONTENT_TYPES.HTML);
-  return new Response(
-    renderToStream(
-      createElement(
-        "div",
-        {
-          breadcrumbs: [{ href: "javascript:history.back()", label: "< Back" }],
-          title: `Error ${status}`,
-        },
-        createElement("div", {}, errorMessage),
-      ),
-    ) as unknown as BodyInit,
-    {
-      headers,
-      status,
-    },
+  return responseHTML(
+    DocumentLayout({
+      breadcrumbs: [{ href: "javascript:history.back()", label: "< Back" }],
+      children: ErrorMessage({ children: errorMessage }),
+      title: `Error ${status}`,
+    }),
+    { headers, status },
   );
 }

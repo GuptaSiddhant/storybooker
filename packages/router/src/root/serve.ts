@@ -3,6 +3,7 @@ import { CACHE_CONTROL_PUBLIC_YEAR, HEADERS, SERVICE_NAME } from "#constants";
 import { getStore } from "#store";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
+import { getMimeType } from "#utils/mime-utils";
 import { generateProjectContainerName } from "#utils/shared-model";
 import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
@@ -41,6 +42,9 @@ export const serveStorybook = defineRoute(
     response.headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
 
     if (!filepath.endsWith("index.html")) {
+      if (!response.headers.has(HEADERS.contentType)) {
+        response.headers.set(HEADERS.contentType, getMimeType(filepath));
+      }
       return response;
     }
 

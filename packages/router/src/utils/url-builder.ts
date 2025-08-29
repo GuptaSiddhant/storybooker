@@ -114,7 +114,7 @@ export const urlBuilder = {
   storybookIndexHtml: (projectId: string, sha: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "index.html"),
+      urlJoin(prefix, "_", projectId, sha, "storybook", "index.html"),
       request.url,
     );
     return url.toString();
@@ -122,7 +122,7 @@ export const urlBuilder = {
   storybookTestReport: (projectId: string, sha: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "report", "index.html"),
+      urlJoin(prefix, "_", projectId, sha, "testReport", "index.html"),
       request.url,
     );
     return url.toString();

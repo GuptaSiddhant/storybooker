@@ -14,6 +14,7 @@ import {
 } from "#utils/response";
 import { LabelSlugSchema, ProjectIdSchema } from "#utils/shared-model";
 import { urlSearchParamsToObject } from "#utils/url";
+import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
 import { LabelsModel } from "./model";
 import {
@@ -103,8 +104,12 @@ export const createLabel = defineRoute(
     const label = await new LabelsModel(projectId).create(
       urlSearchParamsToObject(await request.formData()),
     );
-    const result: LabelsGetResultType = { label };
 
+    if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      return responseRedirect(urlBuilder.labelSlug(projectId, label.id), 303);
+    }
+
+    const result: LabelsGetResultType = { label };
     return Response.json(result, { status: 201 });
   },
 );
@@ -172,6 +177,10 @@ export const deleteLabel = defineRoute(
     ]);
 
     await new LabelsModel(projectId).delete(labelSlug);
+
+    if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      return responseRedirect(urlBuilder.allLabels(projectId), 303);
+    }
 
     return new Response(null, { status: 204 });
   },
