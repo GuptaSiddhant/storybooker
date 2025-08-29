@@ -103,8 +103,10 @@ function handleErrorResponseForHTMLRequest(
   status: number,
 ): Response {
   return responseHTML(
+    // oxlint-disable-next-line new-cap
     DocumentLayout({
       breadcrumbs: [{ href: "javascript:history.back()", label: "< Back" }],
+      // oxlint-disable-next-line new-cap
       children: ErrorMessage({ children: errorMessage }),
       title: `Error ${status}`,
     }),

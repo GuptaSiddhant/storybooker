@@ -1,8 +1,11 @@
+// oxlint-disable max-lines-per-function
+
 import { BuildsTable } from "#builds-ui/builds-table";
 import type { BuildType } from "#builds/schema";
 import { DestructiveButton, LinkButton } from "#components/button";
 import { DocumentLayout } from "#components/document";
 import { RawDataPreview } from "#components/raw-data";
+import { LabelsTable } from "#labels-ui/labels-table";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
@@ -31,6 +34,7 @@ export function renderProjectsPage({
 export function renderProjectDetailsPage({
   project,
   recentBuilds,
+  recentLabels,
 }: {
   project: ProjectType;
   recentBuilds: BuildType[];
@@ -44,6 +48,9 @@ export function renderProjectDetailsPage({
       breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
       toolbar={
         <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
+          <LinkButton href={urlBuilder.buildCreate(project.id)}>
+            + Create build
+          </LinkButton>
           <LinkButton href={urlBuilder.projectIdEdit(project.id)}>
             Edit
           </LinkButton>
@@ -60,13 +67,21 @@ export function renderProjectDetailsPage({
       }
       style={{ padding: 0 }}
     >
-      <BuildsTable
-        builds={recentBuilds}
-        labels={[]}
-        project={project}
-        caption={"Recent builds"}
-        toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
-      />
+      <>
+        <LabelsTable
+          labels={recentLabels}
+          projectId={project.id}
+          caption={"Recent labels"}
+          toolbar={<a href={urlBuilder.allLabels(project.id)}>View all</a>}
+        />
+        <BuildsTable
+          builds={recentBuilds}
+          labels={recentLabels}
+          project={project}
+          caption={"Recent builds"}
+          toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
+        />
+      </>
     </DocumentLayout>
   );
 }

@@ -113,25 +113,7 @@ export function DocumentLayout({
               )}
             </footer>
 
-            <aside>
-              {sidebar || (
-                <nav>
-                  <ul
-                    style={{
-                      margin: 0,
-                      paddingLeft: "1rem",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.5rem",
-                    }}
-                  >
-                    <li>
-                      <a href={urlBuilder.allProjects()}>Projects</a>
-                    </li>
-                  </ul>
-                </nav>
-              )}
-            </aside>
+            <aside>{sidebar}</aside>
 
             <div style={{ gridArea: "user", padding: "1rem" }}>
               <span style={{ opacity: 0.5 }}>Anonymous</span>

@@ -92,7 +92,7 @@ export class LabelsModel implements BaseModel<LabelType> {
 
     const { database } = getStore();
     await database.deleteDocument(this.#collectionName, slug);
-    await new BuildsModel(this.projectId).deleteByLabel(slug);
+    await new BuildsModel(this.projectId).deleteByLabel(slug, false);
 
     return;
   }

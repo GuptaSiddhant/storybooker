@@ -1,3 +1,4 @@
+// oxlint-disable max-lines
 // oxlint-disable switch-case-braces
 
 import fs from "node:fs";
@@ -58,13 +59,13 @@ export class BuildsModel implements BaseModel<BuildType> {
   }
 
   async create(data: unknown): Promise<BuildType> {
-    const { labels, id, ...rest } = BuildCreateSchema.parse(data);
-    this.#log("Create build '%s'...", id);
+    const { labels, sha, ...rest } = BuildCreateSchema.parse(data);
+    this.#log("Create build '%s'...", sha);
     const { database } = getStore();
 
     const labelSlugs = await Promise.all(
       labels.filter(Boolean).map(async (labelSlug) => {
-        return await this.#updateOrCreateLabel(labelSlug, id);
+        return await this.#updateOrCreateLabel(labelSlug, sha);
       }),
     );
 
@@ -76,8 +77,9 @@ export class BuildsModel implements BaseModel<BuildType> {
       hasScreenshots: false,
       hasStorybook: false,
       hasTestReport: false,
-      id,
+      id: sha,
       labelSlugs: labelSlugs.filter(Boolean).join(","),
+      sha,
       updatedAt: now,
     };
     await database.createDocument<BuildType>(this.#collectionName, build);
@@ -86,7 +88,7 @@ export class BuildsModel implements BaseModel<BuildType> {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
       if (labels.includes(project.gitHubDefaultBranch)) {
-        await projectsModel.update(this.projectId, { latestBuildSHA: id });
+        await projectsModel.update(this.projectId, { latestBuildSHA: sha });
       }
     } catch (error) {
       this.#error(error);
@@ -122,7 +124,7 @@ export class BuildsModel implements BaseModel<BuildType> {
     return;
   }
 
-  async delete(buildId: string): Promise<void> {
+  async delete(buildId: string, updateLabel = true): Promise<void> {
     this.#log("Delete build '%s'...", buildId);
     const { database, storage } = getStore();
     const build = await this.get(buildId);
@@ -134,17 +136,19 @@ export class BuildsModel implements BaseModel<BuildType> {
       buildId,
     );
 
-    // Delete ref from labels
-    const labelSlugs = build.labelSlugs.split(",");
-    const labelsModel = new LabelsModel(this.projectId);
-    await Promise.allSettled(
-      labelSlugs.map(async (labelSlug) => {
-        const label = await labelsModel.get(labelSlug);
-        if (label.latestBuildSHA === buildId) {
-          await labelsModel.update(labelSlug, { latestBuildSHA: undefined });
-        }
-      }),
-    );
+    if (updateLabel) {
+      // Delete ref from labels
+      const labelSlugs = build.labelSlugs.split(",");
+      const labelsModel = new LabelsModel(this.projectId);
+      await Promise.allSettled(
+        labelSlugs.map(async (labelSlug) => {
+          const label = await labelsModel.get(labelSlug);
+          if (label.latestBuildSHA === buildId) {
+            await labelsModel.update(labelSlug, { latestBuildSHA: undefined });
+          }
+        }),
+      );
+    }
 
     // Delete ref from project
     try {
@@ -209,13 +213,24 @@ export class BuildsModel implements BaseModel<BuildType> {
     return builds;
   }
 
-  async deleteByLabel(labelSlug: string): Promise<void> {
+  async deleteByLabel(labelSlug: string, force: boolean): Promise<void> {
     const builds = await this.listByLabel(labelSlug);
-    this.#log("Delete builds by label: '%s' (%d)...", labelSlug, builds.length);
+    this.#log(
+      "Delete builds by label: '%s' (%d, force: %s)...",
+      labelSlug,
+      builds.length,
+      force.valueOf(),
+    );
 
     await Promise.allSettled(
       builds.map(async (build): Promise<void> => {
-        await this.delete(build.id);
+        const buildLabelSlugs = build.labelSlugs.split(",");
+        if (!force && buildLabelSlugs.length > 1) {
+          const newSlugs = buildLabelSlugs.filter((slug) => slug !== labelSlug);
+          await this.update(build.id, { labelSlugs: newSlugs.join(",") });
+        } else {
+          await this.delete(build.id, false);
+        }
       }),
     );
   }
@@ -237,9 +252,14 @@ export class BuildsModel implements BaseModel<BuildType> {
       try {
         const type = labelType || LabelsModel.guessType(slug);
         const value = labelValue || slug;
-        this.#log("A new label '$s' (%s) is being created.", value, type);
-        await labelsModel.create({ latestBuildSHA: buildSHA, type, value });
-        return slug;
+        this.#log("A new label '%s' (%s) is being created.", value, type);
+        const label = await labelsModel.create({
+          latestBuildSHA: buildSHA,
+          type,
+          value,
+        });
+
+        return label.id;
       } catch (error) {
         this.#error("Error creating slug:", error);
         return slug;

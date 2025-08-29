@@ -15,7 +15,7 @@ interface BaseItem {
   id: string;
 }
 export class FileDatabase implements DatabaseService {
-  #db: Record<string, BaseItem[]> = {};
+  #db: Record<string, Record<string, BaseItem>> = {};
 
   constructor() {
     try {
@@ -32,7 +32,7 @@ export class FileDatabase implements DatabaseService {
 
   createCollection = async (name: string) => {
     if (!this.#db[name]) {
-      this.#db[name] = [];
+      this.#db[name] = {};
     }
     await this.#saveToFile();
   };
@@ -53,7 +53,7 @@ export class FileDatabase implements DatabaseService {
     }
     const { limit = Number.POSITIVE_INFINITY, sort, filter } = options || {};
     // oxlint-disable-next-line no-non-null-assertion
-    const items = this.#db[name]! as Item[];
+    const items = Object.values(this.#db[name]) as Item[];
     if (sort && typeof sort === "function") {
       items.sort(sort);
     }
@@ -64,10 +64,12 @@ export class FileDatabase implements DatabaseService {
     return items.slice(0, limit);
   };
   getDocument = async <Item extends BaseItem>(name: string, id: string) => {
-    const items = await this.listDocuments(name);
-    const item = items.find((item) => item.id === id);
+    if (!Object.hasOwn(this.#db, name)) {
+      throw new Error(`No collection - ${name}`);
+    }
+    const item = this.#db[name][id];
     if (!item) {
-      throw new Error(`Item ${id} not found in collection '${name}'`);
+      throw new Error(`Item '${id}' not found in collection '${name}'`);
     }
     return item as Item;
   };
@@ -75,15 +77,21 @@ export class FileDatabase implements DatabaseService {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
-    this.#db[name]?.push(item);
+    if (this.#db[name][item.id]) {
+      throw new Error(`Item ${item.id} already exists in collection '${name}'`);
+    }
+    this.#db[name][item.id] = item;
     await this.#saveToFile();
   };
   deleteDocument = async (name: string, id: string) => {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
-    const docs = await this.listDocuments(name);
-    this.#db[name] = docs.filter((doc) => doc.id !== id);
+    if (!(await this.getDocument(name, id))) {
+      throw new Error(`Item '${id}' not found in collection '${name}'`);
+    }
+    // oxlint-disable-next-line no-dynamic-delete
+    delete this.#db[name][id];
     await this.#saveToFile();
   };
   updateDocument = async (
@@ -94,15 +102,11 @@ export class FileDatabase implements DatabaseService {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
-    const docs = await this.listDocuments(name);
-    // oxlint-disable-next-line no-map-spread
-    const mappedDocs = docs.map((doc) => {
-      if (doc.id === id) {
-        return { ...doc, ...item, id };
-      }
-      return doc;
-    });
-    this.#db[name] = mappedDocs;
+    const prevItem = await this.getDocument(name, id);
+    if (!prevItem) {
+      throw new Error(`Item '${id}' not found in collection '${name}'`);
+    }
+    this.#db[name][id] = { ...prevItem, ...item, id };
     await this.#saveToFile();
   };
 }

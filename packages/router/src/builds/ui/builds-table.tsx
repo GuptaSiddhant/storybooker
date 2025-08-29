@@ -51,13 +51,8 @@ export function BuildsTable({
           id: "sha",
           header: "SHA",
           cell: (item) => {
-            const labelSlug =
-              item.labelSlugs.split(",").at(0) || item.labelSlugs;
             return (
-              <a
-                safe
-                href={urlBuilder.buildSHA(project.id, item.sha, labelSlug)}
-              >
+              <a safe href={urlBuilder.buildSHA(project.id, item.sha)}>
                 {item.sha.slice(0, 7)}
               </a>
             );
@@ -98,6 +93,10 @@ export function BuildsTable({
           id: "storybook",
           header: "Storybook",
           cell: (item) => {
+            if (!item.hasStorybook) {
+              return <span class="description">No StoryBook uploaded yet</span>;
+            }
+
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
                 <a
@@ -121,6 +120,14 @@ export function BuildsTable({
           id: "test",
           header: "Tests",
           cell: (item) => {
+            if (!item.hasTestReport) {
+              return (
+                <span class="description">
+                  No test/coverage report uploaded yet
+                </span>
+              );
+            }
+
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
                 <a

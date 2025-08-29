@@ -1,15 +1,24 @@
+import { BuildsModel } from "#builds/model";
 import { CONTENT_TYPES } from "#constants";
+import {
+  renderLabelCreatePage,
+  renderLabelDetailsPage,
+  renderLabelEditPage,
+  renderLabelsPage,
+} from "#labels-ui/render";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
+  checkIsNewMode,
   validateIsFormEncodedRequest,
 } from "#utils/request";
 import {
   commonErrorResponses,
   responseError,
+  responseHTML,
   responseRedirect,
 } from "#utils/response";
 import { LabelSlugSchema, ProjectIdSchema } from "#utils/shared-model";
@@ -49,12 +58,27 @@ export const listLabels = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
+    if (checkIsNewMode()) {
+      await authenticateOrThrow([
+        { action: "create", projectId, resource: "label" },
+      ]);
+      const project = await new ProjectsModel().get(projectId);
+
+      return responseHTML(renderLabelCreatePage({ project }));
+    }
+
     await authenticateOrThrow([
       { action: "read", projectId, resource: "label" },
     ]);
-    const labels = await new LabelsModel(projectId).list();
-    const result: LabelsListResultType = { labels };
 
+    const labels = await new LabelsModel(projectId).list();
+
+    if (checkIsHTMLRequest()) {
+      const project = await new ProjectsModel().get(projectId);
+      return responseHTML(renderLabelsPage({ labels, project }));
+    }
+
+    const result: LabelsListResultType = { labels };
     return Response.json(result);
   },
 );
@@ -143,8 +167,23 @@ export const getLabel = defineRoute(
     ]);
 
     const label = await new LabelsModel(projectId).get(labelSlug);
-    const result: LabelsGetResultType = { label };
 
+    if (checkIsNewMode()) {
+      await authenticateOrThrow([
+        { action: "update", projectId, resource: "label" },
+      ]);
+
+      return responseHTML(renderLabelEditPage({ label, projectId }));
+    }
+
+    if (checkIsHTMLRequest()) {
+      const project = await new ProjectsModel().get(projectId);
+      const builds = await new BuildsModel(projectId).listByLabel(label.id);
+
+      return responseHTML(renderLabelDetailsPage({ builds, label, project }));
+    }
+
+    const result: LabelsGetResultType = { label };
     return Response.json(result);
   },
 );

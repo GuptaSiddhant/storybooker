@@ -1,11 +1,19 @@
-import { renderBuildDetailsPage, renderBuildsPage } from "#builds-ui/render";
-import { CONTENT_TYPES } from "#constants";
+// oxlint-disable max-lines
+
+import {
+  renderBuildCreatePage,
+  renderBuildDetailsPage,
+  renderBuildEditPage,
+  renderBuildsPage,
+} from "#builds-ui/render";
+import { CONTENT_TYPES, QUERY_PARAMS } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
+  checkIsNewMode,
   validateBuildUploadZipBody,
   validateIsFormEncodedRequest,
 } from "#utils/request";
@@ -52,7 +60,19 @@ export const listBuilds = defineRoute(
     summary: "List all builds for a project",
     tags: [tag],
   },
-  async ({ params: { projectId } }) => {
+  async ({ params: { projectId }, request }) => {
+    if (checkIsNewMode()) {
+      await authenticateOrThrow([
+        { action: "create", projectId: undefined, resource: "build" },
+      ]);
+      const project = await new ProjectsModel().get(projectId);
+      const labelSlug =
+        new URL(request.url).searchParams.get(QUERY_PARAMS.labelSlug) ??
+        undefined;
+
+      return responseHTML(renderBuildCreatePage({ labelSlug, project }));
+    }
+
     await authenticateOrThrow([
       { action: "read", projectId, resource: "build" },
     ]);
@@ -155,6 +175,15 @@ export const getBuild = defineRoute(
     ]);
 
     const build = await new BuildsModel(projectId).get(buildSHA);
+
+    if (checkIsNewMode()) {
+      await authenticateOrThrow([
+        { action: "update", projectId: undefined, resource: "build" },
+      ]);
+
+      return responseHTML(renderBuildEditPage({ build, projectId }));
+    }
+
     if (checkIsHTMLRequest()) {
       return responseHTML(renderBuildDetailsPage({ build, projectId }));
     }

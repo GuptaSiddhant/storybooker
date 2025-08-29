@@ -9,7 +9,7 @@ export const LabelSchema = z
   .object({
     createdAt: z.iso.datetime().default(new Date().toISOString()),
     id: LabelSlugSchema,
-    latestBuildSHA: z.optional(BuildSHASchema),
+    latestBuildSHA: z.union([BuildSHASchema.optional(), z.literal("")]),
     slug: LabelSlugSchema,
     type: z.enum(labelTypes),
     updatedAt: z.iso.datetime().default(new Date().toISOString()),

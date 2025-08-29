@@ -31,6 +31,7 @@ export const BuildCreateSchema = BuildSchema.omit({
   hasScreenshots: true,
   hasStorybook: true,
   hasTestReport: true,
+  id: true,
   labelSlugs: true,
   updatedAt: true,
 }).extend({

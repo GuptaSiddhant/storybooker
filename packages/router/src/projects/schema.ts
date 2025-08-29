@@ -30,7 +30,7 @@ export const ProjectSchema = z
 
     id: ProjectIdSchema,
 
-    latestBuildSHA: BuildSHASchema.optional(),
+    latestBuildSHA: z.union([BuildSHASchema.optional(), z.literal("")]),
 
     name: z.string().meta({ description: "Name of the project." }),
 

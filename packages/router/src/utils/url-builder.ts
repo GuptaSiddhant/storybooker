@@ -49,24 +49,24 @@ export const urlBuilder = {
     );
     return url.toString();
   },
-  buildSHA: (projectId: string, sha: string, labelSlug?: string): string => {
+  buildSHA: (projectId: string, sha: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
       urlJoin(prefix, "projects", projectId, "builds", sha),
       request.url,
     );
-    if (labelSlug) {
-      url.searchParams.set(QUERY_PARAMS.labelSlug, labelSlug);
-    }
     return url.toString();
   },
-  buildUpload: (projectId: string): string => {
+  buildCreate: (projectId: string, labelSlug?: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
       urlJoin(prefix, "projects", projectId, "builds"),
       request.url,
     );
     url.searchParams.set(QUERY_PARAMS.mode, QUERY_PARAMS.newResource);
+    if (labelSlug) {
+      url.searchParams.set(QUERY_PARAMS.labelSlug, labelSlug);
+    }
     return url.toString();
   },
   allLabels: (projectId: string): string => {
