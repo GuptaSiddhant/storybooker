@@ -33,6 +33,7 @@ export const openapi = defineRoute(
     ]);
 
     const openAPISpec = createDocument({
+      components: {},
       info: { title: SERVICE_NAME, version: "" },
       openapi: "3.1.0",
       paths: OpenApiRouter.paths,

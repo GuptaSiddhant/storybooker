@@ -109,7 +109,12 @@ export interface Permission {
 }
 
 /** Type of possible resources to check permissions for */
-export type PermissionResource = "project" | "build" | "label" | "openapi";
+export type PermissionResource =
+  | "project"
+  | "build"
+  | "label"
+  | "openapi"
+  | "ui";
 
 /** Type of possible actions to check permissions for */
 export type PermissionAction = "create" | "read" | "update" | "delete";

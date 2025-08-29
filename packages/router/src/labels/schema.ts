@@ -15,7 +15,7 @@ export const LabelSchema = z
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
     value: z.string().meta({ description: "The value of the label." }),
   })
-  .meta({ description: "StoryBooker label.", id: "label" });
+  .meta({ id: "label", title: "StoryBooker Label" });
 
 export type LabelCreateType = z.infer<typeof LabelCreateSchema>;
 export const LabelCreateSchema = LabelSchema.omit({

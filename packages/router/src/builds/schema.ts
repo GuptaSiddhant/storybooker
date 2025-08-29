@@ -3,23 +3,25 @@ import z from "zod";
 
 export type BuildType = z.infer<typeof BuildSchema>;
 /** @private */
-export const BuildSchema = z.object({
-  authorEmail: z
-    .string()
-    .refine((val) => val.includes("@"), "Invalid email format")
-    .meta({ description: "Email of the author" }),
-  authorName: z.string(),
-  createdAt: z.iso.datetime().default(new Date().toISOString()),
-  hasCoverage: z.boolean().default(false),
-  hasScreenshots: z.boolean().default(false),
-  hasStorybook: z.boolean().default(false),
-  hasTestReport: z.boolean().default(false),
-  id: BuildSHASchema,
-  labelSlugs: z.string(),
-  message: z.optional(z.string()),
-  sha: BuildSHASchema,
-  updatedAt: z.iso.datetime().default(new Date().toISOString()),
-});
+export const BuildSchema = z
+  .object({
+    authorEmail: z
+      .string()
+      .refine((val) => val.includes("@"), "Invalid email format")
+      .meta({ description: "Email of the author" }),
+    authorName: z.string(),
+    createdAt: z.iso.datetime().default(new Date().toISOString()),
+    hasCoverage: z.boolean().default(false),
+    hasScreenshots: z.boolean().default(false),
+    hasStorybook: z.boolean().default(false),
+    hasTestReport: z.boolean().default(false),
+    id: BuildSHASchema,
+    labelSlugs: z.string(),
+    message: z.optional(z.string()),
+    sha: BuildSHASchema,
+    updatedAt: z.iso.datetime().default(new Date().toISOString()),
+  })
+  .meta({ id: "build", title: "StoryBooker Build" });
 
 export type BuildCreateType = z.infer<typeof BuildCreateSchema>;
 /** @private */

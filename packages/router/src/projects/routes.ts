@@ -2,13 +2,16 @@ import { CONTENT_TYPES } from "#constants";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
+  checkIsEditMode,
   checkIsHTMLRequest,
   checkIsHXRequest,
+  checkIsNewMode,
   validateIsFormEncodedRequest,
 } from "#utils/request";
 import {
   commonErrorResponses,
   responseError,
+  responseHTML,
   responseRedirect,
 } from "#utils/response";
 import { ProjectIdSchema } from "#utils/shared-model";
@@ -23,6 +26,12 @@ import {
   type ProjectGetResultType,
   type ProjectsListResultType,
 } from "./schema";
+import {
+  renderProjectCreatePage,
+  renderProjectDetailsPage,
+  renderProjectEditPage,
+  renderProjectsPage,
+} from "./ui/render";
 
 const tag = "Projects";
 
@@ -44,12 +53,24 @@ export const listProjects = defineRoute(
     tags: [tag],
   },
   async () => {
+    if (checkIsNewMode()) {
+      await authenticateOrThrow([
+        { action: "create", projectId: undefined, resource: "project" },
+      ]);
+
+      return responseHTML(renderProjectCreatePage());
+    }
+
     await authenticateOrThrow([
       { action: "read", projectId: undefined, resource: "project" },
     ]);
     const projects = await new ProjectsModel().list();
-    const result: ProjectsListResultType = { projects };
 
+    if (checkIsHTMLRequest()) {
+      return responseHTML(renderProjectsPage({ projects }));
+    }
+
+    const result: ProjectsListResultType = { projects };
     return Response.json(result);
   },
 );
@@ -128,8 +149,20 @@ export const getProject = defineRoute(
     ]);
 
     const project = await new ProjectsModel().get(projectId);
-    const result: ProjectGetResultType = { project };
 
+    if (checkIsEditMode()) {
+      await authenticateOrThrow([
+        { action: "update", projectId, resource: "project" },
+      ]);
+
+      return responseHTML(renderProjectEditPage({ project }));
+    }
+
+    if (checkIsHTMLRequest()) {
+      return responseHTML(renderProjectDetailsPage({ project }));
+    }
+
+    const result: ProjectGetResultType = { project };
     return Response.json(result);
   },
 );

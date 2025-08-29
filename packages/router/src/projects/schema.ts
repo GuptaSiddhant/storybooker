@@ -45,10 +45,7 @@ export const ProjectSchema = z
 
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
   })
-  .meta({
-    description: "StoryBooker project",
-    id: "project",
-  });
+  .meta({ id: "project", title: "StoryBooker Project" });
 
 export type ProjectCreateType = z.infer<typeof ProjectCreateSchema>;
 export const ProjectCreateSchema = ProjectSchema.omit({

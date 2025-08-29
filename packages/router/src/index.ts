@@ -4,9 +4,10 @@ import * as projectsRoutes from "#projects/routes";
 import { localStore } from "#store";
 import { OpenApiRouter } from "#utils/api-router";
 import { parseErrorMessage, type CustomErrorParser } from "#utils/error";
-import * as openapiRoutes from "./openapi";
-import * as rootRoutes from "./root";
-import * as serveRoutes from "./serve";
+import { handleStaticFileRoute } from "./root/handlers";
+import * as openapiRoutes from "./root/openapi";
+import * as rootRoutes from "./root/routes";
+import * as serveRoutes from "./root/serve";
 import type {
   CheckPermissionsCallback,
   DatabaseService,
@@ -64,6 +65,7 @@ export async function router(
         prefix,
         request,
         storage: context.storage,
+        url: request.url,
       },
       async () => {
         return await openApiRouter.handleRequest(request);
@@ -76,7 +78,7 @@ export async function router(
 
     const { pathname } = new URL(request.url);
     const filepath = pathname.replace(prefix, "");
-    return rootRoutes.handleStaticFileRoute(filepath, staticDirs, logger);
+    return await handleStaticFileRoute(filepath, staticDirs, logger);
   } catch (error) {
     return new Response(parseErrorMessage(error).errorMessage, { status: 500 });
   }

@@ -21,6 +21,7 @@ export interface Store {
   headless: boolean;
   database: DatabaseService;
   storage: StorageService;
+  url: string;
 }
 
 export const localStore = new AsyncLocalStorage<Store>();

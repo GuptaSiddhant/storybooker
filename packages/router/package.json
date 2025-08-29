@@ -26,9 +26,12 @@
   "imports": {
     "#components/*": "./src/components/*.tsx",
     "#builds/*": "./src/builds/*.ts",
+    "#builds-ui/*": "./src/builds/ui/*.tsx",
     "#constants": "./src/utils/constants.ts",
     "#labels/*": "./src/labels/*.ts",
+    "#labels-ui/*": "./src/labels/ui/*.tsx",
     "#projects/*": "./src/projects/*.ts",
+    "#projects-ui/*": "./src/projects/ui/*.tsx",
     "#store": "./src/utils/store.ts",
     "#types": "./src/types.d.ts",
     "#utils/*": "./src/utils/*.ts"
