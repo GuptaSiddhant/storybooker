@@ -45,7 +45,7 @@ export class BuildsModel implements BaseModel<BuildType> {
 
   async list(options?: ListOptions<BuildType>): Promise<BuildType[]> {
     if (options) {
-      this.#log("List builds with options (%o)...", options);
+      this.#log("List builds with options (%o)...", { ...options });
     } else {
       this.#log("List builds...");
     }

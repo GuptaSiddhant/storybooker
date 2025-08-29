@@ -1,5 +1,5 @@
 {
-  "name": "@storybooker/azure-functions",
+  "name": "@storybooker/azure",
   "version": "0.0.0",
   "type": "module",
   "description": "Utils to upload and manage Storybooks via Azure Functions and storage.",
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/guptasiddhant/storybooker",
-    "directory": "packages/azure-functions"
+    "directory": "packages/azure"
   },
   "license": "MIT",
   "bugs": {

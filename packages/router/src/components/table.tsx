@@ -48,7 +48,11 @@ export function Table<Item extends TableItem>({
           <thead>
             <tr>
               {cols.map((col) => (
-                <th safe>{String(col.header || col.id)}</th>
+                <th safe>
+                  {col.header && typeof col.header === "string"
+                    ? col.header
+                    : col.id.toString()}
+                </th>
               ))}
             </tr>
           </thead>

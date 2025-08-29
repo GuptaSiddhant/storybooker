@@ -1,11 +1,13 @@
 {
   "$schema": "./node_modules/turbo/schema.json",
+  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist"]
     },
     "check": {
+      "dependsOn": ["^build"],
       "outputs": ["tsconfig.tsbuildinfo"],
       "outputLogs": "new-only"
     },
@@ -17,10 +19,11 @@
       "outputLogs": "new-only"
     },
     "lint": {
+      "dependsOn": ["^build"],
       "outputLogs": "new-only"
     },
     "verify": {
-      "dependsOn": ["check", "lint", "build"]
+      "dependsOn": ["build", "check", "lint"]
     }
   }
 }

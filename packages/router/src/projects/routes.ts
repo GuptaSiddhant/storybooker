@@ -1,4 +1,6 @@
+import { BuildsModel } from "#builds/model";
 import { CONTENT_TYPES } from "#constants";
+import { LabelsModel } from "#labels/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
@@ -159,7 +161,12 @@ export const getProject = defineRoute(
     }
 
     if (checkIsHTMLRequest()) {
-      return responseHTML(renderProjectDetailsPage({ project }));
+      const recentBuilds = await new BuildsModel(projectId).list({ limit: 10 });
+      const recentLabels = await new LabelsModel(projectId).list({ limit: 10 });
+
+      return responseHTML(
+        renderProjectDetailsPage({ project, recentBuilds, recentLabels }),
+      );
     }
 
     const result: ProjectGetResultType = { project };

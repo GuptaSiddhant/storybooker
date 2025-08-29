@@ -1,6 +1,9 @@
+import { BuildsTable } from "#builds-ui/builds-table";
+import type { BuildType } from "#builds/schema";
 import { DestructiveButton, LinkButton } from "#components/button";
 import { DocumentLayout } from "#components/document";
 import { RawDataPreview } from "#components/raw-data";
+import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#utils/url-builder";
@@ -27,8 +30,11 @@ export function renderProjectsPage({
 
 export function renderProjectDetailsPage({
   project,
+  recentBuilds,
 }: {
   project: ProjectType;
+  recentBuilds: BuildType[];
+  recentLabels: LabelType[];
 }): JSX.Element {
   const { url } = getStore();
 
@@ -52,8 +58,15 @@ export function renderProjectDetailsPage({
       sidebar={
         <RawDataPreview data={project} summary={"Project details"} open />
       }
+      style={{ padding: 0 }}
     >
-      <RawDataPreview data={project} summary={"Project details"} />
+      <BuildsTable
+        builds={recentBuilds}
+        labels={[]}
+        project={project}
+        caption={"Recent builds"}
+        toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
+      />
     </DocumentLayout>
   );
 }

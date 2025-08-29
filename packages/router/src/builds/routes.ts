@@ -1,3 +1,4 @@
+import { renderBuildDetailsPage, renderBuildsPage } from "#builds-ui/render";
 import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
@@ -11,6 +12,7 @@ import {
 import {
   commonErrorResponses,
   responseError,
+  responseHTML,
   responseRedirect,
 } from "#utils/response";
 import { BuildSHASchema, ProjectIdSchema } from "#utils/shared-model";
@@ -55,8 +57,13 @@ export const listBuilds = defineRoute(
       { action: "read", projectId, resource: "build" },
     ]);
     const builds = await new BuildsModel(projectId).list();
-    const result: BuildsListResultType = { builds };
 
+    if (checkIsHTMLRequest()) {
+      const project = await new ProjectsModel().get(projectId);
+      return responseHTML(renderBuildsPage({ builds, project }));
+    }
+
+    const result: BuildsListResultType = { builds };
     return Response.json(result);
   },
 );
@@ -138,15 +145,17 @@ export const getBuild = defineRoute(
     summary: "Get build details",
     tags: [tag],
   },
-  async ({ params: { buildSHA, projectId } }) => {
+  async ({ params: { buildSHA, projectId }, request }) => {
     await authenticateOrThrow([
       { action: "read", projectId, resource: "build" },
     ]);
 
     const build = await new BuildsModel(projectId).get(buildSHA);
-    const url = urlBuilder.buildSHA(projectId, buildSHA);
-    const result: BuildsGetResultType = { build, url };
+    if (checkIsHTMLRequest()) {
+      return responseHTML(renderBuildDetailsPage({ build, projectId }));
+    }
 
+    const result: BuildsGetResultType = { build, url: request.url };
     return Response.json(result);
   },
 );

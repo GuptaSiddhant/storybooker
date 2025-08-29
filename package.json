@@ -16,7 +16,7 @@
     "check": "turbo check",
     "dev": "turbo dev",
     "fmt": "turbo fmt",
-    "functions": "yarn workspace @storybooker/azure-functions start",
+    "functions": "yarn workspace @storybooker/azure start",
     "lint": "turbo lint",
     "verify": "turbo verify"
   },
