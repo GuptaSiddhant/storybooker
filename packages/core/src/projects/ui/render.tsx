@@ -51,7 +51,7 @@ export function renderProjectDetailsPage({
           <LinkButton href={urlBuilder.buildCreate(project.id)}>
             + Create build
           </LinkButton>
-          <LinkButton href={urlBuilder.projectIdEdit(project.id)}>
+          <LinkButton href={urlBuilder.projectIdUpdate(project.id)}>
             Edit
           </LinkButton>
           <form
@@ -97,14 +97,14 @@ export function renderProjectCreatePage(): JSX.Element {
   );
 }
 
-export function renderProjectEditPage({
+export function renderProjectUpdatePage({
   project,
 }: {
   project: ProjectType;
 }): JSX.Element {
   return (
     <DocumentLayout
-      title="Create Project"
+      title="Update Project"
       breadcrumbs={[
         { href: urlBuilder.allProjects(), label: "Projects" },
         { href: urlBuilder.projectId(project.id), label: project.name },

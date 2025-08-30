@@ -8,4 +8,6 @@ const context: RouterContext = {
   storage: new LocalStorage(),
 };
 
-export default { fetch: createRequestHandler(context) };
+const handler = createRequestHandler(context);
+
+export default { fetch: handler };

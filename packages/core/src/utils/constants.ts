@@ -16,12 +16,12 @@ export const CONTENT_TYPES = {
   OCTET: "application/octet-stream",
   ZIP: "application/zip",
 } as const;
+
 export const QUERY_PARAMS = {
-  editResource: "edit",
   labelSlug: "labelSlug",
-  mode: "mode",
-  newResource: "new",
+  uploadVariant: "uploadVariant",
 };
+
 export const HEADERS = {
   accept: "Accept",
   acceptLanguage: "Accept-Language",

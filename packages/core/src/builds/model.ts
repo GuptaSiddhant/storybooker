@@ -17,13 +17,11 @@ import {
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
-import { urlSearchParamsToObject } from "#utils/url";
 import decompress from "decompress";
 import {
   BuildCreateSchema,
   BuildSchema,
   BuildUpdateSchema,
-  BuildUploadQueryParamsSchema,
   type BuildType,
   type BuildUploadVariant,
 } from "./schema";
@@ -164,13 +162,11 @@ export class BuildsModel implements BaseModel<BuildType> {
     }
   }
 
-  async upload(buildSHA: string, zipFile?: File): Promise<void> {
-    const { request } = getStore();
-
-    const { searchParams } = new URL(request.url);
-    const { variant } = BuildUploadQueryParamsSchema.parse(
-      urlSearchParamsToObject(searchParams),
-    );
+  async upload(
+    buildSHA: string,
+    variant: BuildUploadVariant,
+    zipFile?: File,
+  ): Promise<void> {
     this.#log("Upload build '%s'...", buildSHA, variant);
 
     await this.#decompressAndUploadZip(buildSHA, variant, zipFile);

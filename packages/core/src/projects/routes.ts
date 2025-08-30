@@ -4,10 +4,8 @@ import { LabelsModel } from "#labels/model";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
-  checkIsEditMode,
   checkIsHTMLRequest,
   checkIsHXRequest,
-  checkIsNewMode,
   validateIsFormEncodedRequest,
 } from "#utils/request";
 import {
@@ -32,8 +30,8 @@ import {
 import {
   renderProjectCreatePage,
   renderProjectDetailsPage,
-  renderProjectEditPage,
   renderProjectsPage,
+  renderProjectUpdatePage,
 } from "./ui/render";
 
 const tag = "Projects";
@@ -56,14 +54,6 @@ export const listProjects = defineRoute(
     tags: [tag],
   },
   async () => {
-    if (checkIsNewMode()) {
-      await authenticateOrThrow([
-        { action: "create", projectId: undefined, resource: "project" },
-      ]);
-
-      return responseHTML(renderProjectCreatePage());
-    }
-
     await authenticateOrThrow([
       { action: "read", projectId: undefined, resource: "project" },
     ]);
@@ -80,7 +70,7 @@ export const listProjects = defineRoute(
 
 export const createProject = defineRoute(
   "post",
-  "/",
+  "/create",
   {
     requestBody: {
       content: {
@@ -129,6 +119,31 @@ export const createProject = defineRoute(
   },
 );
 
+export const createProjectForm = defineRoute(
+  "get",
+  "/create",
+  {
+    responses: {
+      ...commonErrorResponses,
+      200: {
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+        },
+        description: "Form to create project",
+      },
+    },
+    summary: "Form to create project",
+    tags: [tag],
+  },
+  async () => {
+    await authenticateOrThrow([
+      { action: "create", projectId: undefined, resource: "project" },
+    ]);
+
+    return responseHTML(renderProjectCreatePage());
+  },
+);
+
 export const getProject = defineRoute(
   "get",
   "/:projectId",
@@ -156,14 +171,6 @@ export const getProject = defineRoute(
     ]);
 
     const project = await new ProjectsModel().get(projectId);
-
-    if (checkIsEditMode()) {
-      await authenticateOrThrow([
-        { action: "update", projectId, resource: "project" },
-      ]);
-
-      return responseHTML(renderProjectEditPage({ project }));
-    }
 
     if (checkIsHTMLRequest()) {
       const recentBuilds = await new BuildsModel(projectId).list({ limit: 10 });
@@ -209,8 +216,8 @@ export const deleteProject = defineRoute(
 );
 
 export const updateProject = defineRoute(
-  "patch",
-  "/:projectId",
+  "post",
+  "/:projectId/update",
   {
     requestBody: {
       content: {
@@ -255,5 +262,32 @@ export const updateProject = defineRoute(
     }
 
     return new Response(null, { status: 202 });
+  },
+);
+
+export const updateProjectForm = defineRoute(
+  "get",
+  "/:projectId/update",
+  {
+    responses: {
+      ...commonErrorResponses,
+      200: {
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+        },
+        description: "Form to update project",
+      },
+    },
+    summary: "Form to update project",
+    tags: [tag],
+  },
+  async ({ params: { projectId } }) => {
+    await authenticateOrThrow([
+      { action: "update", projectId: undefined, resource: "project" },
+    ]);
+
+    const project = await new ProjectsModel().get(projectId);
+
+    return responseHTML(renderProjectUpdatePage({ project }));
   },
 );

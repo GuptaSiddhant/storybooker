@@ -49,16 +49,20 @@ export const BuildUpdateSchema = BuildSchema.omit({
   updatedAt: true,
 }).partial();
 
-export type BuildUploadVariant = z.infer<
-  typeof BuildUploadQueryParamsSchema
->["variant"];
+export const buildUploadVariants = [
+  "storybook",
+  "testReport",
+  "coverage",
+  "screenshots",
+] as const;
+export type BuildUploadVariant = (typeof buildUploadVariants)[number];
 export const BuildUploadQueryParamsSchema = z.object({
-  variant: z
-    .enum(["storybook", "testReport", "coverage", "screenshots"])
-    .default("storybook"),
+  variant: z.enum(buildUploadVariants).default("storybook"),
 });
-
-export const BuildUploadFormSchema = z.object({ file: z.file() });
+export const BuildUploadFormBodySchema = z.object({
+  file: z.file(),
+  variant: z.enum(buildUploadVariants).default("storybook"),
+});
 
 export type BuildsListResultType = z.infer<typeof BuildsListResultSchema>;
 export const BuildsListResultSchema = z.object({

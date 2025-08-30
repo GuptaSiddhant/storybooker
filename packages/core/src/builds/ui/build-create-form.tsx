@@ -1,25 +1,28 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
-import type { BuildType } from "#builds/schema";
+import { LinkButton } from "#components/button";
 import { ErrorMessage } from "#components/error-message";
+import { getStore } from "#store";
 import { CONTENT_TYPES } from "#utils/constants";
 import { urlBuilder } from "#utils/url-builder";
 
 export interface BuildFormProps {
   projectId: string;
-  build: BuildType | undefined;
   labelSlug?: string;
 }
 
-export function BuildForm({
+export function BuildCreateForm({
   projectId,
   labelSlug,
 }: BuildFormProps): JSX.Element {
+  const { url } = getStore();
+
   return (
     <form
+      method="post"
       hx-ext="response-targets"
-      hx-post={urlBuilder.allBuilds(projectId)}
+      hx-post={url}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
       enctype={CONTENT_TYPES.FORM_ENCODED}
@@ -72,8 +75,9 @@ export function BuildForm({
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="submit">Upload build</button>
+        <button type="submit">Create build</button>
         <button type="reset">Reset</button>
+        <LinkButton href={urlBuilder.allBuilds(projectId)}>Cancel</LinkButton>
       </div>
 
       <ErrorMessage id="form-error" />

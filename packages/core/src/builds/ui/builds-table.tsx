@@ -106,7 +106,7 @@ export function BuildsTable({
                   View
                 </a>
                 <a
-                  href={urlBuilder.storybookZip(project.id, item.sha)}
+                  href={urlBuilder.storybookDownload(project.id, item.sha)}
                   target="_blank"
                   download={`storybook-${project.id}-${item.sha}.zip`}
                 >

@@ -1,10 +1,12 @@
+// oxlint-disable max-lines
+
 import { BuildsModel } from "#builds/model";
 import { CONTENT_TYPES } from "#constants";
 import {
   renderLabelCreatePage,
   renderLabelDetailsPage,
-  renderLabelEditPage,
   renderLabelsPage,
+  renderLabelUpdatePage,
 } from "#labels-ui/render";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#utils/api-router";
@@ -12,7 +14,6 @@ import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
-  checkIsNewMode,
   validateIsFormEncodedRequest,
 } from "#utils/request";
 import {
@@ -58,15 +59,6 @@ export const listLabels = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    if (checkIsNewMode()) {
-      await authenticateOrThrow([
-        { action: "create", projectId, resource: "label" },
-      ]);
-      const project = await new ProjectsModel().get(projectId);
-
-      return responseHTML(renderLabelCreatePage({ project }));
-    }
-
     await authenticateOrThrow([
       { action: "read", projectId, resource: "label" },
     ]);
@@ -85,7 +77,7 @@ export const listLabels = defineRoute(
 
 export const createLabel = defineRoute(
   "post",
-  "/:projectId/labels",
+  "/:projectId/labels/create",
   {
     requestBody: {
       content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: LabelCreateSchema } },
@@ -138,6 +130,32 @@ export const createLabel = defineRoute(
   },
 );
 
+export const createLabelForm = defineRoute(
+  "get",
+  "/:projectId/labels/create",
+  {
+    responses: {
+      ...commonErrorResponses,
+      200: {
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+        },
+        description: "Form to create label",
+      },
+    },
+    summary: "Form to create label",
+    tags: [tag],
+  },
+  async ({ params: { projectId } }) => {
+    await authenticateOrThrow([
+      { action: "create", projectId: undefined, resource: "label" },
+    ]);
+    const project = await new ProjectsModel().get(projectId);
+
+    return responseHTML(renderLabelCreatePage({ project }));
+  },
+);
+
 export const getLabel = defineRoute(
   "get",
   "/:projectId/labels/:labelSlug",
@@ -167,14 +185,6 @@ export const getLabel = defineRoute(
     ]);
 
     const label = await new LabelsModel(projectId).get(labelSlug);
-
-    if (checkIsNewMode()) {
-      await authenticateOrThrow([
-        { action: "update", projectId, resource: "label" },
-      ]);
-
-      return responseHTML(renderLabelEditPage({ label, projectId }));
-    }
 
     if (checkIsHTMLRequest()) {
       const project = await new ProjectsModel().get(projectId);
@@ -226,8 +236,8 @@ export const deleteLabel = defineRoute(
 );
 
 export const updateLabel = defineRoute(
-  "patch",
-  "/:projectId/labels/:labelSlug",
+  "post",
+  "/:projectId/labels/:labelSlug/update",
   {
     requestBody: {
       content: {
@@ -275,5 +285,31 @@ export const updateLabel = defineRoute(
     }
 
     return new Response(null, { status: 202 });
+  },
+);
+
+export const updateLabelForm = defineRoute(
+  "get",
+  "/:projectId/labels/:labelSlug/update",
+  {
+    responses: {
+      ...commonErrorResponses,
+      200: {
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+        },
+        description: "Form to update label",
+      },
+    },
+    summary: "Form to update label",
+    tags: [tag],
+  },
+  async ({ params: { projectId, labelSlug } }) => {
+    await authenticateOrThrow([
+      { action: "update", projectId: undefined, resource: "label" },
+    ]);
+    const label = await new LabelsModel(projectId).get(labelSlug);
+
+    return responseHTML(renderLabelUpdatePage({ label, projectId }));
   },
 );

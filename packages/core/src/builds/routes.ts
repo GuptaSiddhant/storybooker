@@ -3,8 +3,8 @@
 import {
   renderBuildCreatePage,
   renderBuildDetailsPage,
-  renderBuildEditPage,
   renderBuildsPage,
+  renderBuildUploadPage,
 } from "#builds-ui/render";
 import { CONTENT_TYPES, QUERY_PARAMS } from "#constants";
 import { ProjectsModel } from "#projects/model";
@@ -13,7 +13,6 @@ import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
-  checkIsNewMode,
   validateBuildUploadZipBody,
   validateIsFormEncodedRequest,
 } from "#utils/request";
@@ -32,10 +31,11 @@ import {
   BuildCreateSchema,
   BuildsGetResultSchema,
   BuildsListResultSchema,
-  BuildUploadFormSchema,
+  BuildUploadFormBodySchema,
   BuildUploadQueryParamsSchema,
   type BuildsGetResultType,
   type BuildsListResultType,
+  type BuildUploadVariant,
 } from "./schema";
 
 const tag = "Builds";
@@ -60,19 +60,7 @@ export const listBuilds = defineRoute(
     summary: "List all builds for a project",
     tags: [tag],
   },
-  async ({ params: { projectId }, request }) => {
-    if (checkIsNewMode()) {
-      await authenticateOrThrow([
-        { action: "create", projectId: undefined, resource: "build" },
-      ]);
-      const project = await new ProjectsModel().get(projectId);
-      const labelSlug =
-        new URL(request.url).searchParams.get(QUERY_PARAMS.labelSlug) ??
-        undefined;
-
-      return responseHTML(renderBuildCreatePage({ labelSlug, project }));
-    }
-
+  async ({ params: { projectId } }) => {
     await authenticateOrThrow([
       { action: "read", projectId, resource: "build" },
     ]);
@@ -90,7 +78,7 @@ export const listBuilds = defineRoute(
 
 export const createBuild = defineRoute(
   "post",
-  "/:projectId/builds",
+  "/:projectId/builds/create",
   {
     requestBody: {
       content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: BuildCreateSchema } },
@@ -146,6 +134,35 @@ export const createBuild = defineRoute(
   },
 );
 
+export const createBuildsForm = defineRoute(
+  "get",
+  "/:projectId/builds/create",
+  {
+    responses: {
+      ...commonErrorResponses,
+      200: {
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+        },
+        description: "Form to create build",
+      },
+    },
+    summary: "Form to create build",
+    tags: [tag],
+  },
+  async ({ params: { projectId }, request }) => {
+    await authenticateOrThrow([
+      { action: "create", projectId: undefined, resource: "build" },
+    ]);
+    const project = await new ProjectsModel().get(projectId);
+    const labelSlug =
+      new URL(request.url).searchParams.get(QUERY_PARAMS.labelSlug) ??
+      undefined;
+
+    return responseHTML(renderBuildCreatePage({ labelSlug, project }));
+  },
+);
+
 export const getBuild = defineRoute(
   "get",
   "/:projectId/builds/:buildSHA",
@@ -175,14 +192,6 @@ export const getBuild = defineRoute(
     ]);
 
     const build = await new BuildsModel(projectId).get(buildSHA);
-
-    if (checkIsNewMode()) {
-      await authenticateOrThrow([
-        { action: "update", projectId: undefined, resource: "build" },
-      ]);
-
-      return responseHTML(renderBuildEditPage({ build, projectId }));
-    }
 
     if (checkIsHTMLRequest()) {
       return responseHTML(renderBuildDetailsPage({ build, projectId }));
@@ -231,15 +240,13 @@ export const deleteBuild = defineRoute(
 );
 
 export const uploadBuild = defineRoute(
-  "put",
-  "/:projectId/builds/:buildSHA",
+  "post",
+  "/:projectId/builds/:buildSHA/upload",
   {
     description: "Upload build files in a compressed zip",
     requestBody: {
       content: {
-        [CONTENT_TYPES.FORM_MULTIPART]: {
-          schema: z.object({ file: z.file() }),
-        },
+        [CONTENT_TYPES.FORM_MULTIPART]: { schema: BuildUploadFormBodySchema },
         [CONTENT_TYPES.ZIP]: {
           example: "storybook.zip",
           schema: { format: "binary", type: "string" },
@@ -284,11 +291,11 @@ export const uploadBuild = defineRoute(
     }
 
     if (contentType.startsWith(CONTENT_TYPES.FORM_MULTIPART)) {
-      const { file } = BuildUploadFormSchema.parse(
+      const { file, variant } = BuildUploadFormBodySchema.parse(
         urlSearchParamsToObject(await request.formData()),
       );
 
-      await buildsModel.upload(buildSHA, file);
+      await buildsModel.upload(buildSHA, variant, file);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
         return responseRedirect(request.url, 303);
@@ -302,8 +309,12 @@ export const uploadBuild = defineRoute(
       if (bodyError) {
         return responseError(bodyError.message, bodyError.status);
       }
+      const { searchParams } = new URL(request.url);
+      const { variant } = BuildUploadQueryParamsSchema.parse(
+        urlSearchParamsToObject(searchParams),
+      );
 
-      await buildsModel.upload(buildSHA);
+      await buildsModel.upload(buildSHA, variant);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
         return responseRedirect(request.url, 303);
@@ -315,6 +326,45 @@ export const uploadBuild = defineRoute(
     return responseError(
       `Invalid content type, expected ${CONTENT_TYPES.ZIP} or ${CONTENT_TYPES.FORM_MULTIPART}.`,
       415,
+    );
+  },
+);
+
+export const uploadBuildForm = defineRoute(
+  "get",
+  "/:projectId/builds/:buildSHA/upload",
+  {
+    requestParams: {
+      path: z.object({
+        buildSHA: BuildSHASchema,
+        projectId: ProjectIdSchema,
+      }),
+    },
+    responses: {
+      ...commonErrorResponses,
+      200: {
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+        },
+        description: "Form to upload build",
+      },
+    },
+    summary: "Form to upload build",
+    tags: [tag],
+  },
+  async ({ params: { projectId, buildSHA }, request }) => {
+    await authenticateOrThrow([
+      { action: "update", projectId: undefined, resource: "build" },
+    ]);
+    const build = await new BuildsModel(projectId).get(buildSHA);
+
+    const uploadVariant =
+      (new URL(request.url).searchParams.get(
+        QUERY_PARAMS.uploadVariant,
+      ) as BuildUploadVariant) ?? undefined;
+
+    return responseHTML(
+      renderBuildUploadPage({ build, projectId, uploadVariant }),
     );
   },
 );

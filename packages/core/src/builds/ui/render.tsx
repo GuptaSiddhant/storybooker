@@ -1,13 +1,14 @@
 // oxlint-disable max-lines-per-function
 
-import type { BuildType } from "#builds/schema";
-import { LinkButton } from "#components/button";
+import type { BuildType, BuildUploadVariant } from "#builds/schema";
+import { DestructiveButton, LinkButton } from "#components/button";
 import { DocumentLayout } from "#components/document";
 import { RawDataPreview } from "#components/raw-data";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#utils/url-builder";
-import { BuildForm } from "./build-form";
+import { BuildCreateForm } from "./build-create-form";
+import { BuildUploadForm } from "./build-upload-form";
 import { BuildsTable } from "./builds-table";
 
 export function renderBuildsPage({
@@ -52,11 +53,14 @@ export function renderBuildDetailsPage({
       breadcrumbs={[projectId, "Builds"]}
       toolbar={
         <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
+          <LinkButton href={urlBuilder.buildUpload(projectId, build.id)}>
+            Upload
+          </LinkButton>
           <form
             hx-delete={url}
             hx-confirm="Are you sure about deleting the build?"
           >
-            <button>Delete</button>
+            <DestructiveButton>Delete</DestructiveButton>
           </form>
         </div>
       }
@@ -78,7 +82,12 @@ export function renderBuildDetailsPage({
               View Storybook
             </a>
           ) : (
-            <span class="description">Storybook not uploaded</span>
+            <a
+              href={urlBuilder.buildUpload(projectId, build.sha, "storybook")}
+              class="description"
+            >
+              Upload Storybook
+            </a>
           )}
           {build.hasTestReport ? (
             <a
@@ -88,7 +97,12 @@ export function renderBuildDetailsPage({
               View Test Report
             </a>
           ) : (
-            <span class="description">Test report not uploaded</span>
+            <a
+              href={urlBuilder.buildUpload(projectId, build.sha, "testReport")}
+              class="description"
+            >
+              Upload Test report
+            </a>
           )}
           {build.hasCoverage ? (
             <a
@@ -98,11 +112,36 @@ export function renderBuildDetailsPage({
               View Coverage
             </a>
           ) : (
-            <span class="description">Coverage report not uploaded</span>
+            <a
+              href={urlBuilder.buildUpload(projectId, build.sha, "coverage")}
+              class="description"
+            >
+              Upload Coverage report
+            </a>
           )}
+
+          {build.hasScreenshots ? (
+            <a
+              href={urlBuilder.storybookScreenshotsDownload(
+                projectId,
+                build.sha,
+              )}
+              target="_blank"
+            >
+              Download screenshots
+            </a>
+          ) : (
+            <a
+              href={urlBuilder.buildUpload(projectId, build.sha, "screenshots")}
+              class="description"
+            >
+              Upload Screenshots
+            </a>
+          )}
+
           {build.hasStorybook ? (
             <a
-              href={urlBuilder.storybookZip(projectId, build.sha)}
+              href={urlBuilder.storybookDownload(projectId, build.sha)}
               download={`storybook-${projectId}-${build.sha}.zip`}
               target="_blank"
             >
@@ -132,32 +171,37 @@ export function renderBuildCreatePage({
         { href: urlBuilder.allBuilds(project.id), label: "Builds" },
       ]}
     >
-      <BuildForm
-        build={undefined}
-        projectId={project.id}
-        labelSlug={labelSlug}
-      />
+      <BuildCreateForm projectId={project.id} labelSlug={labelSlug} />
     </DocumentLayout>
   );
 }
 
-export function renderBuildEditPage({
+export function renderBuildUploadPage({
   build,
   projectId,
+  uploadVariant,
 }: {
   build: BuildType;
   projectId: string;
+  uploadVariant?: BuildUploadVariant;
 }): JSX.Element {
   return (
     <DocumentLayout
-      title="Create Build"
+      title="Upload Build files"
       breadcrumbs={[
         { href: urlBuilder.projectId(projectId), label: projectId },
         { href: urlBuilder.allBuilds(projectId), label: "Builds" },
-        { href: urlBuilder.buildSHA(projectId, build.id), label: build.id },
+        {
+          href: urlBuilder.buildSHA(projectId, build.id),
+          label: build.id.slice(0, 7),
+        },
       ]}
     >
-      <BuildForm build={build} projectId={projectId} />
+      <BuildUploadForm
+        build={build}
+        projectId={projectId}
+        uploadVariant={uploadVariant}
+      />
     </DocumentLayout>
   );
 }

@@ -1,6 +1,6 @@
 import { BuildsTable } from "#builds-ui/builds-table";
 import type { BuildType } from "#builds/schema";
-import { LinkButton } from "#components/button";
+import { DestructiveButton, LinkButton } from "#components/button";
 import { DocumentLayout } from "#components/document";
 import { RawDataPreview } from "#components/raw-data";
 import type { LabelType } from "#labels/schema";
@@ -57,7 +57,7 @@ export function renderLabelDetailsPage({
             hx-delete={url}
             hx-confirm="Are you sure about deleting the build?"
           >
-            <button>Delete</button>
+            <DestructiveButton>Delete</DestructiveButton>
           </form>
         </div>
       }
@@ -92,7 +92,7 @@ export function renderLabelCreatePage({
   );
 }
 
-export function renderLabelEditPage({
+export function renderLabelUpdatePage({
   label,
   projectId,
 }: {
@@ -101,7 +101,7 @@ export function renderLabelEditPage({
 }): JSX.Element {
   return (
     <DocumentLayout
-      title="Edit Label"
+      title="Update Label"
       breadcrumbs={[
         { href: urlBuilder.projectId(projectId), label: projectId },
         { href: urlBuilder.allLabels(projectId), label: "Labels" },

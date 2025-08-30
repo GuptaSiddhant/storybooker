@@ -1,17 +1,28 @@
+// oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
+import {
+  buildUploadVariants,
+  type BuildType,
+  type BuildUploadVariant,
+} from "#builds/schema";
 import { LinkButton } from "#components/button";
 import { ErrorMessage } from "#components/error-message";
-import { labelTypes, type LabelType } from "#labels/schema";
 import { getStore } from "#store";
+import { CONTENT_TYPES } from "#utils/constants";
 import { urlBuilder } from "#utils/url-builder";
 
-export interface LabelFormProps {
-  label: LabelType | undefined;
+export interface BuildUploadFormProps {
+  build: BuildType;
   projectId: string;
+  uploadVariant?: BuildUploadVariant;
 }
 
-export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
+export function BuildUploadForm({
+  build,
+  projectId,
+  uploadVariant,
+}: BuildUploadFormProps): JSX.Element {
   const { url } = getStore();
 
   return (
@@ -21,20 +32,10 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
       hx-post={url}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
+      enctype={CONTENT_TYPES.FORM_MULTIPART}
     >
       <fieldset>
-        <legend>Details</legend>
-
-        {label ? <input type="hidden" name="slug" value={label.slug} /> : null}
-
-        <div class="field">
-          <label for="value">Label</label>
-          <input id="value" name="value" required value={label?.value} />
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Type</legend>
+        <legend>Variant</legend>
 
         <div
           style={{
@@ -43,41 +44,41 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
             gridTemplateColumns: "repeat(3,1fr)",
           }}
         >
-          {labelTypes.map((type) => {
-            const id = `type-${type}`;
+          {buildUploadVariants.map((variant) => {
+            const id = `variant-${variant}`;
             return (
               <div
                 style={{ alignItems: "center", display: "flex", gap: "0.5rem" }}
               >
                 <input
                   id={id}
-                  name="type"
+                  name="variant"
                   type="radio"
                   required
-                  value={type}
-                  checked={type === label?.type}
+                  value={variant}
+                  checked={variant === uploadVariant}
                 />
-                <label for={id}>{type}</label>
+                <label for={id}>{variant}</label>
               </div>
             );
           })}
         </div>
+      </fieldset>
 
-        <span class="description">
-          Type of label defines behaviour of the label.
-        </span>
+      <fieldset>
+        <legend>Zip file</legend>
+        <input
+          type="file"
+          name="file"
+          accept={CONTENT_TYPES.ZIP}
+          multiple={false}
+        />
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="submit">{label ? "Update" : "Create"} Label</button>
+        <button type="submit">Upload file</button>
         <button type="reset">Reset</button>
-        <LinkButton
-          href={
-            label
-              ? urlBuilder.labelSlug(projectId, label.slug)
-              : urlBuilder.allLabels(projectId)
-          }
-        >
+        <LinkButton href={urlBuilder.buildSHA(projectId, build.id)}>
           Cancel
         </LinkButton>
       </div>

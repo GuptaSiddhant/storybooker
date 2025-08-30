@@ -8,6 +8,7 @@ import {
   PATTERNS,
 } from "#constants";
 import { ProjectSchema, type ProjectType } from "#projects/schema";
+import { getStore } from "#store";
 import { urlBuilder } from "#utils/url-builder";
 
 export interface ProjectsFormProps {
@@ -15,11 +16,12 @@ export interface ProjectsFormProps {
 }
 
 export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
+  const { url } = getStore();
   return (
     <form
+      method="post"
       hx-ext="response-targets"
-      hx-patch={project ? urlBuilder.projectId(project.id) : undefined}
-      hx-post={project ? undefined : urlBuilder.allProjects()}
+      hx-post={url}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
     >

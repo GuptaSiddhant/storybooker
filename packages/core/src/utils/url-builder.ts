@@ -1,5 +1,6 @@
 // oxlint-disable sort-keys
 
+import type { BuildUploadVariant } from "#builds/schema";
 import { QUERY_PARAMS } from "./constants";
 import { getStore } from "./store";
 import { urlJoin } from "./url";
@@ -26,8 +27,7 @@ export const urlBuilder = {
   },
   projectCreate: (): string => {
     const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, "projects"), request.url);
-    url.searchParams.set(QUERY_PARAMS.mode, QUERY_PARAMS.newResource);
+    const url = new URL(urlJoin(prefix, "projects", "create"), request.url);
     return url.toString();
   },
   projectId: (projectId: string): string => {
@@ -35,10 +35,12 @@ export const urlBuilder = {
     const url = new URL(urlJoin(prefix, "projects", projectId), request.url);
     return url.toString();
   },
-  projectIdEdit: (projectId: string): string => {
+  projectIdUpdate: (projectId: string): string => {
     const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, "projects", projectId), request.url);
-    url.searchParams.set(QUERY_PARAMS.mode, QUERY_PARAMS.editResource);
+    const url = new URL(
+      urlJoin(prefix, "projects", projectId, "update"),
+      request.url,
+    );
     return url.toString();
   },
   allBuilds: (projectId: string): string => {
@@ -60,12 +62,26 @@ export const urlBuilder = {
   buildCreate: (projectId: string, labelSlug?: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "builds"),
+      urlJoin(prefix, "projects", projectId, "builds", "create"),
       request.url,
     );
-    url.searchParams.set(QUERY_PARAMS.mode, QUERY_PARAMS.newResource);
     if (labelSlug) {
       url.searchParams.set(QUERY_PARAMS.labelSlug, labelSlug);
+    }
+    return url.toString();
+  },
+  buildUpload: (
+    projectId: string,
+    sha: string,
+    variant?: BuildUploadVariant,
+  ): string => {
+    const { prefix, request } = getStore();
+    const url = new URL(
+      urlJoin(prefix, "projects", projectId, "builds", sha, "upload"),
+      request.url,
+    );
+    if (variant) {
+      url.searchParams.set(QUERY_PARAMS.uploadVariant, variant);
     }
     return url.toString();
   },
@@ -80,10 +96,9 @@ export const urlBuilder = {
   labelCreate: (projectId: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels"),
+      urlJoin(prefix, "projects", projectId, "labels", "create"),
       request.url,
     );
-    url.searchParams.set(QUERY_PARAMS.mode, QUERY_PARAMS.newResource);
     return url.toString();
   },
   labelSlug: (projectId: string, labelSlug: string): string => {
@@ -94,13 +109,12 @@ export const urlBuilder = {
     );
     return url.toString();
   },
-  labelSlugEdit: (projectId: string, labelSlug: string): string => {
+  labelSlugUpdate: (projectId: string, labelSlug: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels", labelSlug),
+      urlJoin(prefix, "projects", projectId, "labels", labelSlug, "update"),
       request.url,
     );
-    url.searchParams.set(QUERY_PARAMS.mode, QUERY_PARAMS.editResource);
     return url.toString();
   },
   labelSlugLatest: (projectId: string, labelSlug: string): string => {
@@ -135,10 +149,18 @@ export const urlBuilder = {
     );
     return url.toString();
   },
-  storybookZip: (projectId: string, sha: string): string => {
+  storybookDownload: (projectId: string, sha: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
       urlJoin(prefix, "_", projectId, sha, "storybook.zip"),
+      request.url,
+    );
+    return url.toString();
+  },
+  storybookScreenshotsDownload: (projectId: string, sha: string): string => {
+    const { prefix, request } = getStore();
+    const url = new URL(
+      urlJoin(prefix, "_", projectId, sha, "screenshots.zip"),
       request.url,
     );
     return url.toString();
