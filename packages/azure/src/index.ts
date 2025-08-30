@@ -5,16 +5,16 @@ import {
   type InvocationContext,
 } from "@azure/functions";
 import {
+  createRequestHandler,
   generatePrefixFromBaseRoute,
   parseErrorMessage,
-  router,
   SERVICE_NAME,
   urlJoin,
   type CheckPermissionsCallback,
   type DatabaseService,
   type OpenAPIOptions,
   type StorageService,
-} from "@storybooker/router";
+} from "@storybooker/core";
 import type { BodyInit } from "undici";
 import { AzureTables } from "./database";
 import { parseAzureRestError } from "./error-parser";
@@ -29,7 +29,7 @@ export type {
   CheckPermissionsCallback,
   Permission,
   OpenAPIOptions,
-} from "@storybooker/router";
+} from "@storybooker/core";
 
 /**
  * Options to register the storybooker router
@@ -173,9 +173,19 @@ async function serviceHandler(
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
   const logger = new AzureFunctionLogger(context);
+  const requestHandler = createRequestHandler({
+    checkPermissions: options.checkPermissions,
+    customErrorParser: parseAzureRestError,
+    database: options.database,
+    headless: options.headless,
+    logger,
+    prefix: generatePrefixFromBaseRoute(options.baseRoute) || "/",
+    staticDirs: options.staticDirs,
+    storage: options.storage,
+  });
 
   try {
-    const fetchRequest = new Request(httpRequest.url, {
+    const request = new Request(httpRequest.url, {
       // oxlint-disable-next-line no-invalid-fetch-options
       body: httpRequest.body as ReadableStream | null,
       // @ts-expect-error - Duplex is required for streaming but not supported in TS
@@ -184,16 +194,7 @@ async function serviceHandler(
       method: httpRequest.method,
     });
 
-    const response = await router(fetchRequest, {
-      checkPermissions: options.checkPermissions,
-      customErrorParser: parseAzureRestError,
-      database: options.database,
-      headless: options.headless,
-      logger,
-      prefix: generatePrefixFromBaseRoute(options.baseRoute) || "/",
-      staticDirs: options.staticDirs,
-      storage: options.storage,
-    });
+    const response = await requestHandler(request);
 
     return {
       body: response.body as BodyInit | null,

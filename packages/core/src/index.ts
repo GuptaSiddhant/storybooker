@@ -26,50 +26,46 @@ export interface RouterContext {
   checkPermissions?: CheckPermissionsCallback;
   customErrorParser?: CustomErrorParser;
   prefix: string;
-  headless: boolean | undefined;
-  staticDirs: readonly string[];
+  headless?: boolean;
+  staticDirs?: readonly string[];
   storage: StorageService;
 }
 
-const openApiRouter = new OpenApiRouter();
-openApiRouter.register(rootRoutes.root);
-openApiRouter.register(rootRoutes.health);
-openApiRouter.registerGroup("openapi", openapiRoutes);
-openApiRouter.registerGroup("_", serveRoutes);
-openApiRouter.registerGroup("projects", projectsRoutes);
-openApiRouter.registerGroup("projects", labelsRoutes);
-openApiRouter.registerGroup("projects", buildsRoutes);
+export type RequestHandler = (request: Request) => Promise<Response>;
+
+const router = new OpenApiRouter();
+router.register(rootRoutes.root);
+router.register(rootRoutes.health);
+router.registerGroup("openapi", openapiRoutes);
+router.registerGroup("_", serveRoutes);
+router.registerGroup("projects", projectsRoutes);
+router.registerGroup("projects", labelsRoutes);
+router.registerGroup("projects", buildsRoutes);
 
 const DEFAULT_CHECK_PERMISSIONS: CheckPermissionsCallback = () => true;
+const DEFAULT_STATIC_DIRS = ["./public"];
 
-export async function router(
-  request: Request,
+export function createRequestHandler(context: RouterContext): RequestHandler {
+  return requestHandler.bind(null, context);
+}
+
+async function requestHandler(
   context: RouterContext,
+  request: Request,
 ): Promise<Response> {
-  const {
-    logger,
-    prefix,
-    checkPermissions = DEFAULT_CHECK_PERMISSIONS,
-    customErrorParser,
-    staticDirs,
-  } = context;
+  const { logger, prefix, staticDirs = DEFAULT_STATIC_DIRS } = context;
 
   const store: Store = {
-    checkPermissions,
-    customErrorParser,
-    database: context.database,
+    checkPermissions: DEFAULT_CHECK_PERMISSIONS,
+    customErrorParser: undefined,
+    ...context,
     headless: !!context.headless,
-    logger,
-    prefix,
     request,
-    storage: context.storage,
     url: request.url,
   };
 
   try {
-    const response = await localStore.run(store, () =>
-      openApiRouter.handleRequest(),
-    );
+    const response = await localStore.run(store, () => router.handleRequest());
     if (response) {
       return response;
     }
