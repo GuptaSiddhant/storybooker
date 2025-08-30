@@ -56,7 +56,7 @@ export interface StorageService {
   uploadDir: (
     containerName: string,
     dirpath: string,
-    fileOptions?: (filepath: string) => {
+    fileOptions: (filepath: string) => {
       newFilepath: string;
       mimeType: string;
     },

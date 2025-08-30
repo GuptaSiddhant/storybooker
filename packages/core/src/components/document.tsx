@@ -4,8 +4,8 @@
 
 import { SERVICE_NAME } from "#constants";
 import { getStore } from "#store";
+import { urlBuilder } from "#urls";
 import { urlJoin } from "#utils/url";
-import { urlBuilder } from "#utils/url-builder";
 import { globalStyleSheet } from "./_global";
 
 function Logo(): JSX.Element {

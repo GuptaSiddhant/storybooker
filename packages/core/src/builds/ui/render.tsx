@@ -6,7 +6,7 @@ import { DocumentLayout } from "#components/document";
 import { RawDataPreview } from "#components/raw-data";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#utils/url-builder";
+import { urlBuilder } from "#urls";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildUploadForm } from "./build-upload-form";
 import { BuildsTable } from "./builds-table";

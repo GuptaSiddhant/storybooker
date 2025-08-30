@@ -1,3 +1,4 @@
+import { RoutePattern, type Params } from "@remix-run/route-pattern";
 import { getStore } from "#store";
 import type {
   ZodOpenApiPathItemObject,
@@ -5,11 +6,6 @@ import type {
 } from "zod-openapi";
 import { responseError } from "./response";
 import { urlJoin } from "./url";
-
-// @ts-expect-error: Property 'UrlPattern' does not exist
-if (!globalThis.URLPattern) {
-  await import("urlpattern-polyfill");
-}
 
 type Methods =
   | "get"
@@ -21,31 +17,17 @@ type Methods =
   | "patch"
   | "trace";
 
-type ExtractParam<Segment extends string> = Segment extends `:${infer Param}?`
-  ? Param extends `${infer Int}(\\d)`
-    ? { [Key in Int]?: number }
-    : { [Key in Param]?: string }
-  : Segment extends `:${infer Param}`
-    ? Param extends `${infer Int}(\\d)`
-      ? { [Key in Int]?: number }
-      : { [Key in Param]: string }
-    : // oxlint-disable-next-line no-empty-object-type
-      {}; // oxlint-disable-line ban-types
-
-// Recursively split path by '/' and merge param objects
-type ExtractParams<Path extends string> =
-  Path extends `${infer Head}/${infer Tail}`
-    ? ExtractParam<Head> & ExtractParams<Tail>
-    : ExtractParam<Path>;
-
-type Handler<Path extends string> = (options: {
-  params: ExtractParams<Path>;
+type Handler<
+  Path extends string,
+  PathParams extends string = Params<Path>,
+> = (options: {
+  params: Record<PathParams extends never ? string : PathParams, string>;
   request: Request;
 }) => Promise<Response> | Response;
 
 interface Route<Method extends Methods, Path extends string> {
   method: Method;
-  pattern: URLPattern;
+  pattern: RoutePattern;
   handler: Handler<Path>;
 }
 
@@ -69,7 +51,7 @@ export class OpenApiRouter {
     options: RegisterRouteOptions<Method, Path>,
   ): this {
     const { handler, input, method, overriddenPath, pathname } = options;
-    const pattern = new URLPattern({ pathname });
+    const pattern = new RoutePattern(pathname);
     this.routes.push({
       handler,
       method,
@@ -89,16 +71,20 @@ export class OpenApiRouter {
   }
 
   registerGroup(
-    prefix: string,
     group: Record<string, RegisterRouteOptions<Methods, string>>,
+    prefix?: string,
   ): this {
     for (const route of Object.values(group)) {
       this.register({
         ...route,
+        // oxlint-disable-next-line no-nested-ternary
         overriddenPath: route.overriddenPath
-          ? urlJoin(prefix, route.overriddenPath)
+          ? // oxlint-disable-next-line no-nested-ternary
+            prefix
+            ? urlJoin(prefix, route.overriddenPath)
+            : route.overriddenPath
           : undefined,
-        pathname: urlJoin(prefix, route.pathname),
+        pathname: prefix ? urlJoin(prefix, route.pathname) : route.pathname,
       });
     }
 
@@ -106,25 +92,30 @@ export class OpenApiRouter {
   }
 
   async handleRequest(): Promise<Response | undefined> {
-    const { logger, request } = getStore();
-    const url = new URL(request.url);
+    const { logger, request, prefix, url } = getStore();
     const method = request.method.toLowerCase();
-    logger.log(`[${method}] ${url}`);
+    const { pathname } = new URL(url);
+    logger.log(`[${method.toUpperCase()}] ${pathname}`);
+
+    const urlWithoutPrefix = prefix ? url.replace(`${prefix}/`, "") : url;
+    const urlWithoutTrailingSlash = urlWithoutPrefix.endsWith("/")
+      ? urlWithoutPrefix.slice(0, -1)
+      : urlWithoutPrefix;
 
     for (const route of this.routes) {
-      if (route.method !== method) {
-        continue;
-      }
-
-      const match = route.pattern.exec(url);
-      if (!match) {
+      if (route.method.toLowerCase() !== method.toLowerCase()) {
         continue;
       }
 
       try {
+        const match = route.pattern.match(urlWithoutTrailingSlash);
+        if (!match) {
+          continue;
+        }
+
         // oxlint-disable-next-line no-await-in-loop
         return await route.handler({
-          params: match.pathname.groups,
+          params: match.params,
           request,
         });
       } catch (error) {

@@ -1,7 +1,7 @@
 import { DocumentLayout } from "#components/document";
 import { ProjectsTable } from "#projects-ui/projects-table";
 import type { ProjectType } from "#projects/schema";
-import { urlBuilder } from "#utils/url-builder";
+import { href, urlBuilder, URLS } from "#urls";
 
 export interface RootPageProps {
   projects: ProjectType[];
@@ -11,7 +11,7 @@ export function renderRootPage({ projects }: RootPageProps): JSX.Element {
     <DocumentLayout
       title="Home"
       toolbar={
-        <a href={urlBuilder.root("openapi")} target="_blank">
+        <a href={href(URLS.ui.openapi)} target="_blank">
           OpenAPI
         </a>
       }

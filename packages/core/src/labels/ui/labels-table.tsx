@@ -3,8 +3,8 @@
 
 import { Table } from "#components/table";
 import type { LabelType } from "#labels/schema";
+import { urlBuilder } from "#urls";
 import { getStore } from "#utils/store";
-import { urlBuilder } from "#utils/url-builder";
 
 export interface LabelsTableProps {
   caption?: JSX.Element;

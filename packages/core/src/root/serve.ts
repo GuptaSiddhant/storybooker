@@ -1,16 +1,16 @@
 import path from "node:path";
 import { CACHE_CONTROL_PUBLIC_YEAR, HEADERS, SERVICE_NAME } from "#constants";
 import { getStore } from "#store";
+import { urlBuilder } from "#urls";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import { getMimeType } from "#utils/mime-utils";
 import { generateProjectContainerName } from "#utils/shared-model";
-import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
 
 export const serveStorybook = defineRoute(
   "get",
-  ":projectId/:buildSHA/*",
+  "_/:projectId/:buildSHA/*",
   {
     overridePath: ":projectId/:buildSHA/:filepath",
     requestParams: {

@@ -6,7 +6,7 @@ import { Table } from "#components/table";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#utils/url-builder";
+import { urlBuilder } from "#urls";
 
 export interface BuildsTableProps {
   caption?: JSX.Element;

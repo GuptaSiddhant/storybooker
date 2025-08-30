@@ -4,7 +4,7 @@ import { LinkButton } from "#components/button";
 import { ErrorMessage } from "#components/error-message";
 import { labelTypes, type LabelType } from "#labels/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#utils/url-builder";
+import { urlBuilder } from "#urls";
 
 export interface LabelFormProps {
   label: LabelType | undefined;

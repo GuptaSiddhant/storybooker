@@ -9,7 +9,7 @@ import {
 } from "#constants";
 import { ProjectSchema, type ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#utils/url-builder";
+import { urlBuilder } from "#urls";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;

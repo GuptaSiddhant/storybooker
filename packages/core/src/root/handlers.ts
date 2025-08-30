@@ -1,6 +1,6 @@
 import fs from "node:fs";
+import fsp from "node:fs/promises";
 import path from "node:path";
-import { Readable } from "node:stream";
 import {
   CACHE_CONTROL_PUBLIC_WEEK,
   CONTENT_TYPES,
@@ -41,12 +41,11 @@ export async function handleStaticFileRoute(
 
   logger.debug?.("Static file '%s' found.", staticFilepath);
 
-  const stream = fs.createReadStream(staticFilepath, {
-    autoClose: true,
+  const content = await fsp.readFile(staticFilepath, {
     encoding: "utf8",
   });
 
-  return new Response(Readable.toWeb(stream) as BodyInit, {
+  return new Response(content, {
     headers: {
       "Cache-Control": CACHE_CONTROL_PUBLIC_WEEK,
       "Content-Type": getMimeType(staticFilepath) || CONTENT_TYPES.OCTET,

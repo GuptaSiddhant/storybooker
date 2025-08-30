@@ -1,6 +1,7 @@
 import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { getStore } from "#store";
+import { URLS } from "#urls";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
@@ -14,7 +15,7 @@ import { renderRootPage } from "./render";
 export const root = defineRoute(
   "get",
   // oxlint-disable-next-line prefer-string-raw
-  "/",
+  URLS.ui.root,
   {
     responses: {
       ...commonErrorResponses,
@@ -53,7 +54,7 @@ export const root = defineRoute(
 
 export const health = defineRoute(
   "get",
-  "/health",
+  URLS.ui.health,
   {
     responses: { 200: { description: "Service is healthy." } },
     summary: "Health check",

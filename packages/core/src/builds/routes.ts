@@ -8,6 +8,7 @@ import {
 } from "#builds-ui/render";
 import { CONTENT_TYPES, QUERY_PARAMS } from "#constants";
 import { ProjectsModel } from "#projects/model";
+import { urlBuilder, URLS } from "#urls";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
@@ -24,7 +25,6 @@ import {
 } from "#utils/response";
 import { BuildSHASchema, ProjectIdSchema } from "#utils/shared-model";
 import { urlSearchParamsToObject } from "#utils/url";
-import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
 import { BuildsModel } from "./model";
 import {
@@ -42,7 +42,7 @@ const tag = "Builds";
 
 export const listBuilds = defineRoute(
   "get",
-  "/:projectId/builds",
+  URLS.builds.all,
   {
     requestParams: {
       path: z.object({ projectId: ProjectIdSchema }),
@@ -78,7 +78,7 @@ export const listBuilds = defineRoute(
 
 export const createBuild = defineRoute(
   "post",
-  "/:projectId/builds/create",
+  URLS.builds.create,
   {
     requestBody: {
       content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: BuildCreateSchema } },
@@ -136,7 +136,7 @@ export const createBuild = defineRoute(
 
 export const createBuildsForm = defineRoute(
   "get",
-  "/:projectId/builds/create",
+  URLS.builds.create,
   {
     responses: {
       ...commonErrorResponses,
@@ -165,7 +165,7 @@ export const createBuildsForm = defineRoute(
 
 export const getBuild = defineRoute(
   "get",
-  "/:projectId/builds/:buildSHA",
+  URLS.builds.id,
   {
     requestParams: {
       path: z.object({
@@ -204,7 +204,7 @@ export const getBuild = defineRoute(
 
 export const deleteBuild = defineRoute(
   "delete",
-  "/:projectId/builds/:buildSHA",
+  URLS.builds.id,
   {
     requestParams: {
       path: z.object({
@@ -241,7 +241,7 @@ export const deleteBuild = defineRoute(
 
 export const uploadBuild = defineRoute(
   "post",
-  "/:projectId/builds/:buildSHA/upload",
+  URLS.builds.upload,
   {
     description: "Upload build files in a compressed zip",
     requestBody: {
@@ -332,7 +332,7 @@ export const uploadBuild = defineRoute(
 
 export const uploadBuildForm = defineRoute(
   "get",
-  "/:projectId/builds/:buildSHA/upload",
+  URLS.builds.upload,
   {
     requestParams: {
       path: z.object({

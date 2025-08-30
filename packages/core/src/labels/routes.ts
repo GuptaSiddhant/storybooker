@@ -9,6 +9,7 @@ import {
   renderLabelUpdatePage,
 } from "#labels-ui/render";
 import { ProjectsModel } from "#projects/model";
+import { urlBuilder, URLS } from "#urls";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
@@ -24,7 +25,6 @@ import {
 } from "#utils/response";
 import { LabelSlugSchema, ProjectIdSchema } from "#utils/shared-model";
 import { urlSearchParamsToObject } from "#utils/url";
-import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
 import { LabelsModel } from "./model";
 import {
@@ -40,7 +40,7 @@ const tag = "Labels";
 
 export const listLabels = defineRoute(
   "get",
-  "/:projectId/labels",
+  URLS.labels.all,
   {
     requestParams: {
       path: z.object({ projectId: ProjectIdSchema }),
@@ -77,7 +77,7 @@ export const listLabels = defineRoute(
 
 export const createLabel = defineRoute(
   "post",
-  "/:projectId/labels/create",
+  URLS.labels.create,
   {
     requestBody: {
       content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: LabelCreateSchema } },
@@ -132,7 +132,7 @@ export const createLabel = defineRoute(
 
 export const createLabelForm = defineRoute(
   "get",
-  "/:projectId/labels/create",
+  URLS.labels.create,
   {
     responses: {
       ...commonErrorResponses,
@@ -158,7 +158,7 @@ export const createLabelForm = defineRoute(
 
 export const getLabel = defineRoute(
   "get",
-  "/:projectId/labels/:labelSlug",
+  URLS.labels.id,
   {
     requestParams: {
       path: z.object({
@@ -200,7 +200,7 @@ export const getLabel = defineRoute(
 
 export const deleteLabel = defineRoute(
   "delete",
-  "/:projectId/labels/:labelSlug",
+  URLS.labels.id,
   {
     requestParams: {
       path: z.object({
@@ -237,7 +237,7 @@ export const deleteLabel = defineRoute(
 
 export const updateLabel = defineRoute(
   "post",
-  "/:projectId/labels/:labelSlug/update",
+  URLS.labels.update,
   {
     requestBody: {
       content: {
@@ -290,7 +290,7 @@ export const updateLabel = defineRoute(
 
 export const updateLabelForm = defineRoute(
   "get",
-  "/:projectId/labels/:labelSlug/update",
+  URLS.labels.update,
   {
     responses: {
       ...commonErrorResponses,

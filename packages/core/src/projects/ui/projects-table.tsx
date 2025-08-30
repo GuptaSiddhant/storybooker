@@ -5,7 +5,7 @@ import { Table } from "#components/table";
 import { DEFAULT_GITHUB_BRANCH } from "#constants";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#utils/url-builder";
+import { urlBuilder } from "#urls";
 
 export interface ProjectsTableProps {
   caption?: JSX.Element;

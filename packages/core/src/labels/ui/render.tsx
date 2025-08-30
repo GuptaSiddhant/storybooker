@@ -6,7 +6,7 @@ import { RawDataPreview } from "#components/raw-data";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#utils/url-builder";
+import { urlBuilder } from "#urls";
 import { LabelForm } from "./label-form";
 import { LabelsTable } from "./labels-table";
 

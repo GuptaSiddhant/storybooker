@@ -37,11 +37,11 @@ export type RequestHandler = (request: Request) => Promise<Response>;
 const router = new OpenApiRouter();
 router.register(rootRoutes.root);
 router.register(rootRoutes.health);
-router.registerGroup("openapi", openapiRoutes);
-router.registerGroup("_", serveRoutes);
-router.registerGroup("projects", projectsRoutes);
-router.registerGroup("projects", labelsRoutes);
-router.registerGroup("projects", buildsRoutes);
+router.registerGroup(openapiRoutes);
+router.registerGroup(serveRoutes);
+router.registerGroup(projectsRoutes);
+router.registerGroup(labelsRoutes);
+router.registerGroup(buildsRoutes);
 
 const DEFAULT_CHECK_PERMISSIONS: CheckPermissionsCallback = () => true;
 
@@ -82,6 +82,9 @@ async function requestHandler(
       handleStaticFileRoute(context.staticDirs),
     );
   } catch (error) {
-    return new Response(parseErrorMessage(error).errorMessage, { status: 500 });
+    const { errorMessage } = localStore.run(store, () =>
+      parseErrorMessage(error),
+    );
+    return new Response(errorMessage, { status: 500 });
   }
 }

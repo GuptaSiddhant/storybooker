@@ -1,6 +1,7 @@
 import { BuildsModel } from "#builds/model";
 import { CONTENT_TYPES } from "#constants";
 import { LabelsModel } from "#labels/model";
+import { urlBuilder, URLS } from "#urls";
 import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
@@ -16,7 +17,6 @@ import {
 } from "#utils/response";
 import { ProjectIdSchema } from "#utils/shared-model";
 import { urlSearchParamsToObject } from "#utils/url";
-import { urlBuilder } from "#utils/url-builder";
 import z from "zod";
 import { ProjectsModel } from "./model";
 import {
@@ -38,7 +38,7 @@ const tag = "Projects";
 
 export const listProjects = defineRoute(
   "get",
-  "/",
+  URLS.projects.all,
   {
     responses: {
       ...commonErrorResponses,
@@ -70,7 +70,7 @@ export const listProjects = defineRoute(
 
 export const createProject = defineRoute(
   "post",
-  "/create",
+  URLS.projects.create,
   {
     requestBody: {
       content: {
@@ -121,7 +121,7 @@ export const createProject = defineRoute(
 
 export const createProjectForm = defineRoute(
   "get",
-  "/create",
+  URLS.projects.create,
   {
     responses: {
       ...commonErrorResponses,
@@ -146,7 +146,7 @@ export const createProjectForm = defineRoute(
 
 export const getProject = defineRoute(
   "get",
-  "/:projectId",
+  URLS.projects.id,
   {
     requestParams: {
       path: z.object({ projectId: ProjectIdSchema }),
@@ -188,7 +188,7 @@ export const getProject = defineRoute(
 
 export const deleteProject = defineRoute(
   "delete",
-  "/:projectId",
+  URLS.projects.id,
   {
     requestParams: {
       path: z.object({ projectId: ProjectIdSchema }),
@@ -217,7 +217,7 @@ export const deleteProject = defineRoute(
 
 export const updateProject = defineRoute(
   "post",
-  "/:projectId/update",
+  URLS.projects.update,
   {
     requestBody: {
       content: {
@@ -267,7 +267,7 @@ export const updateProject = defineRoute(
 
 export const updateProjectForm = defineRoute(
   "get",
-  "/:projectId/update",
+  URLS.projects.update,
   {
     responses: {
       ...commonErrorResponses,

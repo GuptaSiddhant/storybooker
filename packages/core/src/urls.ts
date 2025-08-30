@@ -1,46 +1,75 @@
 // oxlint-disable sort-keys
 
+import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
 import type { BuildUploadVariant } from "#builds/schema";
-import { QUERY_PARAMS } from "./constants";
-import { getStore } from "./store";
-import { urlJoin } from "./url";
+import { QUERY_PARAMS } from "#utils/constants";
+import { getStore } from "#utils/store";
+import { urlJoin } from "#utils/url";
+
+export const URLS = {
+  ui: {
+    root: "",
+    openapi: "openapi",
+    health: "health",
+    catchAll: "*filepath",
+  },
+  projects: {
+    all: "projects",
+    create: "projects/create",
+    id: "projects/:projectId",
+    update: "projects/:projectId/update",
+  },
+  builds: {
+    all: "projects/:projectId/builds",
+    create: "projects/:projectId/builds/create",
+    id: "projects/:projectId/builds/:buildSHA",
+    upload: "projects/:projectId/builds/:buildSHA/upload",
+  },
+  labels: {
+    all: "projects/:projectId/labels",
+    create: "projects/:projectId/labels/create",
+    id: "projects/:projectId/labels/:labelSlug",
+    update: "projects/:projectId/labels/:labelSlug/update",
+  },
+  serve: {
+    storybook: "_/:projectId/:buildSHA/storybook/*filepath",
+    coverage: "_/:projectId/:buildSHA/coverage/*filepath",
+    testReport: "_/:projectId/:buildSHA/testReport/*filepath",
+  },
+} as const;
+
+const baseHref = createHrefBuilder();
+export function href<Pattern extends string>(
+  ...buildParams: Parameters<HrefBuilder<Pattern>>
+): string {
+  const { prefix, url: base } = getStore();
+  const path = baseHref(...buildParams);
+  return new URL(urlJoin(prefix, path), base).toString();
+}
 
 /**
  * URL builder for the Storybooks router.
  * @private
  */
 export const urlBuilder = {
-  root: (...pathnames: string[]): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, ...pathnames), request.url);
-    return url.toString();
+  root: (): string => {
+    return href(URLS.ui.root);
   },
   staticFile: (filepath: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, filepath), request.url);
-    return url.toString();
+    return href(URLS.ui.catchAll, { filepath });
   },
   allProjects: (): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, "projects"), request.url);
-    return url.toString();
+    return href(URLS.projects.all);
   },
   projectCreate: (): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, "projects", "create"), request.url);
-    return url.toString();
+    return href(URLS.projects.create);
   },
   projectId: (projectId: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(urlJoin(prefix, "projects", projectId), request.url);
+    const url = href(URLS.projects.id, { projectId });
     return url.toString();
   },
   projectIdUpdate: (projectId: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "update"),
-      request.url,
-    );
+    const url = href(URLS.projects.update, { projectId });
     return url.toString();
   },
   allBuilds: (projectId: string): string => {

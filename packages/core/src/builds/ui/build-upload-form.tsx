@@ -9,8 +9,8 @@ import {
 import { LinkButton } from "#components/button";
 import { ErrorMessage } from "#components/error-message";
 import { getStore } from "#store";
+import { urlBuilder } from "#urls";
 import { CONTENT_TYPES } from "#utils/constants";
-import { urlBuilder } from "#utils/url-builder";
 
 export interface BuildUploadFormProps {
   build: BuildType;

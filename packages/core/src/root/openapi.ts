@@ -1,4 +1,5 @@
 import { getStore } from "#store";
+import { URLS } from "#urls";
 import { defineRoute, OpenApiRouter } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
@@ -8,7 +9,7 @@ import { createDocument } from "zod-openapi";
 
 export const openapi = defineRoute(
   "get",
-  "/",
+  URLS.ui.openapi,
   {
     responses: {
       200: {
