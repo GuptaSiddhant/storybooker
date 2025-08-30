@@ -1,5 +1,5 @@
-import type { RouterContext } from "../packages/router/dist/index.d.ts";
-import { router } from "../packages/router/dist/index.js";
+import type { RouterContext } from "../packages/core/dist/index.d.ts";
+import { router } from "../packages/core/dist/index.js";
 import { FileDatabase } from "./database.ts";
 import { LocalStorage } from "./storage.ts";
 

@@ -57,7 +57,7 @@
   "scripts": {
     "build": "tsdown",
     "check": "tsgo --noEmit",
-    "dev": "tsdown -w ./src -w ../router/src",
+    "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
@@ -68,7 +68,7 @@
     "@azure/data-tables": "^13.0.0",
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
-    "@storybooker/router": "workspace:^",
+    "@storybooker/core": "workspace:^",
     "zod": "^4.0.0"
   },
   "devDependencies": {

@@ -1,8 +1,8 @@
 {
-  "name": "@storybooker/router",
+  "name": "@storybooker/core",
   "version": "0.0.0",
   "type": "module",
-  "description": "Storybooker platform agnostic router.",
+  "description": "Storybooker platform agnostic router core.",
   "author": {
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/guptasiddhant/storybooker",
-    "directory": "packages/router"
+    "directory": "packages/core"
   },
   "license": "MIT",
   "sideEffects": false,
