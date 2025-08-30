@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { BlobServiceClient, type BlobClient } from "@azure/storage-blob";
-import type { StorageService } from "@storybooker/router";
+import type { StorageService } from "@storybooker/core";
 
-export class AzureStorage implements StorageService {
+export class AzureBlobStorageService implements StorageService {
   #client: BlobServiceClient;
 
   constructor(connectionString: string) {

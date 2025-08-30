@@ -1,0 +1,88 @@
+{
+  "name": "@storybooker/azure-functions",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Utils to upload and manage Storybooks via Azure Functions and storage.",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guptasiddhant/storybooker",
+    "directory": "packages/azure-functions"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guptasiddhant/storybooker/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "keywords": [
+    "azure",
+    "functions",
+    "azure-functions",
+    "storybook",
+    "storybooks",
+    "storybooker",
+    "chromatic",
+    "storage",
+    "blob",
+    "upload",
+    "table",
+    "compress",
+    "builds",
+    "labels",
+    "projects"
+  ],
+  "sideEffects": false,
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "default": "./dist/index.js"
+    }
+  },
+  "main": "./start.js",
+  "scripts": {
+    "build": "tsdown",
+    "check": "tsgo --noEmit",
+    "dev": "tsdown -w ./src",
+    "fmt": "prettier src --write --config ../../.prettierrc",
+    "lint": "oxlint --type-aware ./src",
+    "lint:fix": "yarn lint --fix",
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0",
+    "@storybooker/core": "workspace:^",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20250823.8",
+    "glob": "^10.0.0",
+    "oxlint": "^1.12.0",
+    "oxlint-tsgolint": "^0.0.4",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.14.1"
+  },
+  "peerDependencies": {
+    "@storybooker/adapter-azure": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@storybooker/adapter-azure": {
+      "optional": true
+    }
+  }
+}

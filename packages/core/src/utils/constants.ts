@@ -5,6 +5,7 @@ export const DEFAULT_PURGE_AFTER_DAYS = 30;
 export const DEFAULT_GITHUB_BRANCH = "main";
 export const ONE_DAY_IN_MS: number = 24 * 60 * 60 * 1000;
 export const DEFAULT_LOCALE = "en";
+export const DEFAULT_STATIC_DIRS = ["./public"];
 
 export const CONTENT_TYPES = {
   ANY: "*/*",
@@ -22,6 +23,8 @@ export const QUERY_PARAMS = {
   newResource: "new",
 };
 export const HEADERS = {
+  accept: "Accept",
+  acceptLanguage: "Accept-Language",
   cacheControl: "Cache-Control",
   contentLength: "Content-Length",
   contentType: "Content-Type",

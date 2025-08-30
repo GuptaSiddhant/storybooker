@@ -669,13 +669,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybooker/azure@workspace:packages/azure":
+"@storybooker/adapter-azure@workspace:packages/adapter-azure":
   version: 0.0.0-use.local
-  resolution: "@storybooker/azure@workspace:packages/azure"
+  resolution: "@storybooker/adapter-azure@workspace:packages/adapter-azure"
   dependencies:
     "@azure/data-tables": "npm:^13.0.0"
-    "@azure/functions": "npm:^4.0.0"
     "@azure/storage-blob": "npm:^12.0.0"
+    "@storybooker/core": "workspace:^"
+    "@types/node": "npm:^22.0.0"
+    "@typescript/native-preview": "npm:^7.0.0-dev.20250823.8"
+    oxlint: "npm:^1.12.0"
+    oxlint-tsgolint: "npm:^0.0.4"
+    prettier: "npm:^3.6.2"
+    tsdown: "npm:^0.14.1"
+  languageName: unknown
+  linkType: soft
+
+"@storybooker/azure-functions@workspace:packages/azure-functions":
+  version: 0.0.0-use.local
+  resolution: "@storybooker/azure-functions@workspace:packages/azure-functions"
+  dependencies:
+    "@azure/functions": "npm:^4.0.0"
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20250823.8"
@@ -685,6 +699,11 @@ __metadata:
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
     zod: "npm:^4.0.0"
+  peerDependencies:
+    "@storybooker/adapter-azure": "workspace:^"
+  peerDependenciesMeta:
+    "@storybooker/adapter-azure":
+      optional: true
   languageName: unknown
   linkType: soft
 

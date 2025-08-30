@@ -7,7 +7,7 @@
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
-} from "../packages/router/dist/index.d.ts";
+} from "../packages/core/dist/index.d.ts";
 
 const filename = "server/db.json";
 

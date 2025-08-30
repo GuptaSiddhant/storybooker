@@ -5,10 +5,6 @@ import { LocalStorage } from "./storage.ts";
 
 const context: RouterContext = {
   database: new FileDatabase(),
-  headless: false,
-  logger: console,
-  prefix: "",
-  staticDirs: ["./public"],
   storage: new LocalStorage(),
 };
 

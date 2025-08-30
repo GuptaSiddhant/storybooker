@@ -3,21 +3,19 @@ import type { CustomErrorParser } from "#utils/error";
 import type {
   CheckPermissionsCallback,
   DatabaseService,
-  Logger,
+  LoggerService,
   OpenAPIOptions,
   StorageService,
 } from "../types";
 
 export interface Store {
   prefix: string;
-  staticDirs?: readonly string[];
   openAPI?: OpenAPIOptions | undefined | null;
   checkPermissions: CheckPermissionsCallback;
   customErrorParser: CustomErrorParser | undefined;
-  accept?: string;
-  locale?: string;
+  locale: string;
   request: Request;
-  logger: Logger;
+  logger: LoggerService;
   headless: boolean;
   database: DatabaseService;
   storage: StorageService;

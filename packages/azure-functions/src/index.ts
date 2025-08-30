@@ -12,18 +12,14 @@ import {
   urlJoin,
   type CheckPermissionsCallback,
   type DatabaseService,
+  type LoggerService,
   type OpenAPIOptions,
   type StorageService,
 } from "@storybooker/core";
 import type { BodyInit } from "undici";
-import { AzureTables } from "./database";
 import { parseAzureRestError } from "./error-parser";
-import { AzureFunctionLogger } from "./logger";
-import { AzureStorage } from "./storage";
 
-const DEFAULT_STORAGE_CONN_STR_ENV_VAR = "AzureWebJobsStorage";
 // const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
-const DEFAULT_STATIC_DIRS = ["./public"] as const;
 
 export type {
   CheckPermissionsCallback,
@@ -60,13 +56,6 @@ export interface RegisterStorybookerRouterOptions {
   route?: string;
 
   /**
-   * Name of the Environment variable which stores
-   * the connection string to the Azure Storage resource.
-   * @default 'AzureWebJobsStorage'
-   */
-  storageConnectionStringEnvVar?: string;
-
-  /**
    * Modify the cron-schedule of timer function
    * which purge outdated storybooks.
    *
@@ -86,7 +75,7 @@ export interface RegisterStorybookerRouterOptions {
    * Directories to serve static files from relative to project root (package.json)
    * @default './public'
    */
-  staticDirs?: string[];
+  readonly staticDirs?: string[];
 
   /**
    * Callback function to check permissions. The function receives following params
@@ -99,29 +88,44 @@ export interface RegisterStorybookerRouterOptions {
    * - `HttpResponse` - returns the specified HTTP response
    */
   checkPermissions?: CheckPermissionsCallback;
+
+  /**
+   * Provide an adapter for a supported Database service, like Azure DataTables or CosmosDB.
+   */
+  database: DatabaseService;
+  /**
+   * Provide an adapter for a supported Storage service, like Azure BlobStorage.
+   */
+  storage: StorageService;
+
+  /**
+   * Provide an adapter for a logging service to override the default.
+   */
+  logger?: LoggerService;
 }
 
 export function registerStoryBookerRouter(
-  options: RegisterStorybookerRouterOptions = {},
+  options: RegisterStorybookerRouterOptions,
 ): void {
   const route = options.route || "";
   // oxlint-disable-next-line no-console
   console.log("Registering Storybooker Router (route: %s)", route || "/");
 
-  const { storageConnectionString } = validateRegisterOptions(options);
-
   app.setup({ enableHttpStream: true });
+
+  const handlerOptions: ServiceHandlerOptions = {
+    baseRoute: route,
+    checkPermissions: options.checkPermissions,
+    database: options.database,
+    headless: options.headless,
+    logger: options.logger,
+    staticDirs: options.staticDirs,
+    storage: options.storage,
+  };
 
   app.http(SERVICE_NAME, {
     authLevel: options.authLevel,
-    handler: serviceHandler.bind(null, {
-      baseRoute: route,
-      checkPermissions: options.checkPermissions,
-      database: new AzureTables(storageConnectionString),
-      headless: options.headless,
-      staticDirs: options.staticDirs || DEFAULT_STATIC_DIRS,
-      storage: new AzureStorage(storageConnectionString),
-    }),
+    handler: serviceHandler.bind(null, handlerOptions),
     methods: [
       "DELETE",
       "GET",
@@ -144,41 +148,27 @@ export function registerStoryBookerRouter(
   // }
 }
 
-function validateRegisterOptions(options: RegisterStorybookerRouterOptions): {
-  storageConnectionString: string;
-} {
-  const storageConnectionStringEnvVar =
-    options.storageConnectionStringEnvVar || DEFAULT_STORAGE_CONN_STR_ENV_VAR;
-  const storageConnectionString = process.env[storageConnectionStringEnvVar];
-  if (!storageConnectionString) {
-    throw new Error(
-      `Missing env-var '${storageConnectionStringEnvVar}' value.
-It is required to connect with Azure Storage resource.`,
-    );
-  }
-
-  return { storageConnectionString };
+interface ServiceHandlerOptions {
+  baseRoute: string;
+  checkPermissions?: CheckPermissionsCallback;
+  headless?: boolean;
+  logger?: LoggerService;
+  staticDirs: readonly string[] | undefined;
+  database: DatabaseService;
+  storage: StorageService;
 }
 
 async function serviceHandler(
-  options: {
-    baseRoute: string;
-    checkPermissions?: CheckPermissionsCallback;
-    headless?: boolean;
-    staticDirs: readonly string[];
-    database: DatabaseService;
-    storage: StorageService;
-  },
+  options: ServiceHandlerOptions,
   httpRequest: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
-  const logger = new AzureFunctionLogger(context);
   const requestHandler = createRequestHandler({
     checkPermissions: options.checkPermissions,
     customErrorParser: parseAzureRestError,
     database: options.database,
     headless: options.headless,
-    logger,
+    logger: options.logger || context,
     prefix: generatePrefixFromBaseRoute(options.baseRoute) || "/",
     staticDirs: options.staticDirs,
     storage: options.storage,
@@ -203,7 +193,7 @@ async function serviceHandler(
     };
   } catch (error) {
     const { errorMessage, errorType } = parseErrorMessage(error);
-    logger.error(errorType, errorMessage);
+    context.error(errorType, errorMessage);
     return {
       body: errorMessage,
       headers: { "Content-Type": "text/plain" },

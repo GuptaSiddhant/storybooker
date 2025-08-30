@@ -1,10 +1,9 @@
 // oxlint-disable no-undef
-// deno-lint-ignore-file require-await
 // oxlint-disable explicit-module-boundary-types
 // oxlint-disable explicit-function-return-type
 // oxlint-disable require-await
 
-import type { StorageService } from "../packages/router/dist/index.d.ts";
+import type { StorageService } from "../packages/core/dist/index.d.ts";
 
 const prefix = [".", "server", "files"];
 function genPath(...pathParts: string[]): string {

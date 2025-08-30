@@ -1,5 +1,5 @@
 import type { RestError } from "@azure/core-rest-pipeline";
-import type { ParsedError } from "@storybooker/router";
+import type { ParsedError } from "@storybooker/core";
 
 export function parseAzureRestError(error: unknown): ParsedError | undefined {
   if (error instanceof Error && error.name === "RestError") {

@@ -1,12 +1,9 @@
 import type { Readable } from "node:stream";
 
-export interface Logger {
+export interface LoggerService {
   error: (...args: unknown[]) => void;
-  log: (...args: unknown[]) => void;
   debug?: (...args: unknown[]) => void;
-  info?: (...args: unknown[]) => void;
-  trace?: (...args: unknown[]) => void;
-  warn?: (...args: unknown[]) => void;
+  log: (...args: unknown[]) => void;
 }
 
 export interface DatabaseDocumentListOptions<Item extends { id: string }> {
@@ -98,7 +95,7 @@ export interface OpenAPIOptions {
  */
 export type CheckPermissionsCallback = (
   permissions: Permission[],
-  options: { request: Request; logger: Logger },
+  options: { request: Request; logger: LoggerService },
 ) => boolean | Response | Promise<boolean | Response>;
 
 /**  Type of permission to check */

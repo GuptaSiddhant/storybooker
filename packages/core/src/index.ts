@@ -1,4 +1,5 @@
 import * as buildsRoutes from "#builds/routes";
+import { DEFAULT_LOCALE, HEADERS } from "#constants";
 import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
 import { localStore, type Store } from "#store";
@@ -11,7 +12,7 @@ import * as serveRoutes from "./root/serve";
 import type {
   CheckPermissionsCallback,
   DatabaseService,
-  Logger,
+  LoggerService,
   StorageService,
 } from "./types";
 
@@ -22,10 +23,10 @@ export * from "#utils/url";
 
 export interface RouterContext {
   database: DatabaseService;
-  logger: Logger;
+  logger?: LoggerService;
   checkPermissions?: CheckPermissionsCallback;
   customErrorParser?: CustomErrorParser;
-  prefix: string;
+  prefix?: string;
   headless?: boolean;
   staticDirs?: readonly string[];
   storage: StorageService;
@@ -43,7 +44,6 @@ router.registerGroup("projects", labelsRoutes);
 router.registerGroup("projects", buildsRoutes);
 
 const DEFAULT_CHECK_PERMISSIONS: CheckPermissionsCallback = () => true;
-const DEFAULT_STATIC_DIRS = ["./public"];
 
 export function createRequestHandler(context: RouterContext): RequestHandler {
   return requestHandler.bind(null, context);
@@ -53,14 +53,22 @@ async function requestHandler(
   context: RouterContext,
   request: Request,
 ): Promise<Response> {
-  const { logger, prefix, staticDirs = DEFAULT_STATIC_DIRS } = context;
+  const { logger = console, prefix = "" } = context;
+
+  const locale =
+    request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
+    DEFAULT_LOCALE;
 
   const store: Store = {
     checkPermissions: DEFAULT_CHECK_PERMISSIONS,
     customErrorParser: undefined,
-    ...context,
+    database: context.database,
     headless: !!context.headless,
+    locale,
+    logger,
+    prefix,
     request,
+    storage: context.storage,
     url: request.url,
   };
 
@@ -70,11 +78,8 @@ async function requestHandler(
       return response;
     }
 
-    const { pathname } = new URL(request.url);
-    const filepath = pathname.replace(prefix, "");
-
     return await localStore.run(store, () =>
-      handleStaticFileRoute(filepath, staticDirs, logger),
+      handleStaticFileRoute(context.staticDirs),
     );
   } catch (error) {
     return new Response(parseErrorMessage(error).errorMessage, { status: 500 });

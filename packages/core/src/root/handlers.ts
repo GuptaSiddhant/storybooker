@@ -4,17 +4,20 @@ import { Readable } from "node:stream";
 import {
   CACHE_CONTROL_PUBLIC_WEEK,
   CONTENT_TYPES,
+  DEFAULT_STATIC_DIRS,
   SERVICE_NAME,
 } from "#constants";
+import { getStore } from "#store";
 import { authenticateOrThrow } from "#utils/auth";
 import { getMimeType } from "#utils/mime-utils";
-import type { Logger } from "../types";
 
 export async function handleStaticFileRoute(
-  filepath: string,
-  staticDirs: readonly string[],
-  logger: Logger,
+  staticDirs: readonly string[] = DEFAULT_STATIC_DIRS,
 ): Promise<Response> {
+  const { logger, prefix, url } = getStore();
+  const { pathname } = new URL(url);
+  const filepath = pathname.replace(prefix, "");
+
   await authenticateOrThrow([
     { action: "read", projectId: undefined, resource: "ui" },
   ]);

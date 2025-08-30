@@ -14,11 +14,11 @@
     "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
     "build": "turbo build",
     "check": "turbo check",
-    "deno": "deno serve -A --watch ./server/mod.ts",
     "dev": "turbo dev",
     "fmt": "turbo fmt",
-    "functions": "yarn workspace @storybooker/azure start",
+    "functions": "yarn workspace @storybooker/azure-functions start",
     "lint": "turbo lint",
+    "server": "deno serve -A --watch ./server/mod.ts",
     "verify": "turbo verify"
   },
   "devDependencies": {
