@@ -6,7 +6,7 @@ import type {
   LoggerService,
   OpenAPIOptions,
   StorageService,
-  User,
+  StoryBookerUser,
 } from "../types";
 
 export interface Store {
@@ -22,7 +22,7 @@ export interface Store {
   request: Request;
   headless: boolean;
   url: string;
-  user?: User;
+  user?: StoryBookerUser;
 }
 
 export const localStore = new AsyncLocalStorage<Store>();

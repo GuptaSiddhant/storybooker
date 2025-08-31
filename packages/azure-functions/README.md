@@ -12,6 +12,7 @@ Add following files to a Azure Functions project.
 import {
   AzureBlobStorageService,
   AzureDataTablesDatabaseService,
+  // AzureEasyAuthService
 } from "@storybooker/adapter-azure";
 import { registerStoryBookerRouter } from "@storybooker/azure-functions";
 
@@ -23,6 +24,7 @@ if (!storageConnectionString) {
 }
 
 registerStoryBookerRouter({
+  // auth: new AzureEasyAuthService(authorise) // optional auth adapter
   database: new AzureDataTablesDatabaseService(storageConnectionString),
   storage: new AzureBlobStorageService(storageConnectionString),
 });

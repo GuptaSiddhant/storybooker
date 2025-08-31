@@ -75,6 +75,6 @@ export const logout = defineRoute(
       return responseError("Auth is not setup", 404);
     }
 
-    return await auth.logout(user, request);
+    return await auth.logout(request, user);
   },
 );

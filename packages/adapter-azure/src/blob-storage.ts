@@ -149,23 +149,21 @@ export class AzureBlobStorageService implements StorageService {
   downloadFile = async (
     containerName: string,
     filepath: string,
-  ): Promise<Response> => {
+  ): Promise<ReadableStream> => {
     const containerClient = this.#client.getContainerClient(containerName);
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
 
     if (!(await blockBlobClient.exists())) {
-      return new Response(
+      throw new Error(
         `File '${filepath}' not found in container '${containerName}'.`,
-        { status: 404 },
       );
     }
 
     const downloadResponse = await blockBlobClient.download(0);
 
     if (!downloadResponse.readableStreamBody) {
-      return new Response(
+      throw new Error(
         `File '${filepath}' in container '${containerName}' is not downloadable.`,
-        { status: 415 },
       );
     }
 
@@ -180,8 +178,6 @@ export class AzureBlobStorageService implements StorageService {
       headers.set("Content-Encoding", downloadResponse.contentEncoding);
     }
 
-    const stream =
-      downloadResponse.readableStreamBody as unknown as ReadableStream;
-    return new Response(stream, { headers, status: 200 });
+    return downloadResponse.readableStreamBody as unknown as ReadableStream;
   };
 }

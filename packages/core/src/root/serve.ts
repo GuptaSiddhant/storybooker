@@ -5,6 +5,7 @@ import { getStore } from "#store";
 import { urlBuilder } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import { getMimeType } from "#utils/mime-utils";
+import { responseError } from "#utils/response";
 import { generateProjectContainerName } from "#utils/shared-model";
 import z from "zod";
 
@@ -33,31 +34,35 @@ export const serveStorybook = defineRoute(
     const containerFilepath = path.posix.join(buildSHA, filepath);
     await authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
-    const result = await storage.downloadFile(
-      generateProjectContainerName(projectId),
-      containerFilepath,
-    );
+    try {
+      const result = await storage.downloadFile(
+        generateProjectContainerName(projectId),
+        containerFilepath,
+      );
 
-    const headers = new Headers();
-    headers.set(HEADERS.contentType, getMimeType(filepath));
-    headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
+      const headers = new Headers();
+      headers.set(HEADERS.contentType, getMimeType(filepath));
+      headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
 
-    if (!filepath.endsWith("index.html")) {
-      return new Response(result, { headers, status: 200 });
-    }
+      if (!filepath.endsWith("index.html")) {
+        return new Response(result, { headers, status: 200 });
+      }
 
-    // Appending custom UI to index.html
-    const content =
-      typeof result === "string" ? result : await new Response(result).text();
-    const bodyWithBackButton = content.replace(
-      `</body>`,
-      `
-      <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
+      // Appending custom UI to index.html
+      const content =
+        typeof result === "string" ? result : await new Response(result).text();
+      const bodyWithBackButton = content.replace(
+        `</body>`,
+        `
+        <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
         style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
         ← ${SERVICE_NAME}
-      </a></div></body>`,
-    );
+        </a></div></body>`,
+      );
 
-    return new Response(bodyWithBackButton, { headers, status: 200 });
+      return new Response(bodyWithBackButton, { headers, status: 200 });
+    } catch (error) {
+      return responseError(error, 404);
+    }
   },
 );

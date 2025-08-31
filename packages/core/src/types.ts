@@ -110,7 +110,9 @@ export interface OpenAPIOptions {
  * The service is responsible to authorise users from
  * accessing the app.
  */
-export interface AuthService<AuthUser extends User = User> {
+export interface AuthService<
+  AuthUser extends StoryBookerUser = StoryBookerUser,
+> {
   /**
    * This callback is called before every protected route and determines if user
    * has access to the route. It receives a permission object.
@@ -119,7 +121,7 @@ export interface AuthService<AuthUser extends User = User> {
    * - Respond with `false` to block user.
    * - Resposd with `Response` to return custom response
    */
-  authorise: AuthServiceAuthorize<AuthUser>;
+  authorise: AuthServiceAuthorise<AuthUser>;
   /**
    * Get details about the user based on incoming request.
    *
@@ -129,7 +131,7 @@ export interface AuthService<AuthUser extends User = User> {
   /**
    * Give user to logout from UI. The returning response should clear auth session.
    */
-  logout?: (user: AuthUser, request: Request) => Promise<Response>;
+  logout?: (request: Request, user: AuthUser) => Promise<Response>;
 }
 
 /**
@@ -139,7 +141,7 @@ export interface AuthService<AuthUser extends User = User> {
  * - false - returns 403 response
  * - Response - returns the specified HTTP response
  */
-export type AuthServiceAuthorize<AuthUser extends User> = (
+export type AuthServiceAuthorise<AuthUser extends StoryBookerUser> = (
   permission: Permission,
   options: { request: Request; user: AuthUser },
 ) => Promise<boolean | Response>;
@@ -162,7 +164,7 @@ export type PermissionResource =
 /** Type of possible actions to check permissions for */
 export type PermissionAction = "create" | "read" | "update" | "delete";
 
-export interface User {
+export interface StoryBookerUser {
   id: string;
   displayName: string;
   imageUrl?: string;
