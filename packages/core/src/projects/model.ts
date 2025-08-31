@@ -106,16 +106,18 @@ export class ProjectsModel extends Model<ProjectType> {
     });
 
     if (project.gitHubDefaultBranch) {
-      this.debug(
-        "Create default-branch label '%s'...",
-        project.gitHubDefaultBranch,
-      );
-      await new LabelsModel(id)
-        .create({
+      try {
+        this.debug(
+          "Create default-branch label '%s'...",
+          project.gitHubDefaultBranch,
+        );
+        await new LabelsModel(id).create({
           type: "branch",
           value: project.gitHubDefaultBranch,
-        })
-        .catch(this.error);
+        });
+      } catch (error) {
+        this.error(error);
+      }
     }
 
     return;

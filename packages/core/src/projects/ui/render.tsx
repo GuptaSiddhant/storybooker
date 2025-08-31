@@ -70,7 +70,7 @@ export function renderProjectDetailsPage({
       <>
         <LabelsTable
           labels={recentLabels}
-          projectId={project.id}
+          project={project}
           caption={"Recent labels"}
           toolbar={<a href={urlBuilder.allLabels(project.id)}>View all</a>}
         />

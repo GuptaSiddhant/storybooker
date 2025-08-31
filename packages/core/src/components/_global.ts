@@ -86,8 +86,12 @@ export function globalStyleSheet(): string {
 
     #app > aside {
       grid-area: aside;
-      width: 200px;      
+      width: 200px;   
       padding: 1rem;
+    }
+    #app > #user {
+      grid-area: user;
+      width: 200px;      
     }
 
     @media screen and (max-width: 600px) {

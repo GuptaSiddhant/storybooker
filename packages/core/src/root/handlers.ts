@@ -18,9 +18,11 @@ export async function handleStaticFileRoute(
   const { pathname } = new URL(url);
   const filepath = pathname.replace(prefix, "");
 
-  await authenticateOrThrow([
-    { action: "read", projectId: undefined, resource: "ui" },
-  ]);
+  await authenticateOrThrow({
+    action: "read",
+    projectId: undefined,
+    resource: "ui",
+  });
 
   const staticFilepaths = staticDirs.map((dir) =>
     path.join(path.relative(process.cwd(), dir), filepath),

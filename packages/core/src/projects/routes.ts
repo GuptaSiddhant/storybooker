@@ -1,3 +1,5 @@
+// oxlint-disable max-lines
+
 import { BuildsModel } from "#builds/model";
 import { CONTENT_TYPES } from "#constants";
 import { LabelsModel } from "#labels/model";
@@ -54,9 +56,11 @@ export const listProjects = defineRoute(
     tags: [tag],
   },
   async () => {
-    await authenticateOrThrow([
-      { action: "read", projectId: undefined, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "read",
+      projectId: undefined,
+      resource: "project",
+    });
     const projects = await new ProjectsModel().list();
 
     if (checkIsHTMLRequest()) {
@@ -97,9 +101,11 @@ export const createProject = defineRoute(
     tags: [tag],
   },
   async ({ request }) => {
-    await authenticateOrThrow([
-      { action: "create", projectId: undefined, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "create",
+      projectId: undefined,
+      resource: "project",
+    });
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
@@ -136,9 +142,11 @@ export const createProjectForm = defineRoute(
     tags: [tag],
   },
   async () => {
-    await authenticateOrThrow([
-      { action: "create", projectId: undefined, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "create",
+      projectId: undefined,
+      resource: "project",
+    });
 
     return responseHTML(renderProjectCreatePage());
   },
@@ -166,9 +174,11 @@ export const getProject = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([
-      { action: "read", projectId, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "read",
+      projectId,
+      resource: "project",
+    });
 
     const project = await new ProjectsModel().get(projectId);
 
@@ -202,9 +212,11 @@ export const deleteProject = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([
-      { action: "delete", projectId, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "delete",
+      projectId,
+      resource: "project",
+    });
     await new ProjectsModel().delete(projectId);
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
@@ -243,9 +255,11 @@ export const updateProject = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId }, request }) => {
-    await authenticateOrThrow([
-      { action: "update", projectId, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "update",
+      projectId,
+      resource: "project",
+    });
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
@@ -282,9 +296,11 @@ export const updateProjectForm = defineRoute(
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
-    await authenticateOrThrow([
-      { action: "update", projectId: undefined, resource: "project" },
-    ]);
+    await authenticateOrThrow({
+      action: "update",
+      projectId: undefined,
+      resource: "project",
+    });
 
     const project = await new ProjectsModel().get(projectId);
 

@@ -30,6 +30,8 @@ export const ProjectSchema = z
 
     id: ProjectIdSchema,
 
+    jiraDomain: z.url().optional(),
+
     latestBuildSHA: z.union([BuildSHASchema.optional(), z.literal("")]),
 
     name: z.string().meta({ description: "Name of the project." }),
@@ -57,9 +59,12 @@ export const ProjectCreateSchema = ProjectSchema.omit({
 export type ProjectUpdateType = z.infer<typeof ProjectUpdateSchema>;
 export const ProjectUpdateSchema = ProjectSchema.omit({
   createdAt: true,
+  gitHubDefaultBranch: true,
   id: true,
   updatedAt: true,
-}).partial();
+})
+  .extend({ gitHubDefaultBranch: z.string() })
+  .partial();
 
 export type ProjectsListResultType = z.infer<typeof ProjectsListResultSchema>;
 export const ProjectsListResultSchema = z.object({

@@ -10,9 +10,10 @@ import * as rootRoutes from "./root/routes";
 import * as serveRoutes from "./root/serve";
 import { Router } from "./router";
 import type {
-  CheckPermissionsCallback,
+  AuthService,
   DatabaseService,
   LoggerService,
+  OpenAPIOptions,
   StorageService,
 } from "./types";
 
@@ -21,12 +22,13 @@ export * from "#constants";
 export * from "#utils/error";
 export * from "#utils/url";
 
-export interface RouterContext {
+export interface RequestHandlerOptions {
+  auth?: AuthService;
   database: DatabaseService;
   logger?: LoggerService;
-  checkPermissions?: CheckPermissionsCallback;
   customErrorParser?: CustomErrorParser;
   prefix?: string;
+  openAPI?: OpenAPIOptions;
   headless?: boolean;
   staticDirs?: readonly string[];
   storage: StorageService;
@@ -42,36 +44,46 @@ router.registerGroup(projectsRoutes);
 router.registerGroup(labelsRoutes);
 router.registerGroup(buildsRoutes);
 
-const DEFAULT_CHECK_PERMISSIONS: CheckPermissionsCallback = () => true;
-
-export function createRequestHandler(context: RouterContext): RequestHandler {
+export function createRequestHandler(
+  options: RequestHandlerOptions,
+): RequestHandler {
   return async function requestHandler(request: Request): Promise<Response> {
-    const locale =
-      request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
-      DEFAULT_LOCALE;
-
-    localStore.enterWith({
-      checkPermissions: context.checkPermissions || DEFAULT_CHECK_PERMISSIONS,
-      customErrorParser: context.customErrorParser,
-      database: context.database,
-      headless: !!context.headless,
-      locale,
-      logger: context.logger || console,
-      prefix: context.prefix || "",
-      request,
-      storage: context.storage,
-      url: request.url,
-    });
-
     try {
+      const locale =
+        request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
+        DEFAULT_LOCALE;
+      const user = await options.auth?.getUserDetails(request);
+
+      localStore.enterWith({
+        auth: options.auth,
+        customErrorParser: options.customErrorParser,
+        database: options.database,
+        headless: !!options.headless,
+        locale,
+        logger: options.logger || console,
+        openAPI: options.openAPI,
+        prefix: options.prefix || "",
+        request,
+        storage: options.storage,
+        url: request.url,
+        user,
+      });
+
       const response = await router.handleRequest();
       if (response) {
         return response;
       }
 
-      return await handleStaticFileRoute(context.staticDirs);
+      return await handleStaticFileRoute(options.staticDirs);
     } catch (error) {
-      const { errorMessage } = parseErrorMessage(error);
+      if (error instanceof Response) {
+        return error;
+      }
+
+      const { errorMessage } = parseErrorMessage(
+        error,
+        options.customErrorParser,
+      );
       return new Response(errorMessage, { status: 500 });
     }
   };

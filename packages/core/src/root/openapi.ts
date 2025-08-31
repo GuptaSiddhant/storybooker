@@ -29,9 +29,11 @@ export const openapi = defineRoute(
   },
   async () => {
     const { prefix, request, openAPI } = getStore();
-    await authenticateOrThrow([
-      { action: "read", projectId: undefined, resource: "openapi" },
-    ]);
+    await authenticateOrThrow({
+      action: "read",
+      projectId: undefined,
+      resource: "openapi",
+    });
 
     const openAPISpec = createDocument({
       components: {},

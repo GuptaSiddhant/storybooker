@@ -78,7 +78,9 @@ export class FileDatabase implements DatabaseService {
       throw new Error(`No collection - ${name}`);
     }
     if (this.#db[name][item.id]) {
-      throw new Error(`Item ${item.id} already exists in collection '${name}'`);
+      throw new Error(
+        `Item '${item.id}' already exists in collection '${name}'`,
+      );
     }
     this.#db[name][item.id] = item;
     await this.#saveToFile();

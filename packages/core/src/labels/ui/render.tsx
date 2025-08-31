@@ -28,7 +28,7 @@ export function renderLabelsPage({
       }
       style={{ padding: 0 }}
     >
-      <LabelsTable caption={""} projectId={project.id} labels={labels} />
+      <LabelsTable caption={""} project={project} labels={labels} />
     </DocumentLayout>
   );
 }

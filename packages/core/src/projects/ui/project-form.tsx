@@ -93,6 +93,20 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
       </fieldset>
 
       <fieldset>
+        <legend>Jira</legend>
+
+        <div class="field">
+          <label for="jiraDomain">Jira Domain</label>
+          <input
+            id="jiraDomain"
+            name="jiraDomain"
+            placeholder="https://company.jira.net"
+            value={project?.jiraDomain}
+          />
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>Purge</legend>
         <div class="field">
           <label for="purgeBuildsAfterDays">Purge builds after days</label>

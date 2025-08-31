@@ -3,19 +3,21 @@
 
 import { Table } from "#components/table";
 import type { LabelType } from "#labels/schema";
-import { urlBuilder } from "#urls";
+import type { ProjectType } from "#projects/schema";
+import { href, urlBuilder, URLS } from "#urls";
 import { getStore } from "#utils/store";
+import { urlJoin } from "#utils/url";
 
 export interface LabelsTableProps {
   caption?: JSX.Element;
-  projectId: string;
+  project: ProjectType;
   toolbar?: JSX.Element;
   labels: LabelType[];
 }
 
 export function LabelsTable({
   labels,
-  projectId,
+  project,
   toolbar,
   caption,
 }: LabelsTableProps): JSX.Element {
@@ -28,19 +30,65 @@ export function LabelsTable({
       toolbar={toolbar}
       columns={[
         {
-          id: "slug",
-          header: "Slug",
+          id: "updatedAt",
+          header: "Last modified",
           cell: (item) => {
+            if (!item.updatedAt) {
+              return null;
+            }
+
             return (
-              <a safe href={urlBuilder.labelSlug(projectId, item.slug)}>
-                {item.slug}
-              </a>
+              <time datetime={item.updatedAt} safe>
+                {new Date(item.updatedAt).toLocaleString(locale)}
+              </time>
             );
           },
         },
         {
+          id: "slug",
+          header: "Slug",
+        },
+        {
           id: "value",
           header: "Label",
+          cell: (item) => {
+            let href = "";
+            switch (item.type) {
+              case "branch": {
+                href = urlBuilder.gitHub(
+                  project.gitHubRepository,
+                  "tree",
+                  item.value,
+                );
+                break;
+              }
+              case "pr": {
+                href = urlBuilder.gitHub(
+                  project.gitHubRepository,
+                  "pull",
+                  item.value,
+                );
+                break;
+              }
+              case "jira": {
+                href = project.jiraDomain
+                  ? urlJoin(project.jiraDomain, "browse", item.value)
+                  : "";
+                break;
+              }
+              default:
+            }
+
+            if (!href) {
+              return item.value;
+            }
+
+            return (
+              <a href={href} target="_blank">
+                {item.value}
+              </a>
+            );
+          },
         },
         {
           id: "type",
@@ -63,12 +111,12 @@ export function LabelsTable({
                 >
                   [{item.latestBuildSHA.slice(0, 7)}]
                 </span>
-                <a href={urlBuilder.buildSHA(projectId, item.latestBuildSHA)}>
+                <a href={urlBuilder.buildSHA(project.id, item.latestBuildSHA)}>
                   Details
                 </a>
                 <a
                   href={urlBuilder.storybookIndexHtml(
-                    projectId,
+                    project.id,
                     item.latestBuildSHA,
                   )}
                 >
@@ -78,18 +126,20 @@ export function LabelsTable({
             );
           },
         },
-        {
-          id: "updatedAt",
-          header: "Last modified",
-          cell: (item) => {
-            if (!item.updatedAt) {
-              return null;
-            }
 
+        {
+          id: "actions",
+          header: "Actions",
+          cell: (item) => {
             return (
-              <time datetime={item.updatedAt} safe>
-                {new Date(item.updatedAt).toLocaleString(locale)}
-              </time>
+              <a
+                href={href(URLS.labels.id, {
+                  projectId: project.id,
+                  labelSlug: item.id,
+                })}
+              >
+                View builds
+              </a>
             );
           },
         },

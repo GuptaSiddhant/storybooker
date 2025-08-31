@@ -116,11 +116,15 @@ export class BuildsModel extends Model<BuildType> {
     this.debug("Delete document '%s'", buildId);
     await this.database.deleteDocument(this.collectionName, buildId);
 
-    this.debug("Delete files '%s'", buildId);
-    await this.storage.deleteFiles(
-      generateProjectContainerName(this.projectId),
-      buildId,
-    );
+    try {
+      this.debug("Delete files '%s'", buildId);
+      await this.storage.deleteFiles(
+        generateProjectContainerName(this.projectId),
+        buildId,
+      );
+    } catch (error) {
+      this.error("Cannot delete container:", error);
+    }
 
     if (updateLabel) {
       this.debug("Update labels for build '%s'", buildId);
@@ -146,7 +150,7 @@ export class BuildsModel extends Model<BuildType> {
         });
       }
     } catch (error) {
-      this.error("Error unsetting build SHA from project:", error);
+      this.error("Cannot unset build SHA from project:", error);
     }
   }
 

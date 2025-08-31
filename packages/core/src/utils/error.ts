@@ -8,8 +8,18 @@ export interface ParsedError {
   errorType: string;
 }
 
-export function parseErrorMessage(error: unknown): ParsedError {
-  const { customErrorParser } = getStore();
+export function parseErrorMessage(
+  error: unknown,
+  customErrorParser?: CustomErrorParser,
+): ParsedError {
+  if (!customErrorParser) {
+    try {
+      // oxlint-disable-next-line prefer-destructuring
+      customErrorParser = getStore().customErrorParser;
+      // oxlint-disable-next-line no-empty
+    } catch {}
+  }
+
   const customResult = customErrorParser?.(error);
   if (customResult !== undefined) {
     return customResult;

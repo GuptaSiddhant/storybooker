@@ -11,6 +11,7 @@ export const URLS = {
     root: "",
     openapi: "openapi",
     health: "health",
+    logout: "logout",
     catchAll: "*filepath",
   },
   projects: {

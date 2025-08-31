@@ -4,7 +4,7 @@
 
 import { SERVICE_NAME } from "#constants";
 import { getStore } from "#store";
-import { urlBuilder } from "#urls";
+import { href, urlBuilder, URLS } from "#urls";
 import { urlJoin } from "#utils/url";
 import { globalStyleSheet } from "./_global";
 
@@ -107,17 +107,21 @@ export function DocumentLayout({
 
             <footer>
               {footer ?? (
-                <span style={{ color: "var(--color-text-secondary)" }}>
+                <div
+                  style={{
+                    color: "var(--color-text-secondary)",
+                    textAlign: "end",
+                    width: "100%",
+                  }}
+                >
                   {SERVICE_NAME} 2025
-                </span>
+                </div>
               )}
             </footer>
 
             <aside>{sidebar}</aside>
 
-            <div style={{ gridArea: "user", padding: "1rem" }}>
-              <span style={{ opacity: 0.5 }}>Anonymous</span>
-            </div>
+            <DocumentUserSection />
           </div>
 
           <script
@@ -127,5 +131,86 @@ export function DocumentLayout({
         </body>
       </html>
     </>
+  );
+}
+
+function DocumentUserSection(): JSX.Element {
+  const { auth, user } = getStore();
+
+  if (!user) {
+    return (
+      <div id="user" style={{ padding: "1rem" }}>
+        <span style={{ opacity: 0.5 }}>Anonymous</span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      id="user"
+      style={{
+        padding: 0,
+        paddingLeft: user.imageUrl ? "0.5rem" : "1rem",
+        paddingRight: auth?.logout ? "0.5rem" : "1rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "0.5rem",
+      }}
+    >
+      {user.imageUrl ? (
+        <img
+          src={user.imageUrl}
+          style={{
+            width: "2rem",
+            minWidth: "2rem",
+            height: "2rem",
+            borderRadius: "100%",
+            overflow: "hidden",
+            objectFit: "cover",
+            border: "1px solid",
+          }}
+        />
+      ) : null}
+
+      <div style={{ flex: 1, overflow: "hidden" }}>
+        <div
+          style={{
+            overflow: "hidden",
+            textWrap: "nowrap",
+            textOverflow: "ellipsis",
+          }}
+          title={user.displayName}
+        >
+          {user.displayName}
+        </div>
+        {user.title ? (
+          <div
+            style={{
+              fontSize: "0.8em",
+              opacity: 0.8,
+              overflow: "hidden",
+              textWrap: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+            title={user.title}
+          >
+            {user.title}
+          </div>
+        ) : null}
+      </div>
+
+      {auth?.logout ? (
+        <form action={href(URLS.ui.logout)}>
+          <button
+            class={"destructive"}
+            aria-label="Logout"
+            title="Logout"
+            style={{ padding: 0, width: "1.5rem", aspectRatio: 1 }}
+          >
+            {"&cross;"}
+          </button>
+        </form>
+      ) : null}
+    </div>
   );
 }

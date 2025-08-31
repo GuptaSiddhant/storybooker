@@ -6,6 +6,7 @@ import { URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   commonErrorResponses,
+  responseError,
   responseHTML,
   responseRedirect,
 } from "#utils/response";
@@ -43,9 +44,11 @@ export const root = defineRoute(
       return responseRedirect(urlJoin(prefix, "projects"), 301);
     }
 
-    await authenticateOrThrow([
-      { action: "read", projectId: undefined, resource: "ui" },
-    ]);
+    await authenticateOrThrow({
+      action: "read",
+      projectId: undefined,
+      resource: "ui",
+    });
 
     const projects = await new ProjectsModel().list({ limit: 5 });
     return responseHTML(renderRootPage({ projects }));
@@ -60,4 +63,18 @@ export const health = defineRoute(
     summary: "Health check",
   },
   () => new Response("Service is Healthy", { status: 200 }),
+);
+
+export const logout = defineRoute(
+  "get",
+  URLS.ui.logout,
+  undefined,
+  async () => {
+    const { auth, request, user } = getStore();
+    if (!auth?.logout || !user) {
+      return responseError("Auth is not setup", 404);
+    }
+
+    return await auth.logout(user, request);
+  },
 );
