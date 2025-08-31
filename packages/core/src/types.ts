@@ -142,7 +142,7 @@ export interface AuthService<
  * - Response - returns the specified HTTP response
  */
 export type AuthServiceAuthorise<AuthUser extends StoryBookerUser> = (
-  permission: Permission,
+  permission: PermissionWithKey,
   options: { request: Request; user: AuthUser },
 ) => Promise<boolean | Response>;
 
@@ -152,7 +152,9 @@ export interface Permission {
   projectId: string | undefined;
   resource: PermissionResource;
 }
-
+export type PermissionWithKey = Permission & { key: PermissionKey };
+export type PermissionKey =
+  `${PermissionResource}:${PermissionAction}:${string}`;
 /** Type of possible resources to check permissions for */
 export type PermissionResource =
   | "project"

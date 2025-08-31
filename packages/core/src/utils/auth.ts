@@ -1,5 +1,5 @@
 import { getStore } from "#store";
-import type { Permission } from "../types";
+import type { Permission, PermissionKey } from "../types";
 import { responseError } from "./response";
 
 export async function authenticateOrThrow(
@@ -9,16 +9,19 @@ export async function authenticateOrThrow(
   if (!auth || !user) {
     return;
   }
+  const key: PermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
 
   try {
-    const response = await auth.authorise(permission, { request, user });
+    const response = await auth.authorise(
+      { ...permission, key },
+      { request, user },
+    );
     if (response === true) {
       return;
     }
 
     if (response === false) {
-      const permissionsStr = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
-      throw responseError(`Permission denied [${permissionsStr}]`, 403);
+      throw responseError(`Permission denied [${key}]`, 403);
     }
 
     throw response;
