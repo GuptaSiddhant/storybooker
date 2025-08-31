@@ -1,5 +1,3 @@
-import type { Readable } from "node:stream";
-
 export interface LoggerService {
   error: (...args: unknown[]) => void;
   debug?: (...args: unknown[]) => void;
@@ -50,20 +48,20 @@ export interface StorageService {
 
   uploadFile: (
     containerName: string,
-    file: Blob | string | Readable,
+    file: Blob | string | ReadableStream,
     options: { mimeType: string; destinationPath: string },
   ) => Promise<void>;
   uploadDir: (
     containerName: string,
     dirpath: string,
-    fileOptions: (filepath: string) => {
-      newFilepath: string;
-      mimeType: string;
-    },
+    destPrefix: string | undefined,
   ) => Promise<void>;
   deleteFile: (containerName: string, destinationPath: string) => Promise<void>;
   deleteFiles: (containerName: string, prefix: string) => Promise<void>;
-  downloadFile: (containerName: string, filepath: string) => Promise<Response>;
+  downloadFile: (
+    containerName: string,
+    filepath: string,
+  ) => Promise<ReadableStream | string>;
 }
 
 export interface OpenAPIOptions {

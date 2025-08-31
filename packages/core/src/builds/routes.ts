@@ -8,8 +8,8 @@ import {
 } from "#builds-ui/render";
 import { CONTENT_TYPES, QUERY_PARAMS } from "#constants";
 import { ProjectsModel } from "#projects/model";
-import { urlBuilder, URLS } from "#urls";
-import { defineRoute } from "#utils/api-router";
+import { defineRoute } from "#router";
+import { href, urlBuilder, URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,
@@ -290,6 +290,8 @@ export const uploadBuild = defineRoute(
       return responseError("Content-Type header is required", 400);
     }
 
+    const redirectUrl = href(URLS.builds.id, { buildSHA, projectId });
+
     if (contentType.startsWith(CONTENT_TYPES.FORM_MULTIPART)) {
       const { file, variant } = BuildUploadFormBodySchema.parse(
         urlSearchParamsToObject(await request.formData()),
@@ -298,7 +300,7 @@ export const uploadBuild = defineRoute(
       await buildsModel.upload(buildSHA, variant, file);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(request.url, 303);
+        return responseRedirect(redirectUrl, 303);
       }
 
       return new Response(null, { status: 204 });
@@ -317,7 +319,7 @@ export const uploadBuild = defineRoute(
       await buildsModel.upload(buildSHA, variant);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(request.url, 303);
+        return responseRedirect(redirectUrl, 303);
       }
 
       return new Response(null, { status: 204 });

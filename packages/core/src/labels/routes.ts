@@ -9,8 +9,8 @@ import {
   renderLabelUpdatePage,
 } from "#labels-ui/render";
 import { ProjectsModel } from "#projects/model";
+import { defineRoute } from "#router";
 import { urlBuilder, URLS } from "#urls";
-import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,

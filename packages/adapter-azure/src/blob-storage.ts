@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
+import type streamWeb from "node:stream/web";
 import { BlobServiceClient, type BlobClient } from "@azure/storage-blob";
 import type { StorageService } from "@storybooker/core";
 
@@ -65,26 +66,24 @@ export class AzureBlobStorageService implements StorageService {
 
     if (typeof file === "string") {
       await client.uploadFile(file, {
-        blobHTTPHeaders: {
-          blobContentType: mimeType,
-        },
+        blobHTTPHeaders: { blobContentType: mimeType },
       });
       return;
     }
     if (file instanceof Blob) {
       await client.uploadData(file, {
-        blobHTTPHeaders: {
-          blobContentType: mimeType,
-        },
+        blobHTTPHeaders: { blobContentType: mimeType },
       });
       return;
     }
-    if (file instanceof Readable) {
-      await client.uploadStream(file, undefined, undefined, {
-        blobHTTPHeaders: {
-          blobContentType: mimeType,
-        },
-      });
+    if (file instanceof ReadableStream) {
+      const stream = file as unknown as streamWeb.ReadableStream;
+      await client.uploadStream(
+        Readable.fromWeb(stream),
+        undefined,
+        undefined,
+        { blobHTTPHeaders: { blobContentType: mimeType } },
+      );
       return;
     }
 
@@ -94,7 +93,7 @@ export class AzureBlobStorageService implements StorageService {
   uploadDir: StorageService["uploadDir"] = async (
     containerName,
     dirpath,
-    fileOptions,
+    destPrefix,
   ) => {
     const containerClient = this.#client.getContainerClient(containerName);
 
@@ -115,23 +114,17 @@ export class AzureBlobStorageService implements StorageService {
         continue;
       }
 
-      const blobName = filepath.replace(`${dirpath}/`, "");
+      let blobName = filepath.replace(`${dirpath}/`, "");
+      if (destPrefix) {
+        blobName = path.posix.join(destPrefix, blobName);
+      }
 
       try {
-        const { mimeType, newFilepath: updatedBlobName } = fileOptions?.(
-          blobName,
-        ) || {
-          mimeType: "application/octet-stream",
-          newFilepath: blobName,
-        };
-
         // context.debug(`Uploading '${filepath}' to '${newFilepath}'...`);
         // oxlint-disable-next-line no-await-in-loop
         const response = await containerClient
-          .getBlockBlobClient(updatedBlobName)
-          .uploadFile(filepath, {
-            blobHTTPHeaders: { blobContentType: mimeType },
-          });
+          .getBlockBlobClient(blobName)
+          .uploadFile(filepath);
 
         if (response.errorCode) {
           throw response.errorCode;
@@ -177,10 +170,9 @@ export class AzureBlobStorageService implements StorageService {
     }
 
     const headers = new Headers();
-    headers.set(
-      "Content-Type",
-      downloadResponse.contentType || "application/octet-stream",
-    );
+    if (downloadResponse.contentType) {
+      headers.set("Content-Type", downloadResponse.contentType);
+    }
     if (downloadResponse.contentLength) {
       headers.set("Content-Length", downloadResponse.contentLength.toString());
     }

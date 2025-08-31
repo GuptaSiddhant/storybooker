@@ -22,12 +22,6 @@ export async function handleStaticFileRoute(
     { action: "read", projectId: undefined, resource: "ui" },
   ]);
 
-  logger.log(
-    "Serving static file '%s' from '%s' dirs...",
-    filepath,
-    staticDirs.join(","),
-  );
-
   const staticFilepaths = staticDirs.map((dir) =>
     path.join(path.relative(process.cwd(), dir), filepath),
   );
@@ -39,7 +33,7 @@ export async function handleStaticFileRoute(
     });
   }
 
-  logger.debug?.("Static file '%s' found.", staticFilepath);
+  logger.log("Serving static file '%s' found.", staticFilepath);
 
   const content = await fsp.readFile(staticFilepath, {
     encoding: "utf8",

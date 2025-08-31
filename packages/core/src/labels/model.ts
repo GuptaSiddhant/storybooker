@@ -2,10 +2,10 @@ import { BuildsModel } from "#builds/model";
 import { ProjectsModel } from "#projects/model";
 import {
   generateProjectCollectionName,
+  Model,
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
-import { getStore } from "#utils/store";
 import {
   LabelCreateSchema,
   LabelSchema,
@@ -13,31 +13,25 @@ import {
   type LabelType,
 } from "./schema";
 
-export class LabelsModel implements BaseModel<LabelType> {
-  projectId: string;
-  #collectionName: string;
-
+export class LabelsModel extends Model<LabelType> {
   constructor(projectId: string) {
-    this.projectId = projectId;
-    this.#collectionName = generateProjectCollectionName(projectId, "Labels");
-  }
-
-  #log(...args: unknown[]): void {
-    getStore().logger.log(`[${this.projectId}]`, ...args);
+    super(projectId, generateProjectCollectionName(projectId, "Labels"));
   }
 
   async list(options?: ListOptions<LabelType>): Promise<LabelType[]> {
-    this.#log("List labels...");
-    const { database } = getStore();
-    const items = await database.listDocuments(this.#collectionName, options);
+    this.log("List labels...");
+
+    const items = await this.database.listDocuments(
+      this.collectionName,
+      options,
+    );
 
     return LabelSchema.array().parse(items);
   }
 
   async create(data: unknown): Promise<LabelType> {
-    const { database } = getStore();
     const parsedData = LabelCreateSchema.parse(data);
-    this.#log("Create label '%s'...", parsedData.value);
+    this.log("Create label '%s'...", parsedData.value);
 
     const slug = LabelsModel.createSlug(parsedData.value);
     const now = new Date().toISOString();
@@ -48,15 +42,15 @@ export class LabelsModel implements BaseModel<LabelType> {
       slug,
       updatedAt: now,
     };
-    await database.createDocument<LabelType>(this.#collectionName, label);
+    await this.database.createDocument<LabelType>(this.collectionName, label);
 
     return label;
   }
 
   async get(id: string): Promise<LabelType> {
-    this.#log("Get label '%s''...", id);
-    const { database } = getStore();
-    const item = await database.getDocument(this.#collectionName, id);
+    this.log("Get label '%s'...", id);
+
+    const item = await this.database.getDocument(this.collectionName, id);
 
     return LabelSchema.parse(item);
   }
@@ -68,10 +62,10 @@ export class LabelsModel implements BaseModel<LabelType> {
   }
 
   async update(id: string, data: unknown): Promise<void> {
-    this.#log("Update label '%s''...", id);
+    this.log("Update label '%s'...", id);
     const parsedData = LabelUpdateSchema.parse(data);
-    const { database } = getStore();
-    await database.updateDocument(this.#collectionName, id, {
+
+    await this.database.updateDocument(this.collectionName, id, {
       ...parsedData,
       updatedAt: new Date().toISOString(),
     });
@@ -80,19 +74,25 @@ export class LabelsModel implements BaseModel<LabelType> {
   }
 
   async delete(slug: string): Promise<void> {
-    this.#log("Delete label '%s''...", slug);
+    this.log("Delete label '%s'...", slug);
+
     const { gitHubDefaultBranch } = await new ProjectsModel().get(
       this.projectId,
     );
     if (slug === LabelsModel.createSlug(gitHubDefaultBranch)) {
       const message = `Cannot delete the label associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
-      this.#log("[ERROR]", message);
+      this.error(message);
       throw new Error(message);
     }
 
-    const { database } = getStore();
-    await database.deleteDocument(this.#collectionName, slug);
-    await new BuildsModel(this.projectId).deleteByLabel(slug, false);
+    await this.database.deleteDocument(this.collectionName, slug);
+
+    try {
+      this.debug("Delete builds associated with label '%s'...", slug);
+      await new BuildsModel(this.projectId).deleteByLabel(slug, false);
+    } catch (error) {
+      this.error(error);
+    }
 
     return;
   }

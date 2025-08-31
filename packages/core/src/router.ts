@@ -1,11 +1,10 @@
 import { RoutePattern, type Params } from "@remix-run/route-pattern";
 import { getStore } from "#store";
+import { responseError } from "#utils/response";
 import type {
   ZodOpenApiPathItemObject,
   ZodOpenApiPathsObject,
 } from "zod-openapi";
-import { responseError } from "./response";
-import { urlJoin } from "./url";
 
 type Methods =
   | "get"
@@ -42,7 +41,7 @@ export interface RegisterRouteOptions<
   overriddenPath?: string;
 }
 
-export class OpenApiRouter {
+export class Router {
   static paths: ZodOpenApiPathsObject = {};
 
   private routes: Route<Methods, string>[] = [];
@@ -60,10 +59,10 @@ export class OpenApiRouter {
 
     if (input) {
       const path = overriddenPath ?? pathname;
-      if (OpenApiRouter.paths[path]) {
-        OpenApiRouter.paths[path][method] = input;
+      if (Router.paths[path]) {
+        Router.paths[path][method] = input;
       } else {
-        OpenApiRouter.paths[path] = { [method]: input };
+        Router.paths[path] = { [method]: input };
       }
     }
 
@@ -72,20 +71,9 @@ export class OpenApiRouter {
 
   registerGroup(
     group: Record<string, RegisterRouteOptions<Methods, string>>,
-    prefix?: string,
   ): this {
     for (const route of Object.values(group)) {
-      this.register({
-        ...route,
-        // oxlint-disable-next-line no-nested-ternary
-        overriddenPath: route.overriddenPath
-          ? // oxlint-disable-next-line no-nested-ternary
-            prefix
-            ? urlJoin(prefix, route.overriddenPath)
-            : route.overriddenPath
-          : undefined,
-        pathname: prefix ? urlJoin(prefix, route.pathname) : route.pathname,
-      });
+      this.register(route);
     }
 
     return this;

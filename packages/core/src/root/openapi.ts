@@ -1,6 +1,6 @@
+import { defineRoute, Router } from "#router";
 import { getStore } from "#store";
 import { URLS } from "#urls";
-import { defineRoute, OpenApiRouter } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { checkIsHTMLRequest } from "#utils/request";
@@ -37,7 +37,7 @@ export const openapi = defineRoute(
       components: {},
       info: { title: SERVICE_NAME, version: "" },
       openapi: "3.1.0",
-      paths: OpenApiRouter.paths,
+      paths: Router.paths,
       security: [],
       servers: [{ url: prefix }],
       tags: [],

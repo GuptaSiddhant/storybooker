@@ -1,8 +1,8 @@
 import { BuildsModel } from "#builds/model";
 import { CONTENT_TYPES } from "#constants";
 import { LabelsModel } from "#labels/model";
+import { defineRoute } from "#router";
 import { urlBuilder, URLS } from "#urls";
-import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   checkIsHTMLRequest,

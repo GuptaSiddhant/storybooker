@@ -1,8 +1,8 @@
 import path from "node:path";
 import { CACHE_CONTROL_PUBLIC_YEAR, HEADERS, SERVICE_NAME } from "#constants";
+import { defineRoute } from "#router";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
-import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import { getMimeType } from "#utils/mime-utils";
 import { generateProjectContainerName } from "#utils/shared-model";
@@ -35,21 +35,22 @@ export const serveStorybook = defineRoute(
       { action: "read", projectId, resource: "build" },
     ]);
 
-    const response = await storage.downloadFile(
+    const result = await storage.downloadFile(
       generateProjectContainerName(projectId),
       containerFilepath,
     );
-    response.headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
+
+    const headers = new Headers();
+    headers.set(HEADERS.contentType, getMimeType(filepath));
+    headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
 
     if (!filepath.endsWith("index.html")) {
-      if (!response.headers.has(HEADERS.contentType)) {
-        response.headers.set(HEADERS.contentType, getMimeType(filepath));
-      }
-      return response;
+      return new Response(result, { headers, status: 200 });
     }
 
     // Appending custom UI to index.html
-    const content = await response.clone().text();
+    const content =
+      typeof result === "string" ? result : await new Response(result).text();
     const bodyWithBackButton = content.replace(
       `</body>`,
       `
@@ -58,8 +59,6 @@ export const serveStorybook = defineRoute(
         ← ${SERVICE_NAME}
       </a></div></body>`,
     );
-    const headers = new Headers(response.headers);
-    headers.set(HEADERS.contentLength, bodyWithBackButton.length.toString());
 
     return new Response(bodyWithBackButton, { headers, status: 200 });
   },

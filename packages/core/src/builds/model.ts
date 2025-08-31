@@ -5,15 +5,14 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { CONTENT_TYPES } from "#constants";
 import { LabelsModel } from "#labels/model";
 import { ProjectsModel } from "#projects/model";
 import { getStore } from "#store";
 import { writeStreamToFile } from "#utils/file";
-import { getMimeType } from "#utils/mime-utils";
 import {
   generateProjectCollectionName,
   generateProjectContainerName,
+  Model,
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
@@ -26,40 +25,29 @@ import {
   type BuildUploadVariant,
 } from "./schema";
 
-export class BuildsModel implements BaseModel<BuildType> {
-  projectId: string;
-  #collectionName: string;
-
+export class BuildsModel extends Model<BuildType> {
   constructor(projectId: string) {
-    this.projectId = projectId;
-    this.#collectionName = generateProjectCollectionName(projectId, "Builds");
-  }
-
-  #log(...args: unknown[]): void {
-    getStore().logger.log(`[${this.projectId}]`, ...args);
-  }
-  #error(...args: unknown[]): void {
-    getStore().logger.error(`[${this.projectId}]`, ...args);
+    super(projectId, generateProjectCollectionName(projectId, "Builds"));
   }
 
   async list(options?: ListOptions<BuildType>): Promise<BuildType[]> {
     if (options) {
-      this.#log("List builds with options (%o)...", { ...options });
+      this.log("List builds with options (%o)...", { ...options });
     } else {
-      this.#log("List builds...");
+      this.log("List builds...");
     }
 
-    const { database } = getStore();
-    const items = await database.listDocuments(this.#collectionName, options);
-    const builds = BuildSchema.array().parse(items);
+    const items = await this.database.listDocuments(
+      this.collectionName,
+      options,
+    );
 
-    return builds;
+    return BuildSchema.array().parse(items);
   }
 
   async create(data: unknown): Promise<BuildType> {
     const { labels, sha, ...rest } = BuildCreateSchema.parse(data);
-    this.#log("Create build '%s'...", sha);
-    const { database } = getStore();
+    this.log("Create build '%s'...", sha);
 
     const labelSlugs = await Promise.all(
       labels.filter(Boolean).map(async (labelSlug) => {
@@ -80,7 +68,7 @@ export class BuildsModel implements BaseModel<BuildType> {
       sha,
       updatedAt: now,
     };
-    await database.createDocument<BuildType>(this.#collectionName, build);
+    await this.database.createDocument<BuildType>(this.collectionName, build);
 
     try {
       const projectsModel = new ProjectsModel();
@@ -89,17 +77,16 @@ export class BuildsModel implements BaseModel<BuildType> {
         await projectsModel.update(this.projectId, { latestBuildSHA: sha });
       }
     } catch (error) {
-      this.#error(error);
+      this.error(error);
     }
 
     return build;
   }
 
   async get(id: string): Promise<BuildType> {
-    this.#log("Get build '%s'...", id);
-    const { database } = getStore();
+    this.log("Get build '%s'...", id);
 
-    const item = await database.getDocument(this.#collectionName, id);
+    const item = await this.database.getDocument(this.collectionName, id);
 
     return BuildSchema.parse(item);
   }
@@ -111,10 +98,9 @@ export class BuildsModel implements BaseModel<BuildType> {
   }
 
   async update(id: string, data: Partial<BuildType>): Promise<void> {
-    this.#log("Update build '%s''...", id);
+    this.log("Update build '%s''...", id);
     const parsedData = BuildUpdateSchema.parse(data);
-    const { database } = getStore();
-    await database.updateDocument(this.#collectionName, id, {
+    await this.database.updateDocument(this.collectionName, id, {
       ...parsedData,
       updatedAt: new Date().toISOString(),
     });
@@ -123,19 +109,21 @@ export class BuildsModel implements BaseModel<BuildType> {
   }
 
   async delete(buildId: string, updateLabel = true): Promise<void> {
-    this.#log("Delete build '%s'...", buildId);
-    const { database, storage } = getStore();
+    this.log("Delete build '%s'...", buildId);
+
     const build = await this.get(buildId);
 
-    // Delete entry and files
-    await database.deleteDocument(this.#collectionName, buildId);
-    await storage.deleteFiles(
+    this.debug("Delete document '%s'", buildId);
+    await this.database.deleteDocument(this.collectionName, buildId);
+
+    this.debug("Delete files '%s'", buildId);
+    await this.storage.deleteFiles(
       generateProjectContainerName(this.projectId),
       buildId,
     );
 
     if (updateLabel) {
-      // Delete ref from labels
+      this.debug("Update labels for build '%s'", buildId);
       const labelSlugs = build.labelSlugs.split(",");
       const labelsModel = new LabelsModel(this.projectId);
       await Promise.allSettled(
@@ -148,17 +136,17 @@ export class BuildsModel implements BaseModel<BuildType> {
       );
     }
 
-    // Delete ref from project
     try {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
       if (project.latestBuildSHA === buildId) {
+        this.debug("Update project for build '%s'", buildId);
         await projectsModel.update(this.projectId, {
           latestBuildSHA: undefined,
         });
       }
     } catch (error) {
-      this.#error("Error unsetting build SHA from project:", error);
+      this.error("Error unsetting build SHA from project:", error);
     }
   }
 
@@ -167,7 +155,7 @@ export class BuildsModel implements BaseModel<BuildType> {
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
-    this.#log("Upload build '%s'...", buildSHA, variant);
+    this.log("Upload build '%s' (%s)...", buildSHA, variant);
 
     await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
 
@@ -211,7 +199,7 @@ export class BuildsModel implements BaseModel<BuildType> {
 
   async deleteByLabel(labelSlug: string, force: boolean): Promise<void> {
     const builds = await this.listByLabel(labelSlug);
-    this.#log(
+    this.log(
       "Delete builds by label: '%s' (%d, force: %s)...",
       labelSlug,
       builds.length,
@@ -248,7 +236,7 @@ export class BuildsModel implements BaseModel<BuildType> {
       try {
         const type = labelType || LabelsModel.guessType(slug);
         const value = labelValue || slug;
-        this.#log("A new label '%s' (%s) is being created.", value, type);
+        this.log("A new label '%s' (%s) is being created.", value, type);
         const label = await labelsModel.create({
           latestBuildSHA: buildSHA,
           type,
@@ -257,7 +245,7 @@ export class BuildsModel implements BaseModel<BuildType> {
 
         return label.id;
       } catch (error) {
-        this.#error("Error creating slug:", error);
+        this.error("Error creating slug:", error);
         return slug;
       }
     }
@@ -268,14 +256,16 @@ export class BuildsModel implements BaseModel<BuildType> {
     variant: BuildUploadVariant = "storybook",
     zipFile?: File,
   ): Promise<void> {
-    const { request, storage } = getStore();
+    const { request } = getStore();
 
+    this.debug("(%s-%s) Creating temp dir", buildSHA, variant);
     const dirpath = fs.mkdtempSync(
       path.join(os.tmpdir(), `storybooker-${this.projectId}-${buildSHA}-`),
     );
     const zipFilePath = path.join(dirpath, `${variant}.zip`);
 
     try {
+      this.debug("(%s-%s) Save zip file to disk", buildSHA, variant);
       if (zipFile) {
         await writeStreamToFile(zipFilePath, zipFile.stream());
       } else {
@@ -285,23 +275,23 @@ export class BuildsModel implements BaseModel<BuildType> {
         await writeStreamToFile(zipFilePath, request.body);
       }
 
+      this.debug("(%s-%s) Decompress zip file", buildSHA, variant);
       await decompress(zipFilePath, path.join(dirpath, variant));
 
-      await storage.uploadDir(
+      this.debug("(%s-%s) Upload uncompressed dir", buildSHA, variant);
+      await this.storage.uploadDir(
         generateProjectContainerName(this.projectId),
         dirpath,
-        (filepath) => ({
-          mimeType: getMimeType(filepath) || CONTENT_TYPES.OCTET,
-          newFilepath: path.join(buildSHA, filepath),
-        }),
+        buildSHA,
       );
     } catch (error) {
-      this.#error("Error uploading file:", error);
+      this.error(error);
     } finally {
+      this.debug("(%s-%s) Cleaning up temp dir", buildSHA, variant);
       await fsp
         .rm(dirpath, { force: true, recursive: true })
         .catch((error: unknown) => {
-          this.#error(error);
+          this.error(error);
         });
     }
 

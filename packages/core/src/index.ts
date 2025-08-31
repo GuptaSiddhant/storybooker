@@ -2,13 +2,13 @@ import * as buildsRoutes from "#builds/routes";
 import { DEFAULT_LOCALE, HEADERS } from "#constants";
 import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
-import { localStore, type Store } from "#store";
-import { OpenApiRouter } from "#utils/api-router";
+import { localStore } from "#store";
 import { parseErrorMessage, type CustomErrorParser } from "#utils/error";
 import { handleStaticFileRoute } from "./root/handlers";
 import * as openapiRoutes from "./root/openapi";
 import * as rootRoutes from "./root/routes";
 import * as serveRoutes from "./root/serve";
+import { Router } from "./router";
 import type {
   CheckPermissionsCallback,
   DatabaseService,
@@ -34,9 +34,8 @@ export interface RouterContext {
 
 export type RequestHandler = (request: Request) => Promise<Response>;
 
-const router = new OpenApiRouter();
-router.register(rootRoutes.root);
-router.register(rootRoutes.health);
+const router = new Router();
+router.registerGroup(rootRoutes);
 router.registerGroup(openapiRoutes);
 router.registerGroup(serveRoutes);
 router.registerGroup(projectsRoutes);
@@ -46,45 +45,34 @@ router.registerGroup(buildsRoutes);
 const DEFAULT_CHECK_PERMISSIONS: CheckPermissionsCallback = () => true;
 
 export function createRequestHandler(context: RouterContext): RequestHandler {
-  return requestHandler.bind(null, context);
-}
+  return async function requestHandler(request: Request): Promise<Response> {
+    const locale =
+      request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
+      DEFAULT_LOCALE;
 
-async function requestHandler(
-  context: RouterContext,
-  request: Request,
-): Promise<Response> {
-  const { logger = console, prefix = "" } = context;
+    localStore.enterWith({
+      checkPermissions: context.checkPermissions || DEFAULT_CHECK_PERMISSIONS,
+      customErrorParser: context.customErrorParser,
+      database: context.database,
+      headless: !!context.headless,
+      locale,
+      logger: context.logger || console,
+      prefix: context.prefix || "",
+      request,
+      storage: context.storage,
+      url: request.url,
+    });
 
-  const locale =
-    request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
-    DEFAULT_LOCALE;
+    try {
+      const response = await router.handleRequest();
+      if (response) {
+        return response;
+      }
 
-  const store: Store = {
-    checkPermissions: DEFAULT_CHECK_PERMISSIONS,
-    customErrorParser: undefined,
-    database: context.database,
-    headless: !!context.headless,
-    locale,
-    logger,
-    prefix,
-    request,
-    storage: context.storage,
-    url: request.url,
-  };
-
-  try {
-    const response = await localStore.run(store, () => router.handleRequest());
-    if (response) {
-      return response;
+      return await handleStaticFileRoute(context.staticDirs);
+    } catch (error) {
+      const { errorMessage } = parseErrorMessage(error);
+      return new Response(errorMessage, { status: 500 });
     }
-
-    return await localStore.run(store, () =>
-      handleStaticFileRoute(context.staticDirs),
-    );
-  } catch (error) {
-    const { errorMessage } = localStore.run(store, () =>
-      parseErrorMessage(error),
-    );
-    return new Response(errorMessage, { status: 500 });
-  }
+  };
 }

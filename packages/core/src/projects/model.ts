@@ -1,10 +1,9 @@
 import { SERVICE_NAME } from "#constants";
 import { LabelsModel } from "#labels/model";
-import { getStore } from "#store";
-import { parseErrorMessage } from "#utils/error";
 import {
   generateProjectCollectionName,
   generateProjectContainerName,
+  Model,
   type BaseModel,
   type ListOptions,
 } from "#utils/shared-model";
@@ -15,68 +14,78 @@ import {
   type ProjectType,
 } from "./schema";
 
-export class ProjectsModel implements BaseModel<ProjectType> {
-  #collectionName = `${SERVICE_NAME}Projects`;
-  #log(id: string | undefined, ...args: unknown[]): void {
-    getStore().logger.log(`[${id || "Project"}]`, ...args);
-  }
-  #debug(id: string | undefined, ...args: unknown[]): void {
-    getStore().logger.debug?.(`[${id || "Project"}]`, ...args);
+export class ProjectsModel extends Model<ProjectType> {
+  constructor() {
+    super(null, `${SERVICE_NAME}Projects`);
   }
 
   async list(options?: ListOptions<ProjectType>): Promise<ProjectType[]> {
-    const { database } = getStore();
-    this.#log(undefined, "List projects...");
-    await database.createCollection(this.#collectionName);
-    return await database.listDocuments<ProjectType>(
-      this.#collectionName,
+    this.log("List projects...");
+
+    try {
+      this.debug("Create projects collection");
+      await this.database.createCollection(this.collectionName);
+    } catch (error) {
+      this.error(error);
+    }
+
+    const items = await this.database.listDocuments<ProjectType>(
+      this.collectionName,
       options,
     );
+
+    return items;
   }
 
   async create(data: unknown): Promise<ProjectType> {
-    const { database, storage } = getStore();
+    this.log("Create project...");
+
     const projectData = ProjectCreateSchema.parse(data);
     const projectId = projectData.id;
 
-    this.#debug(undefined, "Create projects collection");
-    await database.createCollection(this.#collectionName);
+    this.debug("Create project container");
+    await this.storage.createContainer(generateProjectContainerName(projectId));
 
-    this.#log(projectId, "Create project...");
+    this.debug("Create project collection");
+    await this.database.createCollection(this.collectionName);
 
-    this.#debug(projectId, "Create project container");
-    await storage.createContainer(generateProjectContainerName(projectId));
-
-    this.#debug(projectId, "Create project-builds collection");
-    await database.createCollection(
+    this.debug("Create project-builds collection");
+    await this.database.createCollection(
       generateProjectCollectionName(projectId, "Builds"),
     );
 
-    this.#debug(projectId, "Create project-labels collection");
-    await database.createCollection(
+    this.debug("Create project-labels collection");
+    await this.database.createCollection(
       generateProjectCollectionName(projectId, "Labels"),
+    );
+    this.debug(
+      "Create default branch (%s) label",
+      projectData.gitHubDefaultBranch,
     );
     await new LabelsModel(projectId).create({
       type: "branch",
       value: projectData.gitHubDefaultBranch,
     });
 
-    this.#debug(projectId, "Create project entry in collection");
+    this.debug("Create project entry '%s' in collection", projectData.id);
     const now = new Date().toISOString();
     const project: ProjectType = {
       ...projectData,
       createdAt: now,
       updatedAt: now,
     };
-    await database.createDocument<ProjectType>(this.#collectionName, project);
+    await this.database.createDocument<ProjectType>(
+      this.collectionName,
+      project,
+    );
 
     return project;
   }
 
   async get(id: string): Promise<ProjectType> {
-    this.#log(id, "Get project...");
-    const { database } = getStore();
-    const item = await database.getDocument(this.#collectionName, id);
+    this.log("Get project '%s'...", id);
+
+    const item = await this.database.getDocument(this.collectionName, id);
 
     return ProjectSchema.parse(item);
   }
@@ -88,44 +97,48 @@ export class ProjectsModel implements BaseModel<ProjectType> {
   }
 
   async update(id: string, data: unknown): Promise<void> {
-    this.#log(id, "Update project...");
-    const { database } = getStore();
+    this.log("Update project '%s'...", id);
+
     const project = ProjectUpdateSchema.parse(data);
-    await database.updateDocument(this.#collectionName, id, {
+    await this.database.updateDocument(this.collectionName, id, {
       ...project,
       updatedAt: new Date().toISOString(),
     });
 
     if (project.gitHubDefaultBranch) {
+      this.debug(
+        "Create default-branch label '%s'...",
+        project.gitHubDefaultBranch,
+      );
       await new LabelsModel(id)
         .create({
           type: "branch",
           value: project.gitHubDefaultBranch,
         })
-        .catch((error: unknown) => {
-          this.#log(
-            id,
-            "Failed to create default branch label '%s'. Error: %s",
-            project.gitHubDefaultBranch,
-            parseErrorMessage(error).errorMessage,
-          );
-        });
+        .catch(this.error);
     }
 
     return;
   }
 
   async delete(id: string): Promise<void> {
-    this.#log(id, "Delete project...");
-    const { database, storage } = getStore();
-    await database.deleteDocument(this.#collectionName, id);
-    await database.deleteCollection(
+    this.log("Delete project '%s'...", id);
+
+    this.debug("Delete project entry '%s' in collection", id);
+    await this.database.deleteDocument(this.collectionName, id);
+
+    this.debug("Create project-builds collection");
+    await this.database.deleteCollection(
       generateProjectCollectionName(id, "Builds"),
     );
-    await database.deleteCollection(
+
+    this.debug("Delete project-labels collection");
+    await this.database.deleteCollection(
       generateProjectCollectionName(id, "Labels"),
     );
-    await storage.deleteContainer(generateProjectContainerName(id));
+
+    this.debug("Create project container");
+    await this.storage.deleteContainer(generateProjectContainerName(id));
 
     return;
   }

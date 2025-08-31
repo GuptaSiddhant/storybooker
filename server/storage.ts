@@ -6,8 +6,8 @@
 import type { StorageService } from "../packages/core/dist/index.d.ts";
 
 const prefix = [".", "server", "files"];
-function genPath(...pathParts: string[]): string {
-  return [...prefix, ...pathParts].join("/");
+function genPath(...pathParts: (string | undefined)[]): string {
+  return [...prefix, ...pathParts].filter(Boolean).join("/");
 }
 
 export class LocalStorage implements StorageService {
@@ -52,41 +52,35 @@ export class LocalStorage implements StorageService {
   uploadDir = async (
     containerName: string,
     dirpath: string,
-    fileOptions?: (filepath: string) => {
-      newFilepath: string;
-      mimeType: string;
-    },
+    destPrefix?: string,
   ): Promise<void> => {
-    await copyDir(dirpath, (fp) => {
-      const { newFilepath } = fileOptions?.(fp) || {
-        mimeType: "application/octet-stream",
-        newFilepath: fp,
-      };
-      return genPath(containerName, newFilepath);
-    });
+    const toDirpath = genPath(containerName, destPrefix);
+    await copyDir(dirpath, toDirpath);
   };
 
   downloadFile = async (
     containerName: string,
     filepath: string,
-  ): Promise<Response> => {
+  ): Promise<string> => {
     const path = genPath(containerName, filepath);
-    const content = await Deno.readTextFile(path);
-    return new Response(content);
+    return await Deno.readTextFile(path);
   };
 }
 
 async function copyDir(
   fromDirpath: string,
-  getFilepath: (path: string) => string,
+  toDirpath: string,
+  root = fromDirpath,
 ) {
-  for await (const entry of Deno.readDir(genPath())) {
+  await Deno.mkdir(toDirpath, { recursive: true });
+
+  for await (const entry of Deno.readDir(fromDirpath)) {
+    const fromFilepath = [fromDirpath, entry.name].join("/");
+    const toFilepath = [toDirpath, entry.name].join("/");
     if (entry.isFile) {
-      const filepath = [fromDirpath, entry.name].join("/");
-      const toFilepath = genPath(getFilepath(filepath));
-      await Deno.copyFile(filepath, toFilepath);
+      await Deno.copyFile(fromFilepath, toFilepath);
     } else if (entry.isDirectory) {
-      await copyDir(`${fromDirpath}/${entry.name}`, getFilepath);
+      await copyDir(fromFilepath, toFilepath, root);
     }
   }
 }

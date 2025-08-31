@@ -1,5 +1,8 @@
+import { getStore } from "#store";
 import z from "zod";
+import type { DatabaseService, LoggerService, StorageService } from "../types";
 import { PATTERNS, SERVICE_NAME } from "./constants";
+import { parseErrorMessage } from "./error";
 
 type Obj = Record<string, unknown>;
 
@@ -8,6 +11,42 @@ export interface ListOptions<Item extends Record<string, unknown>> {
   filter?: string | ((item: Item) => boolean);
   select?: string[];
   sort?: "latest" | ((item1: Item, item2: Item) => number);
+}
+
+export abstract class Model<Data extends Obj> implements BaseModel<Data> {
+  projectId: string;
+  collectionName: string;
+  database: DatabaseService;
+  storage: StorageService;
+  logger: LoggerService;
+
+  constructor(projectId: string | null, collectionName: string) {
+    const { database, storage, logger } = getStore();
+    this.projectId = projectId || "SBR";
+    this.collectionName = collectionName;
+    this.database = database;
+    this.storage = storage;
+    this.logger = logger;
+  }
+
+  log(message: string, ...args: unknown[]): void {
+    this.logger.log(`[${this.projectId}] ${message}`, ...args);
+  }
+  debug(message: string, ...args: unknown[]): void {
+    this.logger.debug?.(`[${this.projectId}] ${message}`, ...args);
+  }
+  error(error: unknown, ...args: unknown[]): void {
+    const { errorMessage } = parseErrorMessage(error);
+    this.logger.error(`[${this.projectId}] Error:`, errorMessage, ...args);
+  }
+
+  abstract list(options?: ListOptions<Data>): Promise<Data[]>;
+  abstract create(data: unknown): Promise<Data>;
+  abstract get(id: string): Promise<Data>;
+  abstract has(id: string): Promise<boolean>;
+  abstract update(id: string, data: unknown): Promise<void>;
+  abstract delete(id: string): Promise<void>;
+  abstract id: (id: string) => BaseIdModel<Data>;
 }
 
 export interface BaseModel<Data extends Obj> {

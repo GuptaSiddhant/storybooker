@@ -1,8 +1,8 @@
 import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
+import { defineRoute } from "#router";
 import { getStore } from "#store";
 import { URLS } from "#urls";
-import { defineRoute } from "#utils/api-router";
 import { authenticateOrThrow } from "#utils/auth";
 import {
   commonErrorResponses,

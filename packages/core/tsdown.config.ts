@@ -5,7 +5,6 @@ export default defineConfig({
   entry: ["./src/index.ts"],
   exports: true,
   inputOptions: { jsx: "react-jsx" },
-  name: "Core",
   platform: "node",
   sourcemap: true,
   treeshake: true,
