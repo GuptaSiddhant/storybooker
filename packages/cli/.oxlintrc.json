@@ -1,0 +1,21 @@
+{
+  "extends": ["../../.oxlintrc.json"],
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "rules": {
+    "no-console": "allow",
+    "no-process-exit": "allow",
+    "sort-keys": "allow"
+  },
+  "overrides": [
+    {
+      "files": ["*.d.ts"],
+      "rules": {
+        "max-lines": "allow",
+        "consistent-indexed-object-style": "allow"
+      }
+    }
+  ]
+}
