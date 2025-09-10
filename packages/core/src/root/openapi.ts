@@ -1,4 +1,4 @@
-import { defineRoute, Router } from "#router";
+import { defineRoute, router } from "#router";
 import { getStore } from "#store";
 import { URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
@@ -39,7 +39,7 @@ export const openapi = defineRoute(
       components: {},
       info: { title: SERVICE_NAME, version: "" },
       openapi: "3.1.0",
-      paths: Router.paths,
+      paths: router.paths,
       security: [],
       servers: [{ url: prefix }],
       tags: [],

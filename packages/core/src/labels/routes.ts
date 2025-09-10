@@ -19,6 +19,7 @@ import {
 } from "#utils/request";
 import {
   commonErrorResponses,
+  errorContent,
   responseError,
   responseHTML,
   responseRedirect,
@@ -95,6 +96,7 @@ export const createLabel = defineRoute(
         description: "Label created, redirecting...",
         headers: { Location: z.url() },
       },
+      409: { content: errorContent, description: "Label already exists." },
       415: { description: "Unsupported Media Type" },
     },
     summary: "Create a new label",

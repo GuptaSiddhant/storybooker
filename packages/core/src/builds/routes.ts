@@ -19,6 +19,7 @@ import {
 } from "#utils/request";
 import {
   commonErrorResponses,
+  errorContent,
   responseError,
   responseHTML,
   responseRedirect,
@@ -98,6 +99,7 @@ export const createBuild = defineRoute(
         description: "Build created, redirecting...",
         headers: { Location: z.url() },
       },
+      409: { content: errorContent, description: "Build already exists." },
       415: { description: "Unsupported Media Type" },
     },
     summary: "Create a new build",
@@ -120,9 +122,8 @@ export const createBuild = defineRoute(
       resource: "build",
     });
 
-    const build = await new BuildsModel(projectId).create(
-      urlSearchParamsToObject(await request.formData()),
-    );
+    const data = urlSearchParamsToObject(await request.formData());
+    const build = await new BuildsModel(projectId).create(data);
     const url = urlBuilder.buildSHA(projectId, build.id);
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {

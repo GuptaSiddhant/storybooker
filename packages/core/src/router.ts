@@ -16,17 +16,14 @@ type Methods =
   | "patch"
   | "trace";
 
-type Handler<
-  Path extends string,
-  PathParams extends string = Params<Path>,
-> = (options: {
-  params: Record<PathParams extends never ? string : PathParams, string>;
+type Handler<Path extends string> = (options: {
+  params: Params<Path>;
   request: Request;
 }) => Promise<Response> | Response;
 
 interface Route<Method extends Methods, Path extends string> {
   method: Method;
-  pattern: RoutePattern;
+  pattern: RoutePattern<Path>;
   handler: Handler<Path>;
 }
 
@@ -41,8 +38,8 @@ export interface RegisterRouteOptions<
   overriddenPath?: string;
 }
 
-export class Router {
-  static paths: ZodOpenApiPathsObject = {};
+class Router {
+  paths: ZodOpenApiPathsObject = {};
 
   private routes: Route<Methods, string>[] = [];
 
@@ -58,11 +55,16 @@ export class Router {
     });
 
     if (input) {
-      const path = overriddenPath ?? pathname;
-      if (Router.paths[path]) {
-        Router.paths[path][method] = input;
+      let path = (overriddenPath ?? pathname).replaceAll(/:(\w+)/g, "{$1}");
+      if (!path.startsWith("/")) {
+        path = `/${path}`;
+      }
+
+      const pathObject = this.paths[path];
+      if (pathObject) {
+        pathObject[method] = input;
       } else {
-        Router.paths[path] = { [method]: input };
+        this.paths[path] = { [method]: input };
       }
     }
 
@@ -114,6 +116,8 @@ export class Router {
     return undefined;
   }
 }
+
+export const router = new Router();
 
 // oxlint-disable-next-line max-params
 export function defineRoute<Method extends Methods, Path extends string>(

@@ -4,6 +4,7 @@ import { defineRoute } from "#router";
 import { getStore } from "#store";
 import { URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
+import { checkIsJSONRequest } from "#utils/request";
 import {
   commonErrorResponses,
   responseError,
@@ -11,7 +12,12 @@ import {
   responseRedirect,
 } from "#utils/response";
 import { urlJoin } from "#utils/url";
+import z from "zod";
 import { renderRootPage } from "./render";
+
+const rootSchema = z.object({
+  urls: z.record(z.string(), z.record(z.string(), z.url())),
+});
 
 export const root = defineRoute(
   "get",
@@ -21,7 +27,10 @@ export const root = defineRoute(
     responses: {
       ...commonErrorResponses,
       200: {
-        content: { [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" } },
+        content: {
+          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [CONTENT_TYPES.JSON]: { schema: rootSchema },
+        },
         description: "Root endpoint",
       },
       303: {
@@ -39,7 +48,21 @@ export const root = defineRoute(
     tags: ["UI"],
   },
   async () => {
-    const { headless, prefix } = getStore();
+    const { headless, prefix, url } = getStore();
+
+    if (checkIsJSONRequest()) {
+      const urls: z.infer<typeof rootSchema>["urls"] = {};
+      for (const [key, group] of Object.entries(URLS)) {
+        urls[key] = {};
+        for (const [subkey, path] of Object.entries(group)) {
+          urls[key][subkey] = urlJoin(url, prefix, path);
+        }
+      }
+
+      const data: z.infer<typeof rootSchema> = { urls };
+      return Response.json(data, { status: 200 });
+    }
+
     if (headless) {
       return responseRedirect(urlJoin(prefix, "projects"), 301);
     }

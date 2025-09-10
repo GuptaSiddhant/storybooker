@@ -36,3 +36,9 @@ public/sprite*
 
 server/db.json
 server/files
+
+storybook-static
+.test-results
+*.zip
+test-report
+coverage

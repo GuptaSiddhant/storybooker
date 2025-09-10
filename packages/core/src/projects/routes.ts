@@ -13,6 +13,7 @@ import {
 } from "#utils/request";
 import {
   commonErrorResponses,
+  errorContent,
   responseError,
   responseHTML,
   responseRedirect,
@@ -95,6 +96,7 @@ export const createProject = defineRoute(
         description: "Project created, redirecting...",
         headers: { Location: z.url() },
       },
+      409: { content: errorContent, description: "Project already exists." },
       415: { description: "Unsupported Media Type" },
     },
     summary: "Create a new project",

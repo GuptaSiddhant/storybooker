@@ -1,5 +1,5 @@
 {
-  "name": "storybooker",
+  "name": "storybooker-monorepo",
   "private": true,
   "description": "Self hosted Storybooks management.",
   "repository": "git@github.com:GuptaSiddhant/storybooker.git",
@@ -14,6 +14,8 @@
     "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
     "build": "turbo build",
     "check": "turbo check",
+    "cli": "yarn workspace storybooker start",
+    "cli:dev": "yarn workspace storybooker dev",
     "dev": "turbo dev",
     "fmt": "turbo fmt",
     "functions": "yarn workspace @storybooker/azure-functions start",
@@ -25,5 +27,8 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "prettier": "^3.6.2",
     "turbo": "^2.5.6"
+  },
+  "overrides": {
+    "debug": "4.4.1"
   }
 }

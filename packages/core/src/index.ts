@@ -8,7 +8,7 @@ import { handleStaticFileRoute } from "./root/handlers";
 import * as openapiRoutes from "./root/openapi";
 import * as rootRoutes from "./root/routes";
 import * as serveRoutes from "./root/serve";
-import { Router } from "./router";
+import { router } from "./router";
 import type {
   AuthService,
   DatabaseService,
@@ -36,13 +36,14 @@ export interface RequestHandlerOptions {
 
 export type RequestHandler = (request: Request) => Promise<Response>;
 
-const router = new Router();
 router.registerGroup(rootRoutes);
 router.registerGroup(openapiRoutes);
 router.registerGroup(serveRoutes);
 router.registerGroup(projectsRoutes);
 router.registerGroup(labelsRoutes);
 router.registerGroup(buildsRoutes);
+
+export { router };
 
 export function createRequestHandler(
   options: RequestHandlerOptions,

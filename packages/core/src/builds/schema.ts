@@ -35,7 +35,7 @@ export const BuildCreateSchema = BuildSchema.omit({
   labelSlugs: true,
   updatedAt: true,
 }).extend({
-  labels: LabelSlugSchema.array().meta({
+  labels: z.union([LabelSlugSchema.array(), LabelSlugSchema]).meta({
     description:
       "Label slugs associated with the build. Should be created beforehand.",
   }),

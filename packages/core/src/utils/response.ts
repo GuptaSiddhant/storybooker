@@ -3,14 +3,23 @@ import { ErrorMessage } from "#components/error-message";
 import { getStore } from "#store";
 import { CONTENT_TYPES, HEADERS } from "#utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
+import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { parseErrorMessage } from "./error";
 
+export const errorSchema = z
+  .object({ errorMessage: z.string() })
+  .meta({ id: "error" });
+export const errorContent = { "application/json": { schema: errorSchema } };
+
 export const commonErrorResponses: ZodOpenApiResponsesObject = {
-  400: { description: "Invalid request data" },
-  401: { description: "Unauthenticated access" },
-  403: { description: "Unauthorized access" },
-  500: { description: "An unexpected server-error occurred." },
+  400: { content: errorContent, description: "Invalid request data" },
+  401: { content: errorContent, description: "Unauthenticated access" },
+  403: { content: errorContent, description: "Unauthorized access" },
+  500: {
+    content: errorContent,
+    description: "An unexpected server-error occurred.",
+  },
 };
 
 export function responseHTML(html: JSX.Element, init?: ResponseInit): Response {

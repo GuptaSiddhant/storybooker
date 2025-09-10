@@ -5,7 +5,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-
+    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "jsxImportSource": "@kitajs/html",
     "plugins": [{ "name": "@kitajs/ts-html-plugin" }],

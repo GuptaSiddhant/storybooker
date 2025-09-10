@@ -46,9 +46,16 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   async create(data: unknown): Promise<BuildType> {
-    const { labels, sha, ...rest } = BuildCreateSchema.parse(data);
+    const {
+      labels: parsedLabels,
+      sha,
+      ...rest
+    } = BuildCreateSchema.parse(data);
     this.log("Create build '%s'...", sha);
 
+    const labels = Array.isArray(parsedLabels)
+      ? parsedLabels
+      : parsedLabels.split(",");
     const labelSlugs = await Promise.all(
       labels.filter(Boolean).map(async (labelSlug) => {
         return await this.#updateOrCreateLabel(labelSlug, sha);

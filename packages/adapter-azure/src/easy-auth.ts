@@ -16,14 +16,11 @@ export interface EasyAuthUser extends StoryBookerUser {
 export type EasyAuthRoleMap = Map<string, Permission[]>;
 
 export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
-  #authorise: AuthServiceAuthorise<EasyAuthUser>;
+  authorise: AuthServiceAuthorise<EasyAuthUser>;
 
   constructor(authorise: AuthServiceAuthorise<EasyAuthUser>) {
-    this.#authorise = authorise;
+    this.authorise = authorise;
   }
-
-  authorise: AuthServiceAuthorise<EasyAuthUser> = async (permission, options) =>
-    this.#authorise(permission, options);
 
   async getUserDetails(request: Request): Promise<EasyAuthUser> {
     const principalHeader = request.headers.get("x-ms-client-principal");

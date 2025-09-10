@@ -28,6 +28,7 @@
     ".": "./dist/index.js",
     "./blob-storage": "./dist/blob-storage.js",
     "./data-tables": "./dist/data-tables.js",
+    "./easy-auth": "./dist/easy-auth.js",
     "./package.json": "./package.json"
   },
   "scripts": {

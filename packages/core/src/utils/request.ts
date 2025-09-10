@@ -17,6 +17,12 @@ export function checkIsHTMLRequest(request?: Request): boolean {
   return !!accept?.includes(CONTENT_TYPES.HTML);
 }
 
+export function checkIsJSONRequest(request?: Request): boolean {
+  const req = request || getStore().request;
+  const accept = req.headers.get("accept");
+  return !!accept?.includes(CONTENT_TYPES.JSON);
+}
+
 export function validateIsFormEncodedRequest(
   request?: Request,
 ): undefined | ErrorObject {
