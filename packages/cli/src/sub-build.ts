@@ -1,8 +1,9 @@
+import { spawnSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import { detectPackageManager, spawnPromise } from "./utils";
+import { detectPackageManager } from "./utils";
 
-export async function buildStoryBook({
+export function buildStoryBook({
   build,
   cwd,
   silent,
@@ -10,7 +11,7 @@ export async function buildStoryBook({
   build?: string | boolean;
   cwd: string;
   silent?: boolean;
-}): Promise<string | undefined> {
+}): string | undefined {
   if (build === false) {
     console.log("> Skipping StoryBook Build.");
     return;
@@ -20,29 +21,26 @@ export async function buildStoryBook({
   if (typeof build === "string" && build.trim() !== "") {
     console.log("> Building StoryBook with script: %s", build);
     const pkgManager = detectPackageManager(cwd);
-    output = await spawnPromise(pkgManager, ["run", build], {
+    output = spawnSync(pkgManager, ["run", build], {
       cwd,
       shell: true,
-      stdio: silent ? undefined : "pipe",
-    });
+      stdio: silent ? undefined : "inherit",
+      encoding: "utf8",
+    }).stdout;
   } else {
     console.log("> Building StoryBook with storybook CLI");
-    output = await spawnPromise("npx", ["-y", "storybook", "build"], {
+    output = spawnSync("npx", ["-y", "storybook", "build"], {
       cwd,
-      stdio: silent ? undefined : "pipe",
-    });
+      stdio: silent ? undefined : "inherit",
+      encoding: "utf8",
+    }).stdout;
   }
 
-  if (!output) {
-    throw new Error(`No build output: ${output}`);
-  }
+  const outputDirpath = output?.split("Output directory: ").at(1)?.trim();
 
-  const outputDirpath =
-    output.split("Output directory: ").at(1)?.trim() ||
-    path.join(cwd, "storybook-static");
-
-  if (!fs.existsSync(outputDirpath)) {
-    throw new Error(`Could not find build output at '${outputDirpath}'.`);
+  if (!outputDirpath || !fs.existsSync(outputDirpath)) {
+    console.error(`Could not find build output at '${outputDirpath}'.`);
+    return undefined;
   }
 
   console.log(

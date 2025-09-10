@@ -37,15 +37,17 @@ export async function createSBRBuild(
 
   if (error) {
     if (ignorePrevious) {
-      console.warn(styleText("yellow", "> StoryBooker Build already exits."));
+      console.warn(
+        styleText("yellow", "> StoryBooker Build entry already exits."),
+      );
     } else {
       throw new Error(
         error.errorMessage ||
-          `Request to StoryBooker service failed with status: ${response.status}.`,
+          `Request to service failed with status: ${response.status}.`,
       );
     }
   } else {
-    console.log("StoryBooker Build '%s - %s' created.", project, sha);
+    console.log("New Build entry created '%s / %s'", project, sha);
   }
 }
 
@@ -99,14 +101,10 @@ export async function uploadSBRBuild(
   if (error) {
     throw new Error(
       error.errorMessage ||
-        `Request to StoryBooker service failed with status: ${response.status}.`,
+        `Request to service failed with status: ${response.status}.`,
     );
   } else {
-    console.log(
-      "> StoryBooker uploaded '%s / %s / %s'.",
-      project,
-      sha,
-      variant,
-    );
+    console.log("> Uploaded '%s / %s / %s'.", project, sha, variant);
+    fs.rmSync(zipFilepath);
   }
 }

@@ -72,6 +72,7 @@ export class BuildsModel extends Model<BuildType> {
       hasTestReport: false,
       id: sha,
       labelSlugs: labelSlugs.filter(Boolean).join(","),
+      message: rest.message || "",
       sha,
       updatedAt: now,
     };

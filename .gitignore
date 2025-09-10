@@ -39,6 +39,7 @@ server/files
 
 storybook-static
 .test-results
+.test
 *.zip
 test-report
 coverage

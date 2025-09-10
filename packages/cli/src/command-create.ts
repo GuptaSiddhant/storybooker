@@ -42,56 +42,53 @@ export const createCommandModule: CommandModule = {
     const client = createClient<paths>({ baseUrl: url });
 
     try {
-      console.group(styleText("bold", "Create Build Entry"));
+      console.group(styleText("bold", "\nCreate Build Entry"));
       await createSBRBuild(client, result.data, ignoreError);
       console.groupEnd();
 
-      console.group(styleText("bold", "Build StoryBook"));
-      const buildOutputDirpath = await buildStoryBook({ build, cwd, silent });
-
-      if (buildOutputDirpath) {
+      console.group(styleText("bold", "\nBuild StoryBook"));
+      const buildDirpath = buildStoryBook({ build, cwd, silent });
+      if (buildDirpath) {
         await uploadSBRBuild(client, {
           project,
           sha,
-          dirpath: buildOutputDirpath,
+          dirpath: buildDirpath,
           variant: "storybook",
           cwd,
         });
         console.groupEnd();
       }
 
-      console.group(styleText("bold", "Test StoryBook"));
-      if (test) {
-        const { testCoverageDirpath, testReportDirpath } = await testStoryBook({
-          cwd,
-          test,
-          silent,
-          testCoverageDir,
-          testReportDir,
-        });
+      console.group(styleText("bold", "\nTest StoryBook"));
+      const { testCoverageDirpath, testReportDirpath } = testStoryBook({
+        cwd,
+        test,
+        silent,
+        testCoverageDir,
+        testReportDir,
+      });
 
-        if (testReportDirpath) {
-          await uploadSBRBuild(client, {
-            project,
-            sha,
-            dirpath: testReportDirpath,
-            cwd,
-            variant: "testReport",
-          });
-        }
-        if (testCoverageDirpath) {
-          await uploadSBRBuild(client, {
-            project,
-            sha,
-            dirpath: testCoverageDirpath,
-            cwd,
-            variant: "coverage",
-          });
-        }
-      } else {
-        console.log("> Skipping tests");
+      if (testReportDirpath) {
+        await uploadSBRBuild(client, {
+          project,
+          sha,
+          dirpath: testReportDirpath,
+          cwd,
+          variant: "testReport",
+        });
+      }
+      if (testCoverageDirpath) {
+        await uploadSBRBuild(client, {
+          project,
+          sha,
+          dirpath: testCoverageDirpath,
+          cwd,
+          variant: "coverage",
+        });
       }
       console.groupEnd();
+
+      console.log(styleText("green", "Created build successfully."));
     } catch (error) {
       console.error(error);
       process.exit(1);
