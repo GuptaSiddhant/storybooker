@@ -1,17 +1,11 @@
 import z from "zod";
+import { sharedSchemas } from "../utils/schema-utils";
 
 export type CreateSchemaInputs = z.infer<typeof CreateSchema>;
 export const CreateSchema = z.object({
-  project: z
-    .string({ error: "ProjectID is required to match with project." })
-    .meta({
-      alias: ["p"],
-      description: "Project ID associated with the StoryBook.",
-    }),
-  url: z.url({ error: "URL is required to connect to the service." }).meta({
-    alias: ["u"],
-    description: "URL of the StoryBooker service.",
-  }),
+  project: sharedSchemas.project,
+  url: sharedSchemas.url,
+  cwd: sharedSchemas.cwd,
   sha: z.string({ error: "URL is required to connect to the service." }).meta({
     alias: ["id"],
     description: "Unique ID of the build.",
@@ -27,10 +21,6 @@ export const CreateSchema = z.object({
       alias: ["l"],
       description: "Labels associated with the build.",
     }),
-  cwd: z
-    .string()
-    .optional()
-    .meta({ description: "Change the working directory for the command." }),
   build: z
     .union([z.string(), z.boolean()])
     .optional()
@@ -45,12 +35,8 @@ export const CreateSchema = z.object({
       alias: ["t"],
       description: "Name of the script in package.json to test the StoryBook.",
     }),
-  testReportDir: z.string().optional().meta({
-    description: "Relative path of the test report directory to upload.",
-  }),
-  testCoverageDir: z.string().optional().meta({
-    description: "Relative path of the test coverage directory to upload.",
-  }),
+  testCoverageDir: sharedSchemas.testCoverageDir,
+  testReportDir: sharedSchemas.testReportDir,
   silent: z
     .boolean()
     .default(false)
@@ -64,5 +50,7 @@ export const CreateSchema = z.object({
   authorEmail: z.email().optional().meta({
     description: "Email of the author of the build.",
   }),
-  ignoreError: z.boolean().default(false),
+  ignoreError: z.boolean().default(false).meta({
+    hidden: true,
+  }),
 });

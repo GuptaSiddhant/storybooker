@@ -4,12 +4,12 @@ import { styleText } from "node:util";
 import createClient from "openapi-fetch";
 import type { CommandModule } from "yargs";
 import z from "zod";
-import { CreateSchema } from "./schema";
-import { createSBRBuild, uploadSBRBuild } from "./service";
-import type { paths } from "./service-schema";
-import { buildStoryBook } from "./sub-build";
-import { testStoryBook } from "./sub-test";
-import { zodSchemaToCommandBuilder } from "./utils";
+import type { paths } from "../service-schema";
+import { buildStoryBook } from "../utils/build";
+import { zodSchemaToCommandBuilder } from "../utils/schema-utils";
+import { testStoryBook } from "../utils/test";
+import { CreateSchema } from "./create-schema";
+import { createSBRBuild, uploadSBRBuild } from "./create-service";
 
 export const createCommandModule: CommandModule = {
   command: "create",

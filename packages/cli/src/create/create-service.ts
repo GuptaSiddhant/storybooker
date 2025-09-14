@@ -5,10 +5,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { styleText } from "node:util";
 import type { Client } from "openapi-fetch";
-import type { CreateSchemaInputs } from "./schema";
-import type { paths } from "./service-schema";
-import { toReadableStream } from "./utils";
-import { zip } from "./zip";
+import type { paths } from "../service-schema";
+import { toReadableStream } from "../utils/stream-utils";
+import { zip } from "../utils/zip";
+import type { CreateSchemaInputs } from "./create-schema";
 
 type ServiceClient = Client<paths, `${string}/${string}`>;
 
