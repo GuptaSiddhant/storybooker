@@ -7,6 +7,7 @@ declare module "zod" {
   interface GlobalMeta {
     alias?: string[];
     hidden?: boolean;
+    implies?: string;
   }
 }
 
@@ -31,6 +32,15 @@ export const sharedSchemas = {
   }),
   testCoverageDir: z.string().optional().meta({
     description: "Relative path of the test coverage directory to upload.",
+  }),
+
+  authType: z
+    .enum(["auth-header"])
+    .optional()
+    .meta({ description: "Enable auth for outgoing requests." }),
+  authValue: z.string().optional().meta({
+    description: "Auth value set for outgoing requests.",
+    implies: "authType",
   }),
 };
 
@@ -75,6 +85,7 @@ export function zodSchemaToCommandBuilder(
       default: defaultValue,
       deprecated: meta?.deprecated,
       hidden: meta?.hidden,
+      implies: meta?.implies,
     };
   }
 

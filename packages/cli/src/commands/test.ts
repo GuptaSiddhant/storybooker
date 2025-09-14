@@ -3,11 +3,11 @@ import * as path from "node:path";
 import { styleText } from "node:util";
 import type { CommandModule } from "yargs";
 import z from "zod";
+import { testStoryBook } from "../utils/sb-test";
 import {
   sharedSchemas,
   zodSchemaToCommandBuilder,
 } from "../utils/schema-utils";
-import { testStoryBook } from "../utils/test";
 
 const schema = z.object({
   cwd: sharedSchemas.cwd,

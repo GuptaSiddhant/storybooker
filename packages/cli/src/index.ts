@@ -1,9 +1,9 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { name, version } from "../package.json" with { type: "json" };
-import { createCommandModule } from "./create/create-command";
-import { purgeCommandModule } from "./purge/purge-command";
-import { testCommandModule } from "./test/test-command";
+import { createCommandModule } from "./commands/create";
+import { purgeCommandModule } from "./commands/purge";
+import { testCommandModule } from "./commands/test";
 
 yargs(hideBin(process.argv))
   .scriptName(name)
