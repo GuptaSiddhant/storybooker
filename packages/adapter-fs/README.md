@@ -2,26 +2,28 @@
 
 ## Database
 
-The Azure Storage provides DataTables which can be used as database for StoryBooker.
+The Local FileDB stores all data in a single JSON file.
+
+You can provide path of JSON file relative to CWD as a parameter.
 
 ```ts
-import { AzureDataTablesDatabaseService } from "@storybooker/adapter-azure/data-tables";
+import { LocalFileDatabase } from "@storybooker/adapter-azure/data-tables";
 
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const database = new AzureDataTablesDatabaseService(connectionString);
+const database = new LocalFileDatabase();
 
 // use as database in StoryBooker options.
 ```
 
 ## Storage
 
-The Azure Storage provides BlobStorage which can be used as storage for StoryBooker.
+The File Storage provides access to local files which can be used as storage for StoryBooker.
+
+You can provide path of directory relative to CWD as a parameter.
 
 ```ts
-import { AzureBlobStorageService } from "@storybooker/adapter-azure/blob-storage";
+import { LocalFileStorage } from "@storybooker/adapter-fs";
 
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const storage = new AzureBlobStorageService(connectionString);
+const storage = new LocalFileStorage();
 
 // use as storage in StoryBooker options.
 ```
