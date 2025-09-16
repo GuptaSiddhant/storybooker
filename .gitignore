@@ -34,8 +34,7 @@ public/sprite*
 
 .azurite
 
-server/db.json
-server/files
+.server
 
 storybook-static
 .test-results

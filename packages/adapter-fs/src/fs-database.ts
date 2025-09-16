@@ -4,30 +4,37 @@
 // oxlint-disable explicit-function-return-type
 // oxlint-disable require-await
 
+import * as fs from "node:fs";
+import * as fsp from "node:fs/promises";
+import * as path from "node:path";
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
-} from "../packages/core/dist/index.d.ts";
-
-const filename = "server/db.json";
+} from "@storybooker/core";
 
 interface BaseItem {
   id: string;
 }
-export class FileDatabase implements DatabaseService {
+export class LocalFileDatabase implements DatabaseService {
+  #filename: string;
   #db: Record<string, Record<string, BaseItem>> = {};
 
-  constructor() {
+  constructor(filename = "db.json") {
+    this.#filename = filename;
     try {
-      const db = Deno.readTextFileSync(filename);
+      const db = fs.readFileSync(filename, { encoding: "utf8" });
       this.#db = db ? JSON.parse(db) : {};
     } catch {
-      Deno.create(filename);
+      const basedir = path.dirname(filename);
+      fs.mkdirSync(basedir, { recursive: true });
+      fs.writeFileSync(filename, "{}", { encoding: "utf8" });
     }
   }
 
   async #saveToFile() {
-    await Deno.writeTextFile(filename, JSON.stringify(this.#db, null, 2));
+    await fsp.writeFile(this.#filename, JSON.stringify(this.#db, null, 2), {
+      encoding: "utf8",
+    });
   }
 
   createCollection = async (name: string) => {
@@ -52,8 +59,10 @@ export class FileDatabase implements DatabaseService {
       throw new Error(`No collection - ${name}`);
     }
     const { limit = Number.POSITIVE_INFINITY, sort, filter } = options || {};
+
     // oxlint-disable-next-line no-non-null-assertion
-    const items = Object.values(this.#db[name]) as Item[];
+    const collection = this.#db[name]!;
+    const items = Object.values(collection) as Item[];
     if (sort && typeof sort === "function") {
       items.sort(sort);
     }
@@ -67,7 +76,7 @@ export class FileDatabase implements DatabaseService {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
-    const item = this.#db[name][id];
+    const item = this.#db[name]?.[id];
     if (!item) {
       throw new Error(`Item '${id}' not found in collection '${name}'`);
     }
@@ -77,12 +86,14 @@ export class FileDatabase implements DatabaseService {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
-    if (this.#db[name][item.id]) {
+    // oxlint-disable-next-line no-non-null-assertion
+    const collection = this.#db[name]!;
+    if (collection[item.id]) {
       throw new Error(
         `Item '${item.id}' already exists in collection '${name}'`,
       );
     }
-    this.#db[name][item.id] = item;
+    collection[item.id] = item;
     await this.#saveToFile();
   };
   deleteDocument = async (name: string, id: string) => {
@@ -92,8 +103,10 @@ export class FileDatabase implements DatabaseService {
     if (!(await this.getDocument(name, id))) {
       throw new Error(`Item '${id}' not found in collection '${name}'`);
     }
+    // oxlint-disable-next-line no-non-null-assertion
+    const collection = this.#db[name]!;
     // oxlint-disable-next-line no-dynamic-delete
-    delete this.#db[name][id];
+    delete collection[id];
     await this.#saveToFile();
   };
   updateDocument = async (
@@ -108,7 +121,9 @@ export class FileDatabase implements DatabaseService {
     if (!prevItem) {
       throw new Error(`Item '${id}' not found in collection '${name}'`);
     }
-    this.#db[name][id] = { ...prevItem, ...item, id };
+    // oxlint-disable-next-line no-non-null-assertion
+    const collection = this.#db[name]!;
+    collection[id] = { ...prevItem, ...item, id };
     await this.#saveToFile();
   };
 }

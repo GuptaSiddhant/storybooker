@@ -1,0 +1,54 @@
+{
+  "name": "@storybooker/adapter-fs",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "StoryBooker Adapter for interacting with local file storage.",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guptasiddhant/storybooker",
+    "directory": "packages/adapter-fs"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guptasiddhant/storybooker/issues"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check": "tsgo --noEmit",
+    "dev": "tsdown -w ./src",
+    "fmt": "prettier src --write --config ../../.prettierrc",
+    "lint": "oxlint --type-aware ./src",
+    "lint:fix": "yarn lint --fix",
+    "start": "func start"
+  },
+  "dependencies": {
+    "@storybooker/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20250823.8",
+    "oxlint": "^1.12.0",
+    "oxlint-tsgolint": "^0.0.4",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.14.1"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts"
+}

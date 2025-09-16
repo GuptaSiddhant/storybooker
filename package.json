@@ -20,7 +20,7 @@
     "fmt": "turbo fmt",
     "functions": "yarn workspace @storybooker/azure-functions start",
     "lint": "turbo lint",
-    "server": "deno serve -A --watch ./server/mod.ts",
+    "server": "deno serve -A --unstable-sloppy-imports --watch ./server.ts",
     "verify": "turbo verify"
   },
   "devDependencies": {
