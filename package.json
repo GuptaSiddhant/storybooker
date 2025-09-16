@@ -8,7 +8,7 @@
   "packageManager": "yarn@4.1.1",
   "workspaces": [
     "./apps/*",
-    "./packages/**/*"
+    "./packages/*"
   ],
   "scripts": {
     "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
@@ -20,10 +20,12 @@
     "fmt": "turbo fmt",
     "functions": "yarn workspace @storybooker/azure-functions start",
     "lint": "turbo lint",
+    "pub": "turbo run build lint test && changeset version && changeset publish",
     "server": "deno serve -A --unstable-sloppy-imports --watch ./server.ts",
     "verify": "turbo verify"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.7",
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "prettier": "^3.6.2",
     "turbo": "^2.5.6"
