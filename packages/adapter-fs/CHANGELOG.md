@@ -1,5 +1,13 @@
 # @storybooker/adapter-fs
 
+## 0.1.1
+
+### Patch Changes
+
+- 862a451: Accept generic User type for AuthService
+- Updated dependencies [862a451]
+  - @storybooker/core@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

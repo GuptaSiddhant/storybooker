@@ -1,5 +1,14 @@
 # @storybooker/azure-functions
 
+## 1.0.1
+
+### Patch Changes
+
+- 862a451: Accept generic User type for AuthService
+- Updated dependencies [862a451]
+  - @storybooker/adapter-azure@0.1.1
+  - @storybooker/core@0.1.1
+
 ## 1.0.0
 
 ### Minor Changes
