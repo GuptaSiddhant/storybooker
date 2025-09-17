@@ -11,6 +11,7 @@ import {
   SERVICE_NAME,
   urlJoin,
   type AuthService,
+  type BrandingOptions,
   type DatabaseService,
   type LoggerService,
   type OpenAPIOptions,
@@ -40,6 +41,11 @@ export interface RegisterStorybookerRouterOptions<
    * This setting does not affect health-check route.
    */
   authLevel?: "admin" | "function" | "anonymous";
+
+  /**
+   * Branding options
+   */
+  branding?: BrandingOptions;
 
   /**
    * Enable headless mode to disable all UI/HTML responses
@@ -108,6 +114,7 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
   const handlerOptions: ServiceHandlerOptions<User> = {
     auth: options.auth,
     baseRoute: route,
+    branding: options.branding,
     database: options.database,
     headless: options.headless,
     logger: options.logger,
@@ -144,6 +151,7 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
 interface ServiceHandlerOptions<User extends StoryBookerUser> {
   auth?: AuthService<User>;
   baseRoute: string;
+  branding?: BrandingOptions;
   headless?: boolean;
   logger?: LoggerService;
   staticDirs: readonly string[] | undefined;
@@ -157,14 +165,10 @@ async function serviceHandler<User extends StoryBookerUser>(
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
   const requestHandler = createRequestHandler({
-    auth: options.auth,
     customErrorParser: parseAzureRestError,
-    database: options.database,
-    headless: options.headless,
-    logger: options.logger || context,
+    logger: context,
     prefix: generatePrefixFromBaseRoute(options.baseRoute) || "/",
-    staticDirs: options.staticDirs,
-    storage: options.storage,
+    ...options,
   });
 
   try {

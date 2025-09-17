@@ -84,6 +84,9 @@ export interface StorageService {
   ) => Promise<ReadableStream | string>;
 }
 
+/**
+ * OpenAPI options
+ */
 export interface OpenAPIOptions {
   /**
    * Servers to be included in the OpenAPI schema.
@@ -102,6 +105,36 @@ export interface OpenAPIOptions {
    * @default swagger
    */
   ui?: "swagger" | "scalar";
+}
+
+/**
+ * Options to stylise StoryBooker
+ */
+export interface BrandingOptions {
+  /**
+   * Valid HTML string to place a logo/text in Header
+   */
+  logo?: string;
+  darkTheme?: BrandTheme;
+  lightTheme?: BrandTheme;
+}
+
+/** Brand colors used for theming. */
+export interface BrandTheme {
+  backgroundColor: {
+    base: string;
+    card: string;
+    invert: string;
+  };
+  textColor: {
+    primary: string;
+    secondary: string;
+    accent: string;
+    invert: string;
+  };
+  borderColor: {
+    default: string;
+  };
 }
 
 /**

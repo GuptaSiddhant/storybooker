@@ -1,28 +1,68 @@
+// oxlint-disable sort-keys
+
+import type { BrandTheme } from "../types";
+
+const DEFAULT_LIGHT_THEME: BrandTheme = {
+  backgroundColor: {
+    base: "#f2f2f2",
+    card: "#ffffff",
+    invert: "#000000",
+  },
+  textColor: {
+    primary: "#09090b",
+    secondary: "#71717b",
+    accent: "#2b7fff",
+    invert: "#ffffff",
+  },
+  borderColor: { default: "#e4e4e7" },
+};
+
+const DEFAULT_DARK_THEME: BrandTheme = {
+  backgroundColor: {
+    base: "#09090b",
+    card: "#18181b",
+    invert: "#ffffff",
+  },
+  textColor: {
+    primary: "#fafafa",
+    secondary: "#9f9fa9",
+    accent: "#2b7fff",
+    invert: "#000000",
+  },
+  borderColor: { default: "#ffffff1a" },
+};
+
 // oxlint-disable max-lines
 // oxlint-disable no-useless-escape
-export function globalStyleSheet(): string {
+export function globalStyleSheet(theme: {
+  darkTheme: BrandTheme | undefined;
+  lightTheme: BrandTheme | undefined;
+}): string {
+  const { darkTheme = DEFAULT_DARK_THEME, lightTheme = DEFAULT_LIGHT_THEME } =
+    theme || {};
+
   return /*css*/ `
     :root {
-      --color-bg-base: #f2f2f2;
-      --color-bg-card: #ffffff;
-      --color-bg-invert: #000000;
-      --color-text-primary: #09090b;
-      --color-text-secondary: #71717b;
-      --color-text-accent: #2b7fff;
-      --color-text-invert: #ffffff;
-      --color-border: #e4e4e7;
+      --color-bg-base: ${lightTheme.backgroundColor.base};
+      --color-bg-card:${lightTheme.backgroundColor.card};
+      --color-bg-invert:${lightTheme.backgroundColor.invert};
+      --color-text-primary:${lightTheme.textColor.primary};
+      --color-text-secondary: ${lightTheme.textColor.secondary};
+      --color-text-accent: ${lightTheme.textColor.accent};
+      --color-text-invert: ${lightTheme.textColor.invert};
+      --color-border: ${lightTheme.borderColor.default};
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --color-bg-base: #09090b;
-        --color-bg-card: #18181b;
-        --color-bg-invert: #ffffff;
-        --color-text-primary: #fafafa;
-        --color-text-secondary: #9f9fa9;
-        --color-text-accent: #2b7fff;
-        --color-text-invert: #000000;
-        --color-border: #ffffff1a;
+        --color-bg-base: ${darkTheme.backgroundColor.base};
+        --color-bg-card:${darkTheme.backgroundColor.card};
+        --color-bg-invert:${darkTheme.backgroundColor.invert};
+        --color-text-primary:${darkTheme.textColor.primary};
+        --color-text-secondary: ${darkTheme.textColor.secondary};
+        --color-text-accent: ${darkTheme.textColor.accent};
+        --color-text-invert: ${darkTheme.textColor.invert};
+        --color-border: ${darkTheme.borderColor.default};
       }
     }
 

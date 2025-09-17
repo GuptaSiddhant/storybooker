@@ -11,6 +11,7 @@ import * as serveRoutes from "./root/serve";
 import { router } from "./router";
 import type {
   AuthService,
+  BrandingOptions,
   DatabaseService,
   LoggerService,
   OpenAPIOptions,
@@ -25,6 +26,7 @@ export * from "#utils/url";
 
 export interface RequestHandlerOptions<User extends StoryBookerUser> {
   auth?: AuthService<User>;
+  branding?: BrandingOptions;
   database: DatabaseService;
   logger?: LoggerService;
   customErrorParser?: CustomErrorParser;
@@ -58,6 +60,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
 
       localStore.enterWith({
         auth: options.auth as AuthService | undefined,
+        branding: options.branding,
         customErrorParser: options.customErrorParser,
         database: options.database,
         headless: !!options.headless,

@@ -21,7 +21,10 @@ export function DocumentLayout({
   footer?: JSX.Element | null;
   account?: JSX.Element | null;
 }): JSX.Element {
-  const safeStylesheet = globalStyleSheet();
+  const { branding } = getStore();
+
+  const { darkTheme, lightTheme } = branding || {};
+  const safeStylesheet = globalStyleSheet({ darkTheme, lightTheme });
 
   return (
     <>
@@ -77,8 +80,33 @@ export function DocumentLayout({
 }
 
 function Logo(): JSX.Element {
+  const { branding = {} } = getStore();
+  const { logo } = branding;
+
+  // oxlint-disable-next-line no-nested-ternary
+  const logoElement = logo ? (
+    logo.startsWith("http") ? (
+      <img
+        src={logo}
+        style="width:100%; object-fit:contain; background:white; padding:4px; border-radius: 4px;"
+      />
+    ) : (
+      logo
+    )
+  ) : undefined;
+
   return (
-    <a href={urlBuilder.root()} title="Home">
+    <a
+      href={urlBuilder.root()}
+      title="Home"
+      style={{
+        display: "flex",
+        gap: "0.5rem",
+        alignItems: "center",
+        justifyContent: "center",
+        textDecoration: "none",
+      }}
+    >
       <strong
         style={{
           color: "var(--color-text-primary)",
@@ -93,6 +121,30 @@ function Logo(): JSX.Element {
         <br />
         <span style={{ fontSize: "0.7em" }}>BOOKER</span>
       </strong>
+
+      {logo ? (
+        <>
+          <div
+            style={{
+              background: "var(--color-border)",
+              width: "1px",
+              height: "40px",
+            }}
+          />
+          <div
+            style={{
+              maxWidth: "90px",
+              maxHeight: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            {logoElement}
+          </div>
+        </>
+      ) : null}
     </a>
   );
 }

@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import type { CustomErrorParser } from "#utils/error";
 import type {
   AuthService,
+  BrandingOptions,
   DatabaseService,
   LoggerService,
   OpenAPIOptions,
@@ -11,10 +12,10 @@ import type {
 
 export interface Store {
   auth: AuthService | undefined;
+  branding: BrandingOptions | undefined;
   database: DatabaseService;
   logger: LoggerService;
   storage: StorageService;
-
   prefix: string;
   openAPI?: OpenAPIOptions | undefined | null;
   customErrorParser: CustomErrorParser | undefined;
