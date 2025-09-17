@@ -38,6 +38,8 @@ jobs:
       - name: Publish
         if: ${{ steps.versioning.outputs.hasChangesets == 'true' }}
         run: yarn publish
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Push tags
         if: ${{ steps.versioning.outputs.hasChangesets == 'true' }}
