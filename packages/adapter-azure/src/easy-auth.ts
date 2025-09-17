@@ -12,6 +12,7 @@ export type { AuthServiceAuthorise } from "@storybooker/core";
 
 export interface EasyAuthUser extends StoryBookerUser {
   roles: string[] | null;
+  type: "application" | "user";
 }
 
 export type EasyAuthRoleMap = Map<string, Permission[]>;
@@ -22,6 +23,10 @@ const DEFAULT_AUTHORISE: AuthServiceAuthorise<EasyAuthUser> = (
 ) => {
   if (!user) {
     return false;
+  }
+
+  if (user.type === "application") {
+    return true;
   }
 
   if (action === "read") {
@@ -64,7 +69,12 @@ export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
 
     const azpToken = claims.find((claim) => claim.typ === "azp")?.val;
     if (azpToken) {
-      return { displayName: "Application", id: azpToken, roles: null };
+      return {
+        displayName: "App",
+        id: azpToken,
+        roles: null,
+        type: "application",
+      };
     }
 
     const name = claims.find((claim) => claim.typ === "name")?.val;
@@ -83,6 +93,7 @@ export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
       id: email || "",
       roles,
       title: roles.join(", "),
+      type: "user",
     };
   }
 
