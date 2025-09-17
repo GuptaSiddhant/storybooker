@@ -27,8 +27,9 @@ jobs:
         run: yarn install --immutable
       - name: Verify
         run: yarn verify
-      - name: Versioning
-        id: versioning
+
+      - name: Check changesets
+        id: check
         run: |
           count=$(find .changeset -name "*.md" | wc -l | tr -d '[:space:]')
           if [[ $count == 0 ]]; then
@@ -38,9 +39,12 @@ jobs:
           fi
 
       - name: Publish
-        if: ${{ steps.versioning.outputs.hasChangesets == 'true' }}
+        if: ${{ steps.check.outputs.hasChangesets == 'true' }}
         run: yarn publish
 
-      - name: Push tags
-        if: ${{ steps.versioning.outputs.hasChangesets == 'true' }}
-        run: git push origin --tags
+      - name: Push changes
+        if: ${{ steps.check.outputs.hasChangesets == 'true' }}
+        run: |
+          git status
+          git push origin
+          git push origin --tags
