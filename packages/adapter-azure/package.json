@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/adapter-azure",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with Azure services.",
   "author": {

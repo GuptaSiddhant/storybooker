@@ -1,5 +1,13 @@
 # @storybooker/adapter-fs
 
+## 0.0.3
+
+### Patch Changes
+
+- 14a26f6: Include CHANGELOG.md in published packages
+- Updated dependencies [14a26f6]
+  - @storybooker/core@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes

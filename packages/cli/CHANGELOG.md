@@ -1,5 +1,11 @@
 # storybooker
 
+## 0.0.3
+
+### Patch Changes
+
+- 14a26f6: Include CHANGELOG.md in published packages
+
 ## 0.0.2
 
 ### Patch Changes
