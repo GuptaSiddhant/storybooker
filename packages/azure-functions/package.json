@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/azure-functions",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "description": "Utils to upload and manage Storybooks via Azure Functions and storage.",
   "author": {
