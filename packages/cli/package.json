@@ -8,6 +8,11 @@
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"
   },
+  "files": [
+    "src",
+    "dist",
+    "CHANGELOG.md"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/guptasiddhant/storybooker",

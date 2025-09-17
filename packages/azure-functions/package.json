@@ -20,8 +20,9 @@
     "access": "public"
   },
   "files": [
+    "src",
     "dist",
-    "src"
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.0.0"

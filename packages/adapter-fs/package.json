@@ -17,8 +17,9 @@
     "url": "https://github.com/guptasiddhant/storybooker/issues"
   },
   "files": [
+    "src",
     "dist",
-    "src"
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=22.0.0"

@@ -12,6 +12,11 @@
     "url": "https://github.com/guptasiddhant/storybooker",
     "directory": "packages/core"
   },
+  "files": [
+    "src",
+    "dist",
+    "CHANGELOG.md"
+  ],
   "license": "MIT",
   "sideEffects": false,
   "scripts": {
