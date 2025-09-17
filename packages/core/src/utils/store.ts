@@ -22,7 +22,7 @@ export interface Store {
   request: Request;
   headless: boolean;
   url: string;
-  user?: StoryBookerUser;
+  user: StoryBookerUser | null | undefined;
 }
 
 export const localStore = new AsyncLocalStorage<Store>();

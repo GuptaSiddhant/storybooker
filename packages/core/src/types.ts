@@ -159,7 +159,7 @@ export type AuthServiceAuthorise<
   AuthUser extends StoryBookerUser = StoryBookerUser,
 > = (
   permission: PermissionWithKey,
-  options: { request: Request; user: AuthUser | undefined },
+  options: { request: Request; user: AuthUser | undefined | null },
 ) => Promise<boolean | Response> | boolean | Response;
 
 /**  Type of permission to check */
