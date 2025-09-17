@@ -119,7 +119,7 @@ export interface AuthService<
    *
    * - Response with `true` to allow user to proceed.
    * - Respond with `false` to block user.
-   * - Resposd with `Response` to return custom response
+   * - Respond with `Response` to return custom response
    */
   authorise: AuthServiceAuthorise<AuthUser>;
   /**
@@ -127,11 +127,25 @@ export interface AuthService<
    *
    * Throw an error or response (redirect-to-login) if it is a unauthenticated/anauthorised request.
    */
-  getUserDetails: (request: Request) => Promise<AuthUser>;
+  getUserDetails: (request: Request) => Promise<AuthUser | null>;
   /**
-   * Give user to logout from UI. The returning response should clear auth session.
+   * Get user to login from UI. The returning response should redirect user back to serviceUrl.
    */
-  logout?: (request: Request, user: AuthUser) => Promise<Response>;
+  login?: (
+    request: Request,
+    serviceUrl: string,
+  ) => Promise<Response> | Response;
+  /**
+   * Get user to logout from UI. The returning response should clear auth session.
+   */
+  logout?: (request: Request, user: AuthUser) => Promise<Response> | Response;
+  /**
+   * Render custom HTML in account page. Must return valid HTML string;
+   */
+  renderAccount?: (
+    request: Request,
+    user: AuthUser,
+  ) => Promise<string> | string;
 }
 
 /**
@@ -141,10 +155,12 @@ export interface AuthService<
  * - false - returns 403 response
  * - Response - returns the specified HTTP response
  */
-export type AuthServiceAuthorise<AuthUser extends StoryBookerUser> = (
+export type AuthServiceAuthorise<
+  AuthUser extends StoryBookerUser = StoryBookerUser,
+> = (
   permission: PermissionWithKey,
-  options: { request: Request; user: AuthUser },
-) => Promise<boolean | Response>;
+  options: { request: Request; user: AuthUser | undefined },
+) => Promise<boolean | Response> | boolean | Response;
 
 /**  Type of permission to check */
 export interface Permission {

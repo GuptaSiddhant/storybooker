@@ -16,10 +16,27 @@ export interface EasyAuthUser extends StoryBookerUser {
 
 export type EasyAuthRoleMap = Map<string, Permission[]>;
 
+const DEFAULT_AUTHORISE: AuthServiceAuthorise<EasyAuthUser> = (
+  { action },
+  { user },
+) => {
+  if (!user) {
+    return false;
+  }
+
+  if (action === "read") {
+    return true;
+  }
+
+  return Boolean(user.roles && user.roles.length > 0);
+};
+
 export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
   authorise: AuthServiceAuthorise<EasyAuthUser>;
 
-  constructor(authorise: AuthServiceAuthorise<EasyAuthUser>) {
+  constructor(
+    authorise: AuthServiceAuthorise<EasyAuthUser> = DEFAULT_AUTHORISE,
+  ) {
     this.authorise = authorise;
   }
 

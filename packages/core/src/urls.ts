@@ -11,6 +11,8 @@ export const URLS = {
     root: "",
     openapi: "openapi",
     health: "health",
+    account: "account",
+    login: "login",
     logout: "logout",
     catchAll: "*filepath",
   },
@@ -40,13 +42,14 @@ export const URLS = {
 } as const;
 
 const baseHref = createHrefBuilder();
-export function href<Pattern extends string>(
-  ...buildParams: Parameters<HrefBuilder<Pattern>>
-): string {
+
+export const href: HrefBuilder<string> = (...buildParams) => {
   const { prefix, url: base } = getStore();
-  const path = baseHref(...buildParams);
-  return new URL(urlJoin(prefix, path), base).toString();
-}
+  const [pattern, args, args2] = buildParams;
+  // @ts-expect-error args are complex
+  const value = baseHref(pattern, args, args2);
+  return new URL(urlJoin(prefix, value), base).toString();
+};
 
 /**
  * URL builder for the Storybooks router.

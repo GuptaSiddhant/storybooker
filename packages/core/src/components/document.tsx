@@ -8,46 +8,20 @@ import { href, urlBuilder, URLS } from "#urls";
 import { urlJoin } from "#utils/url";
 import { globalStyleSheet } from "./_global";
 
-function Logo(): JSX.Element {
-  return (
-    <a href={urlBuilder.root()} title="Home">
-      <strong
-        style={{
-          color: "var(--color-text-primary)",
-          display: "block",
-          fontFamily: "monospace",
-          fontSize: "1.2em",
-          lineHeight: "0.8",
-          textAlign: "center",
-        }}
-      >
-        STORY
-        <br />
-        <span style={{ fontSize: "0.7em" }}>BOOKER</span>
-      </strong>
-    </a>
-  );
-}
+type Children = JSX.Element | null | (JSX.Element | null)[];
 
 export function DocumentLayout({
   title,
-  breadcrumbs = [],
   children,
   footer,
-  toolbar,
-  sidebar,
-  style,
 }: {
+  id?: string;
   title: string;
-  breadcrumbs?: string[] | Array<{ label: string; href?: string }>;
-  children: JSX.Element;
+  children: Children;
   footer?: JSX.Element | null;
-  toolbar?: JSX.Element | null;
-  sidebar?: JSX.Element | null;
-  style?: JSX.CSSProperties;
+  account?: JSX.Element | null;
 }): JSX.Element {
   const safeStylesheet = globalStyleSheet();
-  const store = getStore();
 
   return (
     <>
@@ -74,36 +48,7 @@ export function DocumentLayout({
               <Logo />
             </div>
 
-            <header>
-              <div class="page-heading" style={{ flex: 1 }}>
-                {breadcrumbs.length > 0 ? (
-                  <ul>
-                    {breadcrumbs.map((crumb, index, arr) => {
-                      const href =
-                        (typeof crumb === "object" ? crumb.href : "") ||
-                        urlJoin(
-                          store.url,
-                          ...Array.from({ length: arr.length - index }).map(
-                            () => "..",
-                          ),
-                        );
-                      return (
-                        <li>
-                          <a safe href={href}>
-                            {typeof crumb === "object" ? crumb.label : crumb}
-                          </a>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                ) : null}
-                <div safe>{title}</div>
-              </div>
-
-              {toolbar ? <div>{toolbar}</div> : null}
-            </header>
-
-            <main style={style}>{children}</main>
+            {children}
 
             <footer>
               {footer ?? (
@@ -112,16 +57,13 @@ export function DocumentLayout({
                     color: "var(--color-text-secondary)",
                     textAlign: "end",
                     width: "100%",
+                    fontSize: "0.8rem",
                   }}
                 >
                   {SERVICE_NAME} 2025
                 </div>
               )}
             </footer>
-
-            <aside>{sidebar}</aside>
-
-            <DocumentUserSection />
           </div>
 
           <script
@@ -134,20 +76,109 @@ export function DocumentLayout({
   );
 }
 
-function DocumentUserSection(): JSX.Element {
+function Logo(): JSX.Element {
+  return (
+    <a href={urlBuilder.root()} title="Home">
+      <strong
+        style={{
+          color: "var(--color-text-primary)",
+          display: "block",
+          fontFamily: "monospace",
+          fontSize: "1.2em",
+          lineHeight: "0.8",
+          textAlign: "center",
+        }}
+      >
+        STORY
+        <br />
+        <span style={{ fontSize: "0.7em" }}>BOOKER</span>
+      </strong>
+    </a>
+  );
+}
+
+export function DocumentHeader({
+  breadcrumbs = [],
+  children,
+  toolbar,
+}: {
+  breadcrumbs?: string[] | Array<{ label: string; href?: string }>;
+  children: Children;
+  toolbar?: JSX.Element | null;
+}): JSX.Element {
+  const store = getStore();
+
+  return (
+    <header>
+      <div class="page-heading" style={{ flex: 1 }}>
+        {breadcrumbs.length > 0 ? (
+          <ul>
+            {breadcrumbs.map((crumb, index, arr) => {
+              const href =
+                (typeof crumb === "object" ? crumb.href : "") ||
+                urlJoin(
+                  store.url,
+                  ...Array.from({ length: arr.length - index }).map(() => ".."),
+                );
+              return (
+                <li>
+                  <a safe href={href}>
+                    {typeof crumb === "object" ? crumb.label : crumb}
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+        <div safe>{children}</div>
+      </div>
+
+      {toolbar ? <div>{toolbar}</div> : null}
+    </header>
+  );
+}
+
+export function DocumentMain({
+  children,
+  style,
+}: {
+  style?: JSX.CSSProperties;
+  children: Children;
+}): JSX.Element {
+  return <main style={style}>{children}</main>;
+}
+
+export function DocumentSidebar({
+  children,
+  style,
+}: {
+  style?: JSX.CSSProperties;
+  children?: Children;
+}): JSX.Element {
+  return <aside style={style}>{children}</aside>;
+}
+
+export function DocumentUserSection(): JSX.Element {
   const { auth, user } = getStore();
 
   if (!user) {
     return (
       <div id="user" style={{ padding: "1rem" }}>
-        <span style={{ opacity: 0.5 }}>Anonymous</span>
+        {auth?.login ? (
+          <form action={href(URLS.ui.login)}>
+            <button style={"padding:0"}>Login</button>
+          </form>
+        ) : (
+          <span style={{ opacity: 0.5 }}>Anonymous</span>
+        )}
       </div>
     );
   }
 
   return (
-    <div
+    <a
       id="user"
+      href={href(URLS.ui.account)}
       style={{
         padding: 0,
         paddingLeft: user.imageUrl ? "0.5rem" : "1rem",
@@ -155,16 +186,18 @@ function DocumentUserSection(): JSX.Element {
         display: "flex",
         alignItems: "center",
         gap: "0.5rem",
+        textDecoration: "none",
       }}
     >
       {user.imageUrl ? (
         <img
+          alt={user.id}
           src={user.imageUrl}
           style={{
             width: "2rem",
             minWidth: "2rem",
             height: "2rem",
-            borderRadius: "100%",
+            borderRadius: "0.25rem",
             overflow: "hidden",
             objectFit: "cover",
             border: "1px solid",
@@ -199,18 +232,7 @@ function DocumentUserSection(): JSX.Element {
         ) : null}
       </div>
 
-      {auth?.logout ? (
-        <form action={href(URLS.ui.logout)}>
-          <button
-            class={"destructive"}
-            aria-label="Logout"
-            title="Logout"
-            style={{ padding: 0, width: "1.5rem", aspectRatio: 1 }}
-          >
-            {"&cross;"}
-          </button>
-        </form>
-      ) : null}
-    </div>
+      <span style={{ opacity: 0.5 }}>{"&rarr;"}</span>
+    </a>
   );
 }

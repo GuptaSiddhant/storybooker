@@ -13,7 +13,7 @@ import {
 } from "#utils/response";
 import { urlJoin } from "#utils/url";
 import z from "zod";
-import { renderRootPage } from "./render";
+import { renderAccountPage, renderRootPage } from "./render";
 
 const rootSchema = z.object({
   urls: z.record(z.string(), z.record(z.string(), z.url())),
@@ -88,6 +88,24 @@ export const health = defineRoute(
   () => new Response("Service is Healthy", { status: 200 }),
 );
 
+export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
+  const { auth, request, url } = getStore();
+  if (!auth?.login) {
+    return responseError("Auth is not setup", 404);
+  }
+  const serviceUrl = url.replace(URLS.ui.login, "");
+  const response = await auth.login(request, serviceUrl);
+
+  if (response.status >= 300 && response.status < 400) {
+    return responseRedirect(
+      response.headers.get("Location") || "/",
+      response.status,
+    );
+  }
+
+  return response;
+});
+
 export const logout = defineRoute(
   "get",
   URLS.ui.logout,
@@ -98,6 +116,40 @@ export const logout = defineRoute(
       return responseError("Auth is not setup", 404);
     }
 
-    return await auth.logout(request, user);
+    const response = await auth.logout(request, user);
+    if (response.status >= 300 && response.status < 400) {
+      return responseRedirect(
+        response.headers.get("Location") || "/",
+        response.status,
+      );
+    }
+
+    return response;
+  },
+);
+
+export const account = defineRoute(
+  "get",
+  URLS.ui.account,
+  undefined,
+  async () => {
+    const { auth, request, user, url } = getStore();
+    if (!auth) {
+      return responseError("Auth is not setup", 404);
+    }
+
+    if (!user) {
+      const serviceUrl = url.replace(URLS.ui.account, "");
+
+      if (auth.login) {
+        return await auth.login(request, serviceUrl);
+      }
+
+      return responseRedirect(serviceUrl, 404);
+    }
+
+    const children = await auth.renderAccount?.(request, user);
+
+    return responseHTML(renderAccountPage({ children }));
   },
 );

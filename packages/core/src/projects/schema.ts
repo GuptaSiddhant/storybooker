@@ -30,7 +30,7 @@ export const ProjectSchema = z
 
     id: ProjectIdSchema,
 
-    jiraDomain: z.url().optional(),
+    jiraDomain: z.union([z.url().optional(), z.literal("")]),
 
     latestBuildSHA: z.union([BuildSHASchema.optional(), z.literal("")]),
 

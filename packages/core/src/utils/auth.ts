@@ -6,7 +6,7 @@ export async function authenticateOrThrow(
   permission: Permission,
 ): Promise<void> {
   const { auth, request, user } = getStore();
-  if (!auth || !user) {
+  if (!auth) {
     return;
   }
   const key: PermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;

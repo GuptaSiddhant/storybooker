@@ -87,7 +87,7 @@ export function globalStyleSheet(): string {
     #app > aside {
       grid-area: aside;
       width: 200px;   
-      padding: 1rem;
+      /* padding: 1rem; */
     }
     #app > #user {
       grid-area: user;
@@ -115,8 +115,7 @@ export function globalStyleSheet(): string {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      overflow: auto;
-      padding: 1rem;     
+      overflow: auto;      
     }
 
     #app > footer {

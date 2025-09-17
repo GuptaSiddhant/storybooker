@@ -47,6 +47,18 @@ export function LabelsTable({
         {
           id: "slug",
           header: "Slug",
+          cell: (item) => {
+            return (
+              <a
+                href={href(URLS.labels.id, {
+                  projectId: project.id,
+                  labelSlug: item.slug,
+                })}
+              >
+                {item.slug}
+              </a>
+            );
+          },
         },
         {
           id: "value",

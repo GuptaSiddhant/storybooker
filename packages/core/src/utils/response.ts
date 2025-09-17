@@ -1,10 +1,9 @@
-import { DocumentLayout } from "#components/document";
-import { ErrorMessage } from "#components/error-message";
 import { getStore } from "#store";
 import { CONTENT_TYPES, HEADERS } from "#utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
+import { renderErrorPage } from "../root/render";
 import { parseErrorMessage } from "./error";
 
 export const errorSchema = z
@@ -112,13 +111,7 @@ function handleErrorResponseForHTMLRequest(
   status: number,
 ): Response {
   return responseHTML(
-    // oxlint-disable-next-line new-cap
-    DocumentLayout({
-      breadcrumbs: [{ href: "javascript:history.back()", label: "< Back" }],
-      // oxlint-disable-next-line new-cap
-      children: ErrorMessage({ children: errorMessage }),
-      title: `Error ${status}`,
-    }),
+    renderErrorPage({ message: errorMessage, title: `Error ${status}` }),
     { headers, status },
   );
 }

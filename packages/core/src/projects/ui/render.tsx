@@ -3,8 +3,14 @@
 import { BuildsTable } from "#builds-ui/builds-table";
 import type { BuildType } from "#builds/schema";
 import { DestructiveButton, LinkButton } from "#components/button";
-import { DocumentLayout } from "#components/document";
-import { RawDataPreview } from "#components/raw-data";
+import {
+  DocumentHeader,
+  DocumentLayout,
+  DocumentMain,
+  DocumentSidebar,
+  DocumentUserSection,
+} from "#components/document";
+import { RawDataTabular } from "#components/raw-data";
 import { LabelsTable } from "#labels-ui/labels-table";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
@@ -18,15 +24,23 @@ export function renderProjectsPage({
 }: {
   projects: ProjectType[];
 }): JSX.Element {
+  const title = "All projects";
+
   return (
-    <DocumentLayout
-      title="All Projects"
-      toolbar={
-        <LinkButton href={urlBuilder.projectCreate()}>+ Create</LinkButton>
-      }
-      style={{ padding: 0 }}
-    >
-      <ProjectsTable projects={projects} caption={""} />
+    <DocumentLayout title={title}>
+      <DocumentHeader
+        breadcrumbs={["Home"]}
+        toolbar={
+          <LinkButton href={urlBuilder.projectCreate()}>+ Create</LinkButton>
+        }
+      >
+        {title}
+      </DocumentHeader>
+      <DocumentMain>
+        <ProjectsTable projects={projects} caption={""} />
+      </DocumentMain>
+      <DocumentSidebar />
+      <DocumentUserSection />
     </DocumentLayout>
   );
 }
@@ -43,31 +57,29 @@ export function renderProjectDetailsPage({
   const { url } = getStore();
 
   return (
-    <DocumentLayout
-      title={project.name}
-      breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
-      toolbar={
-        <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-          <LinkButton href={urlBuilder.buildCreate(project.id)}>
-            + Create build
-          </LinkButton>
-          <LinkButton href={urlBuilder.projectIdUpdate(project.id)}>
-            Edit
-          </LinkButton>
-          <form
-            hx-delete={url}
-            hx-confirm={`Are you sure about deleting the project '${project.name}'?`}
-          >
-            <DestructiveButton>Delete</DestructiveButton>
-          </form>
-        </div>
-      }
-      sidebar={
-        <RawDataPreview data={project} summary={"Project details"} open />
-      }
-      style={{ padding: 0 }}
-    >
-      <>
+    <DocumentLayout title={project.name}>
+      <DocumentHeader
+        breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
+        toolbar={
+          <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
+            <LinkButton href={urlBuilder.buildCreate(project.id)}>
+              + Create build
+            </LinkButton>
+            <LinkButton href={urlBuilder.projectIdUpdate(project.id)}>
+              Edit
+            </LinkButton>
+            <form
+              hx-delete={url}
+              hx-confirm={`Are you sure about deleting the project '${project.name}'?`}
+            >
+              <DestructiveButton>Delete</DestructiveButton>
+            </form>
+          </div>
+        }
+      >
+        {project.name}
+      </DocumentHeader>
+      <DocumentMain>
         <LabelsTable
           labels={recentLabels}
           project={project}
@@ -81,18 +93,30 @@ export function renderProjectDetailsPage({
           caption={"Recent builds"}
           toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
         />
-      </>
+      </DocumentMain>
+      <DocumentSidebar>
+        <RawDataTabular data={project} />
+      </DocumentSidebar>
+      <DocumentUserSection />
     </DocumentLayout>
   );
 }
 
 export function renderProjectCreatePage(): JSX.Element {
+  const title = "Create Project";
+
   return (
-    <DocumentLayout
-      title="Create Project"
-      breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
-    >
-      <ProjectForm project={undefined} />
+    <DocumentLayout title={title}>
+      <DocumentHeader
+        breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
+      >
+        {title}
+      </DocumentHeader>
+      <DocumentMain style={{ padding: "1rem" }}>
+        <ProjectForm project={undefined} />
+      </DocumentMain>
+      <DocumentSidebar />
+      <DocumentUserSection />
     </DocumentLayout>
   );
 }
@@ -102,15 +126,23 @@ export function renderProjectUpdatePage({
 }: {
   project: ProjectType;
 }): JSX.Element {
+  const title = "Update Project";
+
   return (
-    <DocumentLayout
-      title="Update Project"
-      breadcrumbs={[
-        { href: urlBuilder.allProjects(), label: "Projects" },
-        { href: urlBuilder.projectId(project.id), label: project.name },
-      ]}
-    >
-      <ProjectForm project={project} />
+    <DocumentLayout title={title}>
+      <DocumentHeader
+        breadcrumbs={[
+          { href: urlBuilder.allProjects(), label: "Projects" },
+          { href: urlBuilder.projectId(project.id), label: project.name },
+        ]}
+      >
+        {title}
+      </DocumentHeader>
+      <DocumentMain style={{ padding: "1rem" }}>
+        <ProjectForm project={project} />
+      </DocumentMain>
+      <DocumentSidebar />
+      <DocumentUserSection />
     </DocumentLayout>
   );
 }

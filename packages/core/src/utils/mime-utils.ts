@@ -409,6 +409,7 @@ const standardTypes: TypeMap = {
   "image/tiff-fx": ["tfx"],
   "image/webp": ["webp"],
   "image/wmf": ["wmf"],
+  "image/x-icon": ["ico"],
   "message/disposition-notification": ["disposition-notification"],
   "message/global": ["u8msg"],
   "message/global-delivery-status": ["u8dsn"],

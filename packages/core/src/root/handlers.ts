@@ -37,9 +37,7 @@ export async function handleStaticFileRoute(
 
   logger.log("Serving static file '%s' found.", staticFilepath);
 
-  const content = await fsp.readFile(staticFilepath, {
-    encoding: "utf8",
-  });
+  const content = await fsp.readFile(staticFilepath, { encoding: "binary" });
 
   return new Response(content, {
     headers: {
