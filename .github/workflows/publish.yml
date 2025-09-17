@@ -33,7 +33,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const readChangesets = require("@changesets/read");
+            const readChangesets = await import("@changesets/read").then(mod => mod.default);
             const changesets = await readChangesets(process.cwd());
             const hasChangesets = changesets.length !== 0;
             return String(hasChangesets);
