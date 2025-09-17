@@ -9,7 +9,7 @@ import {
   DocumentUserSection,
 } from "#components/document";
 import { ErrorMessage } from "#components/error-message";
-import { RawDataPreview } from "#components/raw-data";
+import { RawDataTabular } from "#components/raw-data";
 import { ProjectsTable } from "#projects-ui/projects-table";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
@@ -117,7 +117,7 @@ export function renderAccountPage({
           imageUrl={imageUrl}
           title={title}
         />
-        {Object.keys(rest).length > 0 ? <RawDataPreview data={rest} /> : null}
+        {Object.keys(rest).length > 0 ? <RawDataTabular data={rest} /> : null}
       </DocumentSidebar>
 
       {auth?.logout ? (

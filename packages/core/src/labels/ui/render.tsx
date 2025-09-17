@@ -8,7 +8,7 @@ import {
   DocumentSidebar,
   DocumentUserSection,
 } from "#components/document";
-import { RawDataTabular } from "#components/raw-data";
+import { RawDataList } from "#components/raw-data";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
@@ -86,8 +86,8 @@ export function renderLabelDetailsPage({
           toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
         />
       </DocumentMain>
-      <DocumentSidebar>
-        <RawDataTabular data={label} />
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <RawDataList data={label} />
       </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>

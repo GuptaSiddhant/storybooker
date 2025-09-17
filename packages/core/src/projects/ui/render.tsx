@@ -10,7 +10,7 @@ import {
   DocumentSidebar,
   DocumentUserSection,
 } from "#components/document";
-import { RawDataTabular } from "#components/raw-data";
+import { RawDataList } from "#components/raw-data";
 import { LabelsTable } from "#labels-ui/labels-table";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
@@ -94,8 +94,8 @@ export function renderProjectDetailsPage({
           toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
         />
       </DocumentMain>
-      <DocumentSidebar>
-        <RawDataTabular data={project} />
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <RawDataList data={project} />
       </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>

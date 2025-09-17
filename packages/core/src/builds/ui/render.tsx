@@ -9,7 +9,7 @@ import {
   DocumentSidebar,
   DocumentUserSection,
 } from "#components/document";
-import { RawDataPreview } from "#components/raw-data";
+import { RawDataTabular } from "#components/raw-data";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
@@ -83,7 +83,7 @@ export function renderBuildDetailsPage({
           : build.sha.slice(0, 7)}
       </DocumentHeader>
       <DocumentMain>
-        <RawDataPreview data={build} />
+        <RawDataTabular data={build} />
       </DocumentMain>
       <DocumentSidebar
         style={{

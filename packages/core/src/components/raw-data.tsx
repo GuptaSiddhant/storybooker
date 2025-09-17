@@ -25,6 +25,42 @@ export function RawDataPreview({
   return content;
 }
 
+export function RawDataList({
+  data,
+  open,
+  summary,
+}: {
+  data: Record<string, unknown>;
+  open?: boolean;
+  summary?: JSX.Element;
+}): JSX.Element {
+  const content = (
+    <dl style={{ margin: 0 }}>
+      {Object.entries(data).map(([key, value]) => (
+        <div style={{ marginBottom: "1rem" }}>
+          <dt style={{ fontSize: "0.9em", marginBottom: "2px", opacity: 0.8 }}>
+            {key}
+          </dt>
+          <dd style={{ margin: 0 }}>
+            {(typeof value === "string" ? value : JSON.stringify(value)) || "-"}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+
+  if (summary) {
+    return (
+      <details open={open}>
+        <summary>{summary}</summary>
+        {content}
+      </details>
+    );
+  }
+
+  return <div style={{ width: "100%" }}>{content}</div>;
+}
+
 export function RawDataTabular({
   data,
   open,
@@ -45,7 +81,7 @@ export function RawDataTabular({
       <tbody>
         {Object.entries(data).map(([key, value]) => (
           <tr>
-            <td style={{ fontSize: "0.8rem", opacity: 0.8 }}>{key}</td>
+            <td style={{ opacity: 0.8 }}>{key}</td>
             <td>{typeof value === "string" ? value : JSON.stringify(value)}</td>
           </tr>
         ))}
