@@ -15,6 +15,7 @@ import {
   type LoggerService,
   type OpenAPIOptions,
   type StorageService,
+  type StoryBookerUser,
 } from "@storybooker/core";
 import type { BodyInit } from "undici";
 import { parseAzureRestError } from "./error-parser";
@@ -26,7 +27,9 @@ export type { OpenAPIOptions } from "@storybooker/core";
 /**
  * Options to register the storybooker router
  */
-export interface RegisterStorybookerRouterOptions {
+export interface RegisterStorybookerRouterOptions<
+  User extends StoryBookerUser,
+> {
   /**
    * Set the Azure Functions authentication level for all routes.
    *
@@ -76,7 +79,7 @@ export interface RegisterStorybookerRouterOptions {
   /**
    * Provide an adapter for a supported Auth service, like Azure EasyAuth.
    */
-  auth?: AuthService;
+  auth?: AuthService<User>;
 
   /**
    * Provide an adapter for a supported Database service, like Azure DataTables or CosmosDB.
@@ -93,8 +96,8 @@ export interface RegisterStorybookerRouterOptions {
   logger?: LoggerService;
 }
 
-export function registerStoryBookerRouter(
-  options: RegisterStorybookerRouterOptions,
+export function registerStoryBookerRouter<User extends StoryBookerUser>(
+  options: RegisterStorybookerRouterOptions<User>,
 ): void {
   const route = options.route || "";
   // oxlint-disable-next-line no-console
@@ -102,7 +105,7 @@ export function registerStoryBookerRouter(
 
   app.setup({ enableHttpStream: true });
 
-  const handlerOptions: ServiceHandlerOptions = {
+  const handlerOptions: ServiceHandlerOptions<User> = {
     auth: options.auth,
     baseRoute: route,
     database: options.database,
@@ -114,7 +117,8 @@ export function registerStoryBookerRouter(
 
   app.http(SERVICE_NAME, {
     authLevel: options.authLevel,
-    handler: serviceHandler.bind(null, handlerOptions),
+    handler: async (request, context) =>
+      await serviceHandler(handlerOptions, request, context),
     methods: [
       "DELETE",
       "GET",
@@ -137,8 +141,8 @@ export function registerStoryBookerRouter(
   // }
 }
 
-interface ServiceHandlerOptions {
-  auth?: AuthService;
+interface ServiceHandlerOptions<User extends StoryBookerUser> {
+  auth?: AuthService<User>;
   baseRoute: string;
   headless?: boolean;
   logger?: LoggerService;
@@ -147,8 +151,8 @@ interface ServiceHandlerOptions {
   storage: StorageService;
 }
 
-async function serviceHandler(
-  options: ServiceHandlerOptions,
+async function serviceHandler<User extends StoryBookerUser>(
+  options: ServiceHandlerOptions<User>,
   httpRequest: HttpRequest,
   context: InvocationContext,
 ): Promise<HttpResponseInit> {

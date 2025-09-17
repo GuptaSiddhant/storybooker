@@ -15,6 +15,7 @@ import type {
   LoggerService,
   OpenAPIOptions,
   StorageService,
+  StoryBookerUser,
 } from "./types";
 
 export type * from "./types";
@@ -22,8 +23,8 @@ export * from "#constants";
 export * from "#utils/error";
 export * from "#utils/url";
 
-export interface RequestHandlerOptions {
-  auth?: AuthService;
+export interface RequestHandlerOptions<User extends StoryBookerUser> {
+  auth?: AuthService<User>;
   database: DatabaseService;
   logger?: LoggerService;
   customErrorParser?: CustomErrorParser;
@@ -45,8 +46,8 @@ router.registerGroup(buildsRoutes);
 
 export { router };
 
-export function createRequestHandler(
-  options: RequestHandlerOptions,
+export function createRequestHandler<User extends StoryBookerUser>(
+  options: RequestHandlerOptions<User>,
 ): RequestHandler {
   return async function requestHandler(request: Request): Promise<Response> {
     try {
@@ -56,7 +57,7 @@ export function createRequestHandler(
       const user = await options.auth?.getUserDetails(request);
 
       localStore.enterWith({
-        auth: options.auth,
+        auth: options.auth as AuthService | undefined,
         customErrorParser: options.customErrorParser,
         database: options.database,
         headless: !!options.headless,
