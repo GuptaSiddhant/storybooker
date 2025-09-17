@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.2.2
+
+### Patch Changes
+
+- a0b67eb: Enable branding options for UI
+
 ## 0.2.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @storybooker/azure-functions
 
+## 2.0.1
+
+### Patch Changes
+
+- a0b67eb: Enable branding options for UI
+- Updated dependencies [a0b67eb]
+  - @storybooker/core@0.2.2
+
 ## 2.0.0
 
 ### Minor Changes
