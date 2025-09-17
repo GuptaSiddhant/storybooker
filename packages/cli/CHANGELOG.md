@@ -1,5 +1,11 @@
 # storybooker
 
+## 0.2.0
+
+### Minor Changes
+
+- 2dce2e6: Update UI to be more composable. Update EasyAuth to have better default authorise.
+
 ## 0.1.1
 
 ### Patch Changes

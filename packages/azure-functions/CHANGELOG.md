@@ -1,5 +1,17 @@
 # @storybooker/azure-functions
 
+## 2.0.0
+
+### Minor Changes
+
+- 2dce2e6: Update UI to be more composable. Update EasyAuth to have better default authorise.
+
+### Patch Changes
+
+- Updated dependencies [2dce2e6]
+  - @storybooker/adapter-azure@0.2.0
+  - @storybooker/core@0.2.0
+
 ## 1.0.1
 
 ### Patch Changes
