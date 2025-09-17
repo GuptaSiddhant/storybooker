@@ -1,5 +1,16 @@
 # @storybooker/adapter-azure
 
+## 0.1.0
+
+### Minor Changes
+
+- 26a36af: Getting ready for release
+
+### Patch Changes
+
+- Updated dependencies [26a36af]
+  - @storybooker/core@0.1.0
+
 ## 0.0.3
 
 ### Patch Changes
