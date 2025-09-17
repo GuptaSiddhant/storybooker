@@ -1,5 +1,13 @@
 # @storybooker/adapter-azure
 
+## 0.2.1
+
+### Patch Changes
+
+- b72955f: Update UI + Add app type in EasyAuth
+- Updated dependencies [b72955f]
+  - @storybooker/core@0.2.1
+
 ## 0.2.0
 
 ### Minor Changes

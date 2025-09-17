@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.2.1
+
+### Patch Changes
+
+- b72955f: Update UI + Add app type in EasyAuth
+
 ## 0.2.0
 
 ### Minor Changes
