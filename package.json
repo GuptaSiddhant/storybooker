@@ -13,6 +13,7 @@
   "scripts": {
     "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
     "build": "turbo build",
+    "change": "changeset",
     "check": "turbo check",
     "cli": "yarn workspace storybooker start",
     "cli:dev": "yarn workspace storybooker dev",
@@ -20,7 +21,7 @@
     "fmt": "turbo fmt",
     "functions": "yarn workspace @storybooker/azure-functions start",
     "lint": "turbo lint",
-    "pub": "turbo run build lint test && changeset version && changeset publish",
+    "pub": "turbo run build check lint && changeset version && changeset publish",
     "server": "deno serve -A --unstable-sloppy-imports --watch ./server.ts",
     "verify": "turbo verify"
   },

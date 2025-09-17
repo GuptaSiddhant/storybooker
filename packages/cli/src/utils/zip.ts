@@ -5,9 +5,6 @@ import { ChildProcess, execSync } from "node:child_process";
 import fs from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import type { URL } from "node:url";
-
-// import { spawnPromise } from "./utils";
 
 const isWindows = process.platform === "win32";
 
@@ -39,8 +36,8 @@ export function zip(inPath: string, outPath: fs.PathLike): void {
     });
   } catch (error) {
     if (error instanceof ChildProcess) {
-      console.error("STDOUT:", error.stdout && error.stdout.toString());
-      console.error("STDERR:", error.stderr && error.stderr.toString());
+      console.error("STDOUT:", error.stdout);
+      console.error("STDERR:", error.stderr);
     }
     throw error;
   }
@@ -55,10 +52,7 @@ function getZipCommand(): string {
   return "zip";
 }
 
-function getZipArgs(
-  inPath: string | number | URL | Buffer<ArrayBufferLike>,
-  outPath: fs.PathLike,
-): string[] {
+function getZipArgs(inPath: fs.PathLike, outPath: fs.PathLike): string[] {
   if (isWindows) {
     return [
       "-nologo",
@@ -76,6 +70,6 @@ function getZipArgs(
   return ["-r", "-y", outPath.toString(), dirname];
 }
 
-function quotePath(pathToTransform: number | fs.PathLike): string {
-  return `"${pathToTransform}"`;
+function quotePath(pathToTransform: fs.PathLike): string {
+  return `"${pathToTransform.toString()}"`;
 }

@@ -49,14 +49,15 @@ export function zodSchemaToCommandBuilder(
 ): CommandBuilder {
   const builder: CommandBuilder = {};
   for (const [key, schema] of Object.entries(objectSchema._zod.def.shape)) {
-    const meta =
-      "meta" in schema && typeof schema.meta === "function"
-        ? schema.meta()
-        : undefined;
+    const meta = schema instanceof z.ZodType ? schema.meta() : undefined;
 
     let optional = false;
     try {
-      schema["~standard"].validate(undefined);
+      // @ts-expect-error undefined
+      const valueOrPromise = schema["~standard"].validate(undefined, {});
+      if (valueOrPromise instanceof Promise) {
+        throw new TypeError("Cannot handle async schema");
+      }
       optional = true;
     } catch {
       optional = false;
@@ -73,13 +74,17 @@ export function zodSchemaToCommandBuilder(
         ? schema._zod.def.defaultValue
         : undefined;
     if (typeof defaultValue === "function") {
-      defaultValue = defaultValue();
+      defaultValue = String(defaultValue());
     }
+
+    const description =
+      // @ts-expect-error unknown schema
+      // oxlint-disable-next-line no-unsafe-assignment
+      String(schema._zod.def.description ?? schema.description);
 
     builder[key] = {
       alias: meta?.alias,
-      // @ts-expect-error find description
-      description: schema._zod.def.description ?? schema.description,
+      description,
       demandOption: optional ? false : (errorMessage ?? true),
       type: zodSchemaTypeToYargsBuilderType(schema),
       default: defaultValue,

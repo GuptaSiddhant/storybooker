@@ -57,18 +57,18 @@ export function BuildCreateForm({
       <fieldset>
         <legend>Labels</legend>
 
-        {Array.from({ length: 4 }).map((_, i) => {
-          const id = `label-${i}`;
+        {Array.from({ length: 4 }).map((_ignore, index) => {
+          const id = `label-${index}`;
           return (
             <div class="field">
-              <label for={id}>Label {i + 1}</label>
+              <label for={id}>Label {index + 1}</label>
               <input
                 id={id}
                 name="labels"
-                required={i === 0}
-                value={i === 0 ? labelSlug : undefined}
+                required={index === 0}
+                value={index === 0 ? labelSlug : undefined}
               />
-              {i === 0 ? <span class="description">Required</span> : null}
+              {index === 0 ? <span class="description">Required</span> : null}
             </div>
           );
         })}

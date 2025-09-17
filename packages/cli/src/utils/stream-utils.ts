@@ -14,8 +14,7 @@ export function toReadableStream(
 
   return new ReadableStream({
     start: (controller) => {
-      // oxlint-disable-next-line no-explicit-any
-      function onData(chunk: any): void {
+      function onData(chunk: Buffer): void {
         try {
           uploaded += chunk.length;
           controller.enqueue(chunk);

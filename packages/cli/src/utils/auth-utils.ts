@@ -12,6 +12,9 @@ export function createAuthMiddleware(options: {
       if (!authValue) {
         return request;
       }
+      if (!authType) {
+        return request;
+      }
 
       switch (authType) {
         case "auth-header": {

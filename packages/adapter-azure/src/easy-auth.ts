@@ -1,4 +1,5 @@
 // oxlint-disable require-await
+// oxlint-disable no-unsafe-assignment
 
 import type {
   AuthService,
@@ -35,6 +36,7 @@ export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
     const decodedPrincipal = Buffer.from(principalHeader, "base64").toString(
       "utf8",
     );
+
     const clientPrincipal: {
       claims: { typ: string; val: string }[];
       auth_typ: string;
@@ -69,7 +71,7 @@ export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
 
   logout: (request: Request) => Promise<Response> = async (request) => {
     const url = new URL("/.auth/logout", request.url);
-    // url.searchParams.set("post_logout_redirect_uri", "");
+
     return new Response(null, {
       headers: { Location: url.toString() },
       status: 302,

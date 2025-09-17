@@ -10,7 +10,7 @@ import {
   parseErrorMessage,
   SERVICE_NAME,
   urlJoin,
-  type CheckPermissionsCallback,
+  type AuthService,
   type DatabaseService,
   type LoggerService,
   type OpenAPIOptions,
@@ -21,11 +21,7 @@ import { parseAzureRestError } from "./error-parser";
 
 // const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
-export type {
-  CheckPermissionsCallback,
-  Permission,
-  OpenAPIOptions,
-} from "@storybooker/core";
+export type { OpenAPIOptions } from "@storybooker/core";
 
 /**
  * Options to register the storybooker router
@@ -78,16 +74,9 @@ export interface RegisterStorybookerRouterOptions {
   readonly staticDirs?: string[];
 
   /**
-   * Callback function to check permissions. The function receives following params
-   * @param permission - object containing resource and action to permit
-   * @param context - Invocation context of Azure Function
-   * @param request - the HTTP request object
-   *
-   * @return `true` to allow access, or following to deny:
-   * - `false` - returns 403 response
-   * - `HttpResponse` - returns the specified HTTP response
+   * Provide an adapter for a supported Auth service, like Azure EasyAuth.
    */
-  checkPermissions?: CheckPermissionsCallback;
+  auth?: AuthService;
 
   /**
    * Provide an adapter for a supported Database service, like Azure DataTables or CosmosDB.
@@ -114,8 +103,8 @@ export function registerStoryBookerRouter(
   app.setup({ enableHttpStream: true });
 
   const handlerOptions: ServiceHandlerOptions = {
+    auth: options.auth,
     baseRoute: route,
-    checkPermissions: options.checkPermissions,
     database: options.database,
     headless: options.headless,
     logger: options.logger,
@@ -149,8 +138,8 @@ export function registerStoryBookerRouter(
 }
 
 interface ServiceHandlerOptions {
+  auth?: AuthService;
   baseRoute: string;
-  checkPermissions?: CheckPermissionsCallback;
   headless?: boolean;
   logger?: LoggerService;
   staticDirs: readonly string[] | undefined;
@@ -164,7 +153,7 @@ async function serviceHandler(
   context: InvocationContext,
 ): Promise<HttpResponseInit> {
   const requestHandler = createRequestHandler({
-    checkPermissions: options.checkPermissions,
+    auth: options.auth,
     customErrorParser: parseAzureRestError,
     database: options.database,
     headless: options.headless,

@@ -1,9 +1,3 @@
-// oxlint-disable no-undef
-// deno-lint-ignore-file require-await
-// oxlint-disable explicit-module-boundary-types
-// oxlint-disable explicit-function-return-type
-// oxlint-disable require-await
-
 import * as fs from "node:fs";
 import * as fsp from "node:fs/promises";
 import * as path from "node:path";
@@ -31,24 +25,24 @@ export class LocalFileDatabase implements DatabaseService {
     }
   }
 
-  async #saveToFile() {
+  async #saveToFile(): Promise<void> {
     await fsp.writeFile(this.#filename, JSON.stringify(this.#db, null, 2), {
       encoding: "utf8",
     });
   }
 
-  createCollection = async (name: string) => {
+  createCollection = async (name: string): Promise<void> => {
     if (!this.#db[name]) {
       this.#db[name] = {};
     }
     await this.#saveToFile();
   };
-  deleteCollection = async (name: string) => {
+  deleteCollection = async (name: string): Promise<void> => {
     // oxlint-disable-next-line no-dynamic-delete
     delete this.#db[name];
     await this.#saveToFile();
   };
-  listCollections = async () => {
+  listCollections = async (): Promise<string[]> => {
     return Object.keys(this.#db);
   };
   listDocuments = async <Item extends BaseItem>(
@@ -72,7 +66,10 @@ export class LocalFileDatabase implements DatabaseService {
 
     return items.slice(0, limit);
   };
-  getDocument = async <Item extends BaseItem>(name: string, id: string) => {
+  getDocument = async <Item extends BaseItem>(
+    name: string,
+    id: string,
+  ): Promise<Item> => {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
@@ -82,7 +79,7 @@ export class LocalFileDatabase implements DatabaseService {
     }
     return item as Item;
   };
-  createDocument = async (name: string, item: BaseItem) => {
+  createDocument = async (name: string, item: BaseItem): Promise<void> => {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
@@ -96,7 +93,7 @@ export class LocalFileDatabase implements DatabaseService {
     collection[item.id] = item;
     await this.#saveToFile();
   };
-  deleteDocument = async (name: string, id: string) => {
+  deleteDocument = async (name: string, id: string): Promise<void> => {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }
@@ -113,7 +110,7 @@ export class LocalFileDatabase implements DatabaseService {
     name: string,
     id: string,
     item: Partial<BaseItem>,
-  ) => {
+  ): Promise<void> => {
     if (!Object.hasOwn(this.#db, name)) {
       throw new Error(`No collection - ${name}`);
     }

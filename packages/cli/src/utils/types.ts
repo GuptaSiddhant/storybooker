@@ -1,4 +1,4 @@
 import type { Client } from "openapi-fetch";
 import type { paths } from "../service-schema";
 
-export type ServiceClient = Client<paths, `${string}/${string}`>;
+export type ServiceClient = Client<paths>;

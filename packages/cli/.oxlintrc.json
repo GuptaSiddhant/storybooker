@@ -7,14 +7,17 @@
   "rules": {
     "no-console": "allow",
     "no-process-exit": "allow",
+    "no-unsafe-call": "allow",
     "sort-keys": "allow"
   },
+  "ignorePatterns": [],
   "overrides": [
     {
       "files": ["*.d.ts"],
       "rules": {
         "max-lines": "allow",
-        "consistent-indexed-object-style": "allow"
+        "consistent-indexed-object-style": "allow",
+        "no-redundant-type-constituents": "allow"
       }
     }
   ]

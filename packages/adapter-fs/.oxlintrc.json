@@ -3,5 +3,10 @@
   "env": {
     "builtin": true,
     "node": true
+  },
+  "rules": {
+    "require-await": "allow",
+    "no-unsafe-assignment": "allow",
+    "typescript/require-await": "allow"
   }
 }
