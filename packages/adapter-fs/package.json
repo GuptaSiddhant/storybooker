@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/adapter-fs",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with local file storage.",
   "author": {
