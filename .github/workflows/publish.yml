@@ -1,0 +1,47 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish-all:
+    name: Publish all packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+      - name: Install dependencies
+        run: |
+          yarn install --immutable
+          npm i -g @changesets/read
+      - name: Verify
+        run: yarn verify
+      - name: Versioning
+        id: versioning
+        uses: actions/github-script@v8
+        with:
+          result-encoding: string
+          script: |
+            const readChangesets = require("@changesets/read");
+            const changesets = await readChangesets(process.cwd());
+            const hasChangesets = changesets.length !== 0;
+            return String(hasChangesets);
+
+      - name: Publish
+        if: ${{ steps.versioning.outputs.result == 'true' }}
+        run: yarn publish
+
+      - name: Push tags
+        if: ${{ steps.versioning.outputs.result == 'true' }}
+        run: git push origin --tags

@@ -21,7 +21,7 @@
     "fmt": "turbo fmt",
     "functions": "yarn workspace @storybooker/azure-functions start",
     "lint": "turbo lint",
-    "publish": "turbo run build check lint && changeset version && yarn workspaces foreach -A --no-private npm publish && changeset tag",
+    "publish": "changeset version && yarn workspaces foreach -A --no-private npm publish && changeset tag",
     "server": "deno serve -A --unstable-sloppy-imports --watch ./server.ts",
     "verify": "turbo verify"
   },
