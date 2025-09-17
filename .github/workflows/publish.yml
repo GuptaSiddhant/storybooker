@@ -30,32 +30,24 @@ jobs:
       - name: Verify
         run: yarn verify
 
-      - name: Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: yarn publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Check changesets
+        id: check
+        run: |
+          count=$(find .changeset -name "*.md" | wc -l | tr -d '[:space:]')
+          if [[ $count == 0 ]]; then
+            echo "hasChangesets=false" >> $GITHUB_OUTPUT;
+          else 
+            echo "hasChangesets=true" >> $GITHUB_OUTPUT;
+          fi
 
-      # - name: Check changesets
-      #   id: check
-      #   run: |
-      #     count=$(find .changeset -name "*.md" | wc -l | tr -d '[:space:]')
-      #     if [[ $count == 0 ]]; then
-      #       echo "hasChangesets=false" >> $GITHUB_OUTPUT;
-      #     else
-      #       echo "hasChangesets=true" >> $GITHUB_OUTPUT;
-      #     fi
+      - name: Publish
+        if: ${{ steps.check.outputs.hasChangesets == 'true' }}
+        continue-on-error: true
+        run: yarn publish
 
-      # - name: Publish
-      #   if: ${{ steps.check.outputs.hasChangesets == 'true' }}
-      #   run: yarn publish
-
-      # - name: Push changes
-      #   if: ${{ steps.check.outputs.hasChangesets == 'true' }}
-      #   run: |
-      #     git status
-      #     git push origin
-      #     git push origin --tags
+      - name: Push changes
+        if: ${{ steps.check.outputs.hasChangesets == 'true' }}
+        run: |
+          git status
+          git push origin
+          git push origin --tags
