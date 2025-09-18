@@ -13,6 +13,7 @@ import { RawDataTabular } from "#components/raw-data";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT, getT } from "#utils/i18n";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildUploadForm } from "./build-upload-form";
 import { BuildsTable } from "./builds-table";
@@ -24,14 +25,14 @@ export function renderBuildsPage({
   builds: BuildType[];
   project: ProjectType;
 }): JSX.Element {
-  const title = "All builds";
+  const title = `${commonT.All()} ${commonT.Builds()}`;
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[project.name]}
         toolbar={
           <LinkButton href={urlBuilder.buildCreate(project.id)}>
-            + Create
+            + {commonT.Create()}
           </LinkButton>
         }
       >
@@ -63,17 +64,17 @@ export function renderBuildDetailsPage({
   return (
     <DocumentLayout title={build.sha.slice(0, 7)}>
       <DocumentHeader
-        breadcrumbs={[projectId, "Builds"]}
+        breadcrumbs={[projectId, commonT.Builds()]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             <LinkButton href={urlBuilder.buildUpload(projectId, build.id)}>
-              Upload
+              {commonT.Upload()}
             </LinkButton>
             <form
               hx-delete={url}
-              hx-confirm="Are you sure about deleting the build?"
+              hx-confirm={commonT.confirmDelete(commonT.Build(), build.sha)}
             >
-              <DestructiveButton>Delete</DestructiveButton>
+              <DestructiveButton>{commonT.Delete()}</DestructiveButton>
             </form>
           </div>
         }
@@ -98,14 +99,14 @@ export function renderBuildDetailsPage({
             href={urlBuilder.storybookIndexHtml(projectId, build.sha)}
             target="_blank"
           >
-            View Storybook
+            {commonT.View()} {commonT.StoryBook()}
           </a>
         ) : (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "storybook")}
             class="description"
           >
-            Upload Storybook
+            {commonT.Upload()} {commonT.StoryBook()}
           </a>
         )}
         {build.hasTestReport ? (
@@ -113,14 +114,14 @@ export function renderBuildDetailsPage({
             href={urlBuilder.storybookTestReport(projectId, build.sha)}
             target="_blank"
           >
-            View Test Report
+            {commonT.View()} Test Report
           </a>
         ) : (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "testReport")}
             class="description"
           >
-            Upload Test report
+            {commonT.Upload()} Test report
           </a>
         )}
         {build.hasCoverage ? (
@@ -128,14 +129,14 @@ export function renderBuildDetailsPage({
             href={urlBuilder.storybookCoverage(projectId, build.sha)}
             target="_blank"
           >
-            View Coverage
+            {commonT.View()} Coverage report
           </a>
         ) : (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "coverage")}
             class="description"
           >
-            Upload Coverage report
+            {commonT.Upload()} Coverage report
           </a>
         )}
 
@@ -144,14 +145,14 @@ export function renderBuildDetailsPage({
             href={urlBuilder.storybookScreenshotsDownload(projectId, build.sha)}
             target="_blank"
           >
-            Download screenshots
+            {commonT.Download()} screenshots
           </a>
         ) : (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "screenshots")}
             class="description"
           >
-            Upload Screenshots
+            {commonT.Upload()} Screenshots
           </a>
         )}
 
@@ -161,7 +162,7 @@ export function renderBuildDetailsPage({
             download={`storybook-${projectId}-${build.sha}.zip`}
             target="_blank"
           >
-            Download Storybook
+            {commonT.Upload()} {commonT.StoryBook()}
           </a>
         ) : null}
       </DocumentSidebar>
@@ -177,14 +178,14 @@ export function renderBuildCreatePage({
   project: ProjectType;
   labelSlug?: string;
 }): JSX.Element {
-  const title = "Create Build";
+  const title = `${commonT.Create()} ${commonT.Build()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectId(project.id), label: project.name },
-          { href: urlBuilder.allBuilds(project.id), label: "Builds" },
+          { href: urlBuilder.allBuilds(project.id), label: commonT.Builds() },
         ]}
       >
         {title}
@@ -207,14 +208,14 @@ export function renderBuildUploadPage({
   projectId: string;
   uploadVariant?: BuildUploadVariant;
 }): JSX.Element {
-  const title = "Upload Build files";
+  const title = `${commonT.Upload()} ${commonT.Build()} ${getT("dictionary", "files")}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectId(projectId), label: projectId },
-          { href: urlBuilder.allBuilds(projectId), label: "Builds" },
+          { href: urlBuilder.allBuilds(projectId), label: commonT.Builds() },
           {
             href: urlBuilder.buildSHA(projectId, build.id),
             label: build.id.slice(0, 7),

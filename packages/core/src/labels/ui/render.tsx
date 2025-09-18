@@ -1,3 +1,5 @@
+// oxlint-disable max-lines-per-function
+
 import { BuildsTable } from "#builds-ui/builds-table";
 import type { BuildType } from "#builds/schema";
 import { DestructiveButton, LinkButton } from "#components/button";
@@ -13,6 +15,7 @@ import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT } from "#utils/i18n";
 import { LabelForm } from "./label-form";
 import { LabelsTable } from "./labels-table";
 
@@ -23,7 +26,7 @@ export function renderLabelsPage({
   labels: LabelType[];
   project: ProjectType;
 }): JSX.Element {
-  const title = "All labels";
+  const title = `${commonT.All()} ${commonT.Labels()}`;
 
   return (
     <DocumentLayout title={title}>
@@ -31,7 +34,7 @@ export function renderLabelsPage({
         breadcrumbs={[project.name]}
         toolbar={
           <LinkButton href={urlBuilder.labelCreate(project.id)}>
-            + Create
+            + {commonT.Create()}
           </LinkButton>
         }
       >
@@ -58,22 +61,22 @@ export function renderLabelDetailsPage({
   const { url } = getStore();
 
   return (
-    <DocumentLayout title={`Label ${label.value}`}>
+    <DocumentLayout title={`${commonT.Label()} ${label.value}`}>
       <DocumentHeader
-        breadcrumbs={[project.name, "Labels"]}
+        breadcrumbs={[project.name, commonT.Labels()]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             <LinkButton href={urlBuilder.buildCreate(project.id, label.id)}>
-              + Create build
+              + {commonT.Create()} {commonT.Build()}
             </LinkButton>
             <LinkButton href={urlBuilder.labelSlugUpdate(project.id, label.id)}>
-              Edit
+              {commonT.Edit()}
             </LinkButton>
             <form
               hx-delete={url}
-              hx-confirm="Are you sure about deleting the build?"
+              hx-confirm={commonT.confirmDelete(commonT.Label(), label.slug)}
             >
-              <DestructiveButton>Delete</DestructiveButton>
+              <DestructiveButton>{commonT.Delete()}</DestructiveButton>
             </form>
           </div>
         }
@@ -83,7 +86,9 @@ export function renderLabelDetailsPage({
           builds={builds}
           project={project}
           labels={undefined}
-          toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
+          toolbar={
+            <a href={urlBuilder.allBuilds(project.id)}>{commonT.ViewAll()}</a>
+          }
         />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
@@ -99,14 +104,14 @@ export function renderLabelCreatePage({
 }: {
   project: ProjectType;
 }): JSX.Element {
-  const title = "Create Label";
+  const title = `${commonT.Create()} ${commonT.Label()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectId(project.id), label: project.name },
-          { href: urlBuilder.allLabels(project.id), label: "Labels" },
+          { href: urlBuilder.allLabels(project.id), label: commonT.Labels() },
         ]}
       >
         {title}
@@ -127,14 +132,14 @@ export function renderLabelUpdatePage({
   label: LabelType;
   projectId: string;
 }): JSX.Element {
-  const title = "Update Label";
+  const title = `${commonT.Update()} ${commonT.Label()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectId(projectId), label: projectId },
-          { href: urlBuilder.allLabels(projectId), label: "Labels" },
+          { href: urlBuilder.allLabels(projectId), label: commonT.Labels() },
           { href: urlBuilder.labelSlug(projectId, label.id), label: label.id },
         ]}
       >

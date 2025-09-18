@@ -1,6 +1,7 @@
 // oxlint-disable max-lines-per-function
 // oxlint-disable sort-keys
 
+import { DestructiveButton } from "#components/button";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -9,19 +10,25 @@ import {
   DocumentUserSection,
 } from "#components/document";
 import { ErrorMessage } from "#components/error-message";
-import { RawDataTabular } from "#components/raw-data";
+import { IFrameContainer } from "#components/iframe";
+import { RawDataList } from "#components/raw-data";
 import { ProjectsTable } from "#projects-ui/projects-table";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { href, urlBuilder, URLS } from "#urls";
+import { commonT } from "#utils/i18n";
+import { toTitleCase } from "#utils/text-utils";
 import type { StoryBookerUser } from "../types";
 
 export interface RootPageProps {
   projects: ProjectType[];
 }
 export function renderRootPage({ projects }: RootPageProps): JSX.Element {
+  const { translation } = getStore();
+  const pageTitle = commonT.Home();
+
   return (
-    <DocumentLayout title="Home">
+    <DocumentLayout title={pageTitle}>
       <DocumentHeader
         toolbar={
           <a href={href(URLS.ui.openapi)} target="_blank">
@@ -29,16 +36,24 @@ export function renderRootPage({ projects }: RootPageProps): JSX.Element {
           </a>
         }
       >
-        Home
+        {pageTitle}
       </DocumentHeader>
       <DocumentMain style={{ padding: 0 }}>
         <ProjectsTable
           projects={projects}
-          toolbar={<a href={urlBuilder.allProjects()}>View all</a>}
+          toolbar={
+            <a href={urlBuilder.allProjects()}>
+              {toTitleCase(translation.dictionary.view_all)}
+            </a>
+          }
         />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
-        <a href={href(URLS.projects.create)}>Create project</a>
+        <a href={href(URLS.projects.create)}>
+          {toTitleCase(
+            `${translation.dictionary.create} ${translation.dictionary.project}`,
+          )}
+        </a>
       </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>
@@ -52,10 +67,17 @@ export function renderErrorPage({
   title: string;
   message: string;
 }): JSX.Element {
+  const { translation } = getStore();
+
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
-        breadcrumbs={[{ href: "javascript:history.back()", label: "< Back" }]}
+        breadcrumbs={[
+          {
+            href: "javascript:history.back()",
+            label: `< ${toTitleCase(translation.dictionary.back)}`,
+          },
+        ]}
       >
         {title}
       </DocumentHeader>
@@ -74,38 +96,25 @@ export function renderAccountPage({
 }: {
   children: string | undefined;
 }): JSX.Element {
-  const { auth, user } = getStore();
-
+  const { auth, translation, user } = getStore();
+  const pageTitle = toTitleCase(translation.dictionary.account);
   // oxlint-disable-next-line no-non-null-assertion
   const { displayName, id, imageUrl, title, ...rest } = user!;
 
   return (
-    <DocumentLayout title="Account">
-      <DocumentHeader breadcrumbs={["Home"]}>Account</DocumentHeader>
+    <DocumentLayout title={pageTitle}>
+      <DocumentHeader breadcrumbs={[commonT.Home()]}>
+        {pageTitle}
+      </DocumentHeader>
 
       <DocumentMain style={children ? {} : { padding: "1rem" }}>
         {children ? (
-          <iframe
-            title="Account Details"
-            srcdoc={`
-          <html style="width:100%; height:100%;">          
-          <head><meta charset="utf-8"><meta name="color-scheme" content="light dark"></head>
-          <body style="width:100%; height:100%; padding:0; margin:0; font-family:sans-serif; font-size:16px;">
-          ${children}</body>
-          </html>
-          `}
-            style={{
-              background: "transparent",
-              border: "none",
-              padding: 0,
-              height: "100%",
-            }}
-            // @ts-expect-error missing property
-            allowTransparency="true"
-          />
+          <IFrameContainer title={translation.dictionary.account}>
+            {children}
+          </IFrameContainer>
         ) : (
           <span class="description">
-            No further information about the Account is provided by the service.
+            {translation.messages.no_account_details_provided}
           </span>
         )}
       </DocumentMain>
@@ -117,7 +126,7 @@ export function renderAccountPage({
           imageUrl={imageUrl}
           title={title}
         />
-        {Object.keys(rest).length > 0 ? <RawDataTabular data={rest} /> : null}
+        {Object.keys(rest).length > 0 ? <RawDataList data={rest} /> : null}
       </DocumentSidebar>
 
       {auth?.logout ? (
@@ -125,11 +134,11 @@ export function renderAccountPage({
           id="user"
           action={href(URLS.ui.logout)}
           hx-get={href(URLS.ui.logout)}
-          hx-confirm="Are you sure about logging out?"
+          hx-confirm={translation.confirmations.logout}
         >
-          <button class="destructive" style={{ height: "100%" }}>
-            Logout
-          </button>
+          <DestructiveButton style={{ height: "100%" }}>
+            {toTitleCase(translation.dictionary.logout)}
+          </DestructiveButton>
         </form>
       ) : (
         <DocumentUserSection />
@@ -145,7 +154,14 @@ function UserInfo({
   title,
 }: StoryBookerUser): JSX.Element {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "0.5rem",
+        marginBottom: "1rem",
+      }}
+    >
       {imageUrl ? (
         <img
           alt={id}

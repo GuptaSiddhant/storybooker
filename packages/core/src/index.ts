@@ -9,6 +9,7 @@ import * as openapiRoutes from "./root/openapi";
 import * as rootRoutes from "./root/routes";
 import * as serveRoutes from "./root/serve";
 import { router } from "./router";
+import { translations_enGB, type Translation } from "./translations/en-gb";
 import type {
   AuthService,
   BrandingOptions,
@@ -30,6 +31,7 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   database: DatabaseService;
   logger?: LoggerService;
   customErrorParser?: CustomErrorParser;
+  translation?: Translation;
   prefix?: string;
   openAPI?: OpenAPIOptions;
   headless?: boolean;
@@ -70,6 +72,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
         prefix: options.prefix || "",
         request,
         storage: options.storage,
+        translation: options.translation || translations_enGB,
         url: request.url,
         user,
       });

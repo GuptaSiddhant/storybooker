@@ -7,6 +7,7 @@ import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT } from "#utils/i18n";
 
 export interface BuildsTableProps {
   caption?: JSX.Element;
@@ -27,13 +28,13 @@ export function BuildsTable({
 
   return (
     <Table
-      caption={caption ?? `Builds (${builds.length})`}
+      caption={caption ?? `${commonT.Builds()} (${builds.length})`}
       toolbar={toolbar}
       data={builds}
       columns={[
         {
           id: "createdAt",
-          header: "Timestamp",
+          header: commonT.CreatedAt(),
           cell: (item) => {
             const time = item.createdAt || item.updatedAt;
             if (!time) {
@@ -61,7 +62,7 @@ export function BuildsTable({
         labels
           ? {
               id: "label",
-              header: "Labels",
+              header: commonT.Labels(),
               cell: (item) => {
                 return (
                   <div>
@@ -91,7 +92,7 @@ export function BuildsTable({
           : undefined,
         {
           id: "storybook",
-          header: "Storybook",
+          header: commonT.StoryBook(),
           cell: (item) => {
             if (!item.hasStorybook) {
               return <span class="description">No StoryBook uploaded yet</span>;
@@ -103,14 +104,14 @@ export function BuildsTable({
                   href={urlBuilder.storybookIndexHtml(project.id, item.sha)}
                   target="_blank"
                 >
-                  View
+                  {commonT.View()}
                 </a>
                 <a
                   href={urlBuilder.storybookDownload(project.id, item.sha)}
                   target="_blank"
                   download={`storybook-${project.id}-${item.sha}.zip`}
                 >
-                  Download
+                  {commonT.Download()}
                 </a>
               </div>
             );

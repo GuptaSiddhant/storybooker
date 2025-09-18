@@ -8,7 +8,7 @@ import path from "node:path";
 import { LabelsModel } from "#labels/model";
 import { ProjectsModel } from "#projects/model";
 import { getStore } from "#store";
-import { writeStreamToFile } from "#utils/file";
+import { writeStreamToFile } from "#utils/file-utils";
 import {
   generateProjectCollectionName,
   generateProjectContainerName,

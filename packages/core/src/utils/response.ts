@@ -5,21 +5,35 @@ import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { renderErrorPage } from "../root/render";
 import { parseErrorMessage } from "./error";
+import { toTitleCase } from "./text-utils";
 
 export const errorSchema = z
   .object({ errorMessage: z.string() })
   .meta({ id: "error" });
 export const errorContent = { "application/json": { schema: errorSchema } };
 
-export const commonErrorResponses: ZodOpenApiResponsesObject = {
-  400: { content: errorContent, description: "Invalid request data" },
-  401: { content: errorContent, description: "Unauthenticated access" },
-  403: { content: errorContent, description: "Unauthorized access" },
-  500: {
-    content: errorContent,
-    description: "An unexpected server-error occurred.",
-  },
-};
+export function commonErrorResponses(): ZodOpenApiResponsesObject {
+  const { translation } = getStore();
+
+  return {
+    400: {
+      content: errorContent,
+      description: translation.errorMessages.invalid_request_data,
+    },
+    401: {
+      content: errorContent,
+      description: translation.errorMessages.unauthenticated_access,
+    },
+    403: {
+      content: errorContent,
+      description: translation.errorMessages.unauthorised_access,
+    },
+    500: {
+      content: errorContent,
+      description: translation.errorMessages.unexpected_server_error,
+    },
+  };
+}
 
 export function responseHTML(html: JSX.Element, init?: ResponseInit): Response {
   const headers = new Headers(init?.headers);
@@ -110,8 +124,13 @@ function handleErrorResponseForHTMLRequest(
   headers: Headers,
   status: number,
 ): Response {
+  const { translation } = getStore();
+
   return responseHTML(
-    renderErrorPage({ message: errorMessage, title: `Error ${status}` }),
+    renderErrorPage({
+      message: errorMessage,
+      title: `${toTitleCase(translation.dictionary.error)} ${status}`,
+    }),
     { headers, status },
   );
 }

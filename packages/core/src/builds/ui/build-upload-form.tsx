@@ -11,6 +11,7 @@ import { ErrorMessage } from "#components/error-message";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
 import { CONTENT_TYPES } from "#utils/constants";
+import { commonT } from "#utils/i18n";
 
 export interface BuildUploadFormProps {
   build: BuildType;
@@ -35,7 +36,7 @@ export function BuildUploadForm({
       enctype={CONTENT_TYPES.FORM_MULTIPART}
     >
       <fieldset>
-        <legend>Variant</legend>
+        <legend>{commonT.Variant()}</legend>
 
         <div
           style={{
@@ -76,10 +77,10 @@ export function BuildUploadForm({
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="submit">Upload file</button>
-        <button type="reset">Reset</button>
+        <button type="submit">{commonT.Upload()} file</button>
+        <button type="reset">{commonT.Reset()}</button>
         <LinkButton href={urlBuilder.buildSHA(projectId, build.id)}>
-          Cancel
+          {commonT.Cancel()}
         </LinkButton>
       </div>
 

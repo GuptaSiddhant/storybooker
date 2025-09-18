@@ -5,6 +5,7 @@ import { authenticateOrThrow } from "#utils/auth";
 import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
 import { checkIsHTMLRequest } from "#utils/request";
 import { responseHTML } from "#utils/response";
+import { toTitleCase } from "#utils/text-utils";
 import { createDocument } from "zod-openapi";
 
 export const openapi = defineRoute(
@@ -96,6 +97,8 @@ function generateOpenApiSwagger(
   spec: object,
   title: string = SERVICE_NAME,
 ): string {
+  const { translation } = getStore();
+
   return /* html */ `
 <!DOCTYPE html>
 <html lang="en">
@@ -112,9 +115,9 @@ function generateOpenApiSwagger(
   <div style="position: absolute; top: 0; right: 0; padding-right: 16px; display: flex; gap: 0.5rem;">
     <form>
       <input type="hidden" name="download" value="json" />
-      <button type="submit">Download</button>
+      <button type="submit">${toTitleCase(translation.dictionary.download)}</button>
     </form>
-    <button type="button" onClick="window.location.reload();">Refresh</button>
+    <button type="button" onClick="window.location.reload();">${toTitleCase(translation.dictionary.refresh)}</button>
   </div>
   <script async defer>
       window.swaggerUI = SwaggerUIBundle(${JSON.stringify({

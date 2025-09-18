@@ -49,7 +49,7 @@ export const listBuilds = defineRoute(
       path: z.object({ projectId: ProjectIdSchema }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -88,7 +88,7 @@ export const createBuild = defineRoute(
       path: z.object({ projectId: ProjectIdSchema }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       201: {
         content: {
           [CONTENT_TYPES.JSON]: { schema: BuildsGetResultSchema },
@@ -140,7 +140,7 @@ export const createBuildsForm = defineRoute(
   URLS.builds.create,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -177,7 +177,7 @@ export const getBuild = defineRoute(
       }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.JSON]: { schema: BuildsGetResultSchema },
@@ -214,7 +214,7 @@ export const deleteBuild = defineRoute(
       }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       204: { description: "Build deleted successfully" },
       303: {
         description: "Build deleted, redirecting...",
@@ -266,7 +266,7 @@ export const uploadBuild = defineRoute(
       query: BuildUploadQueryParamsSchema,
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       204: { description: "File uploaded successfully" },
       415: { description: "Unsupported Media Type" },
     },
@@ -348,7 +348,7 @@ export const uploadBuildForm = defineRoute(
       }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },

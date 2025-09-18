@@ -25,7 +25,7 @@ export const root = defineRoute(
   URLS.ui.root,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -89,9 +89,9 @@ export const health = defineRoute(
 );
 
 export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
-  const { auth, request, url } = getStore();
+  const { auth, request, translation, url } = getStore();
   if (!auth?.login) {
-    return responseError("Auth is not setup", 404);
+    return responseError(translation.errorMessages.auth_setup_missing, 404);
   }
   const serviceUrl = url.replace(URLS.ui.login, "");
   const response = await auth.login(request, serviceUrl);
@@ -111,9 +111,9 @@ export const logout = defineRoute(
   URLS.ui.logout,
   undefined,
   async () => {
-    const { auth, request, user } = getStore();
+    const { auth, request, translation, user } = getStore();
     if (!auth?.logout || !user) {
-      return responseError("Auth is not setup", 404);
+      return responseError(translation.errorMessages.auth_setup_missing, 404);
     }
 
     const response = await auth.logout(request, user);
@@ -133,9 +133,9 @@ export const account = defineRoute(
   URLS.ui.account,
   undefined,
   async () => {
-    const { auth, request, user, url } = getStore();
+    const { auth, request, user, translation, url } = getStore();
     if (!auth) {
-      return responseError("Auth is not setup", 404);
+      return responseError(translation.errorMessages.auth_setup_missing, 404);
     }
 
     if (!user) {

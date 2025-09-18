@@ -47,7 +47,7 @@ export const listLabels = defineRoute(
       path: z.object({ projectId: ProjectIdSchema }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -85,7 +85,7 @@ export const createLabel = defineRoute(
     },
     requestParams: { path: z.object({ projectId: ProjectIdSchema }) },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       201: {
         content: {
           [CONTENT_TYPES.JSON]: { schema: LabelsGetResultSchema },
@@ -137,7 +137,7 @@ export const createLabelForm = defineRoute(
   URLS.labels.create,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -171,7 +171,7 @@ export const getLabel = defineRoute(
       }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.JSON]: { schema: LabelsGetResultSchema },
@@ -211,7 +211,7 @@ export const deleteLabel = defineRoute(
       }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       204: { description: "Label deleted successfully" },
       303: {
         description: "Label deleted, redirecting...",
@@ -257,7 +257,7 @@ export const updateLabel = defineRoute(
       }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       202: { description: "Label updated successfully" },
       303: {
         description: "Label updated, redirecting...",
@@ -299,7 +299,7 @@ export const updateLabelForm = defineRoute(
   URLS.labels.update,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },

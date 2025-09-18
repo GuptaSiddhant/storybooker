@@ -10,6 +10,7 @@ import {
 import { ProjectSchema, type ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT } from "#utils/i18n";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;
@@ -26,11 +27,13 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
       style={{ maxWidth: "60ch" }}
     >
       <fieldset>
-        <legend>Details</legend>
+        <legend>{commonT.Details()}</legend>
 
         {project?.id ? null : (
           <div class="field">
-            <label for="id">Project ID</label>
+            <label for="id">
+              {commonT.Project()} {commonT.ID()}
+            </label>
             <input
               id="id"
               name="id"
@@ -45,7 +48,9 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
         )}
 
         <div class="field">
-          <label for="name">Project Name</label>
+          <label for="name">
+            {commonT.Project()} ${commonT.Name()}
+          </label>
           <input id="name" name="name" required value={project?.name} />
         </div>
       </fieldset>
@@ -127,8 +132,10 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="submit">{project ? "Update" : "Create"} Project</button>
-        <button type="reset">Reset</button>
+        <button type="submit">
+          {project ? commonT.Update() : commonT.Create()} ${commonT.Project()}
+        </button>
+        <button type="reset">{commonT.Reset()}</button>
         <LinkButton
           href={
             project
@@ -136,7 +143,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
               : urlBuilder.allProjects()
           }
         >
-          Cancel
+          {commonT.Cancel()}
         </LinkButton>
       </div>
 

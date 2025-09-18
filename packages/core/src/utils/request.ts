@@ -1,5 +1,5 @@
 import { getStore } from "#store";
-import { CONTENT_TYPES } from "#utils/constants";
+import { CONTENT_TYPES, HEADERS } from "#utils/constants";
 
 interface ErrorObject {
   message: string;
@@ -26,18 +26,19 @@ export function checkIsJSONRequest(request?: Request): boolean {
 export function validateIsFormEncodedRequest(
   request?: Request,
 ): undefined | ErrorObject {
-  const req = request || getStore().request;
+  const store = getStore();
+  const req = request || store.request;
 
-  const contentType = req.headers.get("content-type");
+  const contentType = req.headers.get(HEADERS.contentType);
   if (!contentType) {
     return {
-      message: "Content-Type header is required",
+      message: store.translation.errorMessages.header_content_length_required,
       status: 400,
     };
   }
   if (!contentType.includes(CONTENT_TYPES.FORM_ENCODED)) {
     return {
-      message: `Invalid Content-Type, expected ${CONTENT_TYPES.FORM_ENCODED}`,
+      message: `${store.translation.errorMessages.header_content_type_invalid}, ${store.translation.dictionary.expected} ${CONTENT_TYPES.FORM_ENCODED}`,
       status: 415,
     };
   }
@@ -48,16 +49,27 @@ export function validateIsFormEncodedRequest(
 export function validateBuildUploadZipBody(
   request: Request,
 ): ErrorObject | undefined {
+  const { translation } = getStore();
   const { body } = request;
+
   if (!body) {
-    return { message: "Request body is required", status: 400 };
+    return {
+      message: translation.errorMessages.request_body_required,
+      status: 400,
+    };
   }
-  const contentLength = request.headers.get("Content-Length");
+  const contentLength = request.headers.get(HEADERS.contentLength);
   if (!contentLength) {
-    return { message: "Content-Length header is required", status: 411 };
+    return {
+      message: translation.errorMessages.header_content_length_required,
+      status: 411,
+    };
   }
   if (Number.parseInt(contentLength, 10) === 0) {
-    return { message: "Request body should have length > 0", status: 400 };
+    return {
+      message: translation.errorMessages.header_content_length_non_zero,
+      status: 400,
+    };
   }
 
   return undefined;

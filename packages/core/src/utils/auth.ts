@@ -5,7 +5,7 @@ import { responseError } from "./response";
 export async function authenticateOrThrow(
   permission: Permission,
 ): Promise<void> {
-  const { auth, request, user } = getStore();
+  const { auth, request, translation, user } = getStore();
   if (!auth) {
     return;
   }
@@ -21,7 +21,10 @@ export async function authenticateOrThrow(
     }
 
     if (response === false) {
-      throw responseError(`Permission denied [${key}]`, 403);
+      throw responseError(
+        `${translation.errorMessages.permission_denied} [${key}]`,
+        403,
+      );
     }
 
     throw response;

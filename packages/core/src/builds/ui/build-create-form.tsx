@@ -6,6 +6,7 @@ import { ErrorMessage } from "#components/error-message";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
 import { CONTENT_TYPES } from "#utils/constants";
+import { commonT } from "#utils/i18n";
 
 export interface BuildFormProps {
   projectId: string;
@@ -28,7 +29,7 @@ export function BuildCreateForm({
       enctype={CONTENT_TYPES.FORM_ENCODED}
     >
       <fieldset>
-        <legend>Details</legend>
+        <legend>{commonT.Details()}</legend>
 
         <div class="field">
           <label for="sha">SHA</label>
@@ -36,48 +37,56 @@ export function BuildCreateForm({
         </div>
 
         <div class="field">
-          <label for="message">Message</label>
+          <label for="message">{commonT.Message()}</label>
           <input id="message" name="message" />
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Author</legend>
+        <legend>{commonT.Author()}</legend>
 
         <div class="field">
-          <label for="authorName">Name</label>
+          <label for="authorName">{commonT.Name()}</label>
           <input id="authorName" name="authorName" required />
         </div>
         <div class="field">
-          <label for="authorEmail">Email</label>
+          <label for="authorEmail">{commonT.Email()}</label>
           <input id="authorEmail" name="authorEmail" required />
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Labels</legend>
+        <legend>{commonT.Labels()}</legend>
 
         {Array.from({ length: 4 }).map((_ignore, index) => {
           const id = `label-${index}`;
           return (
             <div class="field">
-              <label for={id}>Label {index + 1}</label>
+              <label for={id}>
+                {commonT.Label()} {index + 1}
+              </label>
               <input
                 id={id}
                 name="labels"
                 required={index === 0}
                 value={index === 0 ? labelSlug : undefined}
               />
-              {index === 0 ? <span class="description">Required</span> : null}
+              {index === 0 ? (
+                <span class="description">{commonT.Required()}</span>
+              ) : null}
             </div>
           );
         })}
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="submit">Create build</button>
-        <button type="reset">Reset</button>
-        <LinkButton href={urlBuilder.allBuilds(projectId)}>Cancel</LinkButton>
+        <button type="submit">
+          {commonT.Create()} {commonT.Build()}
+        </button>
+        <button type="reset">{commonT.Reset()}</button>
+        <LinkButton href={urlBuilder.allBuilds(projectId)}>
+          {commonT.Cancel()}
+        </LinkButton>
       </div>
 
       <ErrorMessage id="form-error" />

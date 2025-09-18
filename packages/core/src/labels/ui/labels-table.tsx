@@ -5,6 +5,7 @@ import { Table } from "#components/table";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { href, urlBuilder, URLS } from "#urls";
+import { commonT, getT } from "#utils/i18n";
 import { getStore } from "#utils/store";
 import { urlJoin } from "#utils/url";
 
@@ -25,13 +26,13 @@ export function LabelsTable({
 
   return (
     <Table
-      caption={caption ?? `Labels (${labels.length})`}
+      caption={caption ?? `${commonT.Labels()} (${labels.length})`}
       data={labels}
       toolbar={toolbar}
       columns={[
         {
           id: "updatedAt",
-          header: "Last modified",
+          header: commonT.UpdatedAt(),
           cell: (item) => {
             if (!item.updatedAt) {
               return null;
@@ -46,7 +47,7 @@ export function LabelsTable({
         },
         {
           id: "slug",
-          header: "Slug",
+          header: commonT.Slug(),
           cell: (item) => {
             return (
               <a
@@ -62,7 +63,7 @@ export function LabelsTable({
         },
         {
           id: "value",
-          header: "Label",
+          header: commonT.Label(),
           cell: (item) => {
             let href = "";
             switch (item.type) {
@@ -104,15 +105,19 @@ export function LabelsTable({
         },
         {
           id: "type",
-          header: "Type",
+          header: commonT.Type(),
           style: { fontFamily: "monospace", fontSize: "0.9em" },
         },
         {
           id: "build",
-          header: "Latest build",
+          header: `${commonT.Latest()} ${commonT.Build()}`,
           cell: (item) => {
             if (!item.latestBuildSHA) {
-              return <span class="description">No build available</span>;
+              return (
+                <span class="description">
+                  {getT("messages", "no_builds_available")}
+                </span>
+              );
             }
 
             return (
@@ -124,7 +129,7 @@ export function LabelsTable({
                   [{item.latestBuildSHA.slice(0, 7)}]
                 </span>
                 <a href={urlBuilder.buildSHA(project.id, item.latestBuildSHA)}>
-                  Details
+                  {commonT.Details()}
                 </a>
                 <a
                   href={urlBuilder.storybookIndexHtml(
@@ -132,7 +137,7 @@ export function LabelsTable({
                     item.latestBuildSHA,
                   )}
                 >
-                  StoryBook
+                  {commonT.StoryBook()}
                 </a>
               </div>
             );
@@ -141,7 +146,7 @@ export function LabelsTable({
 
         {
           id: "actions",
-          header: "Actions",
+          header: commonT.Actions(),
           cell: (item) => {
             return (
               <a
@@ -150,7 +155,7 @@ export function LabelsTable({
                   labelSlug: item.id,
                 })}
               >
-                View builds
+                {commonT.View()} {commonT.Builds()}
               </a>
             );
           },

@@ -44,7 +44,7 @@ export const listProjects = defineRoute(
   URLS.projects.all,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -85,7 +85,7 @@ export const createProject = defineRoute(
       required: true,
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       201: {
         content: {
           [CONTENT_TYPES.JSON]: { schema: ProjectGetResultSchema },
@@ -132,7 +132,7 @@ export const createProjectForm = defineRoute(
   URLS.projects.create,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -162,7 +162,7 @@ export const getProject = defineRoute(
       path: z.object({ projectId: ProjectIdSchema }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
@@ -206,7 +206,7 @@ export const deleteProject = defineRoute(
       path: z.object({ projectId: ProjectIdSchema }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       204: { description: "Project deleted successfully" },
       404: { description: "Matching project not found." },
     },
@@ -244,7 +244,7 @@ export const updateProject = defineRoute(
       path: z.object({ projectId: ProjectIdSchema }),
     },
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       202: { description: "Project updated successfully" },
       303: {
         description: "Project updated, redirecting...",
@@ -286,7 +286,7 @@ export const updateProjectForm = defineRoute(
   URLS.projects.update,
   {
     responses: {
-      ...commonErrorResponses,
+      ...commonErrorResponses(),
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },

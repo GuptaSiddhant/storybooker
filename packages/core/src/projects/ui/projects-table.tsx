@@ -6,6 +6,7 @@ import { DEFAULT_GITHUB_BRANCH } from "#constants";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT, getT } from "#utils/i18n";
 
 export interface ProjectsTableProps {
   caption?: JSX.Element;
@@ -22,13 +23,13 @@ export function ProjectsTable({
 
   return (
     <Table
-      caption={caption ?? `Projects (${projects.length})`}
+      caption={caption ?? `${commonT.Projects()} (${projects.length})`}
       toolbar={toolbar}
       data={projects}
       columns={[
         {
           id: "id",
-          header: "ID",
+          header: commonT.ID(),
           cell: (item) => {
             return (
               <a safe href={urlBuilder.projectId(item.id)}>
@@ -37,10 +38,10 @@ export function ProjectsTable({
             );
           },
         },
-        { id: "name", header: "Name" },
+        { id: "name", header: commonT.Name() },
         {
           id: "gitHub",
-          header: "GitHub",
+          header: commonT.GitHub(),
           cell: (item) => {
             const pathnames = item.gitHubPath
               ? [
@@ -60,10 +61,14 @@ export function ProjectsTable({
         },
         {
           id: "build",
-          header: "Latest build",
+          header: `${commonT.Latest()} ${getT("dictionary", "build")}`,
           cell: (item) => {
             if (!item.latestBuildSHA) {
-              return <span class="description">No build available</span>;
+              return (
+                <span class="description">
+                  {getT("messages", "no_builds_available")}
+                </span>
+              );
             }
 
             return (
@@ -74,7 +79,7 @@ export function ProjectsTable({
                   [{item.latestBuildSHA.slice(0, 7)}]
                 </span>
                 <a href={urlBuilder.buildSHA(item.id, item.latestBuildSHA)}>
-                  Details
+                  {commonT.Details()}
                 </a>
                 <a
                   href={urlBuilder.storybookIndexHtml(
@@ -82,7 +87,7 @@ export function ProjectsTable({
                     item.latestBuildSHA,
                   )}
                 >
-                  Storybook
+                  {commonT.StoryBook()}
                 </a>
               </div>
             );
@@ -90,7 +95,7 @@ export function ProjectsTable({
         },
         {
           id: "updatedAt",
-          header: "Last modified",
+          header: commonT.UpdatedAt(),
           cell: (item) => {
             if (!item.updatedAt) {
               return null;
@@ -105,7 +110,7 @@ export function ProjectsTable({
         },
         {
           id: "createdAt",
-          header: "Created",
+          header: commonT.CreatedAt(),
           cell: (item) => {
             if (!item.createdAt) {
               return null;

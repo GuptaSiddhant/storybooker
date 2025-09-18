@@ -5,6 +5,7 @@ import { ErrorMessage } from "#components/error-message";
 import { labelTypes, type LabelType } from "#labels/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT } from "#utils/i18n";
 
 export interface LabelFormProps {
   label: LabelType | undefined;
@@ -23,18 +24,18 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
       style={{ maxWidth: "60ch" }}
     >
       <fieldset>
-        <legend>Details</legend>
+        <legend>{commonT.Details()}</legend>
 
         {label ? <input type="hidden" name="slug" value={label.slug} /> : null}
 
         <div class="field">
-          <label for="value">Label</label>
+          <label for="value">{commonT.Label()}</label>
           <input id="value" name="value" required value={label?.value} />
         </div>
       </fieldset>
 
       <fieldset>
-        <legend>Type</legend>
+        <legend>{commonT.Type()}</legend>
 
         <div
           style={{
@@ -69,8 +70,10 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
-        <button type="submit">{label ? "Update" : "Create"} Label</button>
-        <button type="reset">Reset</button>
+        <button type="submit">
+          {label ? commonT.Update() : commonT.Create()} {commonT.Label()}
+        </button>
+        <button type="reset">{commonT.Reset()}</button>
         <LinkButton
           href={
             label
@@ -78,7 +81,7 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
               : urlBuilder.allLabels(projectId)
           }
         >
-          Cancel
+          {commonT.Cancel()}
         </LinkButton>
       </div>
 

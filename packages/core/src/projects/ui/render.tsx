@@ -16,6 +16,7 @@ import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
+import { commonT } from "#utils/i18n";
 import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
 
@@ -24,14 +25,16 @@ export function renderProjectsPage({
 }: {
   projects: ProjectType[];
 }): JSX.Element {
-  const title = "All projects";
+  const title = `${commonT.All()} ${commonT.Projects()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
-        breadcrumbs={["Home"]}
+        breadcrumbs={[commonT.Home()]}
         toolbar={
-          <LinkButton href={urlBuilder.projectCreate()}>+ Create</LinkButton>
+          <LinkButton href={urlBuilder.projectCreate()}>
+            + ${commonT.Create()}
+          </LinkButton>
         }
       >
         {title}
@@ -59,20 +62,25 @@ export function renderProjectDetailsPage({
   return (
     <DocumentLayout title={project.name}>
       <DocumentHeader
-        breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
+        breadcrumbs={[
+          { href: urlBuilder.allProjects(), label: commonT.Projects() },
+        ]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             <LinkButton href={urlBuilder.buildCreate(project.id)}>
-              + Create build
+              + {commonT.Create()} {commonT.Build()}
             </LinkButton>
             <LinkButton href={urlBuilder.projectIdUpdate(project.id)}>
-              Edit
+              {commonT.Edit()}
             </LinkButton>
             <form
               hx-delete={url}
-              hx-confirm={`Are you sure about deleting the project '${project.name}'?`}
+              hx-confirm={commonT.confirmDelete(
+                commonT.Project(),
+                project.name,
+              )}
             >
-              <DestructiveButton>Delete</DestructiveButton>
+              <DestructiveButton>{commonT.Delete()}</DestructiveButton>
             </form>
           </div>
         }
@@ -83,15 +91,19 @@ export function renderProjectDetailsPage({
         <LabelsTable
           labels={recentLabels}
           project={project}
-          caption={"Recent labels"}
-          toolbar={<a href={urlBuilder.allLabels(project.id)}>View all</a>}
+          caption={`${commonT.Recent()} ${commonT.Labels()}`}
+          toolbar={
+            <a href={urlBuilder.allLabels(project.id)}>{commonT.ViewAll()}</a>
+          }
         />
         <BuildsTable
           builds={recentBuilds}
           labels={recentLabels}
           project={project}
-          caption={"Recent builds"}
-          toolbar={<a href={urlBuilder.allBuilds(project.id)}>View all</a>}
+          caption={`${commonT.Recent()} ${commonT.Builds()}`}
+          toolbar={
+            <a href={urlBuilder.allBuilds(project.id)}>{commonT.ViewAll()}</a>
+          }
         />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
@@ -103,12 +115,14 @@ export function renderProjectDetailsPage({
 }
 
 export function renderProjectCreatePage(): JSX.Element {
-  const title = "Create Project";
+  const title = `${commonT.Create()} ${commonT.Project()}"`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
-        breadcrumbs={[{ href: urlBuilder.allProjects(), label: "Projects" }]}
+        breadcrumbs={[
+          { href: urlBuilder.allProjects(), label: commonT.Projects() },
+        ]}
       >
         {title}
       </DocumentHeader>
@@ -126,13 +140,13 @@ export function renderProjectUpdatePage({
 }: {
   project: ProjectType;
 }): JSX.Element {
-  const title = "Update Project";
+  const title = `${commonT.Update()} ${commonT.Project()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.allProjects(), label: "Projects" },
+          { href: urlBuilder.allProjects(), label: commonT.Projects() },
           { href: urlBuilder.projectId(project.id), label: project.name },
         ]}
       >
