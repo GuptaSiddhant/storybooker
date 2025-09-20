@@ -10,15 +10,15 @@ The core can be extended to be used with any platform that supports standard fet
 ```js
 import * as http from 'node:http';
 import { createRequestListener } from "@remix-run/node-fetch-server"
-import { createRequestHandler, type RouterContext } from "@storybooker/core";
+import { createRequestHandler, type RequestHandlerOptions } from "@storybooker/core";
 
-const context: RouterContext = {
+const options: RequestHandlerOptions = {
     database: , // provide a supported database service adapter
     storage: , // provide a supported storage service adapter
 }
 
 // Create StoryBooker router handler
-const handler = createRequestHandler(context)
+const handler = createRequestHandler(options)
 
 // Create a standard Node.js server
 const server = http.createServer(createRequestListener(handler));
@@ -34,12 +34,12 @@ Run following with `deno serve -A server.ts`
 
 ```ts
 // server.ts
-import { createRequestHandler, type RouterContext } from "npm:@storybooker/core";
+import { createRequestHandler, type RequestHandlerOptions } from "npm:@storybooker/core";
 
-const context: RouterContext = {
+const options: RequestHandlerOptions = {
     database: , // provide a supported database service adapter
     storage: , // provide a supported storage service adapter
 }
 
-export default { fetch: createRequestHandler(context) };
+export default { fetch: createRequestHandler(options) };
 ```

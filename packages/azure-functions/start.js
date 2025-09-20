@@ -3,7 +3,7 @@
 import {
   AzureBlobStorageService,
   AzureDataTablesDatabaseService,
-} from "@storybooker/adapter-azure-storage";
+} from "@storybooker/adapter-azure";
 import { registerStoryBookerRouter } from "./dist/index.js";
 
 const storageConnectionStringEnvVar = "AzureWebJobsStorage";

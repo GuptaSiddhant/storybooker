@@ -46,12 +46,12 @@ export { router };
  * @param options Options for creating a request handler.
  * @returns The request-handler which accepts Web-standard Request and return a standard Response.
  */
-export async function createRequestHandler<User extends StoryBookerUser>(
+export function createRequestHandler<User extends StoryBookerUser>(
   options: RequestHandlerOptions<User>,
-): Promise<RequestHandler> {
+): RequestHandler {
   const logger = options.logger || console;
 
-  await Promise.allSettled([
+  const initPromises = Promise.allSettled([
     options.auth?.init?.().catch(logger.error),
     options.database
       .init?.({ abortSignal: options.abortSignal })
@@ -60,27 +60,24 @@ export async function createRequestHandler<User extends StoryBookerUser>(
   ]);
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {
-    try {
-      const finalOptions = { ...options, ...overrideOptions };
+    // Make sure initialisations are complete before first request is handled.
+    await initPromises;
 
+    try {
       const locale =
         request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
         DEFAULT_LOCALE;
-      const user = await finalOptions.auth?.getUserDetails(request);
+      const user = await options.auth?.getUserDetails(request);
 
       localStore.enterWith({
-        abortSignal: finalOptions.abortSignal,
-        auth: finalOptions.auth as AuthService | undefined,
-        branding: finalOptions.branding,
-        database: finalOptions.database,
-        errorParser: finalOptions.errorParser,
+        ...options,
+        ...overrideOptions,
+        auth: options.auth as AuthService | undefined,
         locale,
-        logger: finalOptions.logger ?? logger,
-        openAPI: finalOptions.openAPI,
-        prefix: finalOptions.prefix || "",
+        logger: overrideOptions?.logger ?? logger,
+        prefix: options.prefix || "",
         request,
-        storage: finalOptions.storage,
-        translation: finalOptions.translation || translations_enGB,
+        translation: options.translation || translations_enGB,
         url: request.url,
         user,
       });

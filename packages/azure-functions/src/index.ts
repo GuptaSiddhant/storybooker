@@ -1,9 +1,11 @@
 import { app } from "@azure/functions";
 import { createRequestHandler } from "@storybooker/core";
 import { SERVICE_NAME } from "@storybooker/core/constants";
-import type { StoryBookerUser } from "@storybooker/core/types";
+import type {
+  RequestHandlerOptions,
+  StoryBookerUser,
+} from "@storybooker/core/types";
 import { generatePrefixFromBaseRoute, urlJoin } from "@storybooker/core/utils";
-import type { RegisterStorybookerRouterOptions } from "./types";
 import {
   parseAzureRestError,
   transformHttpRequestToWebRequest,
@@ -12,31 +14,58 @@ import {
 
 // const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
-export type { OpenAPIOptions } from "@storybooker/core";
-export type { RegisterStorybookerRouterOptions } from "./types";
+export type * from "@storybooker/core/types";
 
-app.setup({ enableHttpStream: true });
+/**
+ * Options to register the storybooker router
+ */
+export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
+  extends Omit<RequestHandlerOptions<User>, "abortSignal" | "prefix"> {
+  /**
+   * Set the Azure Functions authentication level for all routes.
+   *
+   * This is a good option to set if the service is used in
+   * Headless mode and requires single token authentication
+   * for all the requests.
+   *
+   * This setting does not affect health-check route.
+   */
+  authLevel?: "admin" | "function" | "anonymous";
 
-export async function registerStoryBookerRouter<User extends StoryBookerUser>(
+  /**
+   * Define the route on which all router is placed.
+   * Can be a sub-path of the main API route.
+   *
+   * @default ''
+   */
+  route?: string;
+
+  /**
+   * Modify the cron-schedule of timer function
+   * which purge outdated storybooks.
+   *
+   * Pass `null` to disable auto-purge functionality.
+   *
+   * @default "0 0 0 * * *" // Every midnight
+   */
+  // purgeScheduleCron?: string | null;
+}
+
+export function registerStoryBookerRouter<User extends StoryBookerUser>(
   options: RegisterStorybookerRouterOptions<User>,
-): Promise<void> {
+): void {
+  app.setup({ enableHttpStream: true });
+
   const route = options.route || "";
   const logger = options.logger ?? console;
-
-  logger.log("Registering Storybooker Router (route: %s)", route || "/");
-
-  const requestHandler = await createRequestHandler({
-    auth: options.auth,
-    branding: options.branding,
-    database: options.database,
-    errorParser: parseAzureRestError,
+  const requestHandler = createRequestHandler({
+    ...options,
+    errorParser: options.errorParser ?? parseAzureRestError,
     logger,
-    middlewares: options.middlewares,
     prefix: generatePrefixFromBaseRoute(route) || "/",
-    staticDirs: options.staticDirs,
-    storage: options.storage,
   });
 
+  logger.log("Registering Storybooker Router (route: %s)", route || "/");
   app.http(SERVICE_NAME, {
     authLevel: options.authLevel,
     handler: async (httpRequest, context) => {
@@ -44,16 +73,7 @@ export async function registerStoryBookerRouter<User extends StoryBookerUser>(
       const response = await requestHandler(request, { logger: context });
       return transformWebResponseToHttpResponse(response);
     },
-    methods: [
-      "DELETE",
-      "GET",
-      "HEAD",
-      "OPTIONS",
-      "PATCH",
-      "POST",
-      "PUT",
-      "TRACE",
-    ],
+    methods: ["DELETE", "GET", "PATCH", "POST", "PUT"],
     route: urlJoin(route, "{**path}"),
   });
 
