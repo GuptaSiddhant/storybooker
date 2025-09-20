@@ -1,5 +1,11 @@
 # storybooker
 
+## 0.2.1
+
+### Patch Changes
+
+- ef486ee: Add new Azure Cosmos DB adapter and CJS exports.
+
 ## 0.2.0
 
 ### Minor Changes

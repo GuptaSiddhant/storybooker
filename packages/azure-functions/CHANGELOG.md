@@ -1,5 +1,15 @@
 # @storybooker/azure-functions
 
+## 3.0.0
+
+### Patch Changes
+
+- ef486ee: Add new Azure Cosmos DB adapter and CJS exports.
+- Updated dependencies [652d1c3]
+- Updated dependencies [ef486ee]
+  - @storybooker/core@0.3.0
+  - @storybooker/adapter-azure@0.3.0
+
 ## 2.0.1
 
 ### Patch Changes

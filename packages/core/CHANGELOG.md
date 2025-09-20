@@ -1,5 +1,12 @@
 # @storybooker/core
 
+## 0.3.0
+
+### Minor Changes
+
+- 652d1c3: Add option to provide translations for the UI
+- ef486ee: Add new Azure Cosmos DB adapter and CJS exports.
+
 ## 0.2.2
 
 ### Patch Changes
