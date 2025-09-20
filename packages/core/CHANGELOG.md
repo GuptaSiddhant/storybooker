@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.4.0
+
+### Minor Changes
+
+- 06cdc51: Add middleware support + add better docs for DB service.
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @storybooker/adapter-azure
 
+## 0.4.0
+
+### Minor Changes
+
+- 06cdc51: Add middleware support + add better docs for DB service.
+
+### Patch Changes
+
+- Updated dependencies [06cdc51]
+  - @storybooker/core@0.4.0
+
 ## 0.3.0
 
 ### Minor Changes
