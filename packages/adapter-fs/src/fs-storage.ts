@@ -2,7 +2,7 @@ import * as fsp from "node:fs/promises";
 import * as path from "node:path";
 import { Readable } from "node:stream";
 import type { ReadableStream as WebReadableStream } from "node:stream/web";
-import type { StorageService } from "@storybooker/core";
+import type { StorageService } from "@storybooker/core/types";
 
 export class LocalFileStorage implements StorageService {
   #basePath: string;

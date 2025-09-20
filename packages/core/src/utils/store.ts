@@ -1,28 +1,17 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { CustomErrorParser } from "#utils/error";
 import type { Translation } from "../translations";
 import type {
-  AuthService,
-  BrandingOptions,
-  DatabaseService,
   LoggerService,
-  OpenAPIOptions,
-  StorageService,
+  RequestHandlerOptions,
   StoryBookerUser,
 } from "../types";
 
-export interface Store {
-  auth: AuthService | undefined;
-  branding: BrandingOptions | undefined;
-  customErrorParser: CustomErrorParser | undefined;
-  database: DatabaseService;
-  headless: boolean;
+export interface Store
+  extends Omit<RequestHandlerOptions<StoryBookerUser>, "staticDirs"> {
   locale: string;
   logger: LoggerService;
-  openAPI?: OpenAPIOptions | undefined | null;
   prefix: string;
   request: Request;
-  storage: StorageService;
   translation: Translation;
   url: string;
   user: StoryBookerUser | null | undefined;
@@ -34,6 +23,15 @@ export function getStore(): Store {
   const value = localStore.getStore();
   if (!value) {
     throw new Error("Store not found.");
+  }
+
+  return value;
+}
+
+export function getStoreOrNull(): Store | null {
+  const value = localStore.getStore();
+  if (!value) {
+    return null;
   }
 
   return value;

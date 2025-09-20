@@ -1,45 +1,36 @@
+// oxlint-disable max-lines-per-function
+
 import * as buildsRoutes from "#builds/routes";
 import { DEFAULT_LOCALE, HEADERS } from "#constants";
 import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
 import { localStore } from "#store";
-import { parseErrorMessage, type CustomErrorParser } from "#utils/error";
+import { parseErrorMessage } from "#utils/error";
 import { handleStaticFileRoute } from "./root/handlers";
 import * as openapiRoutes from "./root/openapi";
 import * as rootRoutes from "./root/routes";
 import * as serveRoutes from "./root/serve";
 import { router } from "./router";
-import { translations_enGB, type Translation } from "./translations/en-gb";
+import { translations_enGB } from "./translations/en-gb";
 import type {
   AuthService,
-  BrandingOptions,
-  DatabaseService,
-  LoggerService,
-  OpenAPIOptions,
-  StorageService,
+  Middleware,
+  RequestHandlerOptions,
+  RequestHandlerOverrideOptions,
   StoryBookerUser,
 } from "./types";
 
-export type * from "./types";
-export * from "#constants";
-export * from "#utils/error";
-export * from "#utils/url";
+export type {
+  RequestHandlerOptions,
+  RequestHandlerOverrideOptions,
+  StoryBookerUser,
+  OpenAPIOptions,
+} from "./types";
 
-export interface RequestHandlerOptions<User extends StoryBookerUser> {
-  auth?: AuthService<User>;
-  branding?: BrandingOptions;
-  database: DatabaseService;
-  logger?: LoggerService;
-  customErrorParser?: CustomErrorParser;
-  translation?: Translation;
-  prefix?: string;
-  openAPI?: OpenAPIOptions;
-  headless?: boolean;
-  staticDirs?: readonly string[];
-  storage: StorageService;
-}
-
-export type RequestHandler = (request: Request) => Promise<Response>;
+export type RequestHandler = (
+  request: Request,
+  overrideOptions?: RequestHandlerOverrideOptions,
+) => Promise<Response>;
 
 router.registerGroup(rootRoutes);
 router.registerGroup(openapiRoutes);
@@ -50,36 +41,46 @@ router.registerGroup(buildsRoutes);
 
 export { router };
 
-export function createRequestHandler<User extends StoryBookerUser>(
+/**
+ * Callback to create a request-handler based on provided options.
+ * @param options Options for creating a request handler.
+ * @returns The request-handler which accepts Web-standard Request and return a standard Response.
+ */
+export async function createRequestHandler<User extends StoryBookerUser>(
   options: RequestHandlerOptions<User>,
-): RequestHandler {
-  return async function requestHandler(request: Request): Promise<Response> {
+): Promise<RequestHandler> {
+  const logger = options.logger || console;
+
+  await Promise.allSettled([
+    options.auth?.init?.().catch(logger.error),
+    options.database
+      .init?.({ abortSignal: options.abortSignal })
+      .catch(logger.error),
+    options.storage.init?.().catch(logger.error),
+  ]);
+
+  const requestHandler: RequestHandler = async (request, overrideOptions) => {
     try {
+      const finalOptions = { ...options, ...overrideOptions };
+
       const locale =
         request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
         DEFAULT_LOCALE;
-      const user = await options.auth?.getUserDetails(request);
-      const logger = options.logger || console;
-
-      await Promise.allSettled([
-        options.auth?.init?.().catch(logger.error),
-        options.database.init?.().catch(logger.error),
-        options.storage.init?.().catch(logger.error),
-      ]);
+      const user = await finalOptions.auth?.getUserDetails(request);
 
       localStore.enterWith({
-        auth: options.auth as AuthService | undefined,
-        branding: options.branding,
-        customErrorParser: options.customErrorParser,
-        database: options.database,
-        headless: !!options.headless,
+        abortSignal: finalOptions.abortSignal,
+        auth: finalOptions.auth as AuthService | undefined,
+        branding: finalOptions.branding,
+        database: finalOptions.database,
+        errorParser: finalOptions.errorParser,
         locale,
-        logger,
-        openAPI: options.openAPI,
-        prefix: options.prefix || "",
+        logger: finalOptions.logger ?? logger,
+        openAPI: finalOptions.openAPI,
+        prefix: finalOptions.prefix || "",
         request,
-        storage: options.storage,
-        translation: options.translation || translations_enGB,
+        storage: finalOptions.storage,
+        translation: finalOptions.translation || translations_enGB,
         url: request.url,
         user,
       });
@@ -95,11 +96,45 @@ export function createRequestHandler<User extends StoryBookerUser>(
         return error;
       }
 
-      const { errorMessage } = parseErrorMessage(
-        error,
-        options.customErrorParser,
-      );
+      const { errorMessage } = parseErrorMessage(error, options.errorParser);
       return new Response(errorMessage, { status: 500 });
     }
+  };
+
+  if (options.middlewares && options.middlewares.length > 0) {
+    return createMiddlewaresPipelineRequestHandler(
+      options.middlewares,
+      requestHandler,
+    );
+  }
+
+  return requestHandler;
+}
+
+function createMiddlewaresPipelineRequestHandler(
+  middlewares: Middleware[],
+  handler: RequestHandler,
+): RequestHandler {
+  return async function run(
+    request: Request,
+    overrideOptions?: RequestHandlerOverrideOptions,
+  ): Promise<Response> {
+    // recursive dispatcher
+    async function dispatch(
+      index: number,
+      currentRequest: Request,
+    ): Promise<Response> {
+      const middleware = middlewares[index];
+
+      if (middleware) {
+        return await middleware(currentRequest, (nextReq) =>
+          dispatch(index + 1, nextReq),
+        );
+      }
+
+      return await handler(currentRequest, overrideOptions);
+    }
+
+    return await dispatch(0, request);
   };
 }

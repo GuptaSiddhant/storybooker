@@ -1,12 +1,6 @@
-import { getStore } from "#store";
+import { getStoreOrNull } from "#store";
 import { z } from "zod";
-
-export type CustomErrorParser = (error: unknown) => ParsedError | undefined;
-export interface ParsedError {
-  errorMessage: string;
-  errorStatus?: number;
-  errorType: string;
-}
+import type { ErrorParser, ParsedError } from "../types";
 
 export class ResponseError extends Error {
   status: number;
@@ -18,19 +12,12 @@ export class ResponseError extends Error {
 
 export function parseErrorMessage(
   error: unknown,
-  customErrorParser?: CustomErrorParser,
+  errorParser?: ErrorParser,
 ): ParsedError {
-  if (!customErrorParser) {
-    try {
-      // oxlint-disable-next-line prefer-destructuring
-      customErrorParser = getStore().customErrorParser;
-      // oxlint-disable-next-line no-empty
-    } catch {}
-  }
-
-  const customResult = customErrorParser?.(error);
-  if (customResult !== undefined) {
-    return customResult;
+  const customErrorParser = errorParser ?? getStoreOrNull()?.errorParser;
+  const customErrorResult = customErrorParser?.(error);
+  if (customErrorResult !== undefined) {
+    return customErrorResult;
   }
 
   if (typeof error === "string") {

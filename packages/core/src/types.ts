@@ -1,3 +1,77 @@
+import type { DatabaseService } from "./services/database";
+import type { Translation } from "./translations";
+
+export type * from "./services/database";
+
+/**
+ * Options for creating a request handler.
+ */
+export interface RequestHandlerOptions<User extends StoryBookerUser> {
+  /** A abort signal that can be used to cancel the request handling. */
+  abortSignal?: AbortSignal;
+  /** Adapter for Auth service. Provides authentication to the service. */
+  auth?: AuthService<User>;
+  /** Options to update branding of UI */
+  branding?: BrandingOptions;
+  /** Adapter for Database service. Provides access to storing data to the service. */
+  database: DatabaseService;
+  /**
+   * A function for parsing custom errors.
+   * Return `undefined` from parser if the service should handle the error.
+   */
+  errorParser?: ErrorParser;
+  /** Adapter for Logging service. Provides option to direct the logging of the service. */
+  logger?: LoggerService;
+  /**
+   * List of middlewares that run before a request is handled.
+   * Run middleware to modify incoming Request or outgoing Response.
+   */
+  middlewares?: Middleware[];
+  /** Options to update OpenAPI spec of the service */
+  openAPI?: OpenAPIOptions;
+  /** Convey URL prefix to the service if the router is not hosted on the root. */
+  prefix?: string;
+  /**
+   * List of path of directories relative to root where static media is kept.
+   * @default ["./public"]
+   */
+  staticDirs?: readonly string[];
+  /** Adapter for Storage service. Provides access to storing files to the service. */
+  storage: StorageService;
+  /** Provide custom translations for the UI. Default to English-GB. */
+  translation?: Translation;
+}
+
+export type RequestHandlerOverrideOptions = Partial<
+  Pick<
+    RequestHandlerOptions<StoryBookerUser>,
+    "abortSignal" | "errorParser" | "logger"
+  >
+>;
+
+/**
+ * Run middleware to modify incoming Request or outgoing Response.
+ * You can only call next(request) once per middleware. Calling it multiple times will throw an error.
+ */
+export type Middleware = (
+  request: Request,
+  next: (
+    request: Request,
+    overrideOptions?: RequestHandlerOverrideOptions,
+  ) => Promise<Response>,
+) => Promise<Response>;
+
+/**
+ * A function type for parsing custom errors.
+ * Return `undefined` from parser if the service should handle the error.
+ */
+export type ErrorParser = (error: unknown) => ParsedError | undefined;
+export interface ParsedError {
+  errorMessage: string;
+  errorStatus?: number;
+  errorType: string;
+}
+
 /**
  * Service to log to desired destination.
  *
@@ -18,49 +92,6 @@ export interface DatabaseDocumentListOptions<Item extends { id: string }> {
   select?: string[];
   sort?: "latest" | ((item1: Item, item2: Item) => number);
 }
-/**
- * Service to interact with database.
- *
- * The service should callbacks to CRUD operations
- * to an existing database.
- */
-export interface DatabaseService {
-  /**
-   * An optional method that is called on app boot-up
-   * to run async setup functions.
-   * Preferably, this function should not throw errors.
-   */
-  init?: () => Promise<void>;
-  listCollections: () => Promise<string[]>;
-  createCollection: (name: string) => Promise<void>;
-  deleteCollection: (name: string) => Promise<void>;
-
-  listDocuments: <Item extends { id: string }>(
-    collectionName: string,
-    options?: DatabaseDocumentListOptions<Item>,
-  ) => Promise<Item[]>;
-  createDocument: <Item extends { id: string }>(
-    collectionName: string,
-    document: Item,
-  ) => Promise<void>;
-  getDocument: <Item extends { id: string }>(
-    collectionName: string,
-    id: string,
-    partitionKey?: string,
-  ) => Promise<Item>;
-  updateDocument: <Item extends { id: string }>(
-    collectionName: string,
-    id: string,
-    document: Partial<Omit<Item, "id">>,
-    partitionKey?: string,
-  ) => Promise<void>;
-  deleteDocument: (
-    collectionName: string,
-    id: string,
-    partitionKey?: string,
-  ) => Promise<void>;
-}
-
 /**
  * Service to interact with file-storage.
  *

@@ -19,12 +19,12 @@ export class ProjectsModel extends Model<ProjectType> {
     super(null, `${SERVICE_NAME}Projects`);
   }
 
-  async list(options?: ListOptions<ProjectType>): Promise<ProjectType[]> {
+  async list(options: ListOptions<ProjectType> = {}): Promise<ProjectType[]> {
     this.log("List projects...");
 
     try {
       this.debug("Create projects collection");
-      await this.database.createCollection(this.collectionName);
+      await this.database.createCollection(this.collectionName, this.dbOptions);
     } catch (error) {
       this.error(error);
     }
@@ -32,6 +32,7 @@ export class ProjectsModel extends Model<ProjectType> {
     const items = await this.database.listDocuments<ProjectType>(
       this.collectionName,
       options,
+      this.dbOptions,
     );
 
     return items;
@@ -47,16 +48,18 @@ export class ProjectsModel extends Model<ProjectType> {
     await this.storage.createContainer(generateProjectContainerName(projectId));
 
     this.debug("Create project collection");
-    await this.database.createCollection(this.collectionName);
+    await this.database.createCollection(this.collectionName, this.dbOptions);
 
     this.debug("Create project-builds collection");
     await this.database.createCollection(
       generateProjectCollectionName(projectId, "Builds"),
+      this.dbOptions,
     );
 
     this.debug("Create project-labels collection");
     await this.database.createCollection(
       generateProjectCollectionName(projectId, "Labels"),
+      this.dbOptions,
     );
     this.debug(
       "Create default branch (%s) label",
@@ -77,6 +80,7 @@ export class ProjectsModel extends Model<ProjectType> {
     await this.database.createDocument<ProjectType>(
       this.collectionName,
       project,
+      this.dbOptions,
     );
 
     return project;
@@ -85,7 +89,11 @@ export class ProjectsModel extends Model<ProjectType> {
   async get(id: string): Promise<ProjectType> {
     this.log("Get project '%s'...", id);
 
-    const item = await this.database.getDocument(this.collectionName, id);
+    const item = await this.database.getDocument(
+      this.collectionName,
+      id,
+      this.dbOptions,
+    );
 
     return ProjectSchema.parse(item);
   }
@@ -100,10 +108,12 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("Update project '%s'...", id);
 
     const project = ProjectUpdateSchema.parse(data);
-    await this.database.updateDocument(this.collectionName, id, {
-      ...project,
-      updatedAt: new Date().toISOString(),
-    });
+    await this.database.updateDocument(
+      this.collectionName,
+      id,
+      { ...project, updatedAt: new Date().toISOString() },
+      this.dbOptions,
+    );
 
     if (project.gitHubDefaultBranch) {
       try {
@@ -127,16 +137,18 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("Delete project '%s'...", id);
 
     this.debug("Delete project entry '%s' in collection", id);
-    await this.database.deleteDocument(this.collectionName, id);
+    await this.database.deleteDocument(this.collectionName, id, this.dbOptions);
 
     this.debug("Create project-builds collection");
     await this.database.deleteCollection(
       generateProjectCollectionName(id, "Builds"),
+      this.dbOptions,
     );
 
     this.debug("Delete project-labels collection");
     await this.database.deleteCollection(
       generateProjectCollectionName(id, "Labels"),
+      this.dbOptions,
     );
 
     this.debug("Create project container");

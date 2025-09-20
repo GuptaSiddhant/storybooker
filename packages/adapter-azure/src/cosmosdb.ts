@@ -1,9 +1,11 @@
 import { CosmosClient, type Database } from "@azure/cosmos";
-import {
-  SERVICE_NAME,
-  type DatabaseDocumentListOptions,
-  type DatabaseService,
-} from "@storybooker/core";
+import { SERVICE_NAME } from "@storybooker/core/constants";
+import type {
+  DatabaseDocumentListOptions,
+  DatabaseService,
+  DatabaseServiceOptions,
+  StoryBookerDatabaseDocument,
+} from "@storybooker/core/types";
 
 export class AzureCosmosDatabaseService implements DatabaseService {
   #db: Database;
@@ -12,12 +14,14 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     this.#db = new CosmosClient(connectionString).database(dbName);
   }
 
-  async init(): Promise<void> {
+  init: DatabaseService["init"] = async () => {
     await this.#db.client.databases.createIfNotExists({ id: this.#db.id });
-  }
+  };
 
-  listCollections: DatabaseService["listCollections"] = async () => {
-    const response = await this.#db.containers.readAll().fetchAll();
+  listCollections: DatabaseService["listCollections"] = async (options) => {
+    const response = await this.#db.containers
+      .readAll({ abortSignal: options.abortSignal })
+      .fetchAll();
     const collections: string[] = response.resources.map(
       (resource) => resource.id,
     );
@@ -25,68 +29,98 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return collections;
   };
 
-  createCollection: DatabaseService["createCollection"] = async (name) => {
-    await this.#db.containers.create({ id: name });
+  createCollection: DatabaseService["createCollection"] = async (
+    collectionId,
+    options,
+  ) => {
+    await this.#db.containers.create(
+      { id: collectionId },
+      { abortSignal: options.abortSignal },
+    );
     return;
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (name) => {
-    await this.#db.container(name).delete();
+  deleteCollection: DatabaseService["deleteCollection"] = async (
+    collectionId,
+    options,
+  ) => {
+    await this.#db
+      .container(collectionId)
+      .delete({ abortSignal: options.abortSignal });
     return;
   };
 
-  listDocuments = async <Item extends { id: string }>(
-    name: string,
-    _options?: DatabaseDocumentListOptions<Item>,
-  ): Promise<Item[]> => {
-    const items = await this.#db.container(name).items.readAll().fetchAll();
-    return items.resources as Item[];
+  listDocuments: DatabaseService["listDocuments"] = async <
+    Document extends StoryBookerDatabaseDocument,
+  >(
+    collectionId: string,
+    _listOptions: DatabaseDocumentListOptions<Document>,
+    options: DatabaseServiceOptions,
+  ) => {
+    const items = await this.#db
+      .container(collectionId)
+      .items.readAll({ abortSignal: options.abortSignal })
+      .fetchAll();
+    return items.resources as Document[];
   };
 
-  getDocument = async <Item extends { id: string }>(
-    name: string,
-    id: string,
-    partitionKey = id,
-  ): Promise<Item> => {
-    const item = this.#db.container(name).item(id, partitionKey);
-    const response = await item.read();
-    return { ...response.resource, id } as Item;
+  getDocument: DatabaseService["getDocument"] = async <
+    Document extends StoryBookerDatabaseDocument,
+  >(
+    collectionId: string,
+    documentId: string,
+    options: DatabaseServiceOptions,
+  ) => {
+    const item = this.#db.container(collectionId).item(documentId);
+    const response = await item.read({ abortSignal: options.abortSignal });
+    const document: Document = response.resource;
+    document.id = documentId;
+    return document;
   };
 
-  createDocument = async <Item extends { id: string }>(
-    name: string,
-    item: Item,
-  ): Promise<void> => {
-    await this.#db.container(name).items.create(item);
+  createDocument: DatabaseService["createDocument"] = async (
+    collectionId,
+    documentData,
+    options,
+  ) => {
+    await this.#db
+      .container(collectionId)
+      .items.create(documentData, { abortSignal: options.abortSignal });
     return;
   };
 
-  deleteDocument = async (
-    name: string,
-    id: string,
-    partitionKey = id,
-  ): Promise<void> => {
-    await this.#db.container(name).item(id, partitionKey).delete();
+  deleteDocument: DatabaseService["deleteDocument"] = async (
+    collectionId,
+    documentId,
+    options,
+  ) => {
+    await this.#db
+      .container(collectionId)
+      .item(documentId)
+      .delete({ abortSignal: options.abortSignal });
     return;
   };
 
   // oxlint-disable-next-line max-params
-  updateDocument = async <Item extends { id: string }>(
-    name: string,
-    id: string,
-    item: Partial<Omit<Item, "id">>,
-    partitionKey = id,
-  ): Promise<void> => {
+  updateDocument: DatabaseService["updateDocument"] = async (
+    collectionId,
+    documentId,
+    documentData,
+    options,
+  ) => {
     await this.#db
-      .container(name)
-      .item(id, partitionKey)
-      .patch<Item>({
-        operations: Object.entries(item).map(([key, value]) => ({
-          op: "replace",
-          path: `/${key}`,
-          value,
-        })),
-      });
+      .container(collectionId)
+      .item(documentId)
+      .patch<Document>(
+        {
+          operations: Object.entries(documentData).map(([key, value]) => ({
+            op: "replace",
+            path: `/${key}`,
+            value,
+          })),
+        },
+        { abortSignal: options.abortSignal },
+      );
 
     return;
   };

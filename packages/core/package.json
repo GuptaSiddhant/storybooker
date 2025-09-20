@@ -61,19 +61,68 @@
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.cts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "default": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./constants": {
+      "source": "./src/utils/constants.ts",
+      "import": "./dist/constants.js",
+      "require": "./dist/constants.cjs"
+    },
+    "./translations": {
+      "source": "./src/translations/index.ts",
+      "import": "./dist/translations.js",
+      "require": "./dist/translations.cjs"
+    },
+    "./translations/en-gb": {
+      "source": "./src/translations/en-gb.ts",
+      "import": "./dist/translations/en-gb.js",
+      "require": "./dist/translations/en-gb.cjs"
+    },
+    "./types": {
+      "source": "./src/types.ts",
+      "import": "./dist/types.js",
+      "require": "./dist/types.cjs"
+    },
+    "./utils": {
+      "source": "./src/utils/index.ts",
+      "import": "./dist/utils.js",
+      "require": "./dist/utils.cjs"
     },
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
-      ".": "./dist/index.js",
+      ".": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "./constants": {
+        "import": "./dist/constants.js",
+        "require": "./dist/constants.cjs"
+      },
+      "./translations": {
+        "import": "./dist/translations.js",
+        "require": "./dist/translations.cjs"
+      },
+      "./translations/en-gb": {
+        "import": "./dist/translations/en-gb.js",
+        "require": "./dist/translations/en-gb.cjs"
+      },
+      "./types": {
+        "import": "./dist/types.js",
+        "require": "./dist/types.cjs"
+      },
+      "./utils": {
+        "import": "./dist/utils.js",
+        "require": "./dist/utils.cjs"
+      },
       "./package.json": "./package.json"
     }
   }

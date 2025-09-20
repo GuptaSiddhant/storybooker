@@ -1,6 +1,11 @@
 import { getStore } from "#store";
 import z from "zod";
-import type { DatabaseService, LoggerService, StorageService } from "../types";
+import type {
+  DatabaseService,
+  DatabaseServiceOptions,
+  LoggerService,
+  StorageService,
+} from "../types";
 import { PATTERNS, SERVICE_NAME } from "./constants";
 import { parseErrorMessage } from "./error";
 
@@ -19,14 +24,16 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   database: DatabaseService;
   storage: StorageService;
   logger: LoggerService;
+  dbOptions: DatabaseServiceOptions;
 
   constructor(projectId: string | null, collectionName: string) {
-    const { database, storage, logger } = getStore();
+    const { abortSignal, database, storage, logger } = getStore();
     this.projectId = projectId || "SBR";
     this.collectionName = collectionName;
     this.database = database;
     this.storage = storage;
     this.logger = logger;
+    this.dbOptions = { abortSignal };
   }
 
   log(message: string, ...args: unknown[]): void {

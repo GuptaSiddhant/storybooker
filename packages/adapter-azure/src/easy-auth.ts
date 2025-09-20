@@ -6,18 +6,18 @@ import type {
   AuthServiceAuthorise,
   Permission,
   StoryBookerUser,
-} from "@storybooker/core";
+} from "@storybooker/core/types";
 
-export type { AuthServiceAuthorise } from "@storybooker/core";
+export type { AuthServiceAuthorise } from "@storybooker/core/types";
 
-export interface EasyAuthUser extends StoryBookerUser {
+export interface AzureEasyAuthUser extends StoryBookerUser {
   roles: string[] | null;
   type: "application" | "user";
 }
 
-export type EasyAuthRoleMap = Map<string, Permission[]>;
+export type AzureEasyAuthRoleMap = Map<string, Permission[]>;
 
-const DEFAULT_AUTHORISE: AuthServiceAuthorise<EasyAuthUser> = (
+const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = (
   { action },
   { user },
 ) => {
@@ -36,16 +36,16 @@ const DEFAULT_AUTHORISE: AuthServiceAuthorise<EasyAuthUser> = (
   return Boolean(user.roles && user.roles.length > 0);
 };
 
-export class AzureEasyAuthService implements AuthService<EasyAuthUser> {
-  authorise: AuthServiceAuthorise<EasyAuthUser>;
+export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
+  authorise: AuthServiceAuthorise<AzureEasyAuthUser>;
 
   constructor(
-    authorise: AuthServiceAuthorise<EasyAuthUser> = DEFAULT_AUTHORISE,
+    authorise: AuthServiceAuthorise<AzureEasyAuthUser> = DEFAULT_AUTHORISE,
   ) {
     this.authorise = authorise;
   }
 
-  async getUserDetails(request: Request): Promise<EasyAuthUser> {
+  async getUserDetails(request: Request): Promise<AzureEasyAuthUser> {
     const principalHeader = request.headers.get("x-ms-client-principal");
     if (!principalHeader) {
       throw new Response(

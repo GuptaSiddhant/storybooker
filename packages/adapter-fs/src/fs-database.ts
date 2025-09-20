@@ -1,62 +1,80 @@
-import * as fs from "node:fs";
+// oxlint-disable max-params
+
+import { existsSync } from "node:fs";
 import * as fsp from "node:fs/promises";
 import * as path from "node:path";
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
-} from "@storybooker/core";
+  DatabaseServiceOptions,
+  StoryBookerDatabaseDocument,
+} from "@storybooker/core/types";
 
-interface BaseItem {
-  id: string;
-}
+type Database = Record<string, Record<string, StoryBookerDatabaseDocument>>;
+
 export class LocalFileDatabase implements DatabaseService {
   #filename: string;
-  #db: Record<string, Record<string, BaseItem>> = {};
+  #db: Database = {};
 
   constructor(filename = "db.json") {
     this.#filename = filename;
-    try {
-      const db = fs.readFileSync(filename, { encoding: "utf8" });
-      this.#db = db ? JSON.parse(db) : {};
-    } catch {
-      const basedir = path.dirname(filename);
-      fs.mkdirSync(basedir, { recursive: true });
-      fs.writeFileSync(filename, "{}", { encoding: "utf8" });
-    }
   }
 
-  async #saveToFile(): Promise<void> {
-    await fsp.writeFile(this.#filename, JSON.stringify(this.#db, null, 2), {
-      encoding: "utf8",
-    });
-  }
-
-  createCollection = async (name: string): Promise<void> => {
-    if (!this.#db[name]) {
-      this.#db[name] = {};
+  init: DatabaseService["init"] = async (options) => {
+    if (existsSync(this.#filename)) {
+      await this.#readFromFile(options);
+    } else {
+      const basedir = path.dirname(this.#filename);
+      await fsp.mkdir(basedir, { recursive: true });
+      await fsp.writeFile(this.#filename, "{}", {
+        encoding: "utf8",
+        signal: options.abortSignal,
+      });
     }
-    await this.#saveToFile();
   };
-  deleteCollection = async (name: string): Promise<void> => {
-    // oxlint-disable-next-line no-dynamic-delete
-    delete this.#db[name];
-    await this.#saveToFile();
-  };
-  listCollections = async (): Promise<string[]> => {
+
+  listCollections: DatabaseService["listCollections"] = async () => {
     return Object.keys(this.#db);
   };
-  listDocuments = async <Item extends BaseItem>(
-    name: string,
-    options?: DatabaseDocumentListOptions<Item>,
-  ): Promise<Item[]> => {
-    if (!Object.hasOwn(this.#db, name)) {
-      throw new Error(`No collection - ${name}`);
+
+  createCollection: DatabaseService["createCollection"] = async (
+    collectionId,
+    options,
+  ): Promise<void> => {
+    if (!this.#db[collectionId]) {
+      this.#db[collectionId] = {};
     }
-    const { limit = Number.POSITIVE_INFINITY, sort, filter } = options || {};
+    await this.#saveToFile(options);
+  };
+
+  deleteCollection: DatabaseService["deleteCollection"] = async (
+    collectionId,
+    options,
+  ): Promise<void> => {
+    // oxlint-disable-next-line no-dynamic-delete
+    delete this.#db[collectionId];
+    await this.#saveToFile(options);
+  };
+
+  listDocuments: DatabaseService["listDocuments"] = async <
+    Document extends StoryBookerDatabaseDocument,
+  >(
+    collectionId: string,
+    listOptions: DatabaseDocumentListOptions<Document>,
+    _options: DatabaseServiceOptions,
+  ): Promise<Document[]> => {
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new Error(`No collection - ${collectionId}`);
+    }
+    const {
+      limit = Number.POSITIVE_INFINITY,
+      sort,
+      filter,
+    } = listOptions || {};
 
     // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[name]!;
-    const items = Object.values(collection) as Item[];
+    const collection = this.#db[collectionId]!;
+    const items = Object.values(collection) as Document[];
     if (sort && typeof sort === "function") {
       items.sort(sort);
     }
@@ -66,61 +84,101 @@ export class LocalFileDatabase implements DatabaseService {
 
     return items.slice(0, limit);
   };
-  getDocument = async <Item extends BaseItem>(
-    name: string,
-    id: string,
-  ): Promise<Item> => {
-    if (!Object.hasOwn(this.#db, name)) {
-      throw new Error(`No collection - ${name}`);
+
+  getDocument: DatabaseService["getDocument"] = async <
+    Document extends StoryBookerDatabaseDocument,
+  >(
+    collectionId: string,
+    documentId: string,
+    _options: DatabaseServiceOptions,
+  ): Promise<Document> => {
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new Error(`No collection - ${collectionId}`);
     }
-    const item = this.#db[name]?.[id];
+    const item = this.#db[collectionId]?.[documentId];
     if (!item) {
-      throw new Error(`Item '${id}' not found in collection '${name}'`);
-    }
-    return item as Item;
-  };
-  createDocument = async (name: string, item: BaseItem): Promise<void> => {
-    if (!Object.hasOwn(this.#db, name)) {
-      throw new Error(`No collection - ${name}`);
-    }
-    // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[name]!;
-    if (collection[item.id]) {
       throw new Error(
-        `Item '${item.id}' already exists in collection '${name}'`,
+        `Item '${documentId}' not found in collection '${collectionId}'`,
       );
     }
-    collection[item.id] = item;
-    await this.#saveToFile();
+    return item as Document;
   };
-  deleteDocument = async (name: string, id: string): Promise<void> => {
-    if (!Object.hasOwn(this.#db, name)) {
-      throw new Error(`No collection - ${name}`);
-    }
-    if (!(await this.getDocument(name, id))) {
-      throw new Error(`Item '${id}' not found in collection '${name}'`);
-    }
-    // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[name]!;
-    // oxlint-disable-next-line no-dynamic-delete
-    delete collection[id];
-    await this.#saveToFile();
-  };
-  updateDocument = async (
-    name: string,
-    id: string,
-    item: Partial<BaseItem>,
+
+  createDocument: DatabaseService["createDocument"] = async (
+    collectionId,
+    documentData,
+    options,
   ): Promise<void> => {
-    if (!Object.hasOwn(this.#db, name)) {
-      throw new Error(`No collection - ${name}`);
-    }
-    const prevItem = await this.getDocument(name, id);
-    if (!prevItem) {
-      throw new Error(`Item '${id}' not found in collection '${name}'`);
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new Error(`No collection - ${collectionId}`);
     }
     // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[name]!;
-    collection[id] = { ...prevItem, ...item, id };
-    await this.#saveToFile();
+    const collection = this.#db[collectionId]!;
+    if (collection[documentData.id]) {
+      throw new Error(
+        `Item '${documentData.id}' already exists in collection '${collectionId}'`,
+      );
+    }
+    collection[documentData.id] = documentData;
+    await this.#saveToFile(options);
   };
+
+  deleteDocument: DatabaseService["deleteDocument"] = async (
+    collectionId,
+    documentId,
+    options,
+  ): Promise<void> => {
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new Error(`No collection - ${collectionId}`);
+    }
+    if (!(await this.getDocument(collectionId, documentId, options))) {
+      throw new Error(
+        `Item '${documentId}' not found in collection '${collectionId}'`,
+      );
+    }
+    // oxlint-disable-next-line no-non-null-assertion
+    const collection = this.#db[collectionId]!;
+    // oxlint-disable-next-line no-dynamic-delete
+    delete collection[documentId];
+    await this.#saveToFile(options);
+  };
+
+  updateDocument: DatabaseService["updateDocument"] = async (
+    collectionId,
+    documentId,
+    documentData,
+    options,
+  ): Promise<void> => {
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new Error(`No collection - ${collectionId}`);
+    }
+    const prevItem = await this.getDocument(collectionId, documentId, options);
+    if (!prevItem) {
+      throw new Error(
+        `Item '${documentId}' not found in collection '${collectionId}'`,
+      );
+    }
+    // oxlint-disable-next-line no-non-null-assertion
+    const collection = this.#db[collectionId]!;
+    collection[documentId] = { ...prevItem, ...documentData, id: documentId };
+    await this.#saveToFile(options);
+  };
+
+  async #readFromFile(options: { abortSignal?: AbortSignal }): Promise<void> {
+    try {
+      const db = await fsp.readFile(this.#filename, {
+        encoding: "utf8",
+        signal: options.abortSignal,
+      });
+      this.#db = db ? JSON.parse(db) : {};
+    } catch {
+      this.#db = {};
+    }
+  }
+  async #saveToFile(options: { abortSignal?: AbortSignal }): Promise<void> {
+    await fsp.writeFile(this.#filename, JSON.stringify(this.#db, null, 2), {
+      encoding: "utf8",
+      signal: options.abortSignal,
+    });
+  }
 }

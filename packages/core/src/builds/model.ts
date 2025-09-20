@@ -30,7 +30,7 @@ export class BuildsModel extends Model<BuildType> {
     super(projectId, generateProjectCollectionName(projectId, "Builds"));
   }
 
-  async list(options?: ListOptions<BuildType>): Promise<BuildType[]> {
+  async list(options: ListOptions<BuildType> = {}): Promise<BuildType[]> {
     if (options) {
       this.log("List builds with options (%o)...", { ...options });
     } else {
@@ -40,6 +40,7 @@ export class BuildsModel extends Model<BuildType> {
     const items = await this.database.listDocuments(
       this.collectionName,
       options,
+      this.dbOptions,
     );
 
     return BuildSchema.array().parse(items);
@@ -76,7 +77,11 @@ export class BuildsModel extends Model<BuildType> {
       sha,
       updatedAt: now,
     };
-    await this.database.createDocument<BuildType>(this.collectionName, build);
+    await this.database.createDocument<BuildType>(
+      this.collectionName,
+      build,
+      this.dbOptions,
+    );
 
     try {
       const projectsModel = new ProjectsModel();
@@ -94,7 +99,11 @@ export class BuildsModel extends Model<BuildType> {
   async get(id: string): Promise<BuildType> {
     this.log("Get build '%s'...", id);
 
-    const item = await this.database.getDocument(this.collectionName, id);
+    const item = await this.database.getDocument(
+      this.collectionName,
+      id,
+      this.dbOptions,
+    );
 
     return BuildSchema.parse(item);
   }
@@ -108,10 +117,12 @@ export class BuildsModel extends Model<BuildType> {
   async update(id: string, data: Partial<BuildType>): Promise<void> {
     this.log("Update build '%s''...", id);
     const parsedData = BuildUpdateSchema.parse(data);
-    await this.database.updateDocument(this.collectionName, id, {
-      ...parsedData,
-      updatedAt: new Date().toISOString(),
-    });
+    await this.database.updateDocument(
+      this.collectionName,
+      id,
+      { ...parsedData, updatedAt: new Date().toISOString() },
+      this.dbOptions,
+    );
 
     return;
   }
@@ -122,7 +133,11 @@ export class BuildsModel extends Model<BuildType> {
     const build = await this.get(buildId);
 
     this.debug("Delete document '%s'", buildId);
-    await this.database.deleteDocument(this.collectionName, buildId);
+    await this.database.deleteDocument(
+      this.collectionName,
+      buildId,
+      this.dbOptions,
+    );
 
     try {
       this.debug("Delete files '%s'", buildId);

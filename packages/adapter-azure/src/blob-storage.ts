@@ -3,7 +3,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import { BlobServiceClient, type BlobClient } from "@azure/storage-blob";
-import type { StorageService } from "@storybooker/core";
+import type { StorageService } from "@storybooker/core/types";
 
 export class AzureBlobStorageService implements StorageService {
   #client: BlobServiceClient;

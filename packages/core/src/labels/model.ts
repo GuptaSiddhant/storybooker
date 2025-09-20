@@ -18,12 +18,13 @@ export class LabelsModel extends Model<LabelType> {
     super(projectId, generateProjectCollectionName(projectId, "Labels"));
   }
 
-  async list(options?: ListOptions<LabelType>): Promise<LabelType[]> {
+  async list(options: ListOptions<LabelType> = {}): Promise<LabelType[]> {
     this.log("List labels...");
 
     const items = await this.database.listDocuments(
       this.collectionName,
       options,
+      this.dbOptions,
     );
 
     return LabelSchema.array().parse(items);
@@ -42,7 +43,11 @@ export class LabelsModel extends Model<LabelType> {
       slug,
       updatedAt: now,
     };
-    await this.database.createDocument<LabelType>(this.collectionName, label);
+    await this.database.createDocument<LabelType>(
+      this.collectionName,
+      label,
+      this.dbOptions,
+    );
 
     return label;
   }
@@ -50,7 +55,11 @@ export class LabelsModel extends Model<LabelType> {
   async get(id: string): Promise<LabelType> {
     this.log("Get label '%s'...", id);
 
-    const item = await this.database.getDocument(this.collectionName, id);
+    const item = await this.database.getDocument(
+      this.collectionName,
+      id,
+      this.dbOptions,
+    );
 
     return LabelSchema.parse(item);
   }
@@ -65,10 +74,12 @@ export class LabelsModel extends Model<LabelType> {
     this.log("Update label '%s'...", id);
     const parsedData = LabelUpdateSchema.parse(data);
 
-    await this.database.updateDocument(this.collectionName, id, {
-      ...parsedData,
-      updatedAt: new Date().toISOString(),
-    });
+    await this.database.updateDocument(
+      this.collectionName,
+      id,
+      { ...parsedData, updatedAt: new Date().toISOString() },
+      this.dbOptions,
+    );
 
     return;
   }
@@ -85,7 +96,11 @@ export class LabelsModel extends Model<LabelType> {
       throw new Error(message);
     }
 
-    await this.database.deleteDocument(this.collectionName, slug);
+    await this.database.deleteDocument(
+      this.collectionName,
+      slug,
+      this.dbOptions,
+    );
 
     try {
       this.debug("Delete builds associated with label '%s'...", slug);

@@ -48,7 +48,7 @@ export const root = defineRoute(
     tags: ["UI"],
   },
   async () => {
-    const { headless, prefix, url } = getStore();
+    const { prefix, url } = getStore();
 
     if (checkIsJSONRequest()) {
       const urls: z.infer<typeof rootSchema>["urls"] = {};
@@ -61,10 +61,6 @@ export const root = defineRoute(
 
       const data: z.infer<typeof rootSchema> = { urls };
       return Response.json(data, { status: 200 });
-    }
-
-    if (headless) {
-      return responseRedirect(urlJoin(prefix, "projects"), 301);
     }
 
     await authenticateOrThrow({

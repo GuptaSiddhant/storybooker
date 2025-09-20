@@ -6,7 +6,9 @@ import {
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
-} from "@storybooker/core";
+  DatabaseServiceOptions,
+  StoryBookerDatabaseDocument,
+} from "@storybooker/core/types";
 
 export class AzureDataTablesDatabaseService implements DatabaseService {
   #connectionString: string;
@@ -18,9 +20,11 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
       TableServiceClient.fromConnectionString(connectionString);
   }
 
-  listCollections: DatabaseService["listCollections"] = async () => {
+  listCollections: DatabaseService["listCollections"] = async (options) => {
     const collections: string[] = [];
-    for await (const table of this.#serviceClient.listTables()) {
+    for await (const table of this.#serviceClient.listTables({
+      abortSignal: options.abortSignal,
+    })) {
       if (table.name) {
         collections.push(table.name);
       }
@@ -29,27 +33,41 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return collections;
   };
 
-  createCollection: DatabaseService["createCollection"] = async (name) => {
-    await this.#serviceClient.createTable(name);
+  createCollection: DatabaseService["createCollection"] = async (
+    collectionId,
+    options,
+  ) => {
+    await this.#serviceClient.createTable(collectionId, {
+      abortSignal: options.abortSignal,
+    });
     return;
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (name) => {
-    await this.#serviceClient.deleteTable(name);
+  deleteCollection: DatabaseService["deleteCollection"] = async (
+    collectionId,
+    options,
+  ) => {
+    await this.#serviceClient.deleteTable(collectionId, {
+      abortSignal: options.abortSignal,
+    });
     return;
   };
 
-  listDocuments = async <Item extends { id: string }>(
-    tableName: string,
-    options?: DatabaseDocumentListOptions<Item>,
-  ): Promise<Item[]> => {
-    const { filter, limit, select, sort } = options || {};
+  listDocuments: DatabaseService["listDocuments"] = async <
+    Document extends StoryBookerDatabaseDocument,
+  >(
+    collectionId: string,
+    listOptions: DatabaseDocumentListOptions<Document>,
+    options: DatabaseServiceOptions,
+  ): Promise<Document[]> => {
+    const { filter, limit, select, sort } = listOptions || {};
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      tableName,
+      collectionId,
     );
     const pageIterator = tableClient
       .listEntities({
+        abortSignal: options.abortSignal,
         queryOptions: {
           filter: typeof filter === "string" ? filter : undefined,
           select,
@@ -57,10 +75,10 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
       })
       .byPage({ maxPageSize: limit });
 
-    const items: Item[] = [];
+    const items: Document[] = [];
     for await (const page of pageIterator) {
       for (const entity of page) {
-        const item = this.#entityToItem<Item>(entity);
+        const item = this.#entityToItem<Document>(entity);
         if (filter && typeof filter === "function") {
           if (filter(item)) {
             items.push(item);
@@ -80,65 +98,76 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return items;
   };
 
-  getDocument = async <Item extends { id: string }>(
-    tableName: string,
-    id: string,
-    partitionKey = id,
-  ): Promise<Item> => {
+  getDocument: DatabaseService["getDocument"] = async <
+    Document extends StoryBookerDatabaseDocument,
+  >(
+    collectionId: string,
+    documentId: string,
+    options: DatabaseServiceOptions,
+  ): Promise<Document> => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      tableName,
+      collectionId,
     );
-    const entity = await tableClient.getEntity(partitionKey, id);
+    const entity = await tableClient.getEntity(collectionId, documentId, {
+      abortSignal: options.abortSignal,
+    });
 
-    return this.#entityToItem<Item>(entity);
+    return this.#entityToItem<Document>(entity);
   };
 
-  createDocument = async <Item extends { id: string }>(
-    tableName: string,
-    item: Item,
+  createDocument: DatabaseService["createDocument"] = async (
+    collectionId,
+    documentData,
+    options,
   ): Promise<void> => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      tableName,
+      collectionId,
     );
-    await tableClient.createEntity({
-      ...item,
-      partitionKey: item.id,
-      rowKey: item.id,
+    await tableClient.createEntity(
+      {
+        ...documentData,
+        partitionKey: collectionId,
+        rowKey: documentData.id,
+      },
+      { abortSignal: options.abortSignal },
+    );
+
+    return;
+  };
+
+  deleteDocument: DatabaseService["deleteDocument"] = async (
+    collectionId,
+    documentId,
+    options,
+  ): Promise<void> => {
+    const tableClient = TableClient.fromConnectionString(
+      this.#connectionString,
+      collectionId,
+    );
+    await tableClient.deleteEntity(collectionId, documentId, {
+      abortSignal: options.abortSignal,
     });
 
     return;
   };
 
-  deleteDocument = async (
-    tableName: string,
-    id: string,
-    partitionKey = id,
-  ): Promise<void> => {
-    const tableClient = TableClient.fromConnectionString(
-      this.#connectionString,
-      tableName,
-    );
-    await tableClient.deleteEntity(partitionKey, id);
-
-    return;
-  };
-
   // oxlint-disable-next-line max-params
-  updateDocument = async <Item extends { id: string }>(
-    tableName: string,
-    id: string,
-    item: Partial<Omit<Item, "id">>,
-    partitionKey = id,
+  updateDocument: DatabaseService["updateDocument"] = async (
+    collectionId,
+    documentId,
+    documentData,
+    options,
   ): Promise<void> => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      tableName,
+      collectionId,
     );
     await tableClient.updateEntity(
-      { ...item, partitionKey, rowKey: id },
+      { ...documentData, partitionKey: collectionId, rowKey: documentId },
       "Merge",
+      { abortSignal: options.abortSignal },
     );
 
     return;
