@@ -26,7 +26,10 @@
   },
   "sideEffects": false,
   "exports": {
-    ".": "./dist/index.js",
+    ".": {
+      "source": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -51,5 +54,11 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  }
 }

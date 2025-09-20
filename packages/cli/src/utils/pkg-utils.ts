@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-export type PkgManager = "npm" | "yarn" | "pnpm" | "bun";
+export type PkgManager = "npm" | "yarn" | "pnpm" | "bun" | "deno";
 export function detectPackageManager(
   startDir: string = process.cwd(),
   maxDepth = 5,
@@ -10,17 +10,20 @@ export function detectPackageManager(
   let depth = 0;
 
   while (depth < maxDepth) {
+    if (fs.existsSync(path.join(currentDir, `package-lock.json`))) {
+      return "npm";
+    }
     if (fs.existsSync(path.join(currentDir, `yarn.lock`))) {
       return "yarn";
     }
     if (fs.existsSync(path.join(currentDir, `pnpm-lock.yaml`))) {
       return "pnpm";
     }
-    if (fs.existsSync(path.join(currentDir, `package-lock.json`))) {
-      return "npm";
-    }
     if (fs.existsSync(path.join(currentDir, `bun.lock`))) {
       return "bun";
+    }
+    if (fs.existsSync(path.join(currentDir, `deno.lock`))) {
+      return "deno";
     }
 
     const parentDir = path.dirname(currentDir);

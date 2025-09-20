@@ -6,6 +6,7 @@
     "node": true
   },
   "rules": {
-    "promise-function-async": "allow"
+    "promise-function-async": "allow",
+    "typescript/no-base-to-string": "allow"
   }
 }

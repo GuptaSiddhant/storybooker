@@ -5,7 +5,7 @@ export default defineConfig({
   clean: !argv.includes("-w"),
   dts: { tsgo: true },
   entry: ["./src/index.ts"],
-  exports: true,
+  exports: { devExports: "source" },
   inputOptions: { jsx: "react-jsx" },
   onSuccess: generateOpenApiSpec,
   platform: "node",
@@ -15,6 +15,7 @@ export default defineConfig({
 
 async function generateOpenApiSpec(): Promise<void> {
   const { router, SERVICE_NAME } = await import("./dist/index.js");
+
   const { createDocument } = await import("zod-openapi");
   const { writeFile } = await import("node:fs/promises");
 

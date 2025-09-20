@@ -6,8 +6,8 @@
     "*.ts": "${capture}.spec.*, ${capture}.test.*, ${capture}.js",
     "*.tsx": "${capture}.spec.*, ${capture}.test.*",
     "*.js": "${capture}.js.map, ${capture}.d.ts",
-    "*.cjs": "${capture}.cjs.map, ${capture}.d.ts",
-    "*.mjs": "${capture}.mjs.map, ${capture}.d.ts, ${capture}.cjs, ${capture}.cjs.map"
+    "*.cjs": "${capture}.cjs.map, ${capture}.d.cts",
+    "*.mjs": "${capture}.mjs.map, ${capture}.d.ts"
   },
   "cSpell.language": "en-GB",
   "cSpell.words": [

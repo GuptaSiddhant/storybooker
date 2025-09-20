@@ -59,6 +59,13 @@ export function createRequestHandler<User extends StoryBookerUser>(
         request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
         DEFAULT_LOCALE;
       const user = await options.auth?.getUserDetails(request);
+      const logger = options.logger || console;
+
+      await Promise.allSettled([
+        options.auth?.init?.().catch(logger.error),
+        options.database.init?.().catch(logger.error),
+        options.storage.init?.().catch(logger.error),
+      ]);
 
       localStore.enterWith({
         auth: options.auth as AuthService | undefined,
@@ -67,7 +74,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
         database: options.database,
         headless: !!options.headless,
         locale,
-        logger: options.logger || console,
+        logger,
         openAPI: options.openAPI,
         prefix: options.prefix || "",
         request,

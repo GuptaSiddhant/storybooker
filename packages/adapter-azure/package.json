@@ -26,10 +26,31 @@
   },
   "sideEffects": false,
   "exports": {
-    ".": "./dist/index.js",
-    "./blob-storage": "./dist/blob-storage.js",
-    "./data-tables": "./dist/data-tables.js",
-    "./easy-auth": "./dist/easy-auth.js",
+    ".": {
+      "source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./blob-storage": {
+      "source": "./src/blob-storage.ts",
+      "import": "./dist/blob-storage.js",
+      "require": "./dist/blob-storage.cjs"
+    },
+    "./cosmosdb": {
+      "source": "./src/cosmosdb.ts",
+      "import": "./dist/cosmosdb.js",
+      "require": "./dist/cosmosdb.cjs"
+    },
+    "./data-tables": {
+      "source": "./src/data-tables.ts",
+      "import": "./dist/data-tables.js",
+      "require": "./dist/data-tables.cjs"
+    },
+    "./easy-auth": {
+      "source": "./src/easy-auth.ts",
+      "import": "./dist/easy-auth.js",
+      "require": "./dist/easy-auth.cjs"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -42,6 +63,7 @@
     "start": "func start"
   },
   "dependencies": {
+    "@azure/cosmos": "^4.5.1",
     "@azure/data-tables": "^13.0.0",
     "@azure/storage-blob": "^12.0.0",
     "@storybooker/core": "workspace:^"
@@ -54,7 +76,32 @@
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1"
   },
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.ts"
+  "types": "./dist/index.d.cts",
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+      },
+      "./blob-storage": {
+        "import": "./dist/blob-storage.js",
+        "require": "./dist/blob-storage.cjs"
+      },
+      "./cosmosdb": {
+        "import": "./dist/cosmosdb.js",
+        "require": "./dist/cosmosdb.cjs"
+      },
+      "./data-tables": {
+        "import": "./dist/data-tables.js",
+        "require": "./dist/data-tables.cjs"
+      },
+      "./easy-auth": {
+        "import": "./dist/easy-auth.js",
+        "require": "./dist/easy-auth.cjs"
+      },
+      "./package.json": "./package.json"
+    }
+  }
 }

@@ -5,10 +5,12 @@ export default defineConfig({
   entry: [
     "./src/index.ts",
     "./src/blob-storage.ts",
+    "./src/cosmosdb.ts",
     "./src/data-tables.ts",
     "./src/easy-auth.ts",
   ],
-  exports: true,
+  exports: { devExports: "source" },
+  format: ["esm", "cjs"],
   platform: "node",
   sourcemap: true,
   treeshake: true,

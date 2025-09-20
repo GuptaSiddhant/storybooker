@@ -13,24 +13,22 @@ export const errorSchema = z
 export const errorContent = { "application/json": { schema: errorSchema } };
 
 export function commonErrorResponses(): ZodOpenApiResponsesObject {
-  const { translation } = getStore();
-
   return {
     400: {
       content: errorContent,
-      description: translation.errorMessages.invalid_request_data,
+      description: "Invalid request data",
     },
     401: {
       content: errorContent,
-      description: translation.errorMessages.unauthenticated_access,
+      description: "Unauthenticated access",
     },
     403: {
       content: errorContent,
-      description: translation.errorMessages.unauthorised_access,
+      description: "Unauthorised access",
     },
     500: {
       content: errorContent,
-      description: translation.errorMessages.unexpected_server_error,
+      description: "An unexpected server-error occurred.",
     },
   };
 }

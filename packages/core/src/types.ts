@@ -25,6 +25,12 @@ export interface DatabaseDocumentListOptions<Item extends { id: string }> {
  * to an existing database.
  */
 export interface DatabaseService {
+  /**
+   * An optional method that is called on app boot-up
+   * to run async setup functions.
+   * Preferably, this function should not throw errors.
+   */
+  init?: () => Promise<void>;
   listCollections: () => Promise<string[]>;
   createCollection: (name: string) => Promise<void>;
   deleteCollection: (name: string) => Promise<void>;
@@ -62,6 +68,12 @@ export interface DatabaseService {
  * to an existing storage like upload and download files.
  */
 export interface StorageService {
+  /**
+   * An optional method that is called on app boot-up
+   * to run async setup functions.
+   * Preferably, this function should not throw errors.
+   */
+  init?: () => Promise<void>;
   listContainers: () => Promise<string[]>;
   createContainer: (name: string) => Promise<void>;
   deleteContainer: (name: string) => Promise<void>;
@@ -146,6 +158,12 @@ export interface BrandTheme {
 export interface AuthService<
   AuthUser extends StoryBookerUser = StoryBookerUser,
 > {
+  /**
+   * An optional method that is called on app boot-up
+   * to run async setup functions.
+   * Preferably, this function should not throw errors.
+   */
+  init?: () => Promise<void>;
   /**
    * This callback is called before every protected route and determines if user
    * has access to the route. It receives a permission object.
