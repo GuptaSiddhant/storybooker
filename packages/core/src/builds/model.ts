@@ -337,7 +337,7 @@ export class BuildsModel extends Model<BuildType> {
     dirpath: string,
     prefix: string,
   ): Promise<StoryBookerFile[]> => {
-    const { streaming } = getStore();
+    const { ui } = getStore();
 
     const allEntriesInDir = await fsp.readdir(dirpath, {
       encoding: "utf8",
@@ -351,7 +351,7 @@ export class BuildsModel extends Model<BuildType> {
     return allFilesInDir.map((filepath): StoryBookerFile => {
       const relativePath = filepath.replace(`${dirpath}/`, "");
       const content =
-        streaming === false
+        ui?.streaming === false
           ? fs.readFileSync(filepath, { encoding: "binary" })
           : (Readable.toWeb(
               fs.createReadStream(filepath, { encoding: "binary" }),

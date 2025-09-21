@@ -21,9 +21,8 @@ export function DocumentLayout({
   footer?: JSX.Element | null;
   account?: JSX.Element | null;
 }): JSX.Element {
-  const { branding } = getStore();
-
-  const { darkTheme, lightTheme } = branding || {};
+  const { ui } = getStore();
+  const { darkTheme, lightTheme } = ui || {};
   const safeStylesheet = globalStyleSheet({ darkTheme, lightTheme });
 
   return (
@@ -80,8 +79,8 @@ export function DocumentLayout({
 }
 
 function Logo(): JSX.Element {
-  const { branding = {} } = getStore();
-  const { logo } = branding;
+  const { ui } = getStore();
+  const { logo } = ui || {};
 
   // oxlint-disable-next-line no-nested-ternary
   const logoElement = logo ? (

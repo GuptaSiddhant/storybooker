@@ -27,7 +27,7 @@ export const serveStorybook = defineRoute(
   },
   async ({ params, request }) => {
     const { buildSHA, projectId } = params;
-    const { abortSignal, storage, streaming } = getStore();
+    const { abortSignal, storage, ui } = getStore();
     const { pathname } = new URL(request.url);
     const filepath = pathname.split(`${buildSHA}/`).at(1) || "index.html";
 
@@ -50,7 +50,7 @@ export const serveStorybook = defineRoute(
       headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
 
       if (!filepath.endsWith("index.html")) {
-        if (streaming === false && content instanceof ReadableStream) {
+        if (ui?.streaming === false && content instanceof ReadableStream) {
           const body = await new Response(content).arrayBuffer();
           return new Response(body, { headers, status: 200 });
         }

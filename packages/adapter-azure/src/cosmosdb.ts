@@ -14,8 +14,11 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     this.#db = new CosmosClient(connectionString).database(dbName);
   }
 
-  init: DatabaseService["init"] = async () => {
-    await this.#db.client.databases.createIfNotExists({ id: this.#db.id });
+  init: DatabaseService["init"] = async (options) => {
+    await this.#db.client.databases.createIfNotExists(
+      { id: this.#db.id },
+      { abortSignal: options.abortSignal },
+    );
   };
 
   listCollections: DatabaseService["listCollections"] = async (options) => {

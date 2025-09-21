@@ -11,16 +11,10 @@ export type * from "./services/storage";
  * Options for creating a request handler.
  */
 export interface RequestHandlerOptions<User extends StoryBookerUser> {
-  /** A abort signal that can be used to cancel the request handling. */
-  abortSignal?: AbortSignal;
   /** Adapter for Auth service. Provides authentication to the service. */
   auth?: AuthService<User>;
-  /** Options to update branding of UI */
-  branding?: BrandingOptions;
   /** Adapter for Database service. Provides access to storing data to the service. */
   database: DatabaseService;
-  /** Enable or disable response streaming. @default true */
-  streaming?: boolean;
   /**
    * A function for parsing custom errors.
    * Return `undefined` from parser if the service should handle the error.
@@ -44,16 +38,16 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   staticDirs?: readonly string[];
   /** Adapter for Storage service. Provides access to storing files to the service. */
   storage: StorageService;
-  /** Provide custom translations for the UI. Default to English-GB. */
-  translation?: Translation;
+  /** Options to customise StoryBooker UI. */
+  ui?: UIOptions;
 }
 
-export type RequestHandlerOverrideOptions = Partial<
-  Pick<
-    RequestHandlerOptions<StoryBookerUser>,
-    "abortSignal" | "errorParser" | "logger"
-  >
->;
+export interface RequestHandlerOverrideOptions {
+  /** A abort signal that can be used to cancel the request handling. */
+  abortSignal?: AbortSignal;
+  /** Adapter for Logging service. Provides option to direct the logging of the service. */
+  logger?: LoggerService;
+}
 
 /**
  * Run middleware to modify incoming Request or outgoing Response.
@@ -115,16 +109,16 @@ export interface OpenAPIOptions {
   ui?: "swagger" | "scalar";
 }
 
-/**
- * Options to stylise StoryBooker
- */
-export interface BrandingOptions {
-  /**
-   * Valid HTML string to place a logo/text in Header
-   */
-  logo?: string;
+export interface UIOptions {
+  /** Valid HTML string to place a logo/text in Header. */ logo?: string;
+  /** Dark mode theme */
   darkTheme?: BrandTheme;
+  /** Light mode theme */
   lightTheme?: BrandTheme;
+  /** Enable or disable response streaming. @default true */
+  streaming?: boolean;
+  /** Provide custom translations for the UI. Default to English-GB. */
+  translation?: Translation;
 }
 
 /** Brand colors used for theming. */

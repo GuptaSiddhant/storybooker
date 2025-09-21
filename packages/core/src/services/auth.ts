@@ -10,14 +10,16 @@ export interface AuthService<
   /**
    * An optional method that is called on app boot-up
    * to run async setup functions.
-   * Preferably, this function should not throw errors.
+   * @param options Common options like abortSignal.
+   * @throws if an error occur during initialisation.
    */
-  init?: () => Promise<void>;
+  init?: (options: AuthServiceOptions) => Promise<void>;
 
   /**
    * This callback is called before every protected route and determines if user
    * has access to the route. It receives a permission object.
    *
+   * @returns
    * - Respond with `true` to allow user to proceed.
    * - Respond with `false` to block user.
    * - Respond with `Response` to return custom response
@@ -27,45 +29,69 @@ export interface AuthService<
   /**
    * Get details about the user based on incoming request.
    *
-   * Throw an error or response (redirect-to-login) if it is a unauthenticated/unauthorised request.
+   * @param options Common options like abortSignal.
+   *
+   * @throws an error or response (redirect-to-login) if it is a unauthenticated/unauthorised request.
    */
-  getUserDetails: (request: Request) => Promise<AuthUser | null>;
+  getUserDetails: (
+    request: Request,
+    options: AuthServiceOptions,
+  ) => Promise<AuthUser | null>;
 
   /**
    * Get user to login from UI. The returning response should create auth session.
    * User will be redirected automatically after function is resolved.
+   *
+   * @param options Common options like abortSignal.
    */
-  login?: (request: Request) => Promise<Response> | Response;
+  login?: (
+    request: Request,
+    options: AuthServiceOptions,
+  ) => Promise<Response> | Response;
 
   /**
    * Get user to logout from UI. The returning response should clear auth session.
    * User will be redirected automatically after function is resolved.
+   *
+   * @param options Common options like abortSignal.
    */
-  logout?: (request: Request, user: AuthUser) => Promise<Response> | Response;
+  logout?: (
+    request: Request,
+    user: AuthUser,
+    options: AuthServiceOptions,
+  ) => Promise<Response> | Response;
 
   /**
    * Render custom HTML in account page. Must return valid HTML string;
+   *
+   * @param options Common options like abortSignal.
    */
   renderAccountDetails?: (
     request: Request,
     user: AuthUser,
+    options: AuthServiceOptions,
   ) => Promise<string> | string;
 }
 
 /**
  * Type for the callback function to check permissions.
  *
- * Return true to allow access, or following to deny:
+ * @param options Common options like abortSignal.
+ *
+ * @returns true to allow access, or following to deny:
  * - false - returns 403 response
  * - Response - returns the specified HTTP response
  */
 export type AuthServiceAuthorise<
   AuthUser extends StoryBookerUser = StoryBookerUser,
-> = (params: {
-  permission: PermissionWithKey;
-  request: Request;
-  user: AuthUser | undefined | null;
-}) => Promise<boolean | Response> | boolean | Response;
+> = (
+  params: {
+    permission: PermissionWithKey;
+    request: Request;
+    user: AuthUser | undefined | null;
+  },
+  options: AuthServiceOptions,
+) => Promise<boolean | Response> | boolean | Response;
 
 /**  Type of permission to check */
 export interface Permission {
@@ -96,4 +122,10 @@ export interface StoryBookerUser {
   displayName: string;
   imageUrl?: string;
   title?: string;
+}
+
+/** Common Auth service options.  */
+export interface AuthServiceOptions {
+  /** A signal that can be used to cancel the request handling. */
+  abortSignal?: AbortSignal;
 }

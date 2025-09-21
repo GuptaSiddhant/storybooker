@@ -50,13 +50,9 @@ export function createRequestHandler<User extends StoryBookerUser>(
   const logger = options.logger || console;
 
   const initPromises = Promise.allSettled([
-    options.auth?.init?.().catch(logger.error),
-    options.database
-      .init?.({ abortSignal: options.abortSignal })
-      .catch(logger.error),
-    options.storage
-      .init?.({ abortSignal: options.abortSignal })
-      .catch(logger.error),
+    options.auth?.init?.({}).catch(logger.error),
+    options.database.init?.({}).catch(logger.error),
+    options.storage.init?.({}).catch(logger.error),
   ]);
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {
@@ -67,17 +63,19 @@ export function createRequestHandler<User extends StoryBookerUser>(
       const locale =
         request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
         DEFAULT_LOCALE;
-      const user = await options.auth?.getUserDetails(request);
+      const user = await options.auth?.getUserDetails(request, {
+        abortSignal: overrideOptions?.abortSignal,
+      });
 
       localStore.enterWith({
         ...options,
-        ...overrideOptions,
+        abortSignal: overrideOptions?.abortSignal,
         auth: options.auth as AuthService | undefined,
         locale,
         logger: overrideOptions?.logger ?? logger,
         prefix: options.prefix || "",
         request,
-        translation: options.translation || translations_enGB,
+        translation: options.ui?.translation ?? translations_enGB,
         url: request.url,
         user,
       });

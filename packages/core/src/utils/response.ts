@@ -48,7 +48,7 @@ export async function responseHTML(
   };
 
   if (html instanceof Promise) {
-    if (getStore().streaming === false) {
+    if (getStore().ui?.streaming === false) {
       return new Response(await html, responseInit);
     }
 

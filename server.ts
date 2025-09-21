@@ -15,12 +15,16 @@ import type {
 
 class LocalAuthService implements AuthService {
   #auth = true;
-  #user: StoryBookerUser = {
-    displayName: "Test User",
-    id: "user",
-    imageUrl:
-      "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-    title: "testAdmin",
+  #user: StoryBookerUser;
+
+  init = async (): Promise<void> => {
+    this.#user = {
+      displayName: "Test User",
+      id: "user",
+      imageUrl:
+        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+      title: "testAdmin",
+    };
   };
 
   authorise: AuthServiceAuthorise = ({ user }) => !!user;
@@ -51,11 +55,11 @@ class LocalAuthService implements AuthService {
 export default {
   fetch: createRequestHandler({
     auth: new LocalAuthService(),
-    branding: {
-      logo: "https://cos-admin.azurewebsites.net/icons/cos-logo.svg",
-    },
     database: new LocalFileDatabase(".server/db.json"),
     staticDirs: [".server"],
     storage: new LocalFileStorage(".server"),
+    ui: {
+      logo: "https://cos-admin.azurewebsites.net/icons/cos-logo.svg",
+    },
   }),
 };

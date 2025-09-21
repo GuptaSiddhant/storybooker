@@ -85,7 +85,7 @@ export const health = defineRoute(
 );
 
 export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
-  const { auth, request, translation, url } = getStore();
+  const { abortSignal, auth, request, translation, url } = getStore();
   if (!auth?.login) {
     return await responseError(
       translation.errorMessages.auth_setup_missing,
@@ -93,7 +93,7 @@ export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
     );
   }
 
-  const response = await auth.login(request);
+  const response = await auth.login(request, { abortSignal });
 
   if (response.status >= 400) {
     return response;
@@ -112,7 +112,7 @@ export const logout = defineRoute(
   URLS.ui.logout,
   undefined,
   async () => {
-    const { auth, request, translation, url, user } = getStore();
+    const { abortSignal, auth, request, translation, url, user } = getStore();
     if (!auth?.logout || !user) {
       return await responseError(
         translation.errorMessages.auth_setup_missing,
@@ -120,7 +120,7 @@ export const logout = defineRoute(
       );
     }
 
-    const response = await auth.logout(request, user);
+    const response = await auth.logout(request, user, { abortSignal });
     if (response.status >= 400) {
       return response;
     }
@@ -138,7 +138,7 @@ export const account = defineRoute(
   URLS.ui.account,
   undefined,
   async () => {
-    const { auth, request, user, translation, url } = getStore();
+    const { abortSignal, auth, request, user, translation, url } = getStore();
     if (!auth) {
       return await responseError(
         translation.errorMessages.auth_setup_missing,
@@ -156,7 +156,9 @@ export const account = defineRoute(
       return responseRedirect(serviceUrl, 404);
     }
 
-    const children = await auth.renderAccountDetails?.(request, user);
+    const children = await auth.renderAccountDetails?.(request, user, {
+      abortSignal,
+    });
 
     return await responseHTML(renderAccountPage({ children }));
   },

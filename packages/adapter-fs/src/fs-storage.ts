@@ -129,7 +129,9 @@ async function writeWebStreamToFile(
 
   // Return a promise that resolves when writing is finished
   return new Promise((resolve, reject) => {
-    fileWritableStream.on("finish", () => resolve(null));
+    fileWritableStream.on("finish", () => {
+      resolve(null);
+    });
     fileWritableStream.on("error", reject);
   });
 }

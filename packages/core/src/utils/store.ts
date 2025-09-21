@@ -8,6 +8,7 @@ import type {
 
 export interface Store
   extends Omit<RequestHandlerOptions<StoryBookerUser>, "staticDirs"> {
+  abortSignal: AbortSignal | undefined;
   locale: string;
   logger: LoggerService;
   prefix: string;
