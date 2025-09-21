@@ -11,13 +11,15 @@ export function getT<
   replacements?: Record<string, string>,
 ): Translation[Category][Key] {
   const value = getStore().translation[category][key];
-  if (replacements && typeof value === "string") {
+
+  let translation: string = typeof value === "string" ? value : String(value);
+  if (replacements) {
     for (const rep of Object.entries(replacements)) {
-      value.replace(`{{${rep[0]}}}`, rep[1]);
+      translation = translation.replace(`{{${rep[0]}}}`, rep[1]);
     }
   }
 
-  return value;
+  return translation as typeof value;
 }
 
 export const commonT = {

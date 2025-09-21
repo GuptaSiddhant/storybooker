@@ -162,7 +162,7 @@ export function renderBuildDetailsPage({
             download={`storybook-${projectId}-${build.sha}.zip`}
             target="_blank"
           >
-            {commonT.Upload()} {commonT.StoryBook()}
+            {commonT.Download()} {commonT.StoryBook()}
           </a>
         ) : null}
       </DocumentSidebar>

@@ -1,8 +1,10 @@
+// oxlint-disable no-await-in-loop
+
 import * as fs from "node:fs";
 import * as fsp from "node:fs/promises";
 import * as path from "node:path";
-import { Readable } from "node:stream";
-import type { ReadableStream } from "node:stream/web";
+import { Readable, type Stream } from "node:stream";
+import type { ReadableStream as WebReadableStream } from "node:stream/web";
 import type { StorageService } from "@storybooker/core/types";
 
 export class LocalFileStorage implements StorageService {
@@ -89,19 +91,45 @@ export class LocalFileStorage implements StorageService {
   ) => {
     for (const file of files) {
       const filepath = this.#genPath(containerId, file.path);
-      const data =
-        // oxlint-disable-next-line no-nested-ternary
-        typeof file.content === "string"
-          ? file.content
-          : // oxlint-disable-next-line no-nested-ternary
-            file.content instanceof Blob
-            ? Readable.fromWeb(file.content.stream() as ReadableStream)
-            : Readable.fromWeb(file.content as ReadableStream);
-      // oxlint-disable-next-line no-await-in-loop
-      await fsp.writeFile(filepath, data, {
-        encoding: "utf8",
-        signal: options.abortSignal,
-      });
+      const dirpath = path.dirname(filepath);
+
+      await fsp.mkdir(dirpath, { recursive: true });
+      if (file.content instanceof ReadableStream) {
+        await writeWebStreamToFile(file.content, filepath);
+      } else {
+        const data: string | Stream =
+          // oxlint-disable-next-line no-nested-ternary
+          typeof file.content === "string"
+            ? file.content
+            : await file.content.text();
+
+        await fsp.writeFile(filepath, data, {
+          encoding: "utf8",
+          signal: options.abortSignal,
+        });
+      }
     }
   };
+}
+
+async function writeWebStreamToFile(
+  webReadableStream: ReadableStream,
+  outputPath: string,
+): Promise<null> {
+  // Convert WebReadableStream to Node.js Readable stream
+  const nodeReadableStream = Readable.fromWeb(
+    webReadableStream as WebReadableStream,
+  );
+
+  // Create a writable file stream
+  const fileWritableStream = fs.createWriteStream(outputPath);
+
+  // Pipe the Node.js readable stream to the writable file stream
+  nodeReadableStream.pipe(fileWritableStream);
+
+  // Return a promise that resolves when writing is finished
+  return new Promise((resolve, reject) => {
+    fileWritableStream.on("finish", () => resolve(null));
+    fileWritableStream.on("error", reject);
+  });
 }

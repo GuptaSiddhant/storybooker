@@ -337,6 +337,8 @@ export class BuildsModel extends Model<BuildType> {
     dirpath: string,
     prefix: string,
   ): Promise<StoryBookerFile[]> => {
+    const { streaming } = getStore();
+
     const allEntriesInDir = await fsp.readdir(dirpath, {
       encoding: "utf8",
       recursive: true,
@@ -348,13 +350,15 @@ export class BuildsModel extends Model<BuildType> {
 
     return allFilesInDir.map((filepath): StoryBookerFile => {
       const relativePath = filepath.replace(`${dirpath}/`, "");
-      const stream = Readable.toWeb(
-        fs.createReadStream(filepath, { encoding: "binary" }),
-      );
-      // const content = await fsp.readFile(filepath, { encoding: "binary" });
+      const content =
+        streaming === false
+          ? fs.readFileSync(filepath, { encoding: "binary" })
+          : (Readable.toWeb(
+              fs.createReadStream(filepath, { encoding: "binary" }),
+            ) as ReadableStream);
 
       return {
-        content: stream as ReadableStream,
+        content,
         mimeType: getMimeType(filepath),
         path: path.posix.join(prefix, relativePath),
       };
