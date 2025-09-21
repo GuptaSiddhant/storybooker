@@ -39,8 +39,6 @@ router.registerGroup(projectsRoutes);
 router.registerGroup(labelsRoutes);
 router.registerGroup(buildsRoutes);
 
-export { router };
-
 /**
  * Callback to create a request-handler based on provided options.
  * @param options Options for creating a request handler.

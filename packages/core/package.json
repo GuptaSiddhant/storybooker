@@ -75,6 +75,11 @@
       "import": "./dist/constants.js",
       "require": "./dist/constants.cjs"
     },
+    "./router": {
+      "source": "./src/router.ts",
+      "import": "./dist/router.js",
+      "require": "./dist/router.cjs"
+    },
     "./translations": {
       "source": "./src/translations/index.ts",
       "import": "./dist/translations.js",
@@ -95,7 +100,8 @@
       "import": "./dist/utils.js",
       "require": "./dist/utils.cjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./openapi.json": "./dist/openapi.json"
   },
   "publishConfig": {
     "exports": {
@@ -106,6 +112,10 @@
       "./constants": {
         "import": "./dist/constants.js",
         "require": "./dist/constants.cjs"
+      },
+      "./router": {
+        "import": "./dist/router.js",
+        "require": "./dist/router.cjs"
       },
       "./translations": {
         "import": "./dist/translations.js",
