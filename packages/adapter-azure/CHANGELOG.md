@@ -1,5 +1,14 @@
 # @storybooker/adapter-azure
 
+## 0.4.1
+
+### Patch Changes
+
+- 5d8239f: Change how login and logout redirect are handled
+- Updated dependencies [5d8239f]
+- Updated dependencies [fc6d986]
+  - @storybooker/core@0.5.0
+
 ## 0.4.0
 
 ### Minor Changes

@@ -1,5 +1,15 @@
 # @storybooker/core
 
+## 0.5.0
+
+### Minor Changes
+
+- fc6d986: Make createRequestHandler sync
+
+### Patch Changes
+
+- 5d8239f: Change how login and logout redirect are handled
+
 ## 0.4.0
 
 ### Minor Changes

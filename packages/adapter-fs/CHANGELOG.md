@@ -1,5 +1,13 @@
 # @storybooker/adapter-fs
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [5d8239f]
+- Updated dependencies [fc6d986]
+  - @storybooker/core@0.5.0
+
 ## 0.3.0
 
 ### Minor Changes

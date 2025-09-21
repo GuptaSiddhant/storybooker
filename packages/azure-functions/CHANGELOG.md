@@ -1,5 +1,18 @@
 # @storybooker/azure-functions
 
+## 1.2.0
+
+### Minor Changes
+
+- fc6d986: Make createRequestHandler sync
+
+### Patch Changes
+
+- Updated dependencies [5d8239f]
+- Updated dependencies [fc6d986]
+  - @storybooker/adapter-azure@0.4.1
+  - @storybooker/core@0.5.0
+
 ## 4.0.0
 
 ### Minor Changes
