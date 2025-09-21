@@ -1,71 +1,49 @@
-import { defineRoute, router } from "#router";
+import { router } from "#router";
 import { getStore } from "#store";
-import { URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
-import { CONTENT_TYPES, SERVICE_NAME } from "#utils/constants";
+import { SERVICE_NAME } from "#utils/constants";
 import { checkIsHTMLRequest } from "#utils/request";
 import { responseHTML } from "#utils/response";
 import { toTitleCase } from "#utils/text-utils";
 import { createDocument } from "zod-openapi";
 
-export const openapi = defineRoute(
-  "get",
-  URLS.ui.openapi,
-  {
-    responses: {
-      200: {
-        content: {
-          [CONTENT_TYPES.JSON]: {
-            example: { info: { title: SERVICE_NAME }, openapi: "3.1.0" },
-          },
-          [CONTENT_TYPES.HTML]: {
-            encoding: "utf8",
-            example: "<!DOCTYPE html>",
-            schema: { type: "string" },
-          },
-        },
-      },
-    },
-    summary: "OpenAPI spec",
-  },
-  async () => {
-    const { prefix, request, openAPI } = getStore();
-    await authenticateOrThrow({
-      action: "read",
-      projectId: undefined,
-      resource: "openapi",
-    });
+export async function handleOpenAPIRoute(): Promise<Response> {
+  const { prefix, request, openAPI } = getStore();
+  await authenticateOrThrow({
+    action: "read",
+    projectId: undefined,
+    resource: "openapi",
+  });
 
-    const openAPISpec = createDocument({
-      components: {},
-      info: { title: SERVICE_NAME, version: "" },
-      openapi: "3.1.0",
-      paths: router.paths,
-      security: [],
-      servers: [{ url: prefix }],
-      tags: [],
-    });
+  const openAPISpec = createDocument({
+    components: {},
+    info: { title: SERVICE_NAME, version: "" },
+    openapi: "3.1.0",
+    paths: router.paths,
+    security: [],
+    servers: [{ url: prefix }],
+    tags: [],
+  });
 
-    const { searchParams } = new URL(request.url);
-    if (searchParams.has("json")) {
-      return Response.json(openAPISpec);
-    }
-
-    if (checkIsHTMLRequest()) {
-      const paramsUI = new URL(request.url).searchParams.get("ui");
-      const ui = paramsUI ?? openAPI?.ui;
-      if (ui === "scalar") {
-        return await responseHTML(
-          generateOpenApiScalar({ content: openAPISpec }),
-        );
-      }
-
-      return await responseHTML(generateOpenApiSwagger(openAPISpec));
-    }
-
+  const { searchParams } = new URL(request.url);
+  if (searchParams.has("json")) {
     return Response.json(openAPISpec);
-  },
-);
+  }
+
+  if (checkIsHTMLRequest()) {
+    const paramsUI = new URL(request.url).searchParams.get("ui");
+    const ui = paramsUI ?? openAPI?.ui;
+    if (ui === "scalar") {
+      return await responseHTML(
+        generateOpenApiScalar({ content: openAPISpec }),
+      );
+    }
+
+    return await responseHTML(generateOpenApiSwagger(openAPISpec));
+  }
+
+  return Response.json(openAPISpec);
+}
 
 function generateOpenApiScalar(
   options: {

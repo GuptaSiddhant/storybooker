@@ -4,7 +4,7 @@ import { DEFAULT_LOCALE, HEADERS } from "#constants";
 import { localStore } from "#store";
 import { parseErrorMessage } from "#utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "#utils/middleware-utils";
-import { handleStaticFileRoute } from "./root/handlers";
+import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
 import { router } from "./router";
 import { translations_enGB } from "./translations/en-gb";
 import type {

@@ -1,19 +1,16 @@
-import { CONTENT_TYPES } from "#constants";
+import { CONTENT_TYPES, SERVICE_NAME } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#router";
 import { getStore } from "#store";
-import { urlBuilder, URLS } from "#urls";
+import { URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import { checkIsJSONRequest } from "#utils/request";
-import {
-  commonErrorResponses,
-  responseError,
-  responseHTML,
-  responseRedirect,
-} from "#utils/response";
+import { commonErrorResponses, responseHTML } from "#utils/response";
 import { urlJoin } from "#utils/url";
 import z from "zod";
-import { renderAccountPage, renderRootPage } from "./render";
+import { handleOpenAPIRoute } from "../handlers/handle-openapi-route";
+import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
+import { renderRootPage } from "./render";
 
 const rootSchema = z.object({
   urls: z.record(z.string(), z.record(z.string(), z.url())),
@@ -84,82 +81,47 @@ export const health = defineRoute(
   () => new Response("Service is Healthy", { status: 200 }),
 );
 
-export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
-  const { abortSignal, auth, request, translation, url } = getStore();
-  if (!auth?.login) {
-    return await responseError(
-      translation.errorMessages.auth_setup_missing,
-      404,
-    );
-  }
-
-  const response = await auth.login(request, { abortSignal });
-
-  if (response.status >= 400) {
-    return response;
-  }
-
-  const redirectTo = new URL(url).searchParams.get("redirect") || "";
-
-  return responseRedirect(url.replace(URLS.ui.login, redirectTo), {
-    headers: response.headers,
-    status: 302,
-  });
-});
-
-export const logout = defineRoute(
+export const serveStorybook = defineRoute(
   "get",
-  URLS.ui.logout,
-  undefined,
-  async () => {
-    const { abortSignal, auth, request, translation, url, user } = getStore();
-    if (!auth?.logout || !user) {
-      return await responseError(
-        translation.errorMessages.auth_setup_missing,
-        404,
-      );
-    }
-
-    const response = await auth.logout(request, user, { abortSignal });
-    if (response.status >= 400) {
-      return response;
-    }
-
-    const serviceUrl = url.replace(URLS.ui.logout, "");
-    return responseRedirect(serviceUrl, {
-      headers: response.headers,
-      status: 302,
-    });
+  "_/:projectId/:buildSHA/*",
+  {
+    overridePath: ":projectId/:buildSHA/:filepath",
+    requestParams: {
+      path: z.object({
+        buildSHA: z.string(),
+        filepath: z.string(),
+        projectId: z.string(),
+      }),
+    },
+    responses: { 200: { summary: "Serving the uploaded file" } },
+    summary: "Serve StoryBook",
+    tags: ["Serve"],
+  },
+  async ({ params }) => {
+    const { buildSHA, projectId, "*": filepath = "index.html" } = params;
+    return await handleServeStoryBook({ buildSHA, filepath, projectId });
   },
 );
 
-export const account = defineRoute(
+export const openapi = defineRoute(
   "get",
-  URLS.ui.account,
-  undefined,
-  async () => {
-    const { abortSignal, auth, request, user, translation, url } = getStore();
-    if (!auth) {
-      return await responseError(
-        translation.errorMessages.auth_setup_missing,
-        404,
-      );
-    }
-
-    if (!user) {
-      const serviceUrl = url.replace(URLS.ui.account, "");
-
-      if (auth.login) {
-        return responseRedirect(urlBuilder.login(URLS.ui.account), 302);
-      }
-
-      return responseRedirect(serviceUrl, 404);
-    }
-
-    const children = await auth.renderAccountDetails?.(request, user, {
-      abortSignal,
-    });
-
-    return await responseHTML(renderAccountPage({ children }));
+  URLS.ui.openapi,
+  {
+    responses: {
+      200: {
+        content: {
+          [CONTENT_TYPES.JSON]: {
+            example: { info: { title: SERVICE_NAME }, openapi: "3.1.0" },
+          },
+          [CONTENT_TYPES.HTML]: {
+            encoding: "utf8",
+            example: "<!DOCTYPE html>",
+            schema: { type: "string" },
+          },
+        },
+      },
+    },
+    summary: "OpenAPI spec",
   },
+  handleOpenAPIRoute,
 );
