@@ -1,5 +1,17 @@
 # @storybooker/core
 
+## 0.6.0
+
+### Minor Changes
+
+- efb70c7: Update Storage services + enable steaming
+- 547b8bf: Change branding options to UI options
+
+### Patch Changes
+
+- 46c052c: Fix Node FS adapter and Translation replacments
+- 50f460f: Add router entrypoint and openapi.json pkg-export.
+
 ## 0.5.0
 
 ### Minor Changes

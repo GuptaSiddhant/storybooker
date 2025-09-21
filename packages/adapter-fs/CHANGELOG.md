@@ -1,5 +1,21 @@
 # @storybooker/adapter-fs
 
+## 0.4.0
+
+### Minor Changes
+
+- efb70c7: Update Storage services + enable steaming
+- 547b8bf: Change branding options to UI options
+
+### Patch Changes
+
+- 46c052c: Fix Node FS adapter and Translation replacments
+- Updated dependencies [efb70c7]
+- Updated dependencies [46c052c]
+- Updated dependencies [547b8bf]
+- Updated dependencies [50f460f]
+  - @storybooker/core@0.6.0
+
 ## 0.3.1
 
 ### Patch Changes

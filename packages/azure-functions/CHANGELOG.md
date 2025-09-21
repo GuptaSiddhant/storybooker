@@ -1,5 +1,16 @@
 # @storybooker/azure-functions
 
+## 2.0.0
+
+### Patch Changes
+
+- Updated dependencies [efb70c7]
+- Updated dependencies [46c052c]
+- Updated dependencies [547b8bf]
+- Updated dependencies [50f460f]
+  - @storybooker/adapter-azure@0.5.0
+  - @storybooker/core@0.6.0
+
 ## 1.2.0
 
 ### Minor Changes
