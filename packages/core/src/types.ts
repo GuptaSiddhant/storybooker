@@ -42,6 +42,20 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   ui?: UIOptions;
 }
 
+export interface PurgeHandlerOptions {
+  /** Adapter for Database service. Provides access to storing data to the service. */
+  database: DatabaseService;
+  /**
+   * A function for parsing custom errors.
+   * Return `undefined` from parser if the service should handle the error.
+   */
+  errorParser?: ErrorParser;
+  /** Adapter for Logging service. Provides option to direct the logging of the service. */
+  logger?: LoggerService;
+  /** Adapter for Storage service. Provides access to storing files to the service. */
+  storage: StorageService;
+}
+
 export type RequestHandler = (
   request: Request,
   overrideOptions?: RequestHandlerOverrideOptions,

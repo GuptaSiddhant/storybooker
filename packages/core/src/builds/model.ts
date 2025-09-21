@@ -165,7 +165,10 @@ export class BuildsModel extends Model<BuildType> {
         labelSlugs.map(async (labelSlug) => {
           const label = await labelsModel.get(labelSlug);
           if (label.latestBuildSHA === buildId) {
-            await labelsModel.update(labelSlug, { latestBuildSHA: undefined });
+            await labelsModel.update(labelSlug, {
+              buildsCount: Math.max(label.buildsCount - 1, 0),
+              latestBuildSHA: undefined,
+            });
           }
         }),
       );
@@ -265,18 +268,25 @@ export class BuildsModel extends Model<BuildType> {
       .map((part) => part.trim());
 
     try {
-      await labelsModel.update(slug, { latestBuildSHA: buildSHA });
+      const existingLabel = await labelsModel.get(labelSlug);
+      await labelsModel.update(slug, {
+        buildsCount: existingLabel.buildsCount + 1,
+        latestBuildSHA: buildSHA,
+      });
       return slug;
     } catch {
       try {
         const type = labelType || LabelsModel.guessType(slug);
         const value = labelValue || slug;
         this.log("A new label '%s' (%s) is being created.", value, type);
-        const label = await labelsModel.create({
-          latestBuildSHA: buildSHA,
-          type,
-          value,
-        });
+        const label = await labelsModel.create(
+          {
+            latestBuildSHA: buildSHA,
+            type,
+            value,
+          },
+          true,
+        );
 
         return label.id;
       } catch (error) {

@@ -1,5 +1,5 @@
 import { app } from "@azure/functions";
-import { createRequestHandler } from "@storybooker/core";
+import { createPurgeHandler, createRequestHandler } from "@storybooker/core";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type {
   RequestHandlerOptions,
@@ -12,7 +12,7 @@ import {
   transformWebResponseToHttpResponse,
 } from "./utils";
 
-// const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
+const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
 export type * from "@storybooker/core/types";
 
@@ -48,7 +48,7 @@ export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
    *
    * @default "0 0 0 * * *" // Every midnight
    */
-  // purgeScheduleCron?: string | null;
+  purgeScheduleCron?: string | null;
 }
 
 export function registerStoryBookerRouter<User extends StoryBookerUser>(
@@ -77,11 +77,21 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
     route: urlJoin(route, "{**path}"),
   });
 
-  // if (options.purgeScheduleCron !== null) {
-  //   app.timer(`${SERVICE_NAME}-timer_purge`, {
-  //     handler: wrapTimerHandlerWithStore(routerOptions, timerPurgeHandler),
-  //     runOnStartup: false,
-  //     schedule: options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON,
-  //   });
-  // }
+  if (options.purgeScheduleCron !== null) {
+    const schedule = options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON;
+    const purgeHandler = createPurgeHandler({
+      database: options.database,
+      errorParser: options.errorParser ?? parseAzureRestError,
+      logger,
+      storage: options.storage,
+    });
+
+    logger.log("Registering Storybooker Timer-Purge (cron: %s)", schedule);
+    app.timer(`${SERVICE_NAME}-timer_purge`, {
+      // oxlint-disable-next-line require-await
+      handler: async (_timer, context) => purgeHandler({}, { logger: context }),
+      runOnStartup: false,
+      schedule,
+    });
+  }
 }

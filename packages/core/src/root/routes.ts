@@ -6,9 +6,10 @@ import { URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import { checkIsJSONRequest } from "#utils/request";
 import { commonErrorResponses, responseHTML } from "#utils/response";
-import { urlJoin } from "#utils/url";
+import { urlJoin, urlSearchParamsToObject } from "#utils/url";
 import z from "zod";
 import { handleOpenAPIRoute } from "../handlers/handle-openapi-route";
+import { handlePurge } from "../handlers/handle-purge";
 import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
 import { renderRootPage } from "./render";
 
@@ -124,4 +125,31 @@ export const openapi = defineRoute(
     summary: "OpenAPI spec",
   },
   handleOpenAPIRoute,
+);
+
+const purgeSearchParams = z.object({ project: z.string().optional() }).loose();
+export const purge = defineRoute(
+  "post",
+  URLS.ui.purge,
+  {
+    requestParams: { query: purgeSearchParams },
+    responses: { 204: { description: "Purge complete" } },
+    summary: "Purge old data",
+  },
+  async ({ request }) => {
+    const { searchParams } = new URL(request.url);
+    const { project: projectId } = purgeSearchParams.parse(
+      urlSearchParamsToObject(searchParams),
+    );
+
+    await authenticateOrThrow({
+      action: "delete",
+      projectId,
+      resource: "project",
+    });
+
+    await handlePurge({ projectId }, {});
+
+    return new Response(null, { status: 204 });
+  },
 );

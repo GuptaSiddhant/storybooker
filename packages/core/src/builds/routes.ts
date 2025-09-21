@@ -235,7 +235,7 @@ export const deleteBuild = defineRoute(
       projectId,
       resource: "build",
     });
-    await new BuildsModel(projectId).delete(buildSHA);
+    await new BuildsModel(projectId).delete(buildSHA, true);
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
       return responseRedirect(urlBuilder.allBuilds(projectId), 303);

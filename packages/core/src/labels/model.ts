@@ -30,7 +30,7 @@ export class LabelsModel extends Model<LabelType> {
     return LabelSchema.array().parse(items);
   }
 
-  async create(data: unknown): Promise<LabelType> {
+  async create(data: unknown, withBuild = false): Promise<LabelType> {
     const parsedData = LabelCreateSchema.parse(data);
     this.log("Create label '%s'...", parsedData.value);
 
@@ -38,6 +38,7 @@ export class LabelsModel extends Model<LabelType> {
     const now = new Date().toISOString();
     const label: LabelType = {
       ...parsedData,
+      buildsCount: withBuild ? 1 : 0,
       createdAt: now,
       id: slug,
       slug,

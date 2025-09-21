@@ -7,6 +7,7 @@ export type LabelType = z.infer<typeof LabelSchema>;
 /** @private */
 export const LabelSchema = z
   .object({
+    buildsCount: z.number().default(0),
     createdAt: z.iso.datetime().default(new Date().toISOString()),
     id: LabelSlugSchema,
     latestBuildSHA: z.union([BuildSHASchema.optional(), z.literal("")]),
@@ -19,6 +20,7 @@ export const LabelSchema = z
 
 export type LabelCreateType = z.infer<typeof LabelCreateSchema>;
 export const LabelCreateSchema = LabelSchema.omit({
+  buildsCount: true,
   createdAt: true,
   id: true,
   slug: true,

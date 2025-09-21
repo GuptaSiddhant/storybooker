@@ -43,3 +43,19 @@ const options: RequestHandlerOptions = {
 
 export default { fetch: createRequestHandler(options) };
 ```
+
+## Exports
+
+### `createRequestHandler`
+
+Callback to create a request-handler based on provided options.
+
+The request handler takes Standard Request and returns a Response asynchronously.
+
+### `createPurgeHandler`
+
+Callback to create a purge-handler based on provided options.
+
+Purging deletes all builds older than certain days based on Project's configuration.
+
+Note: The latest build on project's default branch is not deleted.
