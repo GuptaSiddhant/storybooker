@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.7.0
+
+### Minor Changes
+
+- 0a03e58: Add purge functionality
+
 ## 0.6.0
 
 ### Minor Changes

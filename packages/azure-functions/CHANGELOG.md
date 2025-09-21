@@ -1,5 +1,17 @@
 # @storybooker/azure-functions
 
+## 2.1.0
+
+### Minor Changes
+
+- 0a03e58: Add purge functionality
+
+### Patch Changes
+
+- Updated dependencies [0a03e58]
+  - @storybooker/core@0.7.0
+  - @storybooker/adapter-azure@0.5.1
+
 ## 2.0.0
 
 ### Patch Changes
