@@ -59,6 +59,9 @@ export const urlBuilder = {
   root: (): string => {
     return href(URLS.ui.root);
   },
+  login: (redirect: string): string => {
+    return href(URLS.ui.login, null, { redirect });
+  },
   staticFile: (filepath: string): string => {
     return href(URLS.ui.catchAll, { filepath });
   },
@@ -69,12 +72,10 @@ export const urlBuilder = {
     return href(URLS.projects.create);
   },
   projectId: (projectId: string): string => {
-    const url = href(URLS.projects.id, { projectId });
-    return url.toString();
+    return href(URLS.projects.id, { projectId });
   },
   projectIdUpdate: (projectId: string): string => {
-    const url = href(URLS.projects.update, { projectId });
-    return url.toString();
+    return href(URLS.projects.update, { projectId });
   },
   allBuilds: (projectId: string): string => {
     const { prefix, request } = getStore();

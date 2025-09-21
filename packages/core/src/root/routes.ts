@@ -2,7 +2,7 @@ import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#router";
 import { getStore } from "#store";
-import { URLS } from "#urls";
+import { urlBuilder, URLS } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import { checkIsJSONRequest } from "#utils/request";
 import {
@@ -89,17 +89,19 @@ export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
   if (!auth?.login) {
     return responseError(translation.errorMessages.auth_setup_missing, 404);
   }
-  const serviceUrl = url.replace(URLS.ui.login, "");
-  const response = await auth.login(request, serviceUrl);
 
-  if (response.status >= 300 && response.status < 400) {
-    return responseRedirect(
-      response.headers.get("Location") || "/",
-      response.status,
-    );
+  const response = await auth.login(request);
+
+  if (response.status >= 400) {
+    return response;
   }
 
-  return response;
+  const redirectTo = new URL(url).searchParams.get("redirect") || "";
+
+  return responseRedirect(url.replace(URLS.ui.login, redirectTo), {
+    headers: response.headers,
+    status: 302,
+  });
 });
 
 export const logout = defineRoute(
@@ -107,20 +109,21 @@ export const logout = defineRoute(
   URLS.ui.logout,
   undefined,
   async () => {
-    const { auth, request, translation, user } = getStore();
+    const { auth, request, translation, url, user } = getStore();
     if (!auth?.logout || !user) {
       return responseError(translation.errorMessages.auth_setup_missing, 404);
     }
 
     const response = await auth.logout(request, user);
-    if (response.status >= 300 && response.status < 400) {
-      return responseRedirect(
-        response.headers.get("Location") || "/",
-        response.status,
-      );
+    if (response.status >= 400) {
+      return response;
     }
 
-    return response;
+    const serviceUrl = url.replace(URLS.ui.logout, "");
+    return responseRedirect(serviceUrl, {
+      headers: response.headers,
+      status: 302,
+    });
   },
 );
 
@@ -138,13 +141,13 @@ export const account = defineRoute(
       const serviceUrl = url.replace(URLS.ui.account, "");
 
       if (auth.login) {
-        return await auth.login(request, serviceUrl);
+        return responseRedirect(urlBuilder.login(URLS.ui.account), 302);
       }
 
       return responseRedirect(serviceUrl, 404);
     }
 
-    const children = await auth.renderAccount?.(request, user);
+    const children = await auth.renderAccountDetails?.(request, user);
 
     return responseHTML(renderAccountPage({ children }));
   },

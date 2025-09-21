@@ -6,31 +6,35 @@ import {
 } from "./packages/adapter-fs/dist/index.js";
 import {
   createRequestHandler,
-  type AuthService,
-  type AuthServiceAuthorise,
   type StoryBookerUser,
 } from "./packages/core/dist/index.js";
+import type {
+  AuthService,
+  AuthServiceAuthorise,
+} from "./packages/core/dist/types.d.ts";
 
 class LocalAuthService implements AuthService {
   #auth = true;
+  #user: StoryBookerUser = {
+    displayName: "Test User",
+    id: "user",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+    title: "testAdmin",
+  };
 
-  authorise: AuthServiceAuthorise = (_perm, { user }) => !!user;
+  authorise: AuthServiceAuthorise = ({ user }) => !!user;
   getUserDetails = async (): Promise<StoryBookerUser | null> => {
     if (!this.#auth) {
       return null;
     }
-    return {
-      displayName: "Test User",
-      id: "user",
-      imageUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-      title: "testAdmin",
-    };
+    return this.#user;
   };
-  login = async (request: Request, callbackUrl: string): Promise<Response> => {
+  login = async (request: Request): Promise<Response> => {
     this.#auth = true;
+    const url = new URL(request.url);
     return new Response(null, {
-      headers: { Location: callbackUrl },
+      headers: { Location: url.origin },
       status: 302,
     });
   };

@@ -17,10 +17,10 @@ export interface AzureEasyAuthUser extends StoryBookerUser {
 
 export type AzureEasyAuthRoleMap = Map<string, Permission[]>;
 
-const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = (
-  { action },
-  { user },
-) => {
+const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = ({
+  permission,
+  user,
+}) => {
   if (!user) {
     return false;
   }
@@ -29,7 +29,7 @@ const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = (
     return true;
   }
 
-  if (action === "read") {
+  if (permission.action === "read") {
     return true;
   }
 
@@ -37,7 +37,7 @@ const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = (
 };
 
 export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
-  authorise: AuthServiceAuthorise<AzureEasyAuthUser>;
+  authorise: AuthService<AzureEasyAuthUser>["authorise"];
 
   constructor(
     authorise: AuthServiceAuthorise<AzureEasyAuthUser> = DEFAULT_AUTHORISE,
@@ -45,7 +45,9 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
     this.authorise = authorise;
   }
 
-  async getUserDetails(request: Request): Promise<AzureEasyAuthUser> {
+  getUserDetails: AuthService<AzureEasyAuthUser>["getUserDetails"] = async (
+    request,
+  ) => {
     const principalHeader = request.headers.get("x-ms-client-principal");
     if (!principalHeader) {
       throw new Response(
@@ -95,9 +97,18 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
       title: roles.join(", "),
       type: "user",
     };
-  }
+  };
 
-  logout: (request: Request) => Promise<Response> = async (request) => {
+  login: AuthService<AzureEasyAuthUser>["login"] = async (request) => {
+    const url = new URL("/.auth/login", request.url);
+
+    return new Response(null, {
+      headers: { Location: url.toString() },
+      status: 302,
+    });
+  };
+
+  logout: AuthService<AzureEasyAuthUser>["logout"] = async (request) => {
     const url = new URL("/.auth/logout", request.url);
 
     return new Response(null, {
