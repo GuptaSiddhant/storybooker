@@ -5,10 +5,12 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { Readable } from "node:stream";
 import { LabelsModel } from "#labels/model";
 import { ProjectsModel } from "#projects/model";
 import { getStore } from "#store";
 import { writeStreamToFile } from "#utils/file-utils";
+import { getMimeType } from "#utils/mime-utils";
 import {
   generateProjectCollectionName,
   generateProjectContainerName,
@@ -17,6 +19,7 @@ import {
   type ListOptions,
 } from "#utils/shared-model";
 import decompress from "decompress";
+import type { StoryBookerFile } from "../types";
 import {
   BuildCreateSchema,
   BuildSchema,
@@ -109,9 +112,13 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   async has(id: string): Promise<boolean> {
-    return await this.get(id)
-      .then(() => true)
-      .catch(() => false);
+    this.log("Check build '%s'...", id);
+
+    return await this.database.hasDocument(
+      this.collectionName,
+      id,
+      this.dbOptions,
+    );
   }
 
   async update(id: string, data: Partial<BuildType>): Promise<void> {
@@ -144,6 +151,7 @@ export class BuildsModel extends Model<BuildType> {
       await this.storage.deleteFiles(
         generateProjectContainerName(this.projectId),
         buildId,
+        this.storageOptions,
       );
     } catch (error) {
       this.error("Cannot delete container:", error);
@@ -306,10 +314,10 @@ export class BuildsModel extends Model<BuildType> {
       await decompress(zipFilePath, path.join(dirpath, variant));
 
       this.debug("(%s-%s) Upload uncompressed dir", buildSHA, variant);
-      await this.storage.uploadDir(
+      await this.storage.uploadFiles(
         generateProjectContainerName(this.projectId),
-        dirpath,
-        buildSHA,
+        await this.#dirToFiles(dirpath, buildSHA),
+        this.storageOptions,
       );
     } catch (error) {
       this.error(error);
@@ -324,4 +332,32 @@ export class BuildsModel extends Model<BuildType> {
 
     return;
   }
+
+  #dirToFiles = async (
+    dirpath: string,
+    prefix: string,
+  ): Promise<StoryBookerFile[]> => {
+    const allEntriesInDir = await fsp.readdir(dirpath, {
+      encoding: "utf8",
+      recursive: true,
+      withFileTypes: true,
+    });
+    const allFilesInDir = allEntriesInDir
+      .filter((file) => file.isFile() && !file.name.startsWith("."))
+      .map((file) => path.join(file.parentPath, file.name));
+
+    return allFilesInDir.map((filepath): StoryBookerFile => {
+      const relativePath = filepath.replace(`${dirpath}/`, "");
+      const stream = Readable.toWeb(
+        fs.createReadStream(filepath, { encoding: "binary" }),
+      );
+      // const content = await fsp.readFile(filepath, { encoding: "binary" });
+
+      return {
+        content: stream as ReadableStream,
+        mimeType: getMimeType(filepath),
+        path: path.posix.join(prefix, relativePath),
+      };
+    });
+  };
 }

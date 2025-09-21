@@ -27,31 +27,43 @@ export const serveStorybook = defineRoute(
   },
   async ({ params, request }) => {
     const { buildSHA, projectId } = params;
-    const { storage } = getStore();
+    const { abortSignal, storage, streaming } = getStore();
     const { pathname } = new URL(request.url);
     const filepath = pathname.split(`${buildSHA}/`).at(1) || "index.html";
 
-    const containerFilepath = path.posix.join(buildSHA, filepath);
+    const storageFilepath = path.posix.join(buildSHA, filepath);
     await authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
     try {
-      const result = await storage.downloadFile(
+      const { content, mimeType } = await storage.downloadFile(
         generateProjectContainerName(projectId),
-        containerFilepath,
+        storageFilepath,
+        { abortSignal },
       );
 
+      if (!content) {
+        return await responseError("File does not contain any content", 404);
+      }
+
       const headers = new Headers();
-      headers.set(HEADERS.contentType, getMimeType(filepath));
+      headers.set(HEADERS.contentType, mimeType ?? getMimeType(filepath));
       headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
 
       if (!filepath.endsWith("index.html")) {
-        return new Response(result, { headers, status: 200 });
+        if (streaming === false && content instanceof ReadableStream) {
+          const body = await new Response(content).arrayBuffer();
+          return new Response(body, { headers, status: 200 });
+        }
+
+        return new Response(content, { headers, status: 200 });
       }
 
       // Appending custom UI to index.html
-      const content =
-        typeof result === "string" ? result : await new Response(result).text();
-      const bodyWithBackButton = content.replace(
+      const data =
+        typeof content === "string"
+          ? content
+          : await new Response(content).text();
+      const bodyWithBackButton = data.replace(
         `</body>`,
         `
         <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
@@ -62,7 +74,7 @@ export const serveStorybook = defineRoute(
 
       return new Response(bodyWithBackButton, { headers, status: 200 });
     } catch (error) {
-      return responseError(error, 404);
+      return await responseError(error, 404);
     }
   },
 );

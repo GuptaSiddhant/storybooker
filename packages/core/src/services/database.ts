@@ -1,8 +1,13 @@
 /**
- * Service to interact with database.
+ * Service adapter to interact with database.
  *
- * The service should callbacks to CRUD operations
+ * @description
+ * The adapter should provide callbacks to CRUD operations
  * to an existing database.
+ *
+ * - `collection`: A collection/container/table to hold items.
+ * - `document`: A single entry in collection which contains key-value pairs (no nested data).
+ *    Each document has a key 'id` which is unique in the collection.
  */
 export interface DatabaseService {
   /**
@@ -25,7 +30,7 @@ export interface DatabaseService {
 
   /**
    * Create a collection used for different projects.
-   * @param id ID of the collection
+   * @param collectionId ID of the collection
    * @param options Common options like abortSignal.
    * @throws if collection with ID already exists.
    */
@@ -36,7 +41,7 @@ export interface DatabaseService {
 
   /**
    * Delete an existing collection.
-   * @param id ID of the collection
+   * @param collectionId ID of the collection
    * @param options Common options like abortSignal.
    * @throws if collection with ID does not exist.
    */
@@ -44,6 +49,18 @@ export interface DatabaseService {
     collectionId: string,
     options: DatabaseServiceOptions,
   ) => Promise<void>;
+
+  /**
+   * Check if collection exists.
+   * @param collectionId ID of the collection
+   * @param options Common options like abortSignal.
+   * @returns if collection is available of not
+   * @throws never.
+   */
+  hasCollection: (
+    collectionId: string,
+    options: DatabaseServiceOptions,
+  ) => Promise<boolean>;
 
   // Documents (items, entries, rows, etc)
 
@@ -87,6 +104,20 @@ export interface DatabaseService {
     documentId: string,
     options: DatabaseServiceOptions,
   ) => Promise<Document>;
+
+  /**
+   * Check matching document data available in the requested collection.
+   * @param collectionId ID of the collection
+   * @param documentId ID of the document
+   * @param options Common options like abortSignal.
+   * @returns if document is available of not
+   * @throws if the collection does not exists.
+   */
+  hasDocument: (
+    collectionId: string,
+    documentId: string,
+    options: DatabaseServiceOptions,
+  ) => Promise<boolean>;
 
   /**
    * Update matching document data available in the requested collection.

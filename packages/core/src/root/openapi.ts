@@ -55,10 +55,12 @@ export const openapi = defineRoute(
       const paramsUI = new URL(request.url).searchParams.get("ui");
       const ui = paramsUI ?? openAPI?.ui;
       if (ui === "scalar") {
-        return responseHTML(generateOpenApiScalar({ content: openAPISpec }));
+        return await responseHTML(
+          generateOpenApiScalar({ content: openAPISpec }),
+        );
       }
 
-      return responseHTML(generateOpenApiSwagger(openAPISpec));
+      return await responseHTML(generateOpenApiSwagger(openAPISpec));
     }
 
     return Response.json(openAPISpec);

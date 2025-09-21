@@ -40,6 +40,20 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return;
   };
 
+  hasCollection: DatabaseService["hasCollection"] = async (
+    collectionId,
+    options,
+  ) => {
+    try {
+      const response = await this.#db
+        .container(collectionId)
+        .read({ abortSignal: options.abortSignal });
+      return !!response.resource;
+    } catch {
+      return false;
+    }
+  };
+
   deleteCollection: DatabaseService["deleteCollection"] = async (
     collectionId,
     options,
@@ -87,6 +101,16 @@ export class AzureCosmosDatabaseService implements DatabaseService {
       .container(collectionId)
       .items.create(documentData, { abortSignal: options.abortSignal });
     return;
+  };
+
+  hasDocument: DatabaseService["hasDocument"] = async (
+    collectionId,
+    documentId,
+    options,
+  ) => {
+    const item = this.#db.container(collectionId).item(documentId);
+    const response = await item.read({ abortSignal: options.abortSignal });
+    return !!response.resource;
   };
 
   deleteDocument: DatabaseService["deleteDocument"] = async (

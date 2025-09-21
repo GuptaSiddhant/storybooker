@@ -56,6 +56,13 @@ export class LocalFileDatabase implements DatabaseService {
     await this.#saveToFile(options);
   };
 
+  hasCollection: DatabaseService["hasCollection"] = async (
+    collectionId,
+    _options,
+  ) => {
+    return Object.hasOwn(this.#db, collectionId);
+  };
+
   listDocuments: DatabaseService["listDocuments"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
@@ -104,6 +111,17 @@ export class LocalFileDatabase implements DatabaseService {
     return item as Document;
   };
 
+  hasDocument: DatabaseService["hasDocument"] = async (
+    collectionId,
+    documentId,
+    options,
+  ) => {
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new Error(`No collection - ${collectionId}`);
+    }
+    return !!(await this.getDocument(collectionId, documentId, options));
+  };
+
   createDocument: DatabaseService["createDocument"] = async (
     collectionId,
     documentData,
@@ -131,7 +149,7 @@ export class LocalFileDatabase implements DatabaseService {
     if (!Object.hasOwn(this.#db, collectionId)) {
       throw new Error(`No collection - ${collectionId}`);
     }
-    if (!(await this.getDocument(collectionId, documentId, options))) {
+    if (!(await this.hasDocument(collectionId, documentId, options))) {
       throw new Error(
         `Item '${documentId}' not found in collection '${collectionId}'`,
       );

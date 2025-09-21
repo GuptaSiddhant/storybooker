@@ -65,9 +65,12 @@ export class LabelsModel extends Model<LabelType> {
   }
 
   async has(id: string): Promise<boolean> {
-    return await this.get(id)
-      .then(() => true)
-      .catch(() => false);
+    this.log("Check label '%s'...", id);
+    return await this.database.hasDocument(
+      this.collectionName,
+      id,
+      this.dbOptions,
+    );
   }
 
   async update(id: string, data: unknown): Promise<void> {

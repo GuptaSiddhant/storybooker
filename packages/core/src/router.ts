@@ -109,7 +109,8 @@ class Router {
           request,
         });
       } catch (error) {
-        return responseError(error, 500);
+        // oxlint-disable-next-line no-await-in-loop
+        return await responseError(error, 500);
       }
     }
 

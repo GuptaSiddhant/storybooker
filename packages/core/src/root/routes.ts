@@ -70,7 +70,7 @@ export const root = defineRoute(
     });
 
     const projects = await new ProjectsModel().list({ limit: 5 });
-    return responseHTML(renderRootPage({ projects }));
+    return await responseHTML(renderRootPage({ projects }));
   },
 );
 
@@ -87,7 +87,10 @@ export const health = defineRoute(
 export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
   const { auth, request, translation, url } = getStore();
   if (!auth?.login) {
-    return responseError(translation.errorMessages.auth_setup_missing, 404);
+    return await responseError(
+      translation.errorMessages.auth_setup_missing,
+      404,
+    );
   }
 
   const response = await auth.login(request);
@@ -111,7 +114,10 @@ export const logout = defineRoute(
   async () => {
     const { auth, request, translation, url, user } = getStore();
     if (!auth?.logout || !user) {
-      return responseError(translation.errorMessages.auth_setup_missing, 404);
+      return await responseError(
+        translation.errorMessages.auth_setup_missing,
+        404,
+      );
     }
 
     const response = await auth.logout(request, user);
@@ -134,7 +140,10 @@ export const account = defineRoute(
   async () => {
     const { auth, request, user, translation, url } = getStore();
     if (!auth) {
-      return responseError(translation.errorMessages.auth_setup_missing, 404);
+      return await responseError(
+        translation.errorMessages.auth_setup_missing,
+        404,
+      );
     }
 
     if (!user) {
@@ -149,6 +158,6 @@ export const account = defineRoute(
 
     const children = await auth.renderAccountDetails?.(request, user);
 
-    return responseHTML(renderAccountPage({ children }));
+    return await responseHTML(renderAccountPage({ children }));
   },
 );

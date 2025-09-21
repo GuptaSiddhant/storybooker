@@ -45,7 +45,10 @@ export class ProjectsModel extends Model<ProjectType> {
     const projectId = projectData.id;
 
     this.debug("Create project container");
-    await this.storage.createContainer(generateProjectContainerName(projectId));
+    await this.storage.createContainer(
+      generateProjectContainerName(projectId),
+      this.storageOptions,
+    );
 
     this.debug("Create project collection");
     await this.database.createCollection(this.collectionName, this.dbOptions);
@@ -99,9 +102,13 @@ export class ProjectsModel extends Model<ProjectType> {
   }
 
   async has(id: string): Promise<boolean> {
-    return await this.get(id)
-      .then(() => true)
-      .catch(() => false);
+    this.log("Check project '%s'...", id);
+
+    return await this.database.hasDocument(
+      this.collectionName,
+      id,
+      this.dbOptions,
+    );
   }
 
   async update(id: string, data: unknown): Promise<void> {
@@ -152,7 +159,10 @@ export class ProjectsModel extends Model<ProjectType> {
     );
 
     this.debug("Create project container");
-    await this.storage.deleteContainer(generateProjectContainerName(id));
+    await this.storage.deleteContainer(
+      generateProjectContainerName(id),
+      this.storageOptions,
+    );
 
     return;
   }

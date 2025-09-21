@@ -1,9 +1,11 @@
 import type { AuthService, StoryBookerUser } from "./services/auth";
 import type { DatabaseService } from "./services/database";
+import type { StorageService } from "./services/storage";
 import type { Translation } from "./translations";
 
-export type * from "./services/database";
 export type * from "./services/auth";
+export type * from "./services/database";
+export type * from "./services/storage";
 
 /**
  * Options for creating a request handler.
@@ -17,6 +19,8 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   branding?: BrandingOptions;
   /** Adapter for Database service. Provides access to storing data to the service. */
   database: DatabaseService;
+  /** Enable or disable response streaming. @default true */
+  streaming?: boolean;
   /**
    * A function for parsing custom errors.
    * Return `undefined` from parser if the service should handle the error.
@@ -86,41 +90,6 @@ export interface LoggerService {
   error: (...args: unknown[]) => void;
   debug?: (...args: unknown[]) => void;
   log: (...args: unknown[]) => void;
-}
-
-/**
- * Service to interact with file-storage.
- *
- * The service should callbacks to perform operations
- * to an existing storage like upload and download files.
- */
-export interface StorageService {
-  /**
-   * An optional method that is called on app boot-up
-   * to run async setup functions.
-   * Preferably, this function should not throw errors.
-   */
-  init?: () => Promise<void>;
-  listContainers: () => Promise<string[]>;
-  createContainer: (name: string) => Promise<void>;
-  deleteContainer: (name: string) => Promise<void>;
-
-  uploadFile: (
-    containerName: string,
-    file: Blob | string | ReadableStream,
-    options: { mimeType: string; destinationPath: string },
-  ) => Promise<void>;
-  uploadDir: (
-    containerName: string,
-    dirpath: string,
-    destPrefix: string | undefined,
-  ) => Promise<void>;
-  deleteFile: (containerName: string, destinationPath: string) => Promise<void>;
-  deleteFiles: (containerName: string, prefix: string) => Promise<void>;
-  downloadFile: (
-    containerName: string,
-    filepath: string,
-  ) => Promise<ReadableStream | string>;
 }
 
 /**

@@ -1,8 +1,10 @@
-import fs from "node:fs";
-import path from "node:path";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
-import { BlobServiceClient, type BlobClient } from "@azure/storage-blob";
+import {
+  BlobServiceClient,
+  type BlobClient,
+  type BlockBlobClient,
+} from "@azure/storage-blob";
 import type { StorageService } from "@storybooker/core/types";
 
 export class AzureBlobStorageService implements StorageService {
@@ -12,32 +14,63 @@ export class AzureBlobStorageService implements StorageService {
     this.#client = BlobServiceClient.fromConnectionString(connectionString);
   }
 
-  createContainer: StorageService["createContainer"] = async (name) => {
-    await this.#client.createContainer(name);
+  createContainer: StorageService["createContainer"] = async (
+    containerId,
+    options,
+  ) => {
+    await this.#client.createContainer(containerId, {
+      abortSignal: options.abortSignal,
+    });
   };
 
-  deleteContainer: StorageService["deleteContainer"] = async (name) => {
-    await this.#client.getContainerClient(name).deleteIfExists();
+  deleteContainer: StorageService["deleteContainer"] = async (
+    containerId,
+    options,
+  ) => {
+    await this.#client.getContainerClient(containerId).deleteIfExists({
+      abortSignal: options.abortSignal,
+    });
   };
 
-  listContainers: StorageService["listContainers"] = async () => {
+  hasContainer: StorageService["hasContainer"] = async (
+    containerId,
+    options,
+  ) => {
+    return await this.#client.getContainerClient(containerId).exists({
+      abortSignal: options.abortSignal,
+    });
+  };
+
+  listContainers: StorageService["listContainers"] = async (options) => {
     const containers: string[] = [];
-    for await (const item of this.#client.listContainers()) {
+    for await (const item of this.#client.listContainers({
+      abortSignal: options.abortSignal,
+    })) {
       containers.push(item.name);
     }
 
     return containers;
   };
 
-  deleteFile: StorageService["deleteFile"] = async (name, path) => {
-    await this.#client.getContainerClient(name).deleteBlob(path);
-  };
-
-  deleteFiles: StorageService["deleteFiles"] = async (name, prefix) => {
-    const containerClient = this.#client.getContainerClient(name);
+  deleteFiles: StorageService["deleteFiles"] = async (
+    containerId,
+    filePathsOrPrefix,
+    options,
+  ) => {
+    const containerClient = this.#client.getContainerClient(containerId);
     const blobClientsToDelete: BlobClient[] = [];
-    for await (const blob of containerClient.listBlobsFlat({ prefix })) {
-      blobClientsToDelete.push(containerClient.getBlobClient(blob.name));
+
+    if (typeof filePathsOrPrefix === "string") {
+      for await (const blob of containerClient.listBlobsFlat({
+        abortSignal: options.abortSignal,
+        prefix: filePathsOrPrefix,
+      })) {
+        blobClientsToDelete.push(containerClient.getBlobClient(blob.name));
+      }
+    } else {
+      for (const filepath of filePathsOrPrefix) {
+        blobClientsToDelete.push(containerClient.getBlobClient(filepath));
+      }
     }
 
     if (blobClientsToDelete.length === 0) {
@@ -46,7 +79,9 @@ export class AzureBlobStorageService implements StorageService {
 
     const response = await containerClient
       .getBlobBatchClient()
-      .deleteBlobs(blobClientsToDelete);
+      .deleteBlobs(blobClientsToDelete, {
+        abortSignal: options.abortSignal,
+      });
 
     if (response.errorCode) {
       throw new Error(`Failed to delete blobs: ${response.errorCode}`);
@@ -54,35 +89,54 @@ export class AzureBlobStorageService implements StorageService {
     return;
   };
 
-  uploadFile: StorageService["uploadFile"] = async (
-    containerName,
-    file,
+  uploadFiles: StorageService["uploadFiles"] = async (
+    containerId,
+    files,
     options,
   ) => {
-    const { destinationPath, mimeType = "application/octet-stream" } = options;
-    const client = this.#client
-      .getContainerClient(containerName)
-      .getBlockBlobClient(destinationPath);
+    const containerClient = this.#client.getContainerClient(containerId);
+    // oxlint-disable-next-line require-await
+    const promises = files.map(async ({ content, path, mimeType }) =>
+      this.#uploadFile(
+        containerClient.getBlockBlobClient(path),
+        content,
+        mimeType,
+        options.abortSignal,
+      ),
+    );
 
-    if (typeof file === "string") {
-      await client.uploadFile(file, {
+    await Promise.allSettled(promises);
+  };
+
+  // oxlint-disable-next-line max-params
+  #uploadFile = async (
+    client: BlockBlobClient,
+    data: Blob | string | ReadableStream,
+    mimeType: string,
+    abortSignal?: AbortSignal,
+  ): Promise<void> => {
+    if (typeof data === "string") {
+      const blob = new Blob([data], { type: mimeType });
+      await client.uploadData(blob, {
+        abortSignal,
         blobHTTPHeaders: { blobContentType: mimeType },
       });
       return;
     }
-    if (file instanceof Blob) {
-      await client.uploadData(file, {
+    if (data instanceof Blob) {
+      await client.uploadData(data, {
+        abortSignal,
         blobHTTPHeaders: { blobContentType: mimeType },
       });
       return;
     }
-    if (file instanceof ReadableStream) {
-      const stream = file as unknown as streamWeb.ReadableStream;
+    if (data instanceof ReadableStream) {
+      const stream = data as unknown as streamWeb.ReadableStream;
       await client.uploadStream(
         Readable.fromWeb(stream),
         undefined,
         undefined,
-        { blobHTTPHeaders: { blobContentType: mimeType } },
+        { abortSignal, blobHTTPHeaders: { blobContentType: mimeType } },
       );
       return;
     }
@@ -90,94 +144,44 @@ export class AzureBlobStorageService implements StorageService {
     throw new Error(`Unknown file type`);
   };
 
-  uploadDir: StorageService["uploadDir"] = async (
-    containerName,
-    dirpath,
-    destPrefix,
+  hasFile: StorageService["hasFile"] = async (
+    containerId,
+    filepath,
+    options,
   ) => {
-    const containerClient = this.#client.getContainerClient(containerName);
-
-    const files = fs
-      .readdirSync(dirpath, {
-        recursive: true,
-        withFileTypes: true,
-      })
-      .filter((file) => file.isFile() && !file.name.startsWith("."))
-      .map((file) => path.join(file.parentPath, file.name));
-
-    // context.info(`Found ${files.length} files in dir to upload: ${dirpath}.`);
-    const uploadErrors = new Map<string, unknown>();
-
-    for (const filepath of files) {
-      if (!fs.existsSync(filepath)) {
-        // context.warn(`File ${filepath} does not exist, skipping.`);
-        continue;
-      }
-
-      let blobName = filepath.replace(`${dirpath}/`, "");
-      if (destPrefix) {
-        blobName = path.posix.join(destPrefix, blobName);
-      }
-
-      try {
-        // context.debug(`Uploading '${filepath}' to '${newFilepath}'...`);
-        // oxlint-disable-next-line no-await-in-loop
-        const response = await containerClient
-          .getBlockBlobClient(blobName)
-          .uploadFile(filepath);
-
-        if (response.errorCode) {
-          throw response.errorCode;
-        }
-      } catch (error) {
-        // context.error(
-        //   `Failed to upload blob '${blobName}'. Error: ${errorMessage}`,
-        // );
-        uploadErrors.set(blobName, error);
-      }
-    }
-
-    if (uploadErrors.size > 0) {
-      throw new Error(
-        `Failed to upload ${uploadErrors.size} files to container: ${containerClient.containerName}.`,
-      );
-    }
-
-    return;
+    const containerClient = this.#client.getContainerClient(containerId);
+    const blockBlobClient = containerClient.getBlockBlobClient(filepath);
+    return await blockBlobClient.exists({ abortSignal: options.abortSignal });
   };
 
-  downloadFile = async (
-    containerName: string,
-    filepath: string,
-  ): Promise<ReadableStream> => {
-    const containerClient = this.#client.getContainerClient(containerName);
+  downloadFile: StorageService["downloadFile"] = async (
+    containerId,
+    filepath,
+    options,
+  ) => {
+    const containerClient = this.#client.getContainerClient(containerId);
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
 
     if (!(await blockBlobClient.exists())) {
       throw new Error(
-        `File '${filepath}' not found in container '${containerName}'.`,
+        `File '${filepath}' not found in container '${containerId}'.`,
       );
     }
 
-    const downloadResponse = await blockBlobClient.download(0);
+    const downloadResponse = await blockBlobClient.download(0, undefined, {
+      abortSignal: options.abortSignal,
+    });
 
     if (!downloadResponse.readableStreamBody) {
       throw new Error(
-        `File '${filepath}' in container '${containerName}' is not downloadable.`,
+        `File '${filepath}' in container '${containerId}' is not downloadable.`,
       );
     }
 
-    const headers = new Headers();
-    if (downloadResponse.contentType) {
-      headers.set("Content-Type", downloadResponse.contentType);
-    }
-    if (downloadResponse.contentLength) {
-      headers.set("Content-Length", downloadResponse.contentLength.toString());
-    }
-    if (downloadResponse.contentEncoding) {
-      headers.set("Content-Encoding", downloadResponse.contentEncoding);
-    }
-
-    return downloadResponse.readableStreamBody as unknown as ReadableStream;
+    return {
+      content: downloadResponse.readableStreamBody as unknown as ReadableStream,
+      mimeType: downloadResponse.contentType,
+      path: filepath,
+    };
   };
 }

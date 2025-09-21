@@ -1,4 +1,5 @@
 import {
+  odata,
   TableClient,
   TableServiceClient,
   type TableEntityResult,
@@ -41,6 +42,27 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
       abortSignal: options.abortSignal,
     });
     return;
+  };
+
+  hasCollection: DatabaseService["hasCollection"] = async (
+    collectionId,
+    options,
+  ) => {
+    try {
+      const iterator = this.#serviceClient.listTables({
+        abortSignal: options.abortSignal,
+        queryOptions: { filter: odata`TableName eq ${collectionId}` },
+      });
+      for await (const table of iterator) {
+        if (table.name === collectionId) {
+          return true;
+        }
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
   };
 
   deleteCollection: DatabaseService["deleteCollection"] = async (
@@ -116,11 +138,23 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return this.#entityToItem<Document>(entity);
   };
 
+  hasDocument: DatabaseService["hasDocument"] = async (
+    collectionId,
+    documentId,
+    options,
+  ) => {
+    try {
+      return Boolean(await this.getDocument(collectionId, documentId, options));
+    } catch {
+      return false;
+    }
+  };
+
   createDocument: DatabaseService["createDocument"] = async (
     collectionId,
     documentData,
     options,
-  ): Promise<void> => {
+  ) => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
       collectionId,
@@ -141,7 +175,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     collectionId,
     documentId,
     options,
-  ): Promise<void> => {
+  ) => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
       collectionId,
@@ -159,7 +193,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     documentId,
     documentData,
     options,
-  ): Promise<void> => {
+  ) => {
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
       collectionId,

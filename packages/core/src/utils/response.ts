@@ -1,3 +1,5 @@
+import { Readable } from "node:stream";
+import { renderToStream } from "@kitajs/html/suspense";
 import { getStore } from "#store";
 import { CONTENT_TYPES, HEADERS } from "#utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
@@ -33,14 +35,30 @@ export function commonErrorResponses(): ZodOpenApiResponsesObject {
   };
 }
 
-export function responseHTML(html: JSX.Element, init?: ResponseInit): Response {
+export async function responseHTML(
+  html: JSX.Element,
+  init?: ResponseInit,
+): Promise<Response> {
   const headers = new Headers(init?.headers);
   headers.set(HEADERS.contentType, CONTENT_TYPES.HTML);
-  return new Response(html as unknown as BodyInit, {
+  const responseInit: ResponseInit = {
     ...init,
     headers,
     status: init?.status || 200,
-  });
+  };
+
+  if (html instanceof Promise) {
+    if (getStore().streaming === false) {
+      return new Response(await html, responseInit);
+    }
+
+    return new Response(
+      Readable.toWeb(renderToStream(html)) as ReadableStream,
+      responseInit,
+    );
+  }
+
+  return new Response(html, responseInit);
 }
 
 export function responseRedirect(
@@ -59,10 +77,10 @@ export function responseRedirect(
   return new Response(null, { headers, status });
 }
 
-export function responseError(
+export async function responseError(
   error: unknown,
   init?: ResponseInit | number,
-): Response {
+): Promise<Response> {
   if (error instanceof Response) {
     return error;
   }
@@ -86,7 +104,7 @@ export function responseError(
     }
 
     if (checkIsHTMLRequest()) {
-      return handleErrorResponseForHTMLRequest(
+      return await handleErrorResponseForHTMLRequest(
         errorType === "string" ? errorMessage : JSON.stringify(errorMessage),
         headers,
         status,
@@ -117,14 +135,14 @@ function handleErrorResponseForHxRequest(
   return new Response(errorMessage, { headers, status });
 }
 
-function handleErrorResponseForHTMLRequest(
+async function handleErrorResponseForHTMLRequest(
   errorMessage: string,
   headers: Headers,
   status: number,
-): Response {
+): Promise<Response> {
   const { translation } = getStore();
 
-  return responseHTML(
+  return await responseHTML(
     renderErrorPage({
       message: errorMessage,
       title: `${toTitleCase(translation.dictionary.error)} ${status}`,

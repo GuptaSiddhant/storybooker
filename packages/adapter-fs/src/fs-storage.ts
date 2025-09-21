@@ -1,7 +1,8 @@
+import * as fs from "node:fs";
 import * as fsp from "node:fs/promises";
 import * as path from "node:path";
 import { Readable } from "node:stream";
-import type { ReadableStream as WebReadableStream } from "node:stream/web";
+import type { ReadableStream } from "node:stream/web";
 import type { StorageService } from "@storybooker/core/types";
 
 export class LocalFileStorage implements StorageService {
@@ -20,15 +21,22 @@ export class LocalFileStorage implements StorageService {
 
   // Containers
 
-  createContainer = async (name: string): Promise<void> => {
-    await fsp.mkdir(this.#genPath(name), { recursive: true });
+  createContainer: StorageService["createContainer"] = async (
+    containerId,
+    _options,
+  ) => {
+    await fsp.mkdir(this.#genPath(containerId), { recursive: true });
   };
 
-  deleteContainer = async (name: string): Promise<void> => {
-    await fsp.rm(this.#genPath(name), { force: true, recursive: true });
+  deleteContainer: StorageService["deleteContainer"] = async (containerId) => {
+    await fsp.rm(this.#genPath(containerId), { force: true, recursive: true });
   };
 
-  listContainers = async (): Promise<string[]> => {
+  hasContainer: StorageService["hasContainer"] = async (containerId) => {
+    return fs.existsSync(this.#genPath(containerId));
+  };
+
+  listContainers: StorageService["listContainers"] = async () => {
     const containers: string[] = [];
     const entries = await fsp.readdir(this.#genPath(), {
       withFileTypes: true,
@@ -43,45 +51,57 @@ export class LocalFileStorage implements StorageService {
 
   // Files
 
-  deleteFile = async (name: string, path: string): Promise<void> => {
-    await fsp.rm(this.#genPath(name, path));
-  };
-
-  deleteFiles = async (name: string, prefix: string): Promise<void> => {
-    await fsp.rm(this.#genPath(name, prefix), { force: true, recursive: true });
-  };
-
-  downloadFile = async (
-    containerName: string,
-    filepath: string,
-  ): Promise<string> => {
-    const path = this.#genPath(containerName, filepath);
-    return await fsp.readFile(path, { encoding: "utf8" });
-  };
-
-  uploadFile = async (
-    containerName: string,
-    file: Blob | string | ReadableStream,
-    options: { mimeType: string; destinationPath: string },
+  deleteFiles: StorageService["deleteFiles"] = async (
+    containerId,
+    filePathsOrPrefix,
   ): Promise<void> => {
-    const { destinationPath } = options;
-    const finalPath = this.#genPath(containerName, destinationPath);
-
-    const data =
-      typeof file === "string"
-        ? file
-        : Readable.fromWeb(
-            (file instanceof Blob ? file.stream() : file) as WebReadableStream,
-          );
-    await fsp.writeFile(finalPath, data, { encoding: "utf8" });
+    if (typeof filePathsOrPrefix === "string") {
+      await fsp.rm(this.#genPath(containerId, filePathsOrPrefix), {
+        force: true,
+        recursive: true,
+      });
+    } else {
+      for (const filepath of filePathsOrPrefix) {
+        // oxlint-disable-next-line no-await-in-loop
+        await fsp.rm(filepath, { force: true, recursive: true });
+      }
+    }
   };
 
-  uploadDir = async (
-    containerName: string,
-    dirpath: string,
-    destPrefix?: string,
-  ): Promise<void> => {
-    const toDirpath = this.#genPath(containerName, destPrefix);
-    await fsp.cp(dirpath, toDirpath, { recursive: true });
+  hasFile: StorageService["hasFile"] = async (containerId, filepath) => {
+    const path = this.#genPath(containerId, filepath);
+    return fs.existsSync(path);
+  };
+
+  downloadFile: StorageService["downloadFile"] = async (
+    containerId,
+    filepath,
+  ) => {
+    const path = this.#genPath(containerId, filepath);
+    const content = await fsp.readFile(path, { encoding: "utf8" });
+    return { content, path };
+  };
+
+  uploadFiles: StorageService["uploadFiles"] = async (
+    containerId,
+    files,
+    options,
+  ) => {
+    for (const file of files) {
+      const filepath = this.#genPath(containerId, file.path);
+      const data =
+        // oxlint-disable-next-line no-nested-ternary
+        typeof file.content === "string"
+          ? file.content
+          : // oxlint-disable-next-line no-nested-ternary
+            file.content instanceof Blob
+            ? Readable.fromWeb(file.content.stream() as ReadableStream)
+            : Readable.fromWeb(file.content as ReadableStream);
+      // oxlint-disable-next-line no-await-in-loop
+      await fsp.writeFile(filepath, data, {
+        encoding: "utf8",
+        signal: options.abortSignal,
+      });
+    }
   };
 }

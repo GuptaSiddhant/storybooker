@@ -25,7 +25,7 @@ export async function authenticateOrThrow(
     }
 
     if (response === false) {
-      throw responseError(
+      throw await responseError(
         `${translation.errorMessages.permission_denied} [${key}]`,
         403,
       );
@@ -33,6 +33,6 @@ export async function authenticateOrThrow(
 
     throw response;
   } catch (error) {
-    throw responseError(error, 403);
+    throw await responseError(error, 403);
   }
 }

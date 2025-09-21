@@ -65,7 +65,7 @@ export const listProjects = defineRoute(
     const projects = await new ProjectsModel().list();
 
     if (checkIsHTMLRequest()) {
-      return responseHTML(renderProjectsPage({ projects }));
+      return await responseHTML(renderProjectsPage({ projects }));
     }
 
     const result: ProjectsListResultType = { projects };
@@ -111,7 +111,7 @@ export const createProject = defineRoute(
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
-      return responseError(validFormError.message, validFormError.status);
+      return await responseError(validFormError.message, validFormError.status);
     }
 
     const project = await new ProjectsModel().create(
@@ -150,7 +150,7 @@ export const createProjectForm = defineRoute(
       resource: "project",
     });
 
-    return responseHTML(renderProjectCreatePage());
+    return await responseHTML(renderProjectCreatePage());
   },
 );
 
@@ -188,7 +188,7 @@ export const getProject = defineRoute(
       const recentBuilds = await new BuildsModel(projectId).list({ limit: 10 });
       const recentLabels = await new LabelsModel(projectId).list({ limit: 10 });
 
-      return responseHTML(
+      return await responseHTML(
         renderProjectDetailsPage({ project, recentBuilds, recentLabels }),
       );
     }
@@ -265,7 +265,7 @@ export const updateProject = defineRoute(
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
-      return responseError(validFormError.message, validFormError.status);
+      return await responseError(validFormError.message, validFormError.status);
     }
 
     await new ProjectsModel().update(
@@ -306,6 +306,6 @@ export const updateProjectForm = defineRoute(
 
     const project = await new ProjectsModel().get(projectId);
 
-    return responseHTML(renderProjectUpdatePage({ project }));
+    return await responseHTML(renderProjectUpdatePage({ project }));
   },
 );

@@ -5,6 +5,7 @@ import type {
   DatabaseServiceOptions,
   LoggerService,
   StorageService,
+  StorageServiceOptions,
 } from "../types";
 import { PATTERNS, SERVICE_NAME } from "./constants";
 import { parseErrorMessage } from "./error";
@@ -25,6 +26,7 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   storage: StorageService;
   logger: LoggerService;
   dbOptions: DatabaseServiceOptions;
+  storageOptions: StorageServiceOptions;
 
   constructor(projectId: string | null, collectionName: string) {
     const { abortSignal, database, storage, logger } = getStore();
@@ -34,6 +36,7 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
     this.storage = storage;
     this.logger = logger;
     this.dbOptions = { abortSignal };
+    this.storageOptions = { abortSignal };
   }
 
   log(message: string, ...args: unknown[]): void {

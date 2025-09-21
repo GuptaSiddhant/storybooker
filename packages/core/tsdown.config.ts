@@ -46,7 +46,8 @@ async function generateOpenApiSpec(): Promise<void> {
   const pkgJsonPath = "./package.json";
   const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8" }));
   pkgJson["exports"]["./openapi.json"] = outputFilepath;
-  await writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2), {
+  // oxlint-disable-next-line prefer-template
+  await writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + "\n", {
     encoding: "utf8",
   });
 

@@ -54,7 +54,9 @@ export function createRequestHandler<User extends StoryBookerUser>(
     options.database
       .init?.({ abortSignal: options.abortSignal })
       .catch(logger.error),
-    options.storage.init?.().catch(logger.error),
+    options.storage
+      .init?.({ abortSignal: options.abortSignal })
+      .catch(logger.error),
   ]);
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {

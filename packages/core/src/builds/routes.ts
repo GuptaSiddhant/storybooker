@@ -67,7 +67,7 @@ export const listBuilds = defineRoute(
 
     if (checkIsHTMLRequest()) {
       const project = await new ProjectsModel().get(projectId);
-      return responseHTML(renderBuildsPage({ builds, project }));
+      return await responseHTML(renderBuildsPage({ builds, project }));
     }
 
     const result: BuildsListResultType = { builds };
@@ -108,12 +108,15 @@ export const createBuild = defineRoute(
   async ({ params: { projectId }, request }) => {
     const projectModel = new ProjectsModel().id(projectId);
     if (!(await projectModel.has())) {
-      return responseError(`The project '${projectId}' does not exist.`, 404);
+      return await responseError(
+        `The project '${projectId}' does not exist.`,
+        404,
+      );
     }
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
-      return responseError(validFormError.message, validFormError.status);
+      return await responseError(validFormError.message, validFormError.status);
     }
 
     await authenticateOrThrow({
@@ -162,7 +165,7 @@ export const createBuildsForm = defineRoute(
       new URL(request.url).searchParams.get(QUERY_PARAMS.labelSlug) ??
       undefined;
 
-    return responseHTML(renderBuildCreatePage({ labelSlug, project }));
+    return await responseHTML(renderBuildCreatePage({ labelSlug, project }));
   },
 );
 
@@ -195,7 +198,7 @@ export const getBuild = defineRoute(
     const build = await new BuildsModel(projectId).get(buildSHA);
 
     if (checkIsHTMLRequest()) {
-      return responseHTML(renderBuildDetailsPage({ build, projectId }));
+      return await responseHTML(renderBuildDetailsPage({ build, projectId }));
     }
 
     const result: BuildsGetResultType = { build, url: request.url };
@@ -278,7 +281,7 @@ export const uploadBuild = defineRoute(
     const buildsModel = new BuildsModel(projectId);
 
     if (!(await buildsModel.has(buildSHA))) {
-      return responseError(
+      return await responseError(
         `The build '${buildSHA}' does not exist in project '${projectId}'.`,
         404,
       );
@@ -292,7 +295,7 @@ export const uploadBuild = defineRoute(
 
     const contentType = request.headers.get("content-type");
     if (!contentType) {
-      return responseError("Content-Type header is required", 400);
+      return await responseError("Content-Type header is required", 400);
     }
 
     const redirectUrl = href(URLS.builds.id, { buildSHA, projectId });
@@ -314,7 +317,7 @@ export const uploadBuild = defineRoute(
     if (contentType.startsWith(CONTENT_TYPES.ZIP)) {
       const bodyError = validateBuildUploadZipBody(request);
       if (bodyError) {
-        return responseError(bodyError.message, bodyError.status);
+        return await responseError(bodyError.message, bodyError.status);
       }
       const { searchParams } = new URL(request.url);
       const { variant } = BuildUploadQueryParamsSchema.parse(
@@ -330,7 +333,7 @@ export const uploadBuild = defineRoute(
       return new Response(null, { status: 204 });
     }
 
-    return responseError(
+    return await responseError(
       `Invalid content type, expected ${CONTENT_TYPES.ZIP} or ${CONTENT_TYPES.FORM_MULTIPART}.`,
       415,
     );
@@ -372,7 +375,7 @@ export const uploadBuildForm = defineRoute(
         QUERY_PARAMS.uploadVariant,
       ) as BuildUploadVariant) ?? undefined;
 
-    return responseHTML(
+    return await responseHTML(
       renderBuildUploadPage({ build, projectId, uploadVariant }),
     );
   },

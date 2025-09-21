@@ -66,7 +66,7 @@ export const listLabels = defineRoute(
 
     if (checkIsHTMLRequest()) {
       const project = await new ProjectsModel().get(projectId);
-      return responseHTML(renderLabelsPage({ labels, project }));
+      return await responseHTML(renderLabelsPage({ labels, project }));
     }
 
     const result: LabelsListResultType = { labels };
@@ -105,12 +105,15 @@ export const createLabel = defineRoute(
   async ({ params: { projectId }, request }) => {
     const projectModel = new ProjectsModel().id(projectId);
     if (!(await projectModel.has())) {
-      return responseError(`The project '${projectId}' does not exist.`, 404);
+      return await responseError(
+        `The project '${projectId}' does not exist.`,
+        404,
+      );
     }
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
-      return responseError(validFormError.message, validFormError.status);
+      return await responseError(validFormError.message, validFormError.status);
     }
 
     await authenticateOrThrow({
@@ -156,7 +159,7 @@ export const createLabelForm = defineRoute(
     });
     const project = await new ProjectsModel().get(projectId);
 
-    return responseHTML(renderLabelCreatePage({ project }));
+    return await responseHTML(renderLabelCreatePage({ project }));
   },
 );
 
@@ -192,7 +195,9 @@ export const getLabel = defineRoute(
       const project = await new ProjectsModel().get(projectId);
       const builds = await new BuildsModel(projectId).listByLabel(label.id);
 
-      return responseHTML(renderLabelDetailsPage({ builds, label, project }));
+      return await responseHTML(
+        renderLabelDetailsPage({ builds, label, project }),
+      );
     }
 
     const result: LabelsGetResultType = { label };
@@ -278,7 +283,7 @@ export const updateLabel = defineRoute(
 
     const validFormError = validateIsFormEncodedRequest(request);
     if (validFormError) {
-      return responseError(validFormError.message, validFormError.status);
+      return await responseError(validFormError.message, validFormError.status);
     }
 
     await new LabelsModel(projectId).update(
@@ -318,6 +323,6 @@ export const updateLabelForm = defineRoute(
     });
     const label = await new LabelsModel(projectId).get(labelSlug);
 
-    return responseHTML(renderLabelUpdatePage({ label, projectId }));
+    return await responseHTML(renderLabelUpdatePage({ label, projectId }));
   },
 );
