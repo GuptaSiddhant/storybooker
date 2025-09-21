@@ -1,43 +1,27 @@
 // oxlint-disable max-lines-per-function
 
-import * as buildsRoutes from "#builds/routes";
 import { DEFAULT_LOCALE, HEADERS } from "#constants";
-import * as labelsRoutes from "#labels/routes";
-import * as projectsRoutes from "#projects/routes";
 import { localStore } from "#store";
 import { parseErrorMessage } from "#utils/error";
+import { createMiddlewaresPipelineRequestHandler } from "#utils/middleware-utils";
 import { handleStaticFileRoute } from "./root/handlers";
-import * as openapiRoutes from "./root/openapi";
-import * as rootRoutes from "./root/routes";
-import * as serveRoutes from "./root/serve";
 import { router } from "./router";
 import { translations_enGB } from "./translations/en-gb";
 import type {
   AuthService,
-  Middleware,
+  RequestHandler,
   RequestHandlerOptions,
-  RequestHandlerOverrideOptions,
   StoryBookerUser,
 } from "./types";
 
 export type {
+  OpenAPIOptions,
+  RequestHandler,
   RequestHandlerOptions,
   RequestHandlerOverrideOptions,
   StoryBookerUser,
-  OpenAPIOptions,
+  UIOptions,
 } from "./types";
-
-export type RequestHandler = (
-  request: Request,
-  overrideOptions?: RequestHandlerOverrideOptions,
-) => Promise<Response>;
-
-router.registerGroup(rootRoutes);
-router.registerGroup(openapiRoutes);
-router.registerGroup(serveRoutes);
-router.registerGroup(projectsRoutes);
-router.registerGroup(labelsRoutes);
-router.registerGroup(buildsRoutes);
 
 /**
  * Callback to create a request-handler based on provided options.
@@ -69,7 +53,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
 
       localStore.enterWith({
         ...options,
-        abortSignal: overrideOptions?.abortSignal,
+        abortSignal: overrideOptions?.abortSignal ?? request.signal,
         auth: options.auth as AuthService | undefined,
         locale,
         logger: overrideOptions?.logger ?? logger,
@@ -104,32 +88,4 @@ export function createRequestHandler<User extends StoryBookerUser>(
   }
 
   return requestHandler;
-}
-
-function createMiddlewaresPipelineRequestHandler(
-  middlewares: Middleware[],
-  handler: RequestHandler,
-): RequestHandler {
-  return async function run(
-    request: Request,
-    overrideOptions?: RequestHandlerOverrideOptions,
-  ): Promise<Response> {
-    // recursive dispatcher
-    async function dispatch(
-      index: number,
-      currentRequest: Request,
-    ): Promise<Response> {
-      const middleware = middlewares[index];
-
-      if (middleware) {
-        return await middleware(currentRequest, (nextReq) =>
-          dispatch(index + 1, nextReq),
-        );
-      }
-
-      return await handler(currentRequest, overrideOptions);
-    }
-
-    return await dispatch(0, request);
-  };
 }

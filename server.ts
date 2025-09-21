@@ -52,14 +52,12 @@ class LocalAuthService implements AuthService {
   };
 }
 
-export default {
-  fetch: createRequestHandler({
-    auth: new LocalAuthService(),
-    database: new LocalFileDatabase(".server/db.json"),
-    staticDirs: [".server"],
-    storage: new LocalFileStorage(".server"),
-    ui: {
-      logo: "https://cos-admin.azurewebsites.net/icons/cos-logo.svg",
-    },
-  }),
-};
+const requestHandler = createRequestHandler({
+  auth: new LocalAuthService(),
+  database: new LocalFileDatabase(".server/db.json"),
+  staticDirs: [".server"],
+  storage: new LocalFileStorage(".server"),
+  ui: { logo: "https://cos-admin.azurewebsites.net/icons/cos-logo.svg" },
+});
+
+export default { fetch: requestHandler };

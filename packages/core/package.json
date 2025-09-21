@@ -37,7 +37,7 @@
     "#labels-ui/*": "./src/labels/ui/*.tsx",
     "#projects/*": "./src/projects/*.ts",
     "#projects-ui/*": "./src/projects/ui/*.tsx",
-    "#router": "./src/router.ts",
+    "#router": "./src/utils/router-utils.ts",
     "#store": "./src/utils/store.ts",
     "#types": "./src/types.d.ts",
     "#urls": "./src/urls.ts",

@@ -42,6 +42,11 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   ui?: UIOptions;
 }
 
+export type RequestHandler = (
+  request: Request,
+  overrideOptions?: RequestHandlerOverrideOptions,
+) => Promise<Response>;
+
 export interface RequestHandlerOverrideOptions {
   /** A abort signal that can be used to cancel the request handling. */
   abortSignal?: AbortSignal;
