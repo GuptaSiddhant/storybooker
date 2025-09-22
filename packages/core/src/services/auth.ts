@@ -118,9 +118,13 @@ export type PermissionAction = "create" | "read" | "update" | "delete";
  * Base representation of a generic User
  */
 export interface StoryBookerUser {
-  id: string;
+  /** Name of the user displayed in UI. */
   displayName: string;
+  /** Unique ID of the user. Could be email-address. */
+  id: string;
+  /** Static URL for User's avatar shown in UI. */
   imageUrl?: string;
+  /** Title or Team-name of the User shown in UI. */
   title?: string;
 }
 

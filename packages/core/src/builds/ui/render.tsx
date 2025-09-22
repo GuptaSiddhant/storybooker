@@ -1,3 +1,4 @@
+// oxlint-disable no-nested-ternary
 // oxlint-disable max-lines-per-function
 
 import type { BuildType, BuildUploadVariant } from "#builds/schema";
@@ -55,9 +56,11 @@ export function renderBuildsPage({
 export function renderBuildDetailsPage({
   build,
   projectId,
+  hasUpdatePermission,
 }: {
   build: BuildType;
   projectId: string;
+  hasUpdatePermission: boolean;
 }): JSX.Element {
   const { url } = getStore();
 
@@ -67,9 +70,11 @@ export function renderBuildDetailsPage({
         breadcrumbs={[projectId, commonT.Builds()]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <LinkButton href={urlBuilder.buildUpload(projectId, build.id)}>
-              {commonT.Upload()}
-            </LinkButton>
+            {hasUpdatePermission ? (
+              <LinkButton href={urlBuilder.buildUpload(projectId, build.id)}>
+                {commonT.Upload()}
+              </LinkButton>
+            ) : null}
             <form
               hx-delete={url}
               hx-confirm={commonT.confirmDelete(commonT.Build(), build.sha)}
@@ -101,14 +106,15 @@ export function renderBuildDetailsPage({
           >
             {commonT.View()} {commonT.StoryBook()}
           </a>
-        ) : (
+        ) : hasUpdatePermission ? (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "storybook")}
             class="description"
           >
             {commonT.Upload()} {commonT.StoryBook()}
           </a>
-        )}
+        ) : null}
+
         {build.hasTestReport ? (
           <a
             href={urlBuilder.storybookTestReport(projectId, build.sha)}
@@ -116,14 +122,15 @@ export function renderBuildDetailsPage({
           >
             {commonT.View()} Test Report
           </a>
-        ) : (
+        ) : hasUpdatePermission ? (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "testReport")}
             class="description"
           >
             {commonT.Upload()} Test report
           </a>
-        )}
+        ) : null}
+
         {build.hasCoverage ? (
           <a
             href={urlBuilder.storybookCoverage(projectId, build.sha)}
@@ -131,14 +138,14 @@ export function renderBuildDetailsPage({
           >
             {commonT.View()} Coverage report
           </a>
-        ) : (
+        ) : hasUpdatePermission ? (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "coverage")}
             class="description"
           >
             {commonT.Upload()} Coverage report
           </a>
-        )}
+        ) : null}
 
         {build.hasScreenshots ? (
           <a
@@ -147,14 +154,14 @@ export function renderBuildDetailsPage({
           >
             {commonT.Download()} screenshots
           </a>
-        ) : (
+        ) : hasUpdatePermission ? (
           <a
             href={urlBuilder.buildUpload(projectId, build.sha, "screenshots")}
             class="description"
           >
             {commonT.Upload()} Screenshots
           </a>
-        )}
+        ) : null}
 
         {build.hasStorybook ? (
           <a

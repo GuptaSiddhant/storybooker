@@ -10,7 +10,7 @@ import { CONTENT_TYPES, QUERY_PARAMS } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#router";
 import { href, urlBuilder, URLS } from "#urls";
-import { authenticateOrThrow } from "#utils/auth";
+import { authenticateOrThrow, checkAuthorisation } from "#utils/auth";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
@@ -157,7 +157,7 @@ export const createBuildsForm = defineRoute(
   async ({ params: { projectId }, request }) => {
     await authenticateOrThrow({
       action: "create",
-      projectId: undefined,
+      projectId,
       resource: "build",
     });
     const project = await new ProjectsModel().get(projectId);
@@ -198,7 +198,15 @@ export const getBuild = defineRoute(
     const build = await new BuildsModel(projectId).get(buildSHA);
 
     if (checkIsHTMLRequest()) {
-      return await responseHTML(renderBuildDetailsPage({ build, projectId }));
+      const hasUpdatePermission = await checkAuthorisation({
+        action: "update",
+        projectId,
+        resource: "build",
+      });
+
+      return await responseHTML(
+        renderBuildDetailsPage({ build, hasUpdatePermission, projectId }),
+      );
     }
 
     const result: BuildsGetResultType = { build, url: request.url };
@@ -365,7 +373,7 @@ export const uploadBuildForm = defineRoute(
   async ({ params: { projectId, buildSHA }, request }) => {
     await authenticateOrThrow({
       action: "update",
-      projectId: undefined,
+      projectId,
       resource: "build",
     });
     const build = await new BuildsModel(projectId).get(buildSHA);

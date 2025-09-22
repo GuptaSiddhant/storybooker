@@ -39,3 +39,14 @@ export async function authenticateOrThrow(
     throw await responseError(error, 403);
   }
 }
+
+export async function checkAuthorisation(
+  permission: Permission,
+): Promise<boolean> {
+  try {
+    await authenticateOrThrow(permission);
+    return true;
+  } catch {
+    return false;
+  }
+}
