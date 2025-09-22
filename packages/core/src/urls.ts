@@ -14,7 +14,7 @@ export const URLS = {
     account: "account",
     login: "login",
     logout: "logout",
-    purge: "purge",
+    purge: "purge?project",
     catchAll: "*filepath",
   },
   projects: {

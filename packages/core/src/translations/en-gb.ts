@@ -44,6 +44,7 @@ export const translations_enGB = {
     message: "message",
     email: "email",
     author: "author",
+    purge: "purge",
   },
   errorMessages: {
     auth_setup_missing: "Auth is not setup",
@@ -66,7 +67,8 @@ export const translations_enGB = {
     serving_static_file: "Serving static file",
   },
   confirmations: {
-    logout: "Are you sure about logging out?",
     delete: "Are you sure about deleting the {{variant}} '{{name}}'?",
+    logout: "Are you sure about logging out?",
+    purge: "Are you sure about purging the project(s)?",
   },
 };

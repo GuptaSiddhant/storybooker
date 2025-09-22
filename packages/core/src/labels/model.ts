@@ -1,7 +1,7 @@
 import { BuildsModel } from "#builds/model";
 import { ProjectsModel } from "#projects/model";
 import {
-  generateProjectCollectionName,
+  generateDatabaseCollectionId,
   Model,
   type BaseModel,
   type ListOptions,
@@ -15,14 +15,14 @@ import {
 
 export class LabelsModel extends Model<LabelType> {
   constructor(projectId: string) {
-    super(projectId, generateProjectCollectionName(projectId, "Labels"));
+    super(projectId, generateDatabaseCollectionId(projectId, "Labels"));
   }
 
   async list(options: ListOptions<LabelType> = {}): Promise<LabelType[]> {
     this.log("List labels...");
 
     const items = await this.database.listDocuments(
-      this.collectionName,
+      this.collectionId,
       options,
       this.dbOptions,
     );
@@ -45,7 +45,7 @@ export class LabelsModel extends Model<LabelType> {
       updatedAt: now,
     };
     await this.database.createDocument<LabelType>(
-      this.collectionName,
+      this.collectionId,
       label,
       this.dbOptions,
     );
@@ -57,7 +57,7 @@ export class LabelsModel extends Model<LabelType> {
     this.log("Get label '%s'...", id);
 
     const item = await this.database.getDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       this.dbOptions,
     );
@@ -68,7 +68,7 @@ export class LabelsModel extends Model<LabelType> {
   async has(id: string): Promise<boolean> {
     this.log("Check label '%s'...", id);
     return await this.database.hasDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       this.dbOptions,
     );
@@ -79,7 +79,7 @@ export class LabelsModel extends Model<LabelType> {
     const parsedData = LabelUpdateSchema.parse(data);
 
     await this.database.updateDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       { ...parsedData, updatedAt: new Date().toISOString() },
       this.dbOptions,
@@ -100,11 +100,7 @@ export class LabelsModel extends Model<LabelType> {
       throw new Error(message);
     }
 
-    await this.database.deleteDocument(
-      this.collectionName,
-      slug,
-      this.dbOptions,
-    );
+    await this.database.deleteDocument(this.collectionId, slug, this.dbOptions);
 
     try {
       this.debug("Delete builds associated with label '%s'...", slug);

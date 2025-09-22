@@ -5,7 +5,7 @@ import { urlBuilder } from "#urls";
 import { authenticateOrThrow } from "#utils/auth";
 import { getMimeType } from "#utils/mime-utils";
 import { responseError } from "#utils/response";
-import { generateProjectContainerName } from "#utils/shared-model";
+import { generateStorageContainerId } from "#utils/shared-model";
 
 export async function handleServeStoryBook({
   buildSHA,
@@ -22,7 +22,7 @@ export async function handleServeStoryBook({
 
   try {
     const { content, mimeType } = await storage.downloadFile(
-      generateProjectContainerName(projectId),
+      generateStorageContainerId(projectId),
       storageFilepath,
       { abortSignal },
     );

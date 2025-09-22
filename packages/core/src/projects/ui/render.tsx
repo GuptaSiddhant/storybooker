@@ -15,7 +15,7 @@ import { LabelsTable } from "#labels-ui/labels-table";
 import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import { urlBuilder } from "#urls";
+import { href, urlBuilder, URLS } from "#urls";
 import { commonT } from "#utils/i18n";
 import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
@@ -32,9 +32,19 @@ export function renderProjectsPage({
       <DocumentHeader
         breadcrumbs={[commonT.Home()]}
         toolbar={
-          <LinkButton href={urlBuilder.projectCreate()}>
-            + ${commonT.Create()}
-          </LinkButton>
+          <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
+            <LinkButton href={urlBuilder.projectCreate()}>
+              + {commonT.Create()}
+            </LinkButton>
+            <form
+              hx-post={href(URLS.ui.purge)}
+              hx-confirm={commonT.confirmPurge()}
+            >
+              <DestructiveButton>
+                {commonT.Purge()} {commonT.All()}
+              </DestructiveButton>
+            </form>
+          </div>
         }
       >
         {title}
@@ -73,6 +83,12 @@ export function renderProjectDetailsPage({
             <LinkButton href={urlBuilder.projectIdUpdate(project.id)}>
               {commonT.Edit()}
             </LinkButton>
+            <form
+              hx-post={href(URLS.ui.purge, null, { project: project.id })}
+              hx-confirm={commonT.confirmPurge()}
+            >
+              <DestructiveButton>{commonT.Purge()}</DestructiveButton>
+            </form>
             <form
               hx-delete={url}
               hx-confirm={commonT.confirmDelete(

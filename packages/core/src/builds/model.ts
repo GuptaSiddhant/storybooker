@@ -12,8 +12,8 @@ import { getStore } from "#store";
 import { writeStreamToFile } from "#utils/file-utils";
 import { getMimeType } from "#utils/mime-utils";
 import {
-  generateProjectCollectionName,
-  generateProjectContainerName,
+  generateDatabaseCollectionId,
+  generateStorageContainerId,
   Model,
   type BaseModel,
   type ListOptions,
@@ -30,7 +30,7 @@ import {
 
 export class BuildsModel extends Model<BuildType> {
   constructor(projectId: string) {
-    super(projectId, generateProjectCollectionName(projectId, "Builds"));
+    super(projectId, generateDatabaseCollectionId(projectId, "Builds"));
   }
 
   async list(options: ListOptions<BuildType> = {}): Promise<BuildType[]> {
@@ -41,7 +41,7 @@ export class BuildsModel extends Model<BuildType> {
     }
 
     const items = await this.database.listDocuments(
-      this.collectionName,
+      this.collectionId,
       options,
       this.dbOptions,
     );
@@ -81,7 +81,7 @@ export class BuildsModel extends Model<BuildType> {
       updatedAt: now,
     };
     await this.database.createDocument<BuildType>(
-      this.collectionName,
+      this.collectionId,
       build,
       this.dbOptions,
     );
@@ -103,7 +103,7 @@ export class BuildsModel extends Model<BuildType> {
     this.log("Get build '%s'...", id);
 
     const item = await this.database.getDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       this.dbOptions,
     );
@@ -115,7 +115,7 @@ export class BuildsModel extends Model<BuildType> {
     this.log("Check build '%s'...", id);
 
     return await this.database.hasDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       this.dbOptions,
     );
@@ -125,7 +125,7 @@ export class BuildsModel extends Model<BuildType> {
     this.log("Update build '%s''...", id);
     const parsedData = BuildUpdateSchema.parse(data);
     await this.database.updateDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       { ...parsedData, updatedAt: new Date().toISOString() },
       this.dbOptions,
@@ -141,7 +141,7 @@ export class BuildsModel extends Model<BuildType> {
 
     this.debug("Delete document '%s'", buildId);
     await this.database.deleteDocument(
-      this.collectionName,
+      this.collectionId,
       buildId,
       this.dbOptions,
     );
@@ -149,7 +149,7 @@ export class BuildsModel extends Model<BuildType> {
     try {
       this.debug("Delete files '%s'", buildId);
       await this.storage.deleteFiles(
-        generateProjectContainerName(this.projectId),
+        generateStorageContainerId(this.projectId),
         buildId,
         this.storageOptions,
       );
@@ -325,7 +325,7 @@ export class BuildsModel extends Model<BuildType> {
 
       this.debug("(%s-%s) Upload uncompressed dir", buildSHA, variant);
       await this.storage.uploadFiles(
-        generateProjectContainerName(this.projectId),
+        generateStorageContainerId(this.projectId),
         await this.#dirToFiles(dirpath, buildSHA),
         this.storageOptions,
       );

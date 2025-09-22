@@ -18,7 +18,8 @@ export class AzureBlobStorageService implements StorageService {
     containerId,
     options,
   ) => {
-    await this.#client.createContainer(containerId, {
+    const containerName = genContainerNameFromContainerId(containerId);
+    await this.#client.createContainer(containerName, {
       abortSignal: options.abortSignal,
     });
   };
@@ -27,7 +28,8 @@ export class AzureBlobStorageService implements StorageService {
     containerId,
     options,
   ) => {
-    await this.#client.getContainerClient(containerId).deleteIfExists({
+    const containerName = genContainerNameFromContainerId(containerId);
+    await this.#client.getContainerClient(containerName).deleteIfExists({
       abortSignal: options.abortSignal,
     });
   };
@@ -36,7 +38,8 @@ export class AzureBlobStorageService implements StorageService {
     containerId,
     options,
   ) => {
-    return await this.#client.getContainerClient(containerId).exists({
+    const containerName = genContainerNameFromContainerId(containerId);
+    return await this.#client.getContainerClient(containerName).exists({
       abortSignal: options.abortSignal,
     });
   };
@@ -57,7 +60,8 @@ export class AzureBlobStorageService implements StorageService {
     filePathsOrPrefix,
     options,
   ) => {
-    const containerClient = this.#client.getContainerClient(containerId);
+    const containerName = genContainerNameFromContainerId(containerId);
+    const containerClient = this.#client.getContainerClient(containerName);
     const blobClientsToDelete: BlobClient[] = [];
 
     if (typeof filePathsOrPrefix === "string") {
@@ -94,7 +98,8 @@ export class AzureBlobStorageService implements StorageService {
     files,
     options,
   ) => {
-    const containerClient = this.#client.getContainerClient(containerId);
+    const containerName = genContainerNameFromContainerId(containerId);
+    const containerClient = this.#client.getContainerClient(containerName);
     // oxlint-disable-next-line require-await
     const promises = files.map(async ({ content, path, mimeType }) =>
       this.#uploadFile(
@@ -149,7 +154,8 @@ export class AzureBlobStorageService implements StorageService {
     filepath,
     options,
   ) => {
-    const containerClient = this.#client.getContainerClient(containerId);
+    const containerName = genContainerNameFromContainerId(containerId);
+    const containerClient = this.#client.getContainerClient(containerName);
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
     return await blockBlobClient.exists({ abortSignal: options.abortSignal });
   };
@@ -159,7 +165,8 @@ export class AzureBlobStorageService implements StorageService {
     filepath,
     options,
   ) => {
-    const containerClient = this.#client.getContainerClient(containerId);
+    const containerName = genContainerNameFromContainerId(containerId);
+    const containerClient = this.#client.getContainerClient(containerName);
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
 
     if (!(await blockBlobClient.exists())) {
@@ -184,4 +191,11 @@ export class AzureBlobStorageService implements StorageService {
       path: filepath,
     };
   };
+}
+
+function genContainerNameFromContainerId(containerId: string): string {
+  return containerId
+    .replaceAll(/[^\w-]+/g, "-")
+    .slice(0, 255)
+    .toLowerCase();
 }

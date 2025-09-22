@@ -5,13 +5,14 @@ import { responseError } from "./response";
 export async function authenticateOrThrow(
   permission: Permission,
 ): Promise<void> {
-  const { abortSignal, auth, request, translation, user } = getStore();
+  const { abortSignal, auth, logger, request, translation, user } = getStore();
 
   if (!auth) {
     return;
   }
 
   const key: PermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
+  logger.debug?.("[Auth] Check authorisation for '%s'.", key);
 
   try {
     const response = await auth.authorise(

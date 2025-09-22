@@ -7,7 +7,6 @@ export default defineConfig({
   entry: {
     constants: "./src/utils/constants.ts",
     index: "./src/index.ts",
-    router: "./src/router.ts",
     translations: "./src/translations/index.ts",
     "translations/en-gb": "./src/translations/en-gb.ts",
     types: "./src/types.ts",
@@ -24,7 +23,7 @@ export default defineConfig({
 });
 
 async function generateOpenApiSpec(): Promise<void> {
-  const { router } = await import("./dist/router.js");
+  const { router } = await import("./dist/index.js");
   const { SERVICE_NAME } = await import("./dist/constants.js");
   const { createDocument } = await import("zod-openapi");
   const { readFile, writeFile } = await import("node:fs/promises");

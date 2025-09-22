@@ -46,6 +46,7 @@ export const commonT = {
   Name: (): string => toTitleCase(getT("dictionary", "name")),
   Project: (): string => toTitleCase(getT("dictionary", "project")),
   Projects: (): string => toTitleCase(getT("dictionary", "projects")),
+  Purge: (): string => toTitleCase(getT("dictionary", "purge")),
   Recent: (): string => toTitleCase(getT("dictionary", "recent")),
   Required: (): string => toTitleCase(getT("dictionary", "required")),
   Reset: (): string => toTitleCase(getT("dictionary", "reset")),
@@ -61,4 +62,5 @@ export const commonT = {
 
   confirmDelete: (variant: string, name: string): string =>
     getT("confirmations", "delete", { name, variant }),
+  confirmPurge: (): string => getT("confirmations", "purge"),
 };

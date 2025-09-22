@@ -109,6 +109,11 @@ export function LabelsTable({
           style: { fontFamily: "monospace", fontSize: "0.9em" },
         },
         {
+          id: "builds",
+          header: commonT.Builds(),
+          cell: (item) => <span>{item.buildsCount}</span>,
+        },
+        {
           id: "build",
           header: `${commonT.Latest()} ${commonT.Build()}`,
           cell: (item) => {

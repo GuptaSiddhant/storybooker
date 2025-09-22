@@ -38,7 +38,8 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     collectionId,
     options,
   ) => {
-    await this.#serviceClient.createTable(collectionId, {
+    const tableName = genTableNameFromCollectionId(collectionId);
+    await this.#serviceClient.createTable(tableName, {
       abortSignal: options.abortSignal,
     });
     return;
@@ -49,9 +50,10 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     options,
   ) => {
     try {
+      const tableName = genTableNameFromCollectionId(collectionId);
       const iterator = this.#serviceClient.listTables({
         abortSignal: options.abortSignal,
-        queryOptions: { filter: odata`TableName eq ${collectionId}` },
+        queryOptions: { filter: odata`TableName eq ${tableName}` },
       });
       for await (const table of iterator) {
         if (table.name === collectionId) {
@@ -69,7 +71,8 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     collectionId,
     options,
   ) => {
-    await this.#serviceClient.deleteTable(collectionId, {
+    const tableName = genTableNameFromCollectionId(collectionId);
+    await this.#serviceClient.deleteTable(tableName, {
       abortSignal: options.abortSignal,
     });
     return;
@@ -83,9 +86,11 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     options: DatabaseServiceOptions,
   ): Promise<Document[]> => {
     const { filter, limit, select, sort } = listOptions || {};
+
+    const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      collectionId,
+      tableName,
     );
     const pageIterator = tableClient
       .listEntities({
@@ -127,9 +132,10 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     documentId: string,
     options: DatabaseServiceOptions,
   ): Promise<Document> => {
+    const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      collectionId,
+      tableName,
     );
     const entity = await tableClient.getEntity(collectionId, documentId, {
       abortSignal: options.abortSignal,
@@ -155,9 +161,10 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     documentData,
     options,
   ) => {
+    const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      collectionId,
+      tableName,
     );
     await tableClient.createEntity(
       {
@@ -176,9 +183,10 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     documentId,
     options,
   ) => {
+    const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      collectionId,
+      tableName,
     );
     await tableClient.deleteEntity(collectionId, documentId, {
       abortSignal: options.abortSignal,
@@ -194,9 +202,10 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     documentData,
     options,
   ) => {
+    const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = TableClient.fromConnectionString(
       this.#connectionString,
-      collectionId,
+      tableName,
     );
     await tableClient.updateEntity(
       { ...documentData, partitionKey: collectionId, rowKey: documentId },
@@ -215,4 +224,12 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
       id: entity.rowKey || entity.partitionKey || entity.etag,
     } as unknown as Item;
   };
+}
+
+function genTableNameFromCollectionId(collectionId: string): string {
+  if (/^[A-Za-z][A-Za-z0-9]{2,62}$/.test(collectionId)) {
+    return collectionId;
+  }
+
+  return collectionId.replaceAll(/\W/g, "").slice(0, 63).padEnd(3, "X");
 }

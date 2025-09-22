@@ -1,8 +1,7 @@
-import { SERVICE_NAME } from "#constants";
 import { LabelsModel } from "#labels/model";
 import {
-  generateProjectCollectionName,
-  generateProjectContainerName,
+  generateDatabaseCollectionId,
+  generateStorageContainerId,
   Model,
   type BaseModel,
   type ListOptions,
@@ -16,26 +15,24 @@ import {
 
 export class ProjectsModel extends Model<ProjectType> {
   constructor() {
-    super(null, `${SERVICE_NAME}Projects`);
+    super(null, generateDatabaseCollectionId("Projects", ""));
   }
 
   async list(options: ListOptions<ProjectType> = {}): Promise<ProjectType[]> {
     this.log("List projects...");
 
     try {
-      this.debug("Create projects collection");
-      await this.database.createCollection(this.collectionName, this.dbOptions);
+      const items = await this.database.listDocuments<ProjectType>(
+        this.collectionId,
+        options,
+        this.dbOptions,
+      );
+
+      return items;
     } catch (error) {
       this.error(error);
+      return [];
     }
-
-    const items = await this.database.listDocuments<ProjectType>(
-      this.collectionName,
-      options,
-      this.dbOptions,
-    );
-
-    return items;
   }
 
   async create(data: unknown): Promise<ProjectType> {
@@ -46,22 +43,22 @@ export class ProjectsModel extends Model<ProjectType> {
 
     this.debug("Create project container");
     await this.storage.createContainer(
-      generateProjectContainerName(projectId),
+      generateStorageContainerId(projectId),
       this.storageOptions,
     );
 
     this.debug("Create project collection");
-    await this.database.createCollection(this.collectionName, this.dbOptions);
+    await this.database.createCollection(this.collectionId, this.dbOptions);
 
     this.debug("Create project-builds collection");
     await this.database.createCollection(
-      generateProjectCollectionName(projectId, "Builds"),
+      generateDatabaseCollectionId(projectId, "Builds"),
       this.dbOptions,
     );
 
     this.debug("Create project-labels collection");
     await this.database.createCollection(
-      generateProjectCollectionName(projectId, "Labels"),
+      generateDatabaseCollectionId(projectId, "Labels"),
       this.dbOptions,
     );
     this.debug(
@@ -81,7 +78,7 @@ export class ProjectsModel extends Model<ProjectType> {
       updatedAt: now,
     };
     await this.database.createDocument<ProjectType>(
-      this.collectionName,
+      this.collectionId,
       project,
       this.dbOptions,
     );
@@ -93,7 +90,7 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("Get project '%s'...", id);
 
     const item = await this.database.getDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       this.dbOptions,
     );
@@ -105,7 +102,7 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("Check project '%s'...", id);
 
     return await this.database.hasDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       this.dbOptions,
     );
@@ -116,7 +113,7 @@ export class ProjectsModel extends Model<ProjectType> {
 
     const project = ProjectUpdateSchema.parse(data);
     await this.database.updateDocument(
-      this.collectionName,
+      this.collectionId,
       id,
       { ...project, updatedAt: new Date().toISOString() },
       this.dbOptions,
@@ -144,23 +141,23 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("Delete project '%s'...", id);
 
     this.debug("Delete project entry '%s' in collection", id);
-    await this.database.deleteDocument(this.collectionName, id, this.dbOptions);
+    await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
 
     this.debug("Create project-builds collection");
     await this.database.deleteCollection(
-      generateProjectCollectionName(id, "Builds"),
+      generateDatabaseCollectionId(id, "Builds"),
       this.dbOptions,
     );
 
     this.debug("Delete project-labels collection");
     await this.database.deleteCollection(
-      generateProjectCollectionName(id, "Labels"),
+      generateDatabaseCollectionId(id, "Labels"),
       this.dbOptions,
     );
 
     this.debug("Create project container");
     await this.storage.deleteContainer(
-      generateProjectContainerName(id),
+      generateStorageContainerId(id),
       this.storageOptions,
     );
 

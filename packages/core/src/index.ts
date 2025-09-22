@@ -1,12 +1,17 @@
 // oxlint-disable max-lines-per-function
 
+import * as buildsRoutes from "#builds/routes";
 import { DEFAULT_LOCALE, HEADERS } from "#constants";
+import * as labelsRoutes from "#labels/routes";
+import * as projectsRoutes from "#projects/routes";
+import { router } from "#router";
 import { localStore } from "#store";
 import { parseErrorMessage } from "#utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "#utils/middleware-utils";
+import * as accountRoutes from "./account/routes";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
-import { router } from "./router";
+import * as rootRoutes from "./root/routes";
 import { translations_enGB } from "./translations/en-gb";
 import type {
   AuthService,
@@ -15,6 +20,14 @@ import type {
   RequestHandlerOptions,
   StoryBookerUser,
 } from "./types";
+
+router.registerGroup(rootRoutes);
+router.registerGroup(projectsRoutes);
+router.registerGroup(labelsRoutes);
+router.registerGroup(buildsRoutes);
+router.registerGroup(accountRoutes);
+
+export { router };
 
 export type {
   OpenAPIOptions,

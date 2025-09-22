@@ -35,7 +35,7 @@ async function purgeProject(project: ProjectType): Promise<void> {
     Date.now() - purgeBuildsAfterDays * ONE_DAY_IN_MS,
   );
   logger.log(
-    `[Project: ${projectId}] Purge builds which were last modified more than ${purgeBuildsAfterDays} days ago - since ${new Date(
+    `[Project: ${projectId}] Purge builds which were last modified more than ${purgeBuildsAfterDays} days ago - before ${new Date(
       expiryTime,
     ).toLocaleString(locale)}`,
   );

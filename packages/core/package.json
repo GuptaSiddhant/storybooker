@@ -75,11 +75,6 @@
       "import": "./dist/constants.js",
       "require": "./dist/constants.cjs"
     },
-    "./router": {
-      "source": "./src/router.ts",
-      "import": "./dist/router.js",
-      "require": "./dist/router.cjs"
-    },
     "./translations": {
       "source": "./src/translations/index.ts",
       "import": "./dist/translations.js",
@@ -112,10 +107,6 @@
       "./constants": {
         "import": "./dist/constants.js",
         "require": "./dist/constants.cjs"
-      },
-      "./router": {
-        "import": "./dist/router.js",
-        "require": "./dist/router.cjs"
       },
       "./translations": {
         "import": "./dist/translations.js",

@@ -21,17 +21,17 @@ export interface ListOptions<Item extends Record<string, unknown>> {
 
 export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   projectId: string;
-  collectionName: string;
+  collectionId: string;
   database: DatabaseService;
   storage: StorageService;
   logger: LoggerService;
   dbOptions: DatabaseServiceOptions;
   storageOptions: StorageServiceOptions;
 
-  constructor(projectId: string | null, collectionName: string) {
+  constructor(projectId: string | null, collectionId: string) {
     const { abortSignal, database, storage, logger } = getStore();
-    this.projectId = projectId || "SBR";
-    this.collectionName = collectionName;
+    this.projectId = projectId || "";
+    this.collectionId = collectionId;
     this.database = database;
     this.storage = storage;
     this.logger = logger;
@@ -40,14 +40,21 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   }
 
   log(message: string, ...args: unknown[]): void {
-    this.logger.log(`[${this.projectId}] ${message}`, ...args);
+    this.logger.log(`[Model:${this.projectId || "All"}] ${message}`, ...args);
   }
   debug(message: string, ...args: unknown[]): void {
-    this.logger.debug?.(`[${this.projectId}] ${message}`, ...args);
+    this.logger.debug?.(
+      `[Model:${this.projectId || "All"}] ${message}`,
+      ...args,
+    );
   }
   error(error: unknown, ...args: unknown[]): void {
     const { errorMessage } = parseErrorMessage(error);
-    this.logger.error(`[${this.projectId}] Error:`, errorMessage, ...args);
+    this.logger.error(
+      `[Model:${this.projectId || "All"}] Error:`,
+      errorMessage,
+      ...args,
+    );
   }
 
   abstract list(options?: ListOptions<Data>): Promise<Data[]>;
@@ -100,17 +107,17 @@ export const LabelSlugSchema = z
 /** @private */
 export const EmptyObjectSchema = z.object();
 
-export function generateProjectCollectionName(
+export function generateDatabaseCollectionId(
   projectId: string,
-  suffix: "Labels" | "Builds",
+  suffix: "Labels" | "Builds" | "",
 ): string {
-  return `${SERVICE_NAME}${projectId
-    .replaceAll(/\W+/g, "")
-    .toUpperCase()}${suffix}`;
+  if (!suffix) {
+    return `${SERVICE_NAME}-${projectId}`;
+  }
+
+  return `${SERVICE_NAME}-${projectId}-${suffix}`;
 }
 
-export function generateProjectContainerName(projectId: string): string {
-  return `${SERVICE_NAME}-${projectId.replaceAll(/[^\w-]+/g, "-")}`
-    .slice(0, 60)
-    .toLowerCase();
+export function generateStorageContainerId(projectId: string): string {
+  return `${SERVICE_NAME}-${projectId}`;
 }

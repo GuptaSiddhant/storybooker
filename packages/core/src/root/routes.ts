@@ -143,9 +143,19 @@ export const purge = defineRoute(
     );
 
     await authenticateOrThrow({
-      action: "delete",
+      action: "update",
       projectId,
       resource: "project",
+    });
+    await authenticateOrThrow({
+      action: "delete",
+      projectId,
+      resource: "build",
+    });
+    await authenticateOrThrow({
+      action: "delete",
+      projectId,
+      resource: "label",
     });
 
     await handlePurge({ projectId }, {});
