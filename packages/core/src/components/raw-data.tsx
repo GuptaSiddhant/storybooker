@@ -1,3 +1,9 @@
+// oxlint-disable no-nested-ternary
+
+import { ISO_DATE_REGEXP } from "#constants";
+import { getStore } from "#store";
+import { camelCaseToSentenceCase } from "#utils/text-utils";
+
 export function RawDataPreview({
   data,
   open,
@@ -34,15 +40,28 @@ export function RawDataList({
   open?: boolean;
   summary?: JSX.Element;
 }): JSX.Element {
+  const { locale } = getStore();
+
   const content = (
     <dl style={{ margin: 0 }}>
       {Object.entries(data).map(([key, value]) => (
         <div style={{ marginBottom: "1rem" }}>
-          <dt style={{ fontSize: "0.9em", marginBottom: "2px", opacity: 0.8 }}>
-            {key}
+          <dt
+            style={{
+              fontSize: "0.8em",
+              fontWeight: "500",
+              marginBottom: "2px",
+              opacity: 0.8,
+            }}
+          >
+            {camelCaseToSentenceCase(key)}
           </dt>
-          <dd style={{ margin: 0 }}>
-            {(typeof value === "string" ? value : JSON.stringify(value)) || "-"}
+          <dd style={{ fontSize: "0.9em", margin: 0 }}>
+            {(typeof value === "string"
+              ? ISO_DATE_REGEXP.test(value)
+                ? new Date(value).toLocaleString(locale)
+                : value
+              : JSON.stringify(value)) || "-"}
           </dd>
         </div>
       ))}

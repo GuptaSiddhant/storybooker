@@ -6,6 +6,8 @@ export const DEFAULT_GITHUB_BRANCH = "main";
 export const ONE_DAY_IN_MS: number = 24 * 60 * 60 * 1000;
 export const DEFAULT_LOCALE = "en";
 export const DEFAULT_STATIC_DIRS = ["./public"];
+export const ISO_DATE_REGEXP =
+  /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?/;
 
 export const CONTENT_TYPES = {
   ANY: "*/*",

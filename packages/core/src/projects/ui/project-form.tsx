@@ -133,7 +133,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
 
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="submit">
-          {project ? commonT.Update() : commonT.Create()} ${commonT.Project()}
+          {project ? commonT.Update() : commonT.Create()} {commonT.Project()}
         </button>
         <button type="reset">{commonT.Reset()}</button>
         <LinkButton
