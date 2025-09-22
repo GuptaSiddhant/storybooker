@@ -1,5 +1,15 @@
 # @storybooker/core
 
+## 0.8.0
+
+### Minor Changes
+
+- 2db1858: Fix missing routes and normalise collection/container names in adapter
+
+### Patch Changes
+
+- 5927ec8: Update auth check to limit UI links
+
 ## 0.7.0
 
 ### Minor Changes

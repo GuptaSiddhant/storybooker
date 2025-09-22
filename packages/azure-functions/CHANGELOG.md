@@ -1,5 +1,18 @@
 # @storybooker/azure-functions
 
+## 3.0.0
+
+### Minor Changes
+
+- 2db1858: Fix missing routes and normalise collection/container names in adapter
+
+### Patch Changes
+
+- Updated dependencies [2db1858]
+- Updated dependencies [5927ec8]
+  - @storybooker/adapter-azure@0.6.0
+  - @storybooker/core@0.8.0
+
 ## 2.1.0
 
 ### Minor Changes
