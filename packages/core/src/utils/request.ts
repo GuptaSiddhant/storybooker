@@ -74,3 +74,29 @@ export function validateBuildUploadZipBody(
 
   return undefined;
 }
+
+export function parseRequestCookieHeader(
+  cookieHeaderOrRequest: string | Request,
+): Record<string, string> {
+  const cookieHeader =
+    typeof cookieHeaderOrRequest === "string"
+      ? cookieHeaderOrRequest
+      : new Headers(cookieHeaderOrRequest.headers).get(HEADERS.cookie);
+
+  const cookies: Record<string, string> = {};
+
+  if (!cookieHeader) {
+    return cookies;
+  }
+
+  for (const cookie of cookieHeader.split(";")) {
+    const [key, value] = cookie.split("=");
+    if (key !== undefined && value !== undefined) {
+      cookies[decodeURIComponent(key.trim())] = decodeURIComponent(
+        value.trim(),
+      );
+    }
+  }
+
+  return cookies;
+}

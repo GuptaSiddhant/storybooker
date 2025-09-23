@@ -70,7 +70,9 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
     authLevel: options.authLevel,
     handler: async (httpRequest, context) => {
       const request = transformHttpRequestToWebRequest(httpRequest);
-      const response = await requestHandler(request, { logger: context });
+      const response = await requestHandler(request, {
+        logger: options.logger ?? context,
+      });
       return transformWebResponseToHttpResponse(response);
     },
     methods: ["DELETE", "GET", "PATCH", "POST", "PUT"],

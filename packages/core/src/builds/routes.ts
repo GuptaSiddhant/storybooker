@@ -233,7 +233,6 @@ export const deleteBuild = defineRoute(
       },
       404: { description: "Build not found" },
     },
-    security: [{ ppp: ["build:delete"] }],
     summary: "Delete build",
     tags: [tag],
   },

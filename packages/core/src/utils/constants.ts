@@ -30,6 +30,8 @@ export const HEADERS = {
   cacheControl: "Cache-Control",
   contentLength: "Content-Length",
   contentType: "Content-Type",
+  cookie: "Cookie",
+  setCookie: "Set-Cookie",
 } as const;
 
 export const PATTERNS = {

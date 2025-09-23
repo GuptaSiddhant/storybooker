@@ -292,7 +292,7 @@ export const updateLabel = defineRoute(
     );
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(request.url, 303);
+      return responseRedirect(urlBuilder.labelSlug(projectId, labelSlug), 303);
     }
 
     return new Response(null, { status: 202 });

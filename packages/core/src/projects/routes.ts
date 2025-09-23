@@ -274,7 +274,7 @@ export const updateProject = defineRoute(
     );
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(request.url, 303);
+      return responseRedirect(urlBuilder.projectId(projectId), 303);
     }
 
     return new Response(null, { status: 202 });

@@ -20,7 +20,6 @@ export interface RootPageProps {
   projects: ProjectType[];
 }
 export function renderRootPage({ projects }: RootPageProps): JSX.Element {
-  const { translation } = getStore();
   const pageTitle = commonT.Home();
 
   return (
@@ -37,18 +36,12 @@ export function renderRootPage({ projects }: RootPageProps): JSX.Element {
       <DocumentMain style={{ padding: 0 }}>
         <ProjectsTable
           projects={projects}
-          toolbar={
-            <a href={urlBuilder.allProjects()}>
-              {toTitleCase(translation.dictionary.view_all)}
-            </a>
-          }
+          toolbar={<a href={urlBuilder.allProjects()}>{commonT.ViewAll()}</a>}
         />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
         <a href={href(URLS.projects.create)}>
-          {toTitleCase(
-            `${translation.dictionary.create} ${translation.dictionary.project}`,
-          )}
+          {commonT.Create()} {commonT.Project()}
         </a>
       </DocumentSidebar>
       <DocumentUserSection />
