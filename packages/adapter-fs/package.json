@@ -41,16 +41,18 @@
     "lint:fix": "yarn lint --fix",
     "start": "func start"
   },
-  "dependencies": {
-    "@storybooker/core": "workspace:^"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@storybooker/core": "workspace:^",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",
     "oxlint": "^1.12.0",
     "oxlint-tsgolint": "^0.0.4",
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1"
+  },
+  "peerDependencies": {
+    "@storybooker/core": "workspace:^"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

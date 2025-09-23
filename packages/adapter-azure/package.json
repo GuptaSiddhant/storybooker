@@ -26,11 +26,6 @@
   },
   "sideEffects": false,
   "exports": {
-    ".": {
-      "source": "./src/index.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
     "./blob-storage": {
       "source": "./src/blob-storage.ts",
       "import": "./dist/blob-storage.js",
@@ -62,13 +57,12 @@
     "lint:fix": "yarn lint --fix",
     "start": "func start"
   },
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "@azure/cosmos": "^4.5.1",
     "@azure/data-tables": "^13.0.0",
     "@azure/storage-blob": "^12.0.0",
-    "@storybooker/core": "workspace:^"
-  },
-  "devDependencies": {
+    "@storybooker/core": "workspace:^",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",
     "oxlint": "^1.12.0",
@@ -76,15 +70,28 @@
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1"
   },
+  "peerDependencies": {
+    "@azure/cosmos": "^4.5.1",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "@storybooker/core": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@azure/cosmos": {
+      "optional": true
+    },
+    "@azure/data-tables": {
+      "optional": true
+    },
+    "@azure/storage-blob": {
+      "optional": true
+    }
+  },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.cts",
   "publishConfig": {
     "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      },
       "./blob-storage": {
         "import": "./dist/blob-storage.js",
         "require": "./dist/blob-storage.cjs"

@@ -9,11 +9,9 @@ Add following files to a Azure Functions project.
 ### `index.js`
 
 ```ts
-import {
-  AzureBlobStorageService,
-  AzureDataTablesDatabaseService,
-  // AzureEasyAuthService
-} from "@storybooker/adapter-azure";
+import { AzureBlobStorageService } from "@storybooker/adapter-azure/blob-storage";
+import { AzureDataTablesDatabaseService } from "@storybooker/adapter-azure/data-tables";
+import { AzureEasyAuthService } from "@storybooker/adapter-azure/easy-auth";
 import { registerStoryBookerRouter } from "@storybooker/azure-functions";
 
 const storageConnectionString = process.env["AzureWebJobsStorage"];
@@ -23,8 +21,10 @@ if (!storageConnectionString) {
   );
 }
 
+
+
 registerStoryBookerRouter({
-  // auth: new AzureEasyAuthService(authorise) // optional auth adapter
+  auth: new AzureEasyAuthService() // optional auth adapter
   database: new AzureDataTablesDatabaseService(storageConnectionString),
   storage: new AzureBlobStorageService(storageConnectionString),
 });
@@ -39,6 +39,8 @@ registerStoryBookerRouter({
   "main": "index.js",
   "dependencies": {
     "@azure/functions": "^4.0.0",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/storage-blob": "^12.0.0",
     "@storybooker/adapter-azure": "latest",
     "@storybooker/azure-functions": "latest"
   }
