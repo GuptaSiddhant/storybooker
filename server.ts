@@ -3,7 +3,7 @@
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "./packages/adapter-fs/dist/index.js";
+} from "./packages/adapter-local/dist/index.js";
 import {
   createRequestHandler,
   type StoryBookerUser,
@@ -15,7 +15,7 @@ import type {
 
 class LocalAuthService implements AuthService {
   #auth = true;
-  #user: StoryBookerUser;
+  #user: StoryBookerUser | null = null;
 
   init = async (): Promise<void> => {
     this.#user = {

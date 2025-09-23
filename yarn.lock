@@ -1841,12 +1841,24 @@ __metadata:
     oxlint-tsgolint: "npm:^0.0.4"
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
+  peerDependencies:
+    "@azure/cosmos": ^4.5.1
+    "@azure/data-tables": ^13.0.0
+    "@azure/storage-blob": ^12.0.0
+    "@storybooker/core": "workspace:^"
+  peerDependenciesMeta:
+    "@azure/cosmos":
+      optional: true
+    "@azure/data-tables":
+      optional: true
+    "@azure/storage-blob":
+      optional: true
   languageName: unknown
   linkType: soft
 
-"@storybooker/adapter-fs@workspace:packages/adapter-fs":
+"@storybooker/adapter-local@workspace:packages/adapter-local":
   version: 0.0.0-use.local
-  resolution: "@storybooker/adapter-fs@workspace:packages/adapter-fs"
+  resolution: "@storybooker/adapter-local@workspace:packages/adapter-local"
   dependencies:
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
@@ -1855,6 +1867,8 @@ __metadata:
     oxlint-tsgolint: "npm:^0.0.4"
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
+  peerDependencies:
+    "@storybooker/core": "workspace:^"
   languageName: unknown
   linkType: soft
 
