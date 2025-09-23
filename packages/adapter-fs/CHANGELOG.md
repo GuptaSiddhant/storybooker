@@ -1,5 +1,13 @@
 # @storybooker/adapter-fs
 
+## 0.5.1
+
+### Patch Changes
+
+- 8df8676: Update routing after update
+- Updated dependencies [8df8676]
+  - @storybooker/core@0.8.1
+
 ## 0.5.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # storybooker
 
+## 0.2.2
+
+### Patch Changes
+
+- 8df8676: Update routing after update
+
 ## 0.2.1
 
 ### Patch Changes

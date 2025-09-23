@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.8.1
+
+### Patch Changes
+
+- 8df8676: Update routing after update
+
 ## 0.8.0
 
 ### Minor Changes
