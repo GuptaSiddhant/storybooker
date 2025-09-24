@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.9.0
+
+### Minor Changes
+
+- f1237ad: Create new package for all azure services. Merge local adapter with core.
+
 ## 0.8.1
 
 ### Patch Changes
