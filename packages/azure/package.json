@@ -25,6 +25,24 @@
     "node": ">=22.0.0"
   },
   "sideEffects": false,
+  "keywords": [
+    "azure",
+    "functions",
+    "azure-functions",
+    "storybook",
+    "storybooks",
+    "storybooker",
+    "chromatic",
+    "storage",
+    "blob",
+    "upload",
+    "table",
+    "compress",
+    "builds",
+    "labels",
+    "projects",
+    "cosmos"
+  ],
   "exports": {
     "./blob-storage": {
       "source": "./src/blob-storage.ts",
