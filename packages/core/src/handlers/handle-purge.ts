@@ -4,7 +4,7 @@ import { LabelsModel } from "#labels/model";
 import { ProjectsModel } from "#projects/model";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
-import type { LoggerService } from "../types";
+import type { LoggerService } from "#types";
 
 export type HandlePurge = (
   params: { projectId?: string },

@@ -1,6 +1,6 @@
 // oxlint-disable sort-keys
 
-import type { BrandTheme } from "../types";
+import type { BrandTheme } from "#types";
 
 const DEFAULT_LIGHT_THEME: BrandTheme = {
   backgroundColor: {

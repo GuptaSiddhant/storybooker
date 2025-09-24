@@ -1,6 +1,6 @@
 import { getStoreOrNull } from "#store";
+import type { ErrorParser, ParsedError } from "#types";
 import { z } from "zod";
-import type { ErrorParser, ParsedError } from "../types";
 
 export class ResponseError extends Error {
   status: number;

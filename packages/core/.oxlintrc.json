@@ -8,5 +8,20 @@
   "rules": {
     "promise-function-async": "allow",
     "typescript/no-base-to-string": "allow"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/adapters.ts"],
+      "rules": {
+        "max-classes-per-file": "allow",
+        "max-lines": "allow",
+        "max-params": "allow",
+        "no-await-in-loop": "allow",
+        "no-unsafe-assignment": "allow",
+        "require-await": "allow",
+        "typescript/no-unsafe-assignment": "allow",
+        "typescript/require-await": "allow"
+      }
+    }
+  ]
 }

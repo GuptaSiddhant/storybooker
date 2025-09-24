@@ -1,0 +1,11 @@
+{
+  "name": "azure-functions-app",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "@storybooker/azure": "workspace:*"
+  }
+}

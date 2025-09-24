@@ -1,7 +1,0 @@
-{
-  "extends": ["../../.oxlintrc.json"],
-  "env": {
-    "builtin": true,
-    "node": true
-  }
-}

@@ -21,7 +21,7 @@
     "cli:dev": "yarn workspace storybooker dev",
     "dev": "turbo dev",
     "fmt": "turbo fmt",
-    "functions": "yarn workspace @storybooker/azure-functions start",
+    "functions": "yarn workspace azure-functions-app start",
     "lint": "turbo lint",
     "publish": "changeset version && yarn workspaces foreach -A --no-private npm publish && changeset tag",
     "server": "deno serve -A --unstable-sloppy-imports --watch ./server.ts",

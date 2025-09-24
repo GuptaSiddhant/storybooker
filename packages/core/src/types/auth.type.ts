@@ -88,7 +88,7 @@ export type AuthServiceAuthorise<
   params: {
     permission: PermissionWithKey;
     request: Request;
-    user: AuthUser | undefined | null;
+    user: AuthUser;
   },
   options: AuthServiceOptions,
 ) => Promise<boolean | Response> | boolean | Response;

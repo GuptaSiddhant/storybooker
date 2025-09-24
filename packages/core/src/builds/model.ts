@@ -9,6 +9,7 @@ import { Readable } from "node:stream";
 import { LabelsModel } from "#labels/model";
 import { ProjectsModel } from "#projects/model";
 import { getStore } from "#store";
+import type { StoryBookerFile } from "#types";
 import { writeStreamToFile } from "#utils/file-utils";
 import { getMimeType } from "#utils/mime-utils";
 import {
@@ -19,7 +20,6 @@ import {
   type ListOptions,
 } from "#utils/shared-model";
 import decompress from "decompress";
-import type { StoryBookerFile } from "../types";
 import {
   BuildCreateSchema,
   BuildSchema,

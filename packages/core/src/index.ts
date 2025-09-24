@@ -6,6 +6,13 @@ import * as labelsRoutes from "#labels/routes";
 import * as projectsRoutes from "#projects/routes";
 import { router } from "#router";
 import { localStore } from "#store";
+import type {
+  AuthService,
+  PurgeHandlerOptions,
+  RequestHandler,
+  RequestHandlerOptions,
+  StoryBookerUser,
+} from "#types";
 import { parseErrorMessage } from "#utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "#utils/middleware-utils";
 import * as accountRoutes from "./account/routes";
@@ -13,13 +20,6 @@ import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
 import * as rootRoutes from "./root/routes";
 import { translations_enGB } from "./translations/en-gb";
-import type {
-  AuthService,
-  PurgeHandlerOptions,
-  RequestHandler,
-  RequestHandlerOptions,
-  StoryBookerUser,
-} from "./types";
 
 router.registerGroup(rootRoutes);
 router.registerGroup(projectsRoutes);
@@ -36,7 +36,7 @@ export type {
   RequestHandlerOverrideOptions,
   StoryBookerUser,
   UIOptions,
-} from "./types";
+} from "#types";
 
 /**
  * Callback to create a request-handler based on provided options.

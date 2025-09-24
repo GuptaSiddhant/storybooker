@@ -12,10 +12,10 @@ import {
 import { IFrameContainer } from "#components/iframe";
 import { RawDataList } from "#components/raw-data";
 import { getStore } from "#store";
+import type { StoryBookerUser } from "#types";
 import { href, URLS } from "#urls";
 import { commonT } from "#utils/i18n";
 import { toTitleCase } from "#utils/text-utils";
-import type { StoryBookerUser } from "../types";
 
 // oxlint-disable-next-line max-lines-per-function
 export function renderAccountPage({

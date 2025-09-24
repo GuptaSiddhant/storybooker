@@ -25,8 +25,7 @@
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
-    "lint:fix": "yarn lint --fix",
-    "xss": "xss-scan"
+    "lint:fix": "yarn lint --fix"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",
@@ -39,7 +38,7 @@
     "#projects-ui/*": "./src/projects/ui/*.tsx",
     "#router": "./src/utils/router-utils.ts",
     "#store": "./src/utils/store.ts",
-    "#types": "./src/types.d.ts",
+    "#types": "./src/types/index.ts",
     "#urls": "./src/urls.ts",
     "#utils/*": "./src/utils/*.ts"
   },
@@ -51,13 +50,12 @@
     "zod-openapi": "^5.0.0"
   },
   "devDependencies": {
-    "@kitajs/ts-html-plugin": "^4.0.0",
     "@types/decompress": "^4.0.0",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",
     "glob": "^10.0.0",
     "oxlint": "^1.12.0",
-    "oxlint-tsgolint": "^0.0.4",
+    "oxlint-tsgolint": "^0.2.0",
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1"
   },
@@ -69,6 +67,11 @@
       "source": "./src/index.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./adapters": {
+      "source": "./src/adapters.ts",
+      "import": "./dist/adapters.js",
+      "require": "./dist/adapters.cjs"
     },
     "./constants": {
       "source": "./src/utils/constants.ts",
@@ -86,7 +89,7 @@
       "require": "./dist/translations/en-gb.cjs"
     },
     "./types": {
-      "source": "./src/types.ts",
+      "source": "./src/types/index.ts",
       "import": "./dist/types.js",
       "require": "./dist/types.cjs"
     },
@@ -103,6 +106,10 @@
       ".": {
         "import": "./dist/index.js",
         "require": "./dist/index.cjs"
+      },
+      "./adapters": {
+        "import": "./dist/adapters.js",
+        "require": "./dist/adapters.cjs"
       },
       "./constants": {
         "import": "./dist/constants.js",

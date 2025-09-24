@@ -1153,23 +1153,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kitajs/ts-html-plugin@npm:^4.0.0":
-  version: 4.1.2
-  resolution: "@kitajs/ts-html-plugin@npm:4.1.2"
-  dependencies:
-    chalk: "npm:^4.1.2"
-    tslib: "npm:^2.8.1"
-    yargs: "npm:^17.7.2"
-  peerDependencies:
-    "@kitajs/html": ^4.2.5
-    typescript: ^5.6.2
-  bin:
-    ts-html-plugin: dist/cli.js
-    xss-scan: dist/cli.js
-  checksum: 10c0/907cfe41be38a3633099db36059ef5301bcba89a45ba538452afb9d0a967f856074d5b43350d4f36a801bbd9a35ad2c02240607c8deda54b6465a719970d5e0d
-  languageName: node
-  linkType: hard
-
 "@manypkg/find-root@npm:^1.1.0":
   version: 1.1.0
   resolution: "@manypkg/find-root@npm:1.1.0"
@@ -1270,44 +1253,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@oxlint-tsgolint/darwin-arm64@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@oxlint-tsgolint/darwin-arm64@npm:0.0.4"
+"@oxlint-tsgolint/darwin-arm64@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@oxlint-tsgolint/darwin-arm64@npm:0.2.0"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint-tsgolint/darwin-x64@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@oxlint-tsgolint/darwin-x64@npm:0.0.4"
+"@oxlint-tsgolint/darwin-x64@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@oxlint-tsgolint/darwin-x64@npm:0.2.0"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@oxlint-tsgolint/linux-arm64@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@oxlint-tsgolint/linux-arm64@npm:0.0.4"
+"@oxlint-tsgolint/linux-arm64@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@oxlint-tsgolint/linux-arm64@npm:0.2.0"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint-tsgolint/linux-x64@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@oxlint-tsgolint/linux-x64@npm:0.0.4"
+"@oxlint-tsgolint/linux-x64@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@oxlint-tsgolint/linux-x64@npm:0.2.0"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@oxlint-tsgolint/win32-arm64@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@oxlint-tsgolint/win32-arm64@npm:0.0.4"
+"@oxlint-tsgolint/win32-arm64@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@oxlint-tsgolint/win32-arm64@npm:0.2.0"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@oxlint-tsgolint/win32-x64@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@oxlint-tsgolint/win32-x64@npm:0.0.4"
+"@oxlint-tsgolint/win32-x64@npm:0.2.0":
+  version: 0.2.0
+  resolution: "@oxlint-tsgolint/win32-x64@npm:0.2.0"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -1827,23 +1810,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybooker/adapter-azure@workspace:packages/adapter-azure":
+"@storybooker/azure@workspace:*, @storybooker/azure@workspace:packages/azure":
   version: 0.0.0-use.local
-  resolution: "@storybooker/adapter-azure@workspace:packages/adapter-azure"
+  resolution: "@storybooker/azure@workspace:packages/azure"
   dependencies:
     "@azure/cosmos": "npm:^4.5.1"
     "@azure/data-tables": "npm:^13.0.0"
+    "@azure/functions": "npm:^4.0.0"
     "@azure/storage-blob": "npm:^12.0.0"
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20250823.8"
     oxlint: "npm:^1.12.0"
-    oxlint-tsgolint: "npm:^0.0.4"
+    oxlint-tsgolint: "npm:^0.2.0"
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
   peerDependencies:
     "@azure/cosmos": ^4.5.1
     "@azure/data-tables": ^13.0.0
+    "@azure/functions": ^4.0.0
     "@azure/storage-blob": ^12.0.0
     "@storybooker/core": "workspace:^"
   peerDependenciesMeta:
@@ -1851,45 +1836,9 @@ __metadata:
       optional: true
     "@azure/data-tables":
       optional: true
-    "@azure/storage-blob":
+    "@azure/functions":
       optional: true
-  languageName: unknown
-  linkType: soft
-
-"@storybooker/adapter-local@workspace:packages/adapter-local":
-  version: 0.0.0-use.local
-  resolution: "@storybooker/adapter-local@workspace:packages/adapter-local"
-  dependencies:
-    "@storybooker/core": "workspace:^"
-    "@types/node": "npm:^22.0.0"
-    "@typescript/native-preview": "npm:^7.0.0-dev.20250823.8"
-    oxlint: "npm:^1.12.0"
-    oxlint-tsgolint: "npm:^0.0.4"
-    prettier: "npm:^3.6.2"
-    tsdown: "npm:^0.14.1"
-  peerDependencies:
-    "@storybooker/core": "workspace:^"
-  languageName: unknown
-  linkType: soft
-
-"@storybooker/azure-functions@workspace:packages/azure-functions":
-  version: 0.0.0-use.local
-  resolution: "@storybooker/azure-functions@workspace:packages/azure-functions"
-  dependencies:
-    "@azure/functions": "npm:^4.0.0"
-    "@storybooker/core": "workspace:^"
-    "@types/node": "npm:^22.0.0"
-    "@typescript/native-preview": "npm:^7.0.0-dev.20250823.8"
-    glob: "npm:^10.0.0"
-    oxlint: "npm:^1.12.0"
-    oxlint-tsgolint: "npm:^0.0.4"
-    prettier: "npm:^3.6.2"
-    tsdown: "npm:^0.14.1"
-    zod: "npm:^4.0.0"
-  peerDependencies:
-    "@storybooker/adapter-azure": "workspace:^"
-  peerDependenciesMeta:
-    "@storybooker/adapter-azure":
+    "@azure/storage-blob":
       optional: true
   languageName: unknown
   linkType: soft
@@ -1899,7 +1848,6 @@ __metadata:
   resolution: "@storybooker/core@workspace:packages/core"
   dependencies:
     "@kitajs/html": "npm:^4.0.0"
-    "@kitajs/ts-html-plugin": "npm:^4.0.0"
     "@remix-run/route-pattern": "npm:^0.10.0"
     "@types/decompress": "npm:^4.0.0"
     "@types/node": "npm:^22.0.0"
@@ -1907,7 +1855,7 @@ __metadata:
     decompress: "npm:^4.0.0"
     glob: "npm:^10.0.0"
     oxlint: "npm:^1.12.0"
-    oxlint-tsgolint: "npm:^0.0.4"
+    oxlint-tsgolint: "npm:^0.2.0"
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
     zod: "npm:^4.0.0"
@@ -2413,7 +2361,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-styles@npm:^4.0.0, ansi-styles@npm:^4.1.0":
+"ansi-styles@npm:^4.0.0":
   version: 4.3.0
   resolution: "ansi-styles@npm:4.3.0"
   dependencies:
@@ -2527,6 +2475,17 @@ __metadata:
   checksum: 10c0/d07226ef4f87daa01bd0fe80f8f310982e345f372926da2e5296aecc25c41cab440916bbaa4c5e1034b453af3392f67df5961124e4b586df1e99793a1374bdb2
   languageName: node
   linkType: hard
+
+"azure-functions-app@workspace:apps/azure-functions-app":
+  version: 0.0.0-use.local
+  resolution: "azure-functions-app@workspace:apps/azure-functions-app"
+  dependencies:
+    "@azure/data-tables": "npm:^13.0.0"
+    "@azure/functions": "npm:^4.0.0"
+    "@azure/storage-blob": "npm:^12.0.0"
+    "@storybooker/azure": "workspace:*"
+  languageName: unknown
+  linkType: soft
 
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
@@ -2729,16 +2688,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "chalk@npm:4.1.2"
-  dependencies:
-    ansi-styles: "npm:^4.1.0"
-    supports-color: "npm:^7.1.0"
-  checksum: 10c0/4a3fef5cc34975c898ffe77141450f679721df9dde00f6c304353fa9c8b571929123b26a0e4617bde5018977eb655b31970c297b91b63ee83bb82aeb04666880
-  languageName: node
-  linkType: hard
-
 "change-case@npm:^5.4.4":
   version: 5.4.4
   resolution: "change-case@npm:5.4.4"
@@ -2780,17 +2729,6 @@ __metadata:
   version: 3.9.0
   resolution: "ci-info@npm:3.9.0"
   checksum: 10c0/6f0109e36e111684291d46123d491bc4e7b7a1934c3a20dea28cba89f1d4a03acd892f5f6a81ed3855c38647e285a150e3c9ba062e38943bef57fee6c1554c3a
-  languageName: node
-  linkType: hard
-
-"cliui@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "cliui@npm:8.0.1"
-  dependencies:
-    string-width: "npm:^4.2.0"
-    strip-ansi: "npm:^6.0.1"
-    wrap-ansi: "npm:^7.0.0"
-  checksum: 10c0/4bda0f09c340cbb6dfdc1ed508b3ca080f12992c18d68c6be4d9cf51756033d5266e61ec57529e610dacbf4da1c634423b0c1b11037709cc6b09045cbd815df5
   languageName: node
   linkType: hard
 
@@ -4545,16 +4483,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"oxlint-tsgolint@npm:^0.0.4":
-  version: 0.0.4
-  resolution: "oxlint-tsgolint@npm:0.0.4"
+"oxlint-tsgolint@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "oxlint-tsgolint@npm:0.2.0"
   dependencies:
-    "@oxlint-tsgolint/darwin-arm64": "npm:0.0.4"
-    "@oxlint-tsgolint/darwin-x64": "npm:0.0.4"
-    "@oxlint-tsgolint/linux-arm64": "npm:0.0.4"
-    "@oxlint-tsgolint/linux-x64": "npm:0.0.4"
-    "@oxlint-tsgolint/win32-arm64": "npm:0.0.4"
-    "@oxlint-tsgolint/win32-x64": "npm:0.0.4"
+    "@oxlint-tsgolint/darwin-arm64": "npm:0.2.0"
+    "@oxlint-tsgolint/darwin-x64": "npm:0.2.0"
+    "@oxlint-tsgolint/linux-arm64": "npm:0.2.0"
+    "@oxlint-tsgolint/linux-x64": "npm:0.2.0"
+    "@oxlint-tsgolint/win32-arm64": "npm:0.2.0"
+    "@oxlint-tsgolint/win32-x64": "npm:0.2.0"
   dependenciesMeta:
     "@oxlint-tsgolint/darwin-arm64":
       optional: true
@@ -4570,7 +4508,7 @@ __metadata:
       optional: true
   bin:
     tsgolint: bin/tsgolint.js
-  checksum: 10c0/7e854c847cf66d8286a7385ffae8ebbccaf641f2acb658f152d423157bdd5bb9478d5b7fe04ade253014a5a2edad63ed6462b13c6f045cbe27c465c8d76f6ad7
+  checksum: 10c0/b2117a0d07c5c876a6608d710838c934ef456cf7cff668fba9455d380eb8e3a7d9841c8f3a03d59bbc77b0f1342d5dca0e69557cac361a1afa8b8eb3d1b114c6
   languageName: node
   linkType: hard
 
@@ -5081,13 +5019,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"require-directory@npm:^2.1.1":
-  version: 2.1.1
-  resolution: "require-directory@npm:2.1.1"
-  checksum: 10c0/83aa76a7bc1531f68d92c75a2ca2f54f1b01463cb566cf3fbc787d0de8be30c9dbc211d1d46be3497dac5785fe296f2dd11d531945ac29730643357978966e99
-  languageName: node
-  linkType: hard
-
 "require-from-string@npm:^2.0.2":
   version: 2.0.2
   resolution: "require-from-string@npm:2.0.2"
@@ -5585,7 +5516,7 @@ __metadata:
     openapi-fetch: "npm:^0.14.0"
     openapi-typescript: "npm:^7.9.1"
     oxlint: "npm:^1.12.0"
-    oxlint-tsgolint: "npm:^0.0.4"
+    oxlint-tsgolint: "npm:^0.2.0"
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
     typescript: "npm:^5.9.2"
@@ -5596,7 +5527,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^4.1.0, string-width@npm:^4.2.0, string-width@npm:^4.2.3":
+"string-width-cjs@npm:string-width@^4.2.0, string-width@npm:^4.1.0":
   version: 4.2.3
   resolution: "string-width@npm:4.2.3"
   dependencies:
@@ -6391,7 +6322,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0, wrap-ansi@npm:^7.0.0":
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0":
   version: 7.0.0
   resolution: "wrap-ansi@npm:7.0.0"
   dependencies:
@@ -6499,21 +6430,6 @@ __metadata:
   version: 22.0.0
   resolution: "yargs-parser@npm:22.0.0"
   checksum: 10c0/cb7ef81759c4271cb1d96b9351dbbc9a9ce35d3e1122d2b739bf6c432603824fa02c67cc12dcef6ea80283379d63495686e8f41cc7b06c6576e792aba4d33e1c
-  languageName: node
-  linkType: hard
-
-"yargs@npm:^17.7.2":
-  version: 17.7.2
-  resolution: "yargs@npm:17.7.2"
-  dependencies:
-    cliui: "npm:^8.0.1"
-    escalade: "npm:^3.1.1"
-    get-caller-file: "npm:^2.0.5"
-    require-directory: "npm:^2.1.1"
-    string-width: "npm:^4.2.3"
-    y18n: "npm:^5.0.5"
-    yargs-parser: "npm:^21.1.1"
-  checksum: 10c0/ccd7e723e61ad5965fffbb791366db689572b80cca80e0f96aad968dfff4156cd7cd1ad18607afe1046d8241e6fb2d6c08bf7fa7bfb5eaec818735d8feac8f05
   languageName: node
   linkType: hard
 

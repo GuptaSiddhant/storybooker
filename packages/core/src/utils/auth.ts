@@ -1,5 +1,5 @@
 import { getStore } from "#store";
-import type { Permission, PermissionKey } from "../services/auth";
+import type { Permission, PermissionKey } from "#types";
 import { responseError } from "./response";
 
 export async function authenticateOrThrow(
@@ -8,7 +8,15 @@ export async function authenticateOrThrow(
   const { abortSignal, auth, logger, request, translation, user } = getStore();
 
   if (!auth) {
+    // No authentication service configured, allow all actions
     return;
+  }
+
+  if (!user) {
+    throw await responseError(
+      translation.errorMessages.unauthenticated_access,
+      401,
+    );
   }
 
   const key: PermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
@@ -25,6 +33,7 @@ export async function authenticateOrThrow(
     );
 
     if (response === true) {
+      // Authorized
       return;
     }
 

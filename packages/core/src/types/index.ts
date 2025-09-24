@@ -1,11 +1,11 @@
-import type { AuthService, StoryBookerUser } from "./services/auth";
-import type { DatabaseService } from "./services/database";
-import type { StorageService } from "./services/storage";
-import type { Translation } from "./translations";
+import type { Translation } from "../translations";
+import type { AuthService, StoryBookerUser } from "./auth.type";
+import type { DatabaseService } from "./database.type";
+import type { StorageService } from "./storage.type";
 
-export type * from "./services/auth";
-export type * from "./services/database";
-export type * from "./services/storage";
+export type * from "./auth.type";
+export type * from "./database.type";
+export type * from "./storage.type";
 
 /**
  * Options for creating a request handler.

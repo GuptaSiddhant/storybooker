@@ -1,6 +1,6 @@
 {
-  "name": "@storybooker/adapter-azure",
-  "version": "0.6.1",
+  "name": "@storybooker/azure",
+  "version": "0.0.0",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with Azure services.",
   "author": {
@@ -10,7 +10,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/guptasiddhant/storybooker",
-    "directory": "packages/adapter-azure"
+    "directory": "packages/azure"
   },
   "license": "MIT",
   "bugs": {
@@ -31,10 +31,10 @@
       "import": "./dist/blob-storage.js",
       "require": "./dist/blob-storage.cjs"
     },
-    "./cosmosdb": {
-      "source": "./src/cosmosdb.ts",
-      "import": "./dist/cosmosdb.js",
-      "require": "./dist/cosmosdb.cjs"
+    "./cosmos-db": {
+      "source": "./src/cosmos-db.ts",
+      "import": "./dist/cosmos-db.js",
+      "require": "./dist/cosmos-db.cjs"
     },
     "./data-tables": {
       "source": "./src/data-tables.ts",
@@ -45,6 +45,11 @@
       "source": "./src/easy-auth.ts",
       "import": "./dist/easy-auth.js",
       "require": "./dist/easy-auth.cjs"
+    },
+    "./functions": {
+      "source": "./src/functions.ts",
+      "import": "./dist/functions.js",
+      "require": "./dist/functions.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -60,18 +65,20 @@
   "devDependencies": {
     "@azure/cosmos": "^4.5.1",
     "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
     "@storybooker/core": "workspace:^",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20250823.8",
     "oxlint": "^1.12.0",
-    "oxlint-tsgolint": "^0.0.4",
+    "oxlint-tsgolint": "^0.2.0",
     "prettier": "^3.6.2",
     "tsdown": "^0.14.1"
   },
   "peerDependencies": {
     "@azure/cosmos": "^4.5.1",
     "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
     "@storybooker/core": "workspace:^"
   },
@@ -80,6 +87,9 @@
       "optional": true
     },
     "@azure/data-tables": {
+      "optional": true
+    },
+    "@azure/functions": {
       "optional": true
     },
     "@azure/storage-blob": {
@@ -95,9 +105,9 @@
         "import": "./dist/blob-storage.js",
         "require": "./dist/blob-storage.cjs"
       },
-      "./cosmosdb": {
-        "import": "./dist/cosmosdb.js",
-        "require": "./dist/cosmosdb.cjs"
+      "./cosmos-db": {
+        "import": "./dist/cosmos-db.js",
+        "require": "./dist/cosmos-db.cjs"
       },
       "./data-tables": {
         "import": "./dist/data-tables.js",
@@ -106,6 +116,10 @@
       "./easy-auth": {
         "import": "./dist/easy-auth.js",
         "require": "./dist/easy-auth.cjs"
+      },
+      "./functions": {
+        "import": "./dist/functions.js",
+        "require": "./dist/functions.cjs"
       },
       "./package.json": "./package.json"
     }

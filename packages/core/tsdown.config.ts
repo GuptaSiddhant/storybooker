@@ -5,11 +5,12 @@ export default defineConfig({
   clean: !argv.includes("-w"),
   dts: { tsgo: true },
   entry: {
+    adapters: "./src/adapters.ts",
     constants: "./src/utils/constants.ts",
     index: "./src/index.ts",
     translations: "./src/translations/index.ts",
     "translations/en-gb": "./src/translations/en-gb.ts",
-    types: "./src/types.ts",
+    types: "./src/types/index.ts",
     utils: "./src/utils/index.ts",
   },
   exports: { devExports: "source" },
@@ -19,7 +20,7 @@ export default defineConfig({
   platform: "node",
   sourcemap: true,
   treeshake: true,
-  unbundle: true,
+  unbundle: false,
 });
 
 async function generateOpenApiSpec(): Promise<void> {
