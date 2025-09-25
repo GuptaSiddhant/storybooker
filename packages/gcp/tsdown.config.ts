@@ -2,7 +2,7 @@ import { defineConfig } from "tsdown";
 
 export default defineConfig({
   dts: { tsgo: true },
-  entry: ["./src/storage.ts"],
+  entry: ["./src/big-table.ts", "./src/storage.ts"],
   exports: { devExports: "source" },
   format: ["esm", "cjs"],
   platform: "node",

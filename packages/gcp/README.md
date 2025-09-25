@@ -1,65 +1,42 @@
-# StoryBooker adapter for Azure services
+# StoryBooker adapter for GCP services
 
-Create service adapters for Azure services.
+Create service adapters for GCP services.
 
 ## Auth
 
-The Azure EasyAuth provides quick way to setup auth for Azure Functions
-
-```ts
-import {
-  AzureEasyAuthService,
-  type AuthServiceAuthorise,
-} from "@storybooker/azure/easy-auth";
-
-const authorize: AuthServiceAuthorise = async (permission, { user }) => {
-  // check permission against user (roles)
-  return true; // or false
-};
-const auth = new AzureEasyAuthService(authorise);
-
-// use as auth in StoryBooker options.
-```
+> Currently no auth adapter available for GCP.
 
 ## Database
 
-Azure provides 2 options which can be used as database for StoryBooker.
+GCP provides 3 options which can be used as database for StoryBooker.
 
-### Data Tables
-
-```ts
-import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
-
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const database = new AzureDataTablesDatabaseService(connectionString);
-
-// use as database in StoryBooker options.
-```
-
-### Cosmos DB
+### BigTable
 
 ```ts
-import { AzureCosmosDatabaseService } from "@storybooker/azure/cosmos-db";
+import { GcpBigtableDatabaseService } from "@storybooker/gcp/big-table";
 
-const connectionString = process.env["AZURE_COSMOS_DB_CONNECTION_STRING"];
-const database = new AzureCosmosDatabaseService(connectionString);
+const database = new GcpBigtableDatabaseService({
+  // Auth options can be passed here.
+});
 
 // use as database in StoryBooker options.
 ```
 
 ## Storage
 
-The Azure Storage provides BlobStorage which can be used as storage for StoryBooker.
+The Google Cloud Storage provides BlobStorage which can be used as storage for StoryBooker.
 
 ```ts
-import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
+import { GoogleCloudStorageService } from "@storybooker/gcp/storage";
 
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const storage = new AzureBlobStorageService(connectionString);
+const storage = new GoogleCloudStorageService({
+  // Auth options can be passed here.
+});
 
 // use as storage in StoryBooker options.
 ```
 
+<!--
 ## Hosting StoryBooker in Azure Functions
 
 > For deploying:
@@ -134,4 +111,4 @@ registerStoryBookerRouter({
     "AzureWebJobsStorage": "UseDevelopmentStorage=true"
   }
 }
-```
+``` -->

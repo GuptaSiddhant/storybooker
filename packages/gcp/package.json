@@ -46,7 +46,12 @@
     "cosmos"
   ],
   "exports": {
-    ".": {
+    "./big-table": {
+      "source": "./src/big-table.ts",
+      "import": "./dist/big-table.js",
+      "require": "./dist/big-table.cjs"
+    },
+    "./storage": {
       "source": "./src/storage.ts",
       "import": "./dist/storage.js",
       "require": "./dist/storage.cjs"
@@ -63,6 +68,7 @@
     "start": "func start"
   },
   "devDependencies": {
+    "@google-cloud/bigtable": "^6.4.1",
     "@google-cloud/storage": "^7.17.1",
     "@storybooker/core": "workspace:^",
     "@types/node": "^22.0.0",
@@ -73,10 +79,14 @@
     "tsdown": "^0.14.1"
   },
   "peerDependencies": {
+    "@google-cloud/bigtable": "^6.0.0",
     "@google-cloud/storage": "^7.0.0",
     "@storybooker/core": "workspace:^"
   },
   "peerDependenciesMeta": {
+    "@google-cloud/bigtable": {
+      "optional": true
+    },
     "@google-cloud/storage": {
       "optional": true
     }
@@ -86,7 +96,11 @@
   "types": "./dist/storage.d.cts",
   "publishConfig": {
     "exports": {
-      ".": {
+      "./big-table": {
+        "import": "./dist/big-table.js",
+        "require": "./dist/big-table.cjs"
+      },
+      "./storage": {
         "import": "./dist/storage.js",
         "require": "./dist/storage.cjs"
       },
