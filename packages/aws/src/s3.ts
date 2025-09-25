@@ -1,22 +1,16 @@
-import {
-  CreateBucketCommand,
-  DeleteBucketCommand,
-  DeleteObjectsCommand,
-  GetObjectCommand,
-  HeadObjectCommand,
-  ListBucketsCommand,
-  ListObjectsV2Command,
-  PutObjectCommand,
-  S3Client,
-  type S3ClientConfig,
-} from "@aws-sdk/client-s3";
+import * as S3 from "@aws-sdk/client-s3";
 import type { StorageService } from "@storybooker/core/types";
 
 export class AwsS3StorageService implements StorageService {
-  #client: S3Client;
+  #client: S3.S3Client;
 
-  constructor(config: S3ClientConfig) {
-    this.#client = new S3Client(config);
+  constructor(config: S3.S3ClientConfig);
+  constructor(client: S3.S3Client);
+  constructor(clientOrConfig: S3.S3Client | S3.S3ClientConfig) {
+    this.#client =
+      clientOrConfig instanceof S3.S3Client
+        ? clientOrConfig
+        : new S3.S3Client(clientOrConfig);
   }
 
   createContainer: StorageService["createContainer"] = async (
@@ -24,7 +18,7 @@ export class AwsS3StorageService implements StorageService {
     options,
   ) => {
     await this.#client.send(
-      new CreateBucketCommand({
+      new S3.CreateBucketCommand({
         Bucket: genBucketNameFromContainerId(containerId),
       }),
       { abortSignal: options.abortSignal },
@@ -36,7 +30,7 @@ export class AwsS3StorageService implements StorageService {
     options,
   ) => {
     await this.#client.send(
-      new DeleteBucketCommand({
+      new S3.DeleteBucketCommand({
         Bucket: genBucketNameFromContainerId(containerId),
       }),
       { abortSignal: options.abortSignal },
@@ -47,19 +41,20 @@ export class AwsS3StorageService implements StorageService {
     containerId,
     options,
   ) => {
-    const buckets = await this.#client.send(new ListBucketsCommand({}), {
+    const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
     return !!buckets.Buckets?.some(
-      (b) => b.Name === genBucketNameFromContainerId(containerId),
+      (bucket) => bucket.Name === genBucketNameFromContainerId(containerId),
     );
   };
 
   listContainers: StorageService["listContainers"] = async (options) => {
-    const buckets = await this.#client.send(new ListBucketsCommand({}), {
+    const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
-    return buckets.Buckets?.map((b) => b.Name!) ?? [];
+    // oxlint-disable-next-line no-non-null-assertion
+    return buckets.Buckets?.map((bucket) => bucket.Name!) ?? [];
   };
 
   deleteFiles: StorageService["deleteFiles"] = async (
@@ -71,9 +66,13 @@ export class AwsS3StorageService implements StorageService {
     let objects: { Key: string }[] = [];
     if (typeof filePathsOrPrefix === "string") {
       const resp = await this.#client.send(
-        new ListObjectsV2Command({ Bucket: bucket, Prefix: filePathsOrPrefix }),
+        new S3.ListObjectsV2Command({
+          Bucket: bucket,
+          Prefix: filePathsOrPrefix,
+        }),
         { abortSignal: options.abortSignal },
       );
+      // oxlint-disable-next-line no-non-null-assertion
       objects = (resp.Contents ?? []).map((obj) => ({ Key: obj.Key! }));
     } else {
       objects = filePathsOrPrefix.map((path) => ({ Key: path }));
@@ -83,7 +82,7 @@ export class AwsS3StorageService implements StorageService {
     }
 
     await this.#client.send(
-      new DeleteObjectsCommand({
+      new S3.DeleteObjectsCommand({
         Bucket: bucket,
         Delete: { Objects: objects },
       }),
@@ -97,19 +96,21 @@ export class AwsS3StorageService implements StorageService {
     options,
   ) => {
     const bucket = genBucketNameFromContainerId(containerId);
-    await Promise.allSettled(
-      files.map(({ content, path, mimeType }) =>
-        this.#client.send(
-          new PutObjectCommand({
-            Bucket: bucket,
-            Key: path,
+
+    const promises = files.map(
+      async ({ content, path, mimeType }) =>
+        await this.#client.send(
+          new S3.PutObjectCommand({
             Body: typeof content === "string" ? Buffer.from(content) : content,
+            Bucket: bucket,
             ContentType: mimeType,
+            Key: path,
           }),
           { abortSignal: options.abortSignal },
         ),
-      ),
     );
+
+    await Promise.allSettled(promises);
   };
 
   hasFile: StorageService["hasFile"] = async (
@@ -119,7 +120,7 @@ export class AwsS3StorageService implements StorageService {
   ) => {
     try {
       await this.#client.send(
-        new HeadObjectCommand({
+        new S3.HeadObjectCommand({
           Bucket: genBucketNameFromContainerId(containerId),
           Key: filepath,
         }),
@@ -138,7 +139,7 @@ export class AwsS3StorageService implements StorageService {
   ) => {
     const bucket = genBucketNameFromContainerId(containerId);
     const resp = await this.#client.send(
-      new GetObjectCommand({ Bucket: bucket, Key: filepath }),
+      new S3.GetObjectCommand({ Bucket: bucket, Key: filepath }),
       { abortSignal: options.abortSignal },
     );
     if (!resp.Body) {
@@ -154,7 +155,7 @@ export class AwsS3StorageService implements StorageService {
 
 function genBucketNameFromContainerId(containerId: string): string {
   return containerId
-    .replace(/[^\w-]+/g, "-")
+    .replaceAll(/[^\w-]+/g, "-")
     .slice(0, 63)
     .toLowerCase();
 }

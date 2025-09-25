@@ -1,16 +1,6 @@
-import {
-  CreateTableCommand,
-  DeleteItemCommand,
-  DeleteTableCommand,
-  DescribeTableCommand,
-  DynamoDBClient,
-  GetItemCommand,
-  ListTablesCommand,
-  PutItemCommand,
-  ScanCommand,
-  UpdateItemCommand,
-  type DynamoDBClientConfig,
-} from "@aws-sdk/client-dynamodb";
+// oxlint-disable id-length
+
+import * as Dynamo from "@aws-sdk/client-dynamodb";
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
@@ -19,14 +9,21 @@ import type {
 } from "@storybooker/core/types";
 
 export class AwsDynamoDatabaseService implements DatabaseService {
-  #client: DynamoDBClient;
+  #client: Dynamo.DynamoDBClient;
 
-  constructor(config: DynamoDBClientConfig) {
-    this.#client = new DynamoDBClient(config);
+  constructor(config: Dynamo.DynamoDBClientConfig);
+  constructor(client: Dynamo.DynamoDBClient);
+  constructor(
+    clientOrConfig: Dynamo.DynamoDBClient | Dynamo.DynamoDBClientConfig,
+  ) {
+    this.#client =
+      clientOrConfig instanceof Dynamo.DynamoDBClient
+        ? clientOrConfig
+        : new Dynamo.DynamoDBClient(clientOrConfig);
   }
 
   listCollections: DatabaseService["listCollections"] = async (options) => {
-    const response = await this.#client.send(new ListTablesCommand({}), {
+    const response = await this.#client.send(new Dynamo.ListTablesCommand({}), {
       abortSignal: options.abortSignal,
     });
     return response.TableNames ?? [];
@@ -37,11 +34,11 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options,
   ) => {
     await this.#client.send(
-      new CreateTableCommand({
-        TableName: collectionId,
+      new Dynamo.CreateTableCommand({
         AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
-        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
         BillingMode: "PAY_PER_REQUEST",
+        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+        TableName: collectionId,
       }),
       { abortSignal: options.abortSignal },
     );
@@ -53,7 +50,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
   ) => {
     try {
       const response = await this.#client.send(
-        new DescribeTableCommand({ TableName: collectionId }),
+        new Dynamo.DescribeTableCommand({ TableName: collectionId }),
         { abortSignal: options.abortSignal },
       );
       return !!response.Table;
@@ -67,7 +64,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options,
   ) => {
     await this.#client.send(
-      new DeleteTableCommand({ TableName: collectionId }),
+      new Dynamo.DeleteTableCommand({ TableName: collectionId }),
       { abortSignal: options.abortSignal },
     );
   };
@@ -80,14 +77,15 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options: DatabaseServiceOptions,
   ) => {
     const response = await this.#client.send(
-      new ScanCommand({ TableName: collectionId }),
+      new Dynamo.ScanCommand({ TableName: collectionId }),
       { abortSignal: options.abortSignal },
     );
     return (response.Items ?? []).map((item) => {
-      const doc: any = {};
-      Object.entries(item).forEach(([key, value]) => {
+      const doc: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(item)) {
         doc[key] = value.S ?? value.N ?? value.BOOL ?? value.NULL ?? value;
-      });
+      }
+
       return doc as Document;
     });
   };
@@ -100,17 +98,17 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options: DatabaseServiceOptions,
   ): Promise<Document> => {
     const response = await this.#client.send(
-      new GetItemCommand({
-        TableName: collectionId,
+      new Dynamo.GetItemCommand({
         Key: { id: { S: documentId } },
+        TableName: collectionId,
       }),
       { abortSignal: options.abortSignal },
     );
     const document = response.Item
       ? (Object.fromEntries(
-          Object.entries(response.Item).map(([k, v]) => [
-            k,
-            v.S ?? v.N ?? v.BOOL ?? v.NULL ?? v,
+          Object.entries(response.Item).map(([key, value]) => [
+            key,
+            value.S ?? value.N ?? value.BOOL ?? value.NULL ?? value,
           ]),
         ) as Record<string, unknown>)
       : undefined;
@@ -131,11 +129,14 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options,
   ) => {
     await this.#client.send(
-      new PutItemCommand({
-        TableName: collectionId,
+      new Dynamo.PutItemCommand({
         Item: Object.fromEntries(
-          Object.entries(documentData).map(([k, v]) => [k, { S: String(v) }]),
+          Object.entries(documentData).map(([key, value]) => [
+            key,
+            { S: String(value) },
+          ]),
         ),
+        TableName: collectionId,
       }),
       { abortSignal: options.abortSignal },
     );
@@ -147,9 +148,9 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options,
   ) => {
     const response = await this.#client.send(
-      new GetItemCommand({
-        TableName: collectionId,
+      new Dynamo.GetItemCommand({
         Key: { id: { S: documentId } },
+        TableName: collectionId,
       }),
       { abortSignal: options.abortSignal },
     );
@@ -162,14 +163,15 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options,
   ) => {
     await this.#client.send(
-      new DeleteItemCommand({
-        TableName: collectionId,
+      new Dynamo.DeleteItemCommand({
         Key: { id: { S: documentId } },
+        TableName: collectionId,
       }),
       { abortSignal: options.abortSignal },
     );
   };
 
+  // oxlint-disable-next-line max-params
   updateDocument: DatabaseService["updateDocument"] = async (
     collectionId,
     documentId,
@@ -177,20 +179,21 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     options,
   ) => {
     const updateExpr: string[] = [];
-    const exprAttrValues: Record<string, any> = {};
-    Object.entries(documentData).forEach(([key, value]) => {
+    const exprAttrValues: Record<string, Dynamo.AttributeValue> = {};
+    for (const [key, value] of Object.entries(documentData)) {
       updateExpr.push(`#${key} = :${key}`);
       exprAttrValues[`:${key}`] = { S: String(value) };
-    });
+    }
+
     await this.#client.send(
-      new UpdateItemCommand({
-        TableName: collectionId,
-        Key: { id: { S: documentId } },
-        UpdateExpression: `SET ${updateExpr.join(", ")}`,
+      new Dynamo.UpdateItemCommand({
         ExpressionAttributeNames: Object.fromEntries(
           Object.keys(documentData).map((k) => [`#${k}`, k]),
         ),
         ExpressionAttributeValues: exprAttrValues,
+        Key: { id: { S: documentId } },
+        TableName: collectionId,
+        UpdateExpression: `SET ${updateExpr.join(", ")}`,
       }),
       { abortSignal: options.abortSignal },
     );

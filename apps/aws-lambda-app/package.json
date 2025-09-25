@@ -1,0 +1,8 @@
+{
+  "name": "aws-lambda-app",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@storybooker/aws": "workspace:*"
+  }
+}

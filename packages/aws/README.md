@@ -1,93 +1,71 @@
-# StoryBooker adapter for Azure Storage
+# StoryBooker adapters for AWS
 
-Create service adapters for Azure Storage.
+Create service adapters for AWS services.
 
 ## Auth
 
-The Azure EasyAuth provides quick way to setup auth for Azure Functions
-
-```ts
-import {
-  AzureEasyAuthService,
-  type AuthServiceAuthorise,
-} from "@storybooker/azure/easy-auth";
-
-const authorize: AuthServiceAuthorise = async (permission, { user }) => {
-  // check permission against user (roles)
-  return true; // or false
-};
-const auth = new AzureEasyAuthService(authorise);
-
-// use as auth in StoryBooker options.
-```
+> Currently no auth adapter available for AWS.
 
 ## Database
 
-The Azure Storage provides 2 options which can be used as database for StoryBooker.
+### DynamoDB
 
-### Data Tables
-
-```ts
-import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
-
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const database = new AzureDataTablesDatabaseService(connectionString);
-
-// use as database in StoryBooker options.
-```
-
-### Cosmos DB
+The adapter constructor accepts either a pre-configured `DynamoDBClient` instance or a configuration object for the client.
 
 ```ts
-import { AzureCosmosDatabaseService } from "@storybooker/azure/cosmos-db";
+import { AwsDynamoDatabaseService } from "@storybooker/aws/dynamo-db";
 
-const connectionString = process.env["AZURE_COSMOS_DB_CONNECTION_STRING"];
-const database = new AzureCosmosDatabaseService(connectionString);
+const database = new AwsDynamoDatabaseService({
+  region: process.env["AWS_REGION"],
+  credentials: {
+    accessKeyId: process.env["AWS_ACCESS_KEY_ID"],
+    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"],
+  },
+});
 
 // use as database in StoryBooker options.
 ```
 
 ## Storage
 
-The Azure Storage provides BlobStorage which can be used as storage for StoryBooker.
+The AWS S3 provides BlobStorage which can be used as storage for StoryBooker.
 
 ```ts
-import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
+import { AwsS3StorageService } from "@storybooker/aws/s3";
 
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const storage = new AzureBlobStorageService(connectionString);
+const bucketName = process.env["AWS_S3_BUCKET_NAME"];
+const storage = new AwsS3StorageService({
+  region: process.env["AWS_REGION"],
+  credentials: {
+    accessKeyId: process.env["AWS_ACCESS_KEY_ID"]!,
+    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"]!,
+  },
+});
 
 // use as storage in StoryBooker options.
 ```
 
-## Hosting StoryBooker in Azure Functions
+## Hosting StoryBooker via AWS Lambda + API Gateway
 
 > For deploying:
 >
-> - Set Azure Functions runtime to `Node` and version to `22 LTS` or higher.
-> - Set environment variable in deployment for `AzureWebJobsStorage` if not already done.
+> - The AWS Lambda function should be have a HTTP API Gateway trigger.
+> - The Trigger should have `/{proxy+}` route with ANY method.
 
-Create following files in your Azure Functions project.
+Create following files in your AWS Lambda project.
 
 ### `index.js`
 
 ```js
-import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
-import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
-import { AzureEasyAuthService } from "@storybooker/azure/easy-auth";
-import { registerStoryBookerRouter } from "@storybooker/azure/functions";
+// @ts-check
 
-const storageConnectionString = process.env["AzureWebJobsStorage"];
-if (!storageConnectionString) {
-  throw new Error(
-    `The storage connectionString is required to connect with Azure Storage resource.`,
-  );
-}
+import { AwsDynamoDatabaseService } from "@storybooker/aws/dynamo-db";
+import { createStoryBookerRouterHandler } from "@storybooker/aws/lambda";
+import { AwsS3StorageService } from "@storybooker/aws/s3";
 
-registerStoryBookerRouter({
-  auth: new AzureEasyAuthService(), // optional auth adapter
-  database: new AzureDataTablesDatabaseService(storageConnectionString),
-  storage: new AzureBlobStorageService(storageConnectionString),
+export const handler = createStoryBookerRouterHandler({
+  database: new AwsDynamoDatabaseService({}),
+  storage: new AwsS3StorageService({}),
 });
 ```
 
@@ -99,37 +77,9 @@ registerStoryBookerRouter({
   "type": "module",
   "main": "index.js",
   "dependencies": {
-    "@azure/functions": "^4.0.0",
-    "@azure/data-tables": "^13.0.0",
-    "@azure/storage-blob": "^12.0.0",
-    "@storybooker/azure": "latest"
-  }
-}
-```
-
-### `host.json`
-
-```json
-{
-  "version": "2.0",
-  "extensionBundle": {
-    "id": "Microsoft.Azure.Functions.ExtensionBundle",
-    "version": "[4.*, 5.0.0)"
-  },
-  "extensions": { "http": { "routePrefix": "" } }
-}
-```
-
-### `local.settings.json` (for local dev only)
-
-> Must not be committed to source control (git).
-
-```json
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true"
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@storybooker/aws": "latest"
   }
 }
 ```

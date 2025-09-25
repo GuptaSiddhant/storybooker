@@ -1,6 +1,6 @@
-# StoryBooker adapter for Azure Storage
+# StoryBooker adapter for Azure services
 
-Create service adapters for Azure Storage.
+Create service adapters for Azure services.
 
 ## Auth
 
@@ -23,7 +23,7 @@ const auth = new AzureEasyAuthService(authorise);
 
 ## Database
 
-The Azure Storage provides 2 options which can be used as database for StoryBooker.
+Azure provides 2 options which can be used as database for StoryBooker.
 
 ### Data Tables
 
@@ -72,6 +72,8 @@ Create following files in your Azure Functions project.
 ### `index.js`
 
 ```js
+// @ts-check
+
 import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
 import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
 import { AzureEasyAuthService } from "@storybooker/azure/easy-auth";
