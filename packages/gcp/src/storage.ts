@@ -6,8 +6,13 @@ import type { StorageService } from "@storybooker/core/types";
 export class GcpGcsStorageService implements StorageService {
   #client: Storage;
 
-  constructor(options: StorageOptions) {
-    this.#client = new Storage(options);
+  constructor(client: Storage);
+  constructor(options: StorageOptions);
+  constructor(clientOrOptions: Storage | StorageOptions) {
+    this.#client =
+      clientOrOptions instanceof Storage
+        ? clientOrOptions
+        : new Storage(clientOrOptions);
   }
 
   createContainer: StorageService["createContainer"] = async (

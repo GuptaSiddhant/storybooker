@@ -1773,6 +1773,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@google-cloud/firestore@npm:^7.11.5":
+  version: 7.11.5
+  resolution: "@google-cloud/firestore@npm:7.11.5"
+  dependencies:
+    "@opentelemetry/api": "npm:^1.3.0"
+    fast-deep-equal: "npm:^3.1.1"
+    functional-red-black-tree: "npm:^1.0.1"
+    google-gax: "npm:^4.3.3"
+    protobufjs: "npm:^7.2.6"
+  checksum: 10c0/ed4fdf64656ba907a0382b7d9a67ddbe1c2e0c48a89d526f1da274ddfba5709cd026611ce08401882ca645ad393c28d3c04013607aee3e4261f40d47ad0b5271
+  languageName: node
+  linkType: hard
+
 "@google-cloud/monitoring@npm:^5.0.1":
   version: 5.3.0
   resolution: "@google-cloud/monitoring@npm:5.3.0"
@@ -1886,13 +1899,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grpc/grpc-js@npm:^1.12.6, @grpc/grpc-js@npm:^1.7.0":
+"@grpc/grpc-js@npm:^1.10.9, @grpc/grpc-js@npm:^1.12.6, @grpc/grpc-js@npm:^1.7.0":
   version: 1.14.0
   resolution: "@grpc/grpc-js@npm:1.14.0"
   dependencies:
     "@grpc/proto-loader": "npm:^0.8.0"
     "@js-sdsl/ordered-map": "npm:^4.4.2"
   checksum: 10c0/51e0eb32f6dac68c49502b227e565c4244f53983d2efab8ef3fd2cc923999751c059f6c77fec4941a93c44eaa58cbc321ce1e9868e1ec226fba5a6c93722c3b1
+  languageName: node
+  linkType: hard
+
+"@grpc/proto-loader@npm:^0.7.13":
+  version: 0.7.15
+  resolution: "@grpc/proto-loader@npm:0.7.15"
+  dependencies:
+    lodash.camelcase: "npm:^4.3.0"
+    long: "npm:^5.0.0"
+    protobufjs: "npm:^7.2.5"
+    yargs: "npm:^17.7.2"
+  bin:
+    proto-loader-gen-types: build/bin/proto-loader-gen-types.js
+  checksum: 10c0/514a134a724b56d73d0a202b7e02c84479da21e364547bacb2f4995ebc0d52412a1a21653add9f004ebd146c1e6eb4bcb0b8846fdfe1bfa8a98ed8f3d203da4a
   languageName: node
   linkType: hard
 
@@ -2146,7 +2173,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/api@npm:^1.9.0":
+"@opentelemetry/api@npm:^1.3.0, @opentelemetry/api@npm:^1.9.0":
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
   checksum: 10c0/9aae2fe6e8a3a3eeb6c1fdef78e1939cf05a0f37f8a4fae4d6bf2e09eb1e06f966ece85805626e01ba5fab48072b94f19b835449e58b6d26720ee19a58298add
@@ -3538,6 +3565,7 @@ __metadata:
   resolution: "@storybooker/gcp@workspace:packages/gcp"
   dependencies:
     "@google-cloud/bigtable": "npm:^6.4.1"
+    "@google-cloud/firestore": "npm:^7.11.5"
     "@google-cloud/storage": "npm:^7.17.1"
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
@@ -3547,9 +3575,15 @@ __metadata:
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.14.1"
   peerDependencies:
+    "@google-cloud/bigtable": ^6.0.0
+    "@google-cloud/firestore": ^7.0.0
     "@google-cloud/storage": ^7.0.0
     "@storybooker/core": "workspace:^"
   peerDependenciesMeta:
+    "@google-cloud/bigtable":
+      optional: true
+    "@google-cloud/firestore":
+      optional: true
     "@google-cloud/storage":
       optional: true
   languageName: unknown
@@ -4905,7 +4939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"duplexify@npm:^4.1.1, duplexify@npm:^4.1.3":
+"duplexify@npm:^4.0.0, duplexify@npm:^4.1.1, duplexify@npm:^4.1.3":
   version: 4.1.3
   resolution: "duplexify@npm:4.1.3"
   dependencies:
@@ -5546,6 +5580,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"functional-red-black-tree@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "functional-red-black-tree@npm:1.0.1"
+  checksum: 10c0/5959eed0375803d9924f47688479bb017e0c6816a0e5ac151e22ba6bfe1d12c41de2f339188885e0aa8eeea2072dad509d8e4448467e816bde0a2ca86a0670d3
+  languageName: node
+  linkType: hard
+
 "gaxios@npm:^6.0.0, gaxios@npm:^6.0.2, gaxios@npm:^6.0.3, gaxios@npm:^6.1.1":
   version: 6.7.1
   resolution: "gaxios@npm:6.7.1"
@@ -5714,7 +5755,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.6.3, google-auth-library@npm:^9.7.0":
+"google-auth-library@npm:^9.0.0, google-auth-library@npm:^9.3.0, google-auth-library@npm:^9.6.3, google-auth-library@npm:^9.7.0":
   version: 9.15.1
   resolution: "google-auth-library@npm:9.15.1"
   dependencies:
@@ -5725,6 +5766,26 @@ __metadata:
     gtoken: "npm:^7.0.0"
     jws: "npm:^4.0.0"
   checksum: 10c0/6eef36d9a9cb7decd11e920ee892579261c6390104b3b24d3e0f3889096673189fe2ed0ee43fd563710e2560de98e63ad5aa4967b91e7f4e69074a422d5f7b65
+  languageName: node
+  linkType: hard
+
+"google-gax@npm:^4.3.3":
+  version: 4.6.1
+  resolution: "google-gax@npm:4.6.1"
+  dependencies:
+    "@grpc/grpc-js": "npm:^1.10.9"
+    "@grpc/proto-loader": "npm:^0.7.13"
+    "@types/long": "npm:^4.0.0"
+    abort-controller: "npm:^3.0.0"
+    duplexify: "npm:^4.0.0"
+    google-auth-library: "npm:^9.3.0"
+    node-fetch: "npm:^2.7.0"
+    object-hash: "npm:^3.0.0"
+    proto3-json-serializer: "npm:^2.0.2"
+    protobufjs: "npm:^7.3.2"
+    retry-request: "npm:^7.0.0"
+    uuid: "npm:^9.0.1"
+  checksum: 10c0/740e47beb1def74d3e0074f8582fd919423f6c261b8cfa1c6a6c1c5bf9d8b92a11f1afe07eb1eea2fda7f4b6603c836f9427ed3cfa4c04ae97eb00db7c291400
   languageName: node
   linkType: hard
 
@@ -6722,7 +6783,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.9":
+"node-fetch@npm:^2.6.9, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -7306,6 +7367,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"proto3-json-serializer@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "proto3-json-serializer@npm:2.0.2"
+  dependencies:
+    protobufjs: "npm:^7.2.5"
+  checksum: 10c0/802e6a34f6ebf07007b186768f1985494bdfa6dd92e14c89d10cda6c4cc14df707ad59b75054a17a582f481db12c7663d25f91f505d2a85d7d4174eb5d798628
+  languageName: node
+  linkType: hard
+
 "proto3-json-serializer@npm:^3.0.0":
   version: 3.0.2
   resolution: "proto3-json-serializer@npm:3.0.2"
@@ -7315,7 +7385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"protobufjs@npm:^7.4.0, protobufjs@npm:^7.5.3":
+"protobufjs@npm:^7.2.5, protobufjs@npm:^7.2.6, protobufjs@npm:^7.3.2, protobufjs@npm:^7.4.0, protobufjs@npm:^7.5.3":
   version: 7.5.4
   resolution: "protobufjs@npm:7.5.4"
   dependencies:

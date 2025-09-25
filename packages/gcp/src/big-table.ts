@@ -17,8 +17,17 @@ const COLUMN_FAMILY: ColumnFamily = "cf1";
 export class GcpBigtableDatabaseService implements DatabaseService {
   #instance: Instance;
 
-  constructor(options: BigtableOptions, instanceId: string = SERVICE_NAME) {
-    this.#instance = new Bigtable(options).instance(instanceId);
+  constructor(client: Bigtable, instanceId?: string);
+  constructor(options: BigtableOptions, instanceId?: string);
+  constructor(
+    clientOrOptions: Bigtable | BigtableOptions,
+    instanceId: string = SERVICE_NAME,
+  ) {
+    const client =
+      clientOrOptions instanceof Bigtable
+        ? clientOrOptions
+        : new Bigtable(clientOrOptions);
+    this.#instance = client.instance(instanceId);
   }
 
   init: DatabaseService["init"] = async (_options) => {

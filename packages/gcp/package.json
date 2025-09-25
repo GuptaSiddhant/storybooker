@@ -51,6 +51,11 @@
       "import": "./dist/big-table.js",
       "require": "./dist/big-table.cjs"
     },
+    "./firestore": {
+      "source": "./src/firestore.ts",
+      "import": "./dist/firestore.js",
+      "require": "./dist/firestore.cjs"
+    },
     "./storage": {
       "source": "./src/storage.ts",
       "import": "./dist/storage.js",
@@ -69,6 +74,7 @@
   },
   "devDependencies": {
     "@google-cloud/bigtable": "^6.4.1",
+    "@google-cloud/firestore": "^7.11.5",
     "@google-cloud/storage": "^7.17.1",
     "@storybooker/core": "workspace:^",
     "@types/node": "^22.0.0",
@@ -80,11 +86,15 @@
   },
   "peerDependencies": {
     "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
     "@google-cloud/storage": "^7.0.0",
     "@storybooker/core": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@google-cloud/bigtable": {
+      "optional": true
+    },
+    "@google-cloud/firestore": {
       "optional": true
     },
     "@google-cloud/storage": {
@@ -99,6 +109,10 @@
       "./big-table": {
         "import": "./dist/big-table.js",
         "require": "./dist/big-table.cjs"
+      },
+      "./firestore": {
+        "import": "./dist/firestore.js",
+        "require": "./dist/firestore.cjs"
       },
       "./storage": {
         "import": "./dist/storage.js",

@@ -8,7 +8,7 @@ Create service adapters for GCP services.
 
 ## Database
 
-GCP provides 3 options which can be used as database for StoryBooker.
+GCP provides 2 options which can be used as database for StoryBooker.
 
 ### BigTable
 
@@ -16,6 +16,16 @@ GCP provides 3 options which can be used as database for StoryBooker.
 import { GcpBigtableDatabaseService } from "@storybooker/gcp/big-table";
 
 const database = new GcpBigtableDatabaseService({
+  // Auth options can be passed here.
+});
+
+// use as database in StoryBooker options.
+```
+
+```ts
+import { GcpFirestoreDatabaseService } from "@storybooker/gcp/firestore";
+
+const database = new GcpFirestoreDatabaseService({
   // Auth options can be passed here.
 });
 
