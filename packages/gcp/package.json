@@ -1,0 +1,96 @@
+{
+  "name": "@storybooker/gcp",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "StoryBooker Adapter for interacting with GCP services.",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guptasiddhant/storybooker",
+    "directory": "packages/gcp"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guptasiddhant/storybooker/issues"
+  },
+  "files": [
+    "src",
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "sideEffects": false,
+  "keywords": [
+    "gcp",
+    "google-cloud",
+    "google",
+    "functions",
+    "gcp-functions",
+    "storybook",
+    "storybooks",
+    "storybooker",
+    "chromatic",
+    "storage",
+    "blob",
+    "upload",
+    "table",
+    "compress",
+    "builds",
+    "labels",
+    "projects",
+    "cosmos"
+  ],
+  "exports": {
+    ".": {
+      "source": "./src/storage.ts",
+      "import": "./dist/storage.js",
+      "require": "./dist/storage.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "check": "tsgo --noEmit",
+    "dev": "tsdown -w ./src",
+    "fmt": "prettier src --write --config ../../.prettierrc",
+    "lint": "oxlint --type-aware ./src",
+    "lint:fix": "yarn lint --fix",
+    "start": "func start"
+  },
+  "devDependencies": {
+    "@google-cloud/storage": "^7.17.1",
+    "@storybooker/core": "workspace:^",
+    "@types/node": "^22.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20250823.8",
+    "oxlint": "^1.12.0",
+    "oxlint-tsgolint": "^0.2.0",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.14.1"
+  },
+  "peerDependencies": {
+    "@google-cloud/storage": "^7.0.0",
+    "@storybooker/core": "workspace:^"
+  },
+  "peerDependenciesMeta": {
+    "@google-cloud/storage": {
+      "optional": true
+    }
+  },
+  "main": "./dist/storage.cjs",
+  "module": "./dist/storage.js",
+  "types": "./dist/storage.d.cts",
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "import": "./dist/storage.js",
+        "require": "./dist/storage.cjs"
+      },
+      "./package.json": "./package.json"
+    }
+  }
+}
