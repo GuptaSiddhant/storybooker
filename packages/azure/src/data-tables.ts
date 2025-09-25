@@ -105,7 +105,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     const items: Document[] = [];
     for await (const page of pageIterator) {
       for (const entity of page) {
-        const item = this.#entityToItem<Document>(entity);
+        const item = entityToItem<Document>(entity);
         if (filter && typeof filter === "function") {
           if (filter(item)) {
             items.push(item);
@@ -141,7 +141,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
       abortSignal: options.abortSignal,
     });
 
-    return this.#entityToItem<Document>(entity);
+    return entityToItem<Document>(entity);
   };
 
   hasDocument: DatabaseService["hasDocument"] = async (
@@ -215,15 +215,6 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
 
     return;
   };
-
-  #entityToItem = <Item extends { id: string }>(
-    entity: TableEntityResult<Record<string, unknown>>,
-  ): Item => {
-    return {
-      ...entity,
-      id: entity.rowKey || entity.partitionKey || entity.etag,
-    } as unknown as Item;
-  };
 }
 
 function genTableNameFromCollectionId(collectionId: string): string {
@@ -232,4 +223,13 @@ function genTableNameFromCollectionId(collectionId: string): string {
   }
 
   return collectionId.replaceAll(/\W/g, "").slice(0, 63).padEnd(3, "X");
+}
+
+function entityToItem<Item extends { id: string }>(
+  entity: TableEntityResult<Record<string, unknown>>,
+): Item {
+  return {
+    ...entity,
+    id: entity.rowKey || entity.partitionKey || entity.etag,
+  } as unknown as Item;
 }

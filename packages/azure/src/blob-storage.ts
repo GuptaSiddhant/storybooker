@@ -102,7 +102,7 @@ export class AzureBlobStorageService implements StorageService {
     const containerClient = this.#client.getContainerClient(containerName);
     // oxlint-disable-next-line require-await
     const promises = files.map(async ({ content, path, mimeType }) =>
-      this.#uploadFile(
+      uploadFileToBlobStorage(
         containerClient.getBlockBlobClient(path),
         content,
         mimeType,
@@ -111,42 +111,6 @@ export class AzureBlobStorageService implements StorageService {
     );
 
     await Promise.allSettled(promises);
-  };
-
-  // oxlint-disable-next-line max-params
-  #uploadFile = async (
-    client: BlockBlobClient,
-    data: Blob | string | ReadableStream,
-    mimeType: string,
-    abortSignal?: AbortSignal,
-  ): Promise<void> => {
-    if (typeof data === "string") {
-      const blob = new Blob([data], { type: mimeType });
-      await client.uploadData(blob, {
-        abortSignal,
-        blobHTTPHeaders: { blobContentType: mimeType },
-      });
-      return;
-    }
-    if (data instanceof Blob) {
-      await client.uploadData(data, {
-        abortSignal,
-        blobHTTPHeaders: { blobContentType: mimeType },
-      });
-      return;
-    }
-    if (data instanceof ReadableStream) {
-      const stream = data as unknown as streamWeb.ReadableStream;
-      await client.uploadStream(
-        Readable.fromWeb(stream),
-        undefined,
-        undefined,
-        { abortSignal, blobHTTPHeaders: { blobContentType: mimeType } },
-      );
-      return;
-    }
-
-    throw new Error(`Unknown file type`);
   };
 
   hasFile: StorageService["hasFile"] = async (
@@ -198,4 +162,40 @@ function genContainerNameFromContainerId(containerId: string): string {
     .replaceAll(/[^\w-]+/g, "-")
     .slice(0, 255)
     .toLowerCase();
+}
+
+// oxlint-disable-next-line max-params
+async function uploadFileToBlobStorage(
+  client: BlockBlobClient,
+  data: Blob | string | ReadableStream,
+  mimeType: string,
+  abortSignal?: AbortSignal,
+): Promise<void> {
+  if (typeof data === "string") {
+    const blob = new Blob([data], { type: mimeType });
+    await client.uploadData(blob, {
+      abortSignal,
+      blobHTTPHeaders: { blobContentType: mimeType },
+    });
+    return;
+  }
+
+  if (data instanceof Blob) {
+    await client.uploadData(data, {
+      abortSignal,
+      blobHTTPHeaders: { blobContentType: mimeType },
+    });
+    return;
+  }
+
+  if (data instanceof ReadableStream) {
+    const stream = data as unknown as streamWeb.ReadableStream;
+    await client.uploadStream(Readable.fromWeb(stream), undefined, undefined, {
+      abortSignal,
+      blobHTTPHeaders: { blobContentType: mimeType },
+    });
+    return;
+  }
+
+  throw new Error(`Unknown file type`);
 }

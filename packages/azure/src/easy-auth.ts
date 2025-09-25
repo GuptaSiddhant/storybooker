@@ -1,5 +1,5 @@
+// oxlint-disable class-methods-use-this
 // oxlint-disable require-await
-// oxlint-disable no-unsafe-assignment
 
 import type {
   AuthService,
