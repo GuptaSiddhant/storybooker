@@ -1,5 +1,11 @@
 # @storybooker/aws
 
+## 0.2.0
+
+### Minor Changes
+
+- c9e0511: Add AWS Lambda option
+
 ## 0.1.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @storybooker/azure
 
+## 0.1.1
+
+### Patch Changes
+
+- c9e0511: Add AWS Lambda option
+
 ## 0.1.0
 
 ### Minor Changes
