@@ -1,4 +1,4 @@
-import { CosmosClient, type Database } from "@azure/cosmos";
+import type { CosmosClient, Database } from "@azure/cosmos";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type {
   DatabaseDocumentListOptions,
@@ -10,8 +10,8 @@ import type {
 export class AzureCosmosDatabaseService implements DatabaseService {
   #db: Database;
 
-  constructor(connectionString: string, dbName = SERVICE_NAME) {
-    this.#db = new CosmosClient(connectionString).database(dbName);
+  constructor(client: CosmosClient, dbName = SERVICE_NAME) {
+    this.#db = client.database(dbName);
   }
 
   init: DatabaseService["init"] = async (options) => {

@@ -4,13 +4,8 @@ import type { StorageService } from "@storybooker/core/types";
 export class AwsS3StorageService implements StorageService {
   #client: S3.S3Client;
 
-  constructor(config: S3.S3ClientConfig);
-  constructor(client: S3.S3Client);
-  constructor(clientOrConfig: S3.S3Client | S3.S3ClientConfig) {
-    this.#client =
-      clientOrConfig instanceof S3.S3Client
-        ? clientOrConfig
-        : new S3.S3Client(clientOrConfig);
+  constructor(client: S3.S3Client) {
+    this.#client = client;
   }
 
   createContainer: StorageService["createContainer"] = async (

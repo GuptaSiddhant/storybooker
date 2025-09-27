@@ -1,8 +1,7 @@
-import {
-  odata,
+import type {
   TableClient,
+  TableEntityResult,
   TableServiceClient,
-  type TableEntityResult,
 } from "@azure/data-tables";
 import type {
   DatabaseDocumentListOptions,
@@ -11,14 +10,17 @@ import type {
   StoryBookerDatabaseDocument,
 } from "@storybooker/core/types";
 
-export class AzureDataTablesDatabaseService implements DatabaseService {
-  #connectionString: string;
-  #serviceClient: TableServiceClient;
+export type TableClientGenerator = (tableName: string) => TableClient;
 
-  constructor(connectionString: string) {
-    this.#connectionString = connectionString;
-    this.#serviceClient =
-      TableServiceClient.fromConnectionString(connectionString);
+export class AzureDataTablesDatabaseService implements DatabaseService {
+  #serviceClient: TableServiceClient;
+  #tableClientGenerator: TableClientGenerator;
+  constructor(
+    serviceClient: TableServiceClient,
+    tableClientGenerator: TableClientGenerator,
+  ) {
+    this.#serviceClient = serviceClient;
+    this.#tableClientGenerator = tableClientGenerator;
   }
 
   listCollections: DatabaseService["listCollections"] = async (options) => {
@@ -53,7 +55,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
       const tableName = genTableNameFromCollectionId(collectionId);
       const iterator = this.#serviceClient.listTables({
         abortSignal: options.abortSignal,
-        queryOptions: { filter: odata`TableName eq ${tableName}` },
+        queryOptions: { filter: `TableName eq '${tableName}'` },
       });
       for await (const table of iterator) {
         if (table.name === collectionId) {
@@ -88,10 +90,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     const { filter, limit, select, sort } = listOptions || {};
 
     const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = TableClient.fromConnectionString(
-      this.#connectionString,
-      tableName,
-    );
+    const tableClient = this.#tableClientGenerator(tableName);
     const pageIterator = tableClient
       .listEntities({
         abortSignal: options.abortSignal,
@@ -133,10 +132,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     options: DatabaseServiceOptions,
   ): Promise<Document> => {
     const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = TableClient.fromConnectionString(
-      this.#connectionString,
-      tableName,
-    );
+    const tableClient = this.#tableClientGenerator(tableName);
     const entity = await tableClient.getEntity(collectionId, documentId, {
       abortSignal: options.abortSignal,
     });
@@ -162,10 +158,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     options,
   ) => {
     const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = TableClient.fromConnectionString(
-      this.#connectionString,
-      tableName,
-    );
+    const tableClient = this.#tableClientGenerator(tableName);
     await tableClient.createEntity(
       {
         ...documentData,
@@ -184,10 +177,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     options,
   ) => {
     const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = TableClient.fromConnectionString(
-      this.#connectionString,
-      tableName,
-    );
+    const tableClient = this.#tableClientGenerator(tableName);
     await tableClient.deleteEntity(collectionId, documentId, {
       abortSignal: options.abortSignal,
     });
@@ -203,10 +193,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     options,
   ) => {
     const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = TableClient.fromConnectionString(
-      this.#connectionString,
-      tableName,
-    );
+    const tableClient = this.#tableClientGenerator(tableName);
     await tableClient.updateEntity(
       { ...documentData, partitionKey: collectionId, rowKey: documentId },
       "Merge",

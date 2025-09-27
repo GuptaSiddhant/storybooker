@@ -1,18 +1,13 @@
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
-import { Storage, type File, type StorageOptions } from "@google-cloud/storage";
+import type { File, Storage } from "@google-cloud/storage";
 import type { StorageService } from "@storybooker/core/types";
 
 export class GcpGcsStorageService implements StorageService {
   #client: Storage;
 
-  constructor(client: Storage);
-  constructor(options: StorageOptions);
-  constructor(clientOrOptions: Storage | StorageOptions) {
-    this.#client =
-      clientOrOptions instanceof Storage
-        ? clientOrOptions
-        : new Storage(clientOrOptions);
+  constructor(client: Storage) {
+    this.#client = client;
   }
 
   createContainer: StorageService["createContainer"] = async (

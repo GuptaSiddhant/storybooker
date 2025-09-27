@@ -1,17 +1,17 @@
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
-import {
+import type {
+  BlobClient,
   BlobServiceClient,
-  type BlobClient,
-  type BlockBlobClient,
+  BlockBlobClient,
 } from "@azure/storage-blob";
 import type { StorageService } from "@storybooker/core/types";
 
 export class AzureBlobStorageService implements StorageService {
   #client: BlobServiceClient;
 
-  constructor(connectionString: string) {
-    this.#client = BlobServiceClient.fromConnectionString(connectionString);
+  constructor(client: BlobServiceClient) {
+    this.#client = client;
   }
 
   createContainer: StorageService["createContainer"] = async (

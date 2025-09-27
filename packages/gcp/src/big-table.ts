@@ -1,8 +1,4 @@
-import {
-  Bigtable,
-  type BigtableOptions,
-  type Instance,
-} from "@google-cloud/bigtable";
+import type { Bigtable, Instance } from "@google-cloud/bigtable";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type {
   DatabaseDocumentListOptions,
@@ -17,17 +13,8 @@ const COLUMN_FAMILY: ColumnFamily = "cf1";
 export class GcpBigtableDatabaseService implements DatabaseService {
   #instance: Instance;
 
-  constructor(client: Bigtable, instanceId?: string);
-  constructor(options: BigtableOptions, instanceId?: string);
-  constructor(
-    clientOrOptions: Bigtable | BigtableOptions,
-    instanceId: string = SERVICE_NAME,
-  ) {
-    const client =
-      clientOrOptions instanceof Bigtable
-        ? clientOrOptions
-        : new Bigtable(clientOrOptions);
-    this.#instance = client.instance(instanceId);
+  constructor(client: Bigtable, instanceName: string = SERVICE_NAME) {
+    this.#instance = client.instance(instanceName);
   }
 
   init: DatabaseService["init"] = async (_options) => {

@@ -11,15 +11,8 @@ import type {
 export class AwsDynamoDatabaseService implements DatabaseService {
   #client: Dynamo.DynamoDBClient;
 
-  constructor(config: Dynamo.DynamoDBClientConfig);
-  constructor(client: Dynamo.DynamoDBClient);
-  constructor(
-    clientOrConfig: Dynamo.DynamoDBClient | Dynamo.DynamoDBClientConfig,
-  ) {
-    this.#client =
-      clientOrConfig instanceof Dynamo.DynamoDBClient
-        ? clientOrConfig
-        : new Dynamo.DynamoDBClient(clientOrConfig);
+  constructor(client: Dynamo.DynamoDBClient) {
+    this.#client = client;
   }
 
   listCollections: DatabaseService["listCollections"] = async (options) => {

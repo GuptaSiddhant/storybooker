@@ -28,10 +28,13 @@ Azure provides 2 options which can be used as database for StoryBooker.
 ### Data Tables
 
 ```ts
+import { TableClient, TableServiceClient } from "@azure/data-tables";
 import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
 
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const database = new AzureDataTablesDatabaseService(connectionString);
+const database = new AzureDataTablesDatabaseService(
+  new TableServiceClient(connectionString),
+  (tableName) => TableClient.fromConnectionString(connectionString, tableName),
+);
 
 // use as database in StoryBooker options.
 ```
@@ -39,10 +42,11 @@ const database = new AzureDataTablesDatabaseService(connectionString);
 ### Cosmos DB
 
 ```ts
+import { CosmosClient } from "@azure/cosmos";
 import { AzureCosmosDatabaseService } from "@storybooker/azure/cosmos-db";
 
-const connectionString = process.env["AZURE_COSMOS_DB_CONNECTION_STRING"];
-const database = new AzureCosmosDatabaseService(connectionString);
+const client = new CosmosClient(connectionString);
+const database = new AzureCosmosDatabaseService(client);
 
 // use as database in StoryBooker options.
 ```
@@ -52,10 +56,11 @@ const database = new AzureCosmosDatabaseService(connectionString);
 The Azure Storage provides BlobStorage which can be used as storage for StoryBooker.
 
 ```ts
+import { BlobServiceClient } from "@azure/storage-blob";
 import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
 
-const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
-const storage = new AzureBlobStorageService(connectionString);
+const client = BlobServiceClient.fromConnectionString(connectionString);
+const storage = new AzureBlobStorageService(client);
 
 // use as storage in StoryBooker options.
 ```
@@ -74,6 +79,9 @@ Create following files in your Azure Functions project.
 ```js
 // @ts-check
 
+import { TableClient, TableServiceClient } from "@azure/data-tables";
+import { app } from "@azure/functions";
+import { BlobServiceClient } from "@azure/storage-blob";
 import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
 import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
 import { AzureEasyAuthService } from "@storybooker/azure/easy-auth";
@@ -86,10 +94,16 @@ if (!storageConnectionString) {
   );
 }
 
-registerStoryBookerRouter({
+registerStoryBookerRouter(app, {
   auth: new AzureEasyAuthService(), // optional auth adapter
-  database: new AzureDataTablesDatabaseService(storageConnectionString),
-  storage: new AzureBlobStorageService(storageConnectionString),
+  database: new AzureDataTablesDatabaseService(
+    new TableServiceClient(storageConnectionString),
+    (tableName) =>
+      TableClient.fromConnectionString(storageConnectionString, tableName),
+  ),
+  storage: new AzureBlobStorageService(
+    BlobServiceClient.fromConnectionString(storageConnectionString),
+  ),
 });
 ```
 

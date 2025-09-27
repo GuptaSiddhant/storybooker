@@ -1,4 +1,4 @@
-import { Firestore, type Settings } from "@google-cloud/firestore";
+import type { Firestore } from "@google-cloud/firestore";
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,
@@ -9,13 +9,8 @@ import type {
 export class GcpFirestoreDatabaseService implements DatabaseService {
   #instance: Firestore;
 
-  constructor(instance: Firestore);
-  constructor(settings: Settings);
-  constructor(instanceOrSettings: Firestore | Settings) {
-    this.#instance =
-      instanceOrSettings instanceof Firestore
-        ? instanceOrSettings
-        : new Firestore(instanceOrSettings);
+  constructor(instance: Firestore) {
+    this.#instance = instance;
   }
 
   listCollections: DatabaseService["listCollections"] = async (_options) => {

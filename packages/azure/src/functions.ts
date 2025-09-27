@@ -1,5 +1,11 @@
 import type { RestError } from "@azure/core-rest-pipeline";
-import { app, type HttpRequest, type HttpResponseInit } from "@azure/functions";
+import type {
+  HttpFunctionOptions,
+  HttpRequest,
+  HttpResponseInit,
+  SetupOptions,
+  TimerFunctionOptions,
+} from "@azure/functions";
 import { createPurgeHandler, createRequestHandler } from "@storybooker/core";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type {
@@ -13,6 +19,12 @@ import type { BodyInit } from "undici";
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
 export type * from "@storybooker/core/types";
+
+interface FunctionsApp {
+  http(name: string, options: HttpFunctionOptions): void;
+  setup(options: SetupOptions): void;
+  timer(name: string, options: TimerFunctionOptions): void;
+}
 
 /**
  * Options to register the storybooker router
@@ -50,6 +62,7 @@ export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
 }
 
 export function registerStoryBookerRouter<User extends StoryBookerUser>(
+  app: FunctionsApp,
   options: RegisterStorybookerRouterOptions<User>,
 ): void {
   app.setup({ enableHttpStream: true });

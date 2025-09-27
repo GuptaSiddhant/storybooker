@@ -13,15 +13,11 @@ Create service adapters for AWS services.
 The adapter constructor accepts either a pre-configured `DynamoDBClient` instance or a configuration object for the client.
 
 ```ts
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { AwsDynamoDatabaseService } from "@storybooker/aws/dynamo-db";
 
-const database = new AwsDynamoDatabaseService({
-  region: process.env["AWS_REGION"],
-  credentials: {
-    accessKeyId: process.env["AWS_ACCESS_KEY_ID"],
-    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"],
-  },
-});
+const client = new DynamoDBClient(...)
+const database = new AwsDynamoDatabaseService(client);
 
 // use as database in StoryBooker options.
 ```
@@ -31,16 +27,11 @@ const database = new AwsDynamoDatabaseService({
 The AWS S3 provides BlobStorage which can be used as storage for StoryBooker.
 
 ```ts
+import { S3Client } from "@aws-sdk/client-s3";
 import { AwsS3StorageService } from "@storybooker/aws/s3";
 
-const bucketName = process.env["AWS_S3_BUCKET_NAME"];
-const storage = new AwsS3StorageService({
-  region: process.env["AWS_REGION"],
-  credentials: {
-    accessKeyId: process.env["AWS_ACCESS_KEY_ID"]!,
-    secretAccessKey: process.env["AWS_SECRET_ACCESS_KEY"]!,
-  },
-});
+const client = new S3Client(...);
+const storage = new AwsS3StorageService(client);
 
 // use as storage in StoryBooker options.
 ```
@@ -59,13 +50,15 @@ Create following files in your AWS Lambda project.
 ```js
 // @ts-check
 
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { S3Client } from "@aws-sdk/client-s3";
 import { AwsDynamoDatabaseService } from "@storybooker/aws/dynamo-db";
 import { createStoryBookerRouterHandler } from "@storybooker/aws/lambda";
 import { AwsS3StorageService } from "@storybooker/aws/s3";
 
 export const handler = createStoryBookerRouterHandler({
-  database: new AwsDynamoDatabaseService({}),
-  storage: new AwsS3StorageService({}),
+  database: new AwsDynamoDatabaseService(new DynamoDBClient({})),
+  storage: new AwsS3StorageService(new S3Client({})),
 });
 ```
 
