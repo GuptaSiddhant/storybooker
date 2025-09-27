@@ -1,5 +1,11 @@
 # @storybooker/azure
 
+## 0.2.0
+
+### Minor Changes
+
+- 5086bd4: Make external dependencies explicit.
+
 ## 0.1.1
 
 ### Patch Changes
