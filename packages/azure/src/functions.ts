@@ -20,6 +20,10 @@ const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
 export type * from "@storybooker/core/types";
 
+/**
+ * Minimal representation of Azure Functions App namespace
+ * to register HTTP and Timer functions.
+ */
 interface FunctionsApp {
   http(name: string, options: HttpFunctionOptions): void;
   setup(options: SetupOptions): void;
@@ -61,6 +65,16 @@ export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
   purgeScheduleCron?: string | null;
 }
 
+/**
+ * Register the Storybooker router with the Azure Functions App.
+ *
+ * - It enabled streaming responses for HTTP functions.
+ * - It registers the HTTP function with provided route and auth-level.
+ * - It registers the Timer function for purge if `purgeScheduleCron` is not `null`.
+ *
+ * @param app Azure Functions App instance
+ * @param options Options for registering the router
+ */
 export function registerStoryBookerRouter<User extends StoryBookerUser>(
   app: FunctionsApp,
   options: RegisterStorybookerRouterOptions<User>,
@@ -130,7 +144,7 @@ const parseAzureRestError: ErrorParser = (error) => {
 function transformHttpRequestToWebRequest(httpRequest: HttpRequest): Request {
   return new Request(httpRequest.url, {
     // oxlint-disable-next-line no-invalid-fetch-options
-    body: httpRequest.body as ReadableStream | null,
+    body: (httpRequest.body as ReadableStream | null) ?? undefined,
     // @ts-expect-error - Duplex is required for streaming but not supported in TS
     duplex: "half",
     headers: new Headers(httpRequest.headers as Headers),
@@ -138,12 +152,19 @@ function transformHttpRequestToWebRequest(httpRequest: HttpRequest): Request {
   });
 }
 
-function transformWebResponseToHttpResponse(
+async function transformWebResponseToHttpResponse(
   response: Response,
-): HttpResponseInit {
+): Promise<HttpResponseInit> {
+  let body: BodyInit | null = null;
+  if (response.body) {
+    body = response.body as unknown as BodyInit;
+  } else {
+    body = await response.text();
+  }
+
   return {
-    body: response.body as BodyInit | null,
-    headers: new Headers(response.headers),
+    body,
+    headers: response.headers,
     status: response.status,
   };
 }

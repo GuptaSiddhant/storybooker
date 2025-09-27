@@ -25,7 +25,9 @@
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
-    "lint:fix": "yarn lint --fix"
+    "lint:fix": "yarn lint --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "imports": {
     "#components/*": "./src/components/*.tsx",
@@ -57,7 +59,8 @@
     "oxlint": "^1.12.0",
     "oxlint-tsgolint": "^0.2.0",
     "prettier": "^3.6.2",
-    "tsdown": "^0.14.1"
+    "tsdown": "^0.14.1",
+    "vitest": "^3.2.4"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

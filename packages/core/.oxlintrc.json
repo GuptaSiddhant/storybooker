@@ -22,6 +22,16 @@
         "typescript/no-unsafe-assignment": "allow",
         "typescript/require-await": "allow"
       }
+    },
+    {
+      "files": ["src/**/*.test.ts"],
+      "rules": {
+        "max-classes-per-file": "allow",
+        "max-lines-per-function": "allow",
+        "max-lines": "allow",
+        "max-params": "allow",
+        "sort-keys": "allow"
+      }
     }
   ]
 }
