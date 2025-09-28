@@ -3,9 +3,9 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     coverage: {
-      enabled: true,
       exclude: ["src/**/*.type.ts"],
       include: ["src/**/*.ts"],
+      provider: "v8",
       reporter: ["text", "text-summary"],
     },
     environment: "node",

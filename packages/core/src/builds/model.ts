@@ -326,7 +326,7 @@ export class BuildsModel extends Model<BuildType> {
       this.debug("(%s-%s) Upload uncompressed dir", buildSHA, variant);
       await this.storage.uploadFiles(
         generateStorageContainerId(this.projectId),
-        await this.#dirToFiles(dirpath, buildSHA),
+        await dirToFiles(dirpath, buildSHA),
         this.storageOptions,
       );
     } catch (error) {
@@ -342,36 +342,36 @@ export class BuildsModel extends Model<BuildType> {
 
     return;
   }
+}
 
-  #dirToFiles = async (
-    dirpath: string,
-    prefix: string,
-  ): Promise<StoryBookerFile[]> => {
-    const { ui } = getStore();
+async function dirToFiles(
+  dirpath: string,
+  prefix: string,
+): Promise<StoryBookerFile[]> {
+  const { ui } = getStore();
 
-    const allEntriesInDir = await fsp.readdir(dirpath, {
-      encoding: "utf8",
-      recursive: true,
-      withFileTypes: true,
-    });
-    const allFilesInDir = allEntriesInDir
-      .filter((file) => file.isFile() && !file.name.startsWith("."))
-      .map((file) => path.join(file.parentPath, file.name));
+  const allEntriesInDir = await fsp.readdir(dirpath, {
+    encoding: "utf8",
+    recursive: true,
+    withFileTypes: true,
+  });
+  const allFilesInDir = allEntriesInDir
+    .filter((file) => file.isFile() && !file.name.startsWith("."))
+    .map((file) => path.join(file.parentPath, file.name));
 
-    return allFilesInDir.map((filepath): StoryBookerFile => {
-      const relativePath = filepath.replace(`${dirpath}/`, "");
-      const content =
-        ui?.streaming === false
-          ? fs.readFileSync(filepath, { encoding: "binary" })
-          : (Readable.toWeb(
-              fs.createReadStream(filepath, { encoding: "binary" }),
-            ) as ReadableStream);
+  return allFilesInDir.map((filepath): StoryBookerFile => {
+    const relativePath = filepath.replace(`${dirpath}/`, "");
+    const content =
+      ui?.streaming === false
+        ? fs.readFileSync(filepath, { encoding: "binary" })
+        : (Readable.toWeb(
+            fs.createReadStream(filepath, { encoding: "binary" }),
+          ) as ReadableStream);
 
-      return {
-        content,
-        mimeType: getMimeType(filepath),
-        path: path.posix.join(prefix, relativePath),
-      };
-    });
-  };
+    return {
+      content,
+      mimeType: getMimeType(filepath),
+      path: path.posix.join(prefix, relativePath),
+    };
+  });
 }
