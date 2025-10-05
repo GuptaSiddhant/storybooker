@@ -2,39 +2,7 @@
 
 Create service adapters for AWS services.
 
-## Auth
-
-> Currently no auth adapter available for AWS.
-
-## Database
-
-### DynamoDB
-
-The adapter constructor accepts either a pre-configured `DynamoDBClient` instance or a configuration object for the client.
-
-```ts
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { AwsDynamoDatabaseService } from "@storybooker/aws/dynamo-db";
-
-const client = new DynamoDBClient(...)
-const database = new AwsDynamoDatabaseService(client);
-
-// use as database in StoryBooker options.
-```
-
-## Storage
-
-The AWS S3 provides BlobStorage which can be used as storage for StoryBooker.
-
-```ts
-import { S3Client } from "@aws-sdk/client-s3";
-import { AwsS3StorageService } from "@storybooker/aws/s3";
-
-const client = new S3Client(...);
-const storage = new AwsS3StorageService(client);
-
-// use as storage in StoryBooker options.
-```
+Adapter Docs: https://storybooker.js.org/docs/aws
 
 ## Hosting StoryBooker via AWS Lambda + API Gateway
 

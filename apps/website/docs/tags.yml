@@ -1,0 +1,15 @@
+hosting:
+  label: Hosting adapter
+  description: Hosting adapter for StoryBooker
+
+auth:
+  label: Auth adapter
+  description: Auth adapter for StoryBooker
+
+database:
+  label: Database adapter
+  description: Database adapter for StoryBooker
+
+storage:
+  label: Storage adapter
+  description: Storage adapter for StoryBooker

@@ -1,3 +1,4 @@
+// oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
 import {

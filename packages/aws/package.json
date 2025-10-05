@@ -75,7 +75,7 @@
     "@storybooker/core": "workspace:^",
     "@types/aws-lambda": "^8.10.152",
     "@types/node": "^22.0.0",
-    "@typescript/native-preview": "^7.0.0-dev.20250823.8",
+    "@typescript/native-preview": "^7.0.0-dev.20251005.1",
     "oxlint": "^1.12.0",
     "oxlint-tsgolint": "^0.2.0",
     "prettier": "^3.6.2",

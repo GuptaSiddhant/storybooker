@@ -1,0 +1,37 @@
+import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+
+export function DisplayTitle() {
+  const { siteConfig } = useDocusaurusContext();
+  return <>{siteConfig.title}</>;
+}
+export function DisplayTagline() {
+  const { siteConfig } = useDocusaurusContext();
+  return <b>{siteConfig.tagline}</b>;
+}
+
+# <DisplayTitle />
+
+<DisplayTagline />
+
+StoryBooker is a tool to help you host and manage your Storybooks with ease. You can host your Storybooks on your own server using cloud storage like Azure, AWS, GCP or bring-your-own-solution.
+
+[To get started, read Docs for more information.](docs)
+
+- [Host on Azure](docs/azure)
+- [Host on AWS](docs/aws)
+- [Host on GCP](docs/gcp)
+- [Host on custom server](docs/core)
+
+---
+
+## Features
+
+- **Easy Deployment**: Deploy StoryBooker on popular cloud platforms like Azure, AWS, and GCP with minimal setup.
+- **User Management**: Manage users and permissions to control access to your Storybook instances.
+- **Multiple Storybooks**: Host and manage multiple Storybook instances from a single interface.
+- **Custom adapters**: Use custom adapters to connect to different storage solutions or services.
+
+## Benefits
+
+- **Open Source**: StoryBooker is an open-source project, allowing you to customize and extend its functionality to suit your needs.
+- **Self-Hosted**: You have full control over your Storybook instances by hosting them on your own infrastructure.

@@ -20,6 +20,7 @@
     "cli": "yarn workspace storybooker start",
     "cli:dev": "yarn workspace storybooker dev",
     "dev": "turbo dev",
+    "docs": "yarn workspace website start",
     "fmt": "turbo fmt",
     "functions": "yarn workspace azure-functions-app start",
     "lint": "turbo lint",

@@ -2,68 +2,7 @@
 
 Create service adapters for Azure services.
 
-## Auth
-
-The Azure EasyAuth provides quick way to setup auth for Azure Functions
-
-```ts
-import {
-  AzureEasyAuthService,
-  type AuthServiceAuthorise,
-} from "@storybooker/azure/easy-auth";
-
-const authorize: AuthServiceAuthorise = async (permission, { user }) => {
-  // check permission against user (roles)
-  return true; // or false
-};
-const auth = new AzureEasyAuthService(authorise);
-
-// use as auth in StoryBooker options.
-```
-
-## Database
-
-Azure provides 2 options which can be used as database for StoryBooker.
-
-### Data Tables
-
-```ts
-import { TableClient, TableServiceClient } from "@azure/data-tables";
-import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
-
-const database = new AzureDataTablesDatabaseService(
-  new TableServiceClient(connectionString),
-  (tableName) => TableClient.fromConnectionString(connectionString, tableName),
-);
-
-// use as database in StoryBooker options.
-```
-
-### Cosmos DB
-
-```ts
-import { CosmosClient } from "@azure/cosmos";
-import { AzureCosmosDatabaseService } from "@storybooker/azure/cosmos-db";
-
-const client = new CosmosClient(connectionString);
-const database = new AzureCosmosDatabaseService(client);
-
-// use as database in StoryBooker options.
-```
-
-## Storage
-
-The Azure Storage provides BlobStorage which can be used as storage for StoryBooker.
-
-```ts
-import { BlobServiceClient } from "@azure/storage-blob";
-import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
-
-const client = BlobServiceClient.fromConnectionString(connectionString);
-const storage = new AzureBlobStorageService(client);
-
-// use as storage in StoryBooker options.
-```
+Adapter Docs: https://storybooker.js.org/docs/azure
 
 ## Hosting StoryBooker in Azure Functions
 
