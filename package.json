@@ -25,7 +25,7 @@
     "functions": "yarn workspace azure-functions-app start",
     "lint": "turbo lint",
     "publish": "changeset version && yarn workspaces foreach -A --no-private npm publish && changeset tag",
-    "server": "deno serve -A --unstable-sloppy-imports --watch ./server.ts",
+    "server": "deno serve -REW --unstable-sloppy-imports --watch ./server.ts",
     "test": "turbo test",
     "verify": "turbo verify"
   },

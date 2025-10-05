@@ -14,7 +14,7 @@ StoryBooker is composed of 3 main parts:
 
 The router is the core of StoryBooker. It is responsible for routing requests to the page/api and using the appropriate adapter to render the response.
 
-The entire router is maintained in the `@storybooker/core` package. The package is used to create a router-handler that takes a WebRequest and returns a WebResponse. The router is framework agnostic and can be used in any server environment that supports NodeJS api (NodeJS, Deno, Bun, etc.).
+The entire router is maintained in the [`@storybooker/core`](./core) package. The package is used to create a router-handler that takes a WebRequest and returns a WebResponse. The router is framework agnostic and can be used in any server environment that supports NodeJS api (NodeJS, Deno, Bun, etc.).
 
 ## Adapters
 

@@ -13,3 +13,11 @@ database:
 storage:
   label: Storage adapter
   description: Storage adapter for StoryBooker
+
+core:
+  label: Core package
+  description: Core package for StoryBooker
+
+api:
+  label: API definitions
+  description: API definitions for StoryBooker

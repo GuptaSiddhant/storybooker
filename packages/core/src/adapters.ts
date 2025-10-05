@@ -87,7 +87,7 @@ export class LocalFileDatabase implements DatabaseService {
       items.sort(sort);
     }
     if (filter && typeof filter === "function") {
-      return items.filter(filter).slice(0, limit);
+      return items.filter((item) => filter(item)).slice(0, limit);
     }
 
     return items.slice(0, limit);

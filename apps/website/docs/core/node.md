@@ -1,13 +1,17 @@
-# StoryBooker Core
+---
+sidebar_position: 1
+tags:
+  - core
+---
 
-The core contains the routing logic and UI for StoryBooker.
-The core can be extended to be used with any platform that supports standard fetch (Request+Response).
+# NodeJS
 
-Core Docs: https://storybooker.js.org/docs/core
-
-### Running on basic Node server
+Run following with `node server.mjs`
 
 ```js
+// @ts-check
+// server.mjs
+
 import { createServer } from "node:http";
 import { createRequestListener } from "@remix-run/node-fetch-server";
 import { createRequestHandler } from "@storybooker/core";
@@ -16,11 +20,15 @@ import {
   LocalFileStorage,
 } from "@storybooker/core/adapters";
 
+// Create StoryBooker router handler
 const handler = createRequestHandler({
+  // provide a supported database service adapter
   database: new LocalFileDatabase(),
+  // provide a supported storage service adapter
   storage: new LocalFileStorage(),
 });
 
+// Create a standard Node.js server
 const server = createServer(createRequestListener(handler));
 
 server.listen(8000, () => {

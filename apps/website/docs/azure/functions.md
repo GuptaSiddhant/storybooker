@@ -7,6 +7,8 @@ tags:
 
 Host your StoryBooker instance using Azure Functions. This is a wrapper around StoryBooker core-router to make it work in Azure Functions environment using Functions HTTP Trigger.
 
+It also registers a purge function that can be scheduled to run periodically using Azure Functions Timer Trigger. Defaults to running at midnight every day.
+
 > Note: You can use any database/storage adapter supported by StoryBooker but it is recommended to use Azure native services for best performance.
 
 ---
