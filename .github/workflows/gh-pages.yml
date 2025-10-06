@@ -4,6 +4,9 @@ on:
     push:
         branches:
             - "main"
+        paths:
+            - "apps/website/**"
+            - ".github/workflows/gh-pages.yml"
 
 jobs:
     # Build job
@@ -16,14 +19,14 @@ jobs:
             - name: Setup Node.js
               uses: actions/setup-node@v5
               with:
-                  node-version: lts
+                  node-version-file: ".nvmrc"
                   cache: "yarn"
 
             - name: Setup Turbo and Install dependencies
               run: |
                   npx -y turbo prune website;
                   cd out;
-                  yarn install --frozen-lockfile;
+                  yarn install --immutable
 
             - name: Build static files
               id: build
