@@ -77,7 +77,7 @@ const config: Config = {
         {
           href: "/openapi",
           label: "OpenAPI",
-          position: "right",
+          position: "left",
         },
         {
           href: "https://github.com/GuptaSiddhant/storybooker",
