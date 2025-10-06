@@ -2,6 +2,8 @@
 
 Host your own StoryBooks management solution.
 
+Docs: https://storybooker.js.org
+
 ## Supported hosts
 
 ### Azure Functions
