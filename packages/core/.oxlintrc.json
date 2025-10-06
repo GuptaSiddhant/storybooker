@@ -24,13 +24,14 @@
       }
     },
     {
-      "files": ["src/**/*.test.ts"],
+      "files": ["src/**/*.test.ts", "src/mocks/**/*.ts"],
       "rules": {
         "max-classes-per-file": "allow",
         "max-lines-per-function": "allow",
         "max-lines": "allow",
         "max-params": "allow",
-        "sort-keys": "allow"
+        "sort-keys": "allow",
+        "typescript/require-await": "allow"
       }
     }
   ]
