@@ -1,12 +1,10 @@
-// oxlint-disable sort-keys
-
 import Layout from "@theme/Layout";
 
 export default function OpenApi(): React.ReactNode {
   return (
     <Layout title="OpenAPI" description="StoryBooker OpenAPI">
       <iframe
-        style={{ width: "100%", height: "100vh", border: "none" }}
+        style={{ border: "none", height: "100vh", width: "100%" }}
         srcDoc={`<!doctype html>
 <html>
   <head>

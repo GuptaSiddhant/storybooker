@@ -20823,8 +20823,8 @@ __metadata:
     "@docusaurus/types": "npm:3.9.1"
     "@easyops-cn/docusaurus-search-local": "npm:^0.52.1"
     "@mdx-js/react": "npm:^3.0.0"
+    "@storybooker/core": "workspace:^"
     "@types/react": "npm:^19.0.0"
-    "@typescript/native-preview": "npm:^7.0.0-dev.20251005.1"
     clsx: "npm:^2.0.0"
     oxlint: "npm:^1.12.0"
     oxlint-tsgolint: "npm:^0.2.0"
@@ -20832,6 +20832,7 @@ __metadata:
     prism-react-renderer: "npm:^2.3.0"
     react: "npm:^19.0.0"
     react-dom: "npm:^19.0.0"
+    typescript: "npm:^5.9.2"
   languageName: unknown
   linkType: soft
 
