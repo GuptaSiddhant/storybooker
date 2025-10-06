@@ -69,7 +69,7 @@ export function globalStyleSheet(theme: {
     * {
       box-sizing: border-box;
       color-scheme: light dark;
-      font-family: system-ui;      
+      font-family: 'IBM Plex Mono', system-ui;      
       border-color: var(--color-border);
       border-radius: 0px;
     }

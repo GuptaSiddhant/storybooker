@@ -54,7 +54,7 @@ export function RawDataList({
               opacity: 0.8,
             }}
           >
-            {camelCaseToSentenceCase(key)}
+            {key.includes(" ") ? key : camelCaseToSentenceCase(key)}
           </dt>
           <dd style={{ fontSize: "0.9em", margin: 0 }}>
             {(typeof value === "string"

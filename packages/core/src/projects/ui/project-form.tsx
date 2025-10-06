@@ -49,7 +49,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
 
         <div class="field">
           <label for="name">
-            {commonT.Project()} ${commonT.Name()}
+            {commonT.Project()} {commonT.Name()}
           </label>
           <input id="name" name="name" required value={project?.name} />
         </div>

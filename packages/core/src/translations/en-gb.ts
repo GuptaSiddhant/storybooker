@@ -65,6 +65,8 @@ export const translations_enGB = {
       "No further information about the Account is provided by the service.",
     no_builds_available: "No builds available",
     serving_static_file: "Serving static file",
+    create_project_info:
+      "A project is a collection of StoryBook builds and labels. One project corresponds to one StoryBook instance/project.",
   },
   confirmations: {
     delete: "Are you sure about deleting the {{variant}} '{{name}}'?",

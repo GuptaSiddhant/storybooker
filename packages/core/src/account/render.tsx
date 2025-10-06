@@ -107,9 +107,6 @@ function UserInfo({
 
       <div
         style={{
-          overflow: "hidden",
-          textWrap: "nowrap",
-          textOverflow: "ellipsis",
           fontWeight: "bold",
           fontSize: "1.5rem",
         }}

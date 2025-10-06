@@ -9,7 +9,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 const config: Config = {
   title: "StoryBooker",
   tagline: "Host and manage your own Storybooks",
-  favicon: "img/favicon.ico",
+  favicon: "img/SBR_white_128.jpg",
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
@@ -63,10 +63,10 @@ const config: Config = {
     },
     navbar: {
       title: "StoryBooker",
-      // logo: {
-      //   alt: "StoryBooker Logo",
-      //   src: "img/logo.svg",
-      // },
+      logo: {
+        alt: "StoryBooker Logo",
+        src: "img/StoryBooker_border.png",
+      },
       items: [
         {
           type: "docSidebar",

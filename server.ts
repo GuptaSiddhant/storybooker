@@ -1,3 +1,4 @@
+// oxlint-disable no-console
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
@@ -20,7 +21,7 @@ class LocalAuthService implements AuthService {
 
   init = async (): Promise<void> => {
     this.#user = {
-      displayName: "Test User",
+      displayName: "Test User name",
       id: "user",
       imageUrl:
         "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
@@ -61,4 +62,6 @@ const requestHandler = createRequestHandler({
   ui: { logo: "https://cos-admin.azurewebsites.net/icons/cos-logo.svg" },
 });
 
-export default { fetch: requestHandler };
+export default {
+  fetch: requestHandler,
+};

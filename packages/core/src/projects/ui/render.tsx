@@ -16,7 +16,7 @@ import type { LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { href, urlBuilder, URLS } from "#urls";
-import { commonT } from "#utils/i18n";
+import { commonT, getT } from "#utils/i18n";
 import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
 
@@ -131,7 +131,7 @@ export function renderProjectDetailsPage({
 }
 
 export function renderProjectCreatePage(): JSX.Element {
-  const title = `${commonT.Create()} ${commonT.Project()}"`;
+  const title = `${commonT.Create()} ${commonT.Project()}`;
 
   return (
     <DocumentLayout title={title}>
@@ -145,7 +145,9 @@ export function renderProjectCreatePage(): JSX.Element {
       <DocumentMain style={{ padding: "1rem" }}>
         <ProjectForm project={undefined} />
       </DocumentMain>
-      <DocumentSidebar />
+      <DocumentSidebar style={{ fontSize: "0.9em", padding: "1rem" }}>
+        {getT("messages", "create_project_info")}
+      </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>
   );
@@ -171,7 +173,9 @@ export function renderProjectUpdatePage({
       <DocumentMain style={{ padding: "1rem" }}>
         <ProjectForm project={project} />
       </DocumentMain>
-      <DocumentSidebar />
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <RawDataList data={{ "Project ID": project.id }} />
+      </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>
   );

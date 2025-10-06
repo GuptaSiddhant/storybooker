@@ -6,7 +6,9 @@ import { SERVICE_NAME } from "#constants";
 import { getStore } from "#store";
 import { href, urlBuilder, URLS } from "#urls";
 import { urlJoin } from "#utils/url";
+import { globalFonts } from "./_fonts";
 import { globalStyleSheet } from "./_global";
+import { SBRLogo } from "./logo";
 
 type Children = JSX.Element | null | (JSX.Element | null)[];
 
@@ -24,6 +26,7 @@ export function DocumentLayout({
   const { ui } = getStore();
   const { darkTheme, lightTheme } = ui || {};
   const safeStylesheet = globalStyleSheet({ darkTheme, lightTheme });
+  const safeFontsStylesheet = globalFonts();
 
   return (
     <>
@@ -33,8 +36,18 @@ export function DocumentLayout({
           <title safe>
             {title} | {SERVICE_NAME}
           </title>
+          <link
+            rel="icon"
+            href={"https://storybooker.js.org/img/SBR_white_128.jpg"}
+          />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossorigin="true"
+          />
           <style>{safeStylesheet}</style>
+          <style>{safeFontsStylesheet}</style>
           <script
             src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"
             crossorigin="anonymous"
@@ -106,22 +119,15 @@ function Logo(): JSX.Element {
         textDecoration: "none",
       }}
     >
-      <strong
+      <SBRLogo
         style={{
           color: "var(--color-text-primary)",
-          display: "block",
-          fontFamily: "monospace",
-          fontSize: "1.2em",
-          lineHeight: "0.8",
-          textAlign: "center",
+          height: "min-content",
+          width: "64px",
         }}
-      >
-        STORY
-        <br />
-        <span style={{ fontSize: "0.7em" }}>BOOKER</span>
-      </strong>
+      />
 
-      {logo ? (
+      {logoElement ? (
         <>
           <div
             style={{
@@ -132,7 +138,7 @@ function Logo(): JSX.Element {
           />
           <div
             style={{
-              maxWidth: "90px",
+              maxWidth: "80px",
               maxHeight: "40px",
               display: "flex",
               alignItems: "center",
@@ -248,7 +254,6 @@ export function DocumentUserSection(): JSX.Element {
             width: "2rem",
             minWidth: "2rem",
             height: "2rem",
-            borderRadius: "0.25rem",
             overflow: "hidden",
             objectFit: "cover",
             border: "1px solid",
