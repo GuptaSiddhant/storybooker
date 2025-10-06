@@ -12,7 +12,11 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "check": "tsgo --noEmit",
+    "fmt": "prettier src --write --config ../../.prettierrc",
+    "lint": "oxlint --type-aware ./src",
+    "lint:fix": "yarn lint --fix",
+    "openapi": "cp ../../packages/core/dist/openapi.json ./static/openapi.json"
   },
   "dependencies": {
     "@docusaurus/core": "3.9.1",
@@ -29,6 +33,7 @@
     "@docusaurus/module-type-aliases": "3.9.1",
     "@docusaurus/tsconfig": "3.9.1",
     "@docusaurus/types": "3.9.1",
+    "@storybooker/core": "workspace:^",
     "@types/react": "^19.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20251005.1",
     "oxlint": "^1.12.0",

@@ -75,6 +75,11 @@ const config: Config = {
           label: "Docs",
         },
         {
+          href: "/openapi",
+          label: "OpenAPI",
+          position: "right",
+        },
+        {
           href: "https://github.com/GuptaSiddhant/storybooker",
           label: "GitHub",
           position: "right",

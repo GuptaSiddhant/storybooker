@@ -43,3 +43,4 @@ storybook-static
 *.zip
 test-report
 coverage
+openapi.json
