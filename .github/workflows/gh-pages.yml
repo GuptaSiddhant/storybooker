@@ -25,7 +25,9 @@ jobs:
           cache: "yarn"
 
       - name: Setup Turbo
-        run: npx -y turbo prune website
+        run: |
+          npx -y turbo prune website
+          cp tsconfig.base.json out/tsconfig.base.json
 
       - name: Install dependencies
         working-directory: ./out
