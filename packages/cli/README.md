@@ -2,6 +2,8 @@
 
 A NodeJS CLI to sync with StoryBooker service. The CLI can be used to build, test, upload StoryBook to the service.
 
+Docs: https://storybooker.js.org/docs/
+
 ## Usage
 
 See commands + help
