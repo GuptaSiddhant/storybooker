@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.9.1
+
+### Patch Changes
+
+- 6d297bb: Update to reflect new homepage-docs
+
 ## 0.9.0
 
 ### Minor Changes
