@@ -160,7 +160,7 @@ export function globalStyleSheet(theme: {
 
     #app > footer {
       grid-area: footer;    
-      padding: 1rem;  
+      padding: 0.5rem 1rem;  
       min-height: 3rem;
     }
 
@@ -291,6 +291,13 @@ export function globalStyleSheet(theme: {
       flex-direction: column;
       gap: 0.25rem;
     }
+  
+    form .field-h {
+      display: flex;
+      flex-direction: row;
+      gap: 0.25rem;
+      align-items: center;
+    }
 
     form label {
       font-size: 0.8rem;
@@ -301,34 +308,41 @@ export function globalStyleSheet(theme: {
     select {
       min-height: 3em;
     }
-
+    
     input,
     select,
     textarea
     {      
       padding: 0.25rem 0.5rem;
       color: inherit;      
+      font-size: inherit;
       border: 1px solid var(--color-border);
     }
     
-    button, a.button {
+    button, .button {
       padding: 0.25rem 0.5rem;
       cursor: pointer;
-      font-size: 0.9em;      
+      font-size: 0.9em;            
     }
 
     button[type="submit"] {
-      background-color: var(--color-bg-invert);
+      background: var(--color-bg-invert);
       color: var(--color-text-invert);      
       padding: 0.25rem 1rem;
-    }
+    }    
+    button[type="submit"].outline, .outline {
+      background: none;
+      color: inherit; 
+      border: 1px solid var(--color-border);
+      padding: 0.25rem 0.5rem;
+    }    
 
     .description {
       font-size: 0.8rem;
       color: var(--color-text-secondary);
     }
 
-    a.button {
+    .button,  {      
       border: 1px solid var(--color-border);
       background: none;
       display: flex;
@@ -336,7 +350,7 @@ export function globalStyleSheet(theme: {
       justify-content: center;
       color: inherit;
     }
-    a.button:hover {
+    .button:hover {
       text-decoration:none;
     }
 

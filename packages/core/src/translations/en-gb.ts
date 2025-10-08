@@ -45,6 +45,8 @@ export const translations_enGB = {
     email: "email",
     author: "author",
     purge: "purge",
+    filter: "filter",
+    clear: "clear",
   },
   errorMessages: {
     auth_setup_missing: "Auth is not setup",

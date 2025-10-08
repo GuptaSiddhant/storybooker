@@ -70,9 +70,12 @@ export function DocumentLayout({
                 <div
                   style={{
                     color: "var(--color-text-secondary)",
-                    textAlign: "end",
                     width: "100%",
                     fontSize: "0.8rem",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
                   }}
                 >
                   {SERVICE_NAME} 2025
@@ -122,7 +125,7 @@ function Logo(): JSX.Element {
       <SBRLogo
         style={{
           color: "var(--color-text-primary)",
-          height: "min-content",
+          height: "32px",
           width: "64px",
         }}
       />
@@ -190,7 +193,18 @@ export function DocumentHeader({
         <div safe>{children}</div>
       </div>
 
-      {toolbar ? <div>{toolbar}</div> : null}
+      {toolbar ? (
+        <div
+          style={{
+            display: "flex",
+            gap: "0.5rem",
+            alignItems: "center",
+            justifyContent: "end",
+          }}
+        >
+          {toolbar}
+        </div>
+      ) : null}
     </header>
   );
 }

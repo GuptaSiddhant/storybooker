@@ -11,7 +11,7 @@ import {
   DocumentUserSection,
 } from "#components/document";
 import { RawDataList } from "#components/raw-data";
-import type { LabelType } from "#labels/schema";
+import { labelTypes, type LabelType } from "#labels/schema";
 import type { ProjectType } from "#projects/schema";
 import { getStore } from "#store";
 import { urlBuilder } from "#urls";
@@ -22,11 +22,13 @@ import { LabelsTable } from "./labels-table";
 export function renderLabelsPage({
   labels,
   project,
+  defaultType,
 }: {
   labels: LabelType[];
   project: ProjectType;
+  defaultType: string | null;
 }): JSX.Element {
-  const title = `${commonT.All()} ${commonT.Labels()}`;
+  const title = `${commonT.All()} ${commonT.Labels()} ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
 
   return (
     <DocumentLayout title={title}>
@@ -43,7 +45,36 @@ export function renderLabelsPage({
       <DocumentMain>
         <LabelsTable caption={""} project={project} labels={labels} />
       </DocumentMain>
-      <DocumentSidebar></DocumentSidebar>
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <form
+          style={{
+            display: "flex",
+            gap: "1rem",
+          }}
+        >
+          <div class="field" style={{ minWidth: "100px" }}>
+            <label for="filter-type">{commonT.Type()}</label>
+            <select id="filter-type" name="type">
+              <option value="">
+                {commonT.All()} {commonT.Type()}
+              </option>
+              {labelTypes.map((type) => (
+                <option value={type} selected={defaultType === type}>
+                  {type.toUpperCase()}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button style={{ height: "max-content" }}>
+              {commonT.Filter()}
+            </button>
+            <LinkButton href={urlBuilder.allLabels(project.id)} class="outline">
+              {commonT.Clear()}
+            </LinkButton>
+          </div>
+        </form>
+      </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>
   );

@@ -1,5 +1,5 @@
 export function LinkButton(props: JSX.HtmlAnchorTag): JSX.Element {
-  return <a {...props} class="button" />;
+  return <a {...props} class={`button ${props.class}`} />;
 }
 
 export function DestructiveButton(props: JSX.HtmlButtonTag): JSX.Element {

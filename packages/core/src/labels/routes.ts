@@ -59,14 +59,21 @@ export const listLabels = defineRoute(
     summary: "List all labels for a project",
     tags: [tag],
   },
-  async ({ params: { projectId } }) => {
+  async ({ params: { projectId }, request }) => {
     await authenticateOrThrow({ action: "read", projectId, resource: "label" });
 
-    const labels = await new LabelsModel(projectId).list();
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+
+    const labels = await new LabelsModel(projectId).list({
+      filter: type ? (item): boolean => item.type === type : undefined,
+    });
 
     if (checkIsHTMLRequest()) {
       const project = await new ProjectsModel().get(projectId);
-      return await responseHTML(renderLabelsPage({ labels, project }));
+      return await responseHTML(
+        renderLabelsPage({ defaultType: type, labels, project }),
+      );
     }
 
     const result: LabelsListResultType = { labels };
