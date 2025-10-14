@@ -5930,10 +5930,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/route-pattern@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@remix-run/route-pattern@npm:0.10.0"
-  checksum: 10c0/1e9521e62a862902987e9982508787b2e82f2bded5daa21170450dbba79c88f0d9d6543b2057db22e344b9fe02ebad7e8f3671720fd1865653e56525a08144a3
+"@remix-run/route-pattern@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@remix-run/route-pattern@npm:0.14.0"
+  checksum: 10c0/ba9106b2b732a888283187455f665a335f383bc759f9d36fa5b9e395e363d27a7a245a1f0123f64a4801edd7ecfb2f090541037595ed6f08776e3a8ffd6db549
   languageName: node
   linkType: hard
 
@@ -7292,7 +7292,7 @@ __metadata:
   resolution: "@storybooker/core@workspace:packages/core"
   dependencies:
     "@kitajs/html": "npm:^4.0.0"
-    "@remix-run/route-pattern": "npm:^0.10.0"
+    "@remix-run/route-pattern": "npm:^0.14.0"
     "@types/decompress": "npm:^4.0.0"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251005.1"

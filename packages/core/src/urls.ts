@@ -44,7 +44,7 @@ export const URLS = {
 
 const baseHref = createHrefBuilder();
 
-export const href: HrefBuilder<string> = (...buildParams) => {
+export const href: HrefBuilder = (...buildParams) => {
   const { prefix, url: base } = getStore();
   const [pattern, args, args2] = buildParams;
   // @ts-expect-error args are complex

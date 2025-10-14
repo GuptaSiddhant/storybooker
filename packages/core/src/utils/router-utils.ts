@@ -24,7 +24,7 @@ type Handler<Path extends string> = (options: {
 interface Route<Method extends Methods, Path extends string> {
   method: Method;
   pattern: RoutePattern<Path>;
-  handler: Handler<Path>;
+  handler: Handler<NoInfer<Path>>;
 }
 
 export interface RegisterRouteOptions<
@@ -105,7 +105,7 @@ class Router {
 
         // oxlint-disable-next-line no-await-in-loop
         return await route.handler({
-          params: match.params,
+          params: match.params as Record<string, string>,
           request,
         });
       } catch (error) {
@@ -127,7 +127,7 @@ export function defineRoute<Method extends Methods, Path extends string>(
   input:
     | (ZodOpenApiPathItemObject[Method] & { overridePath?: string })
     | undefined,
-  handler: Handler<Path>,
+  handler: Handler<NoInfer<Path>>,
 ): RegisterRouteOptions<Method, Path> {
   const overriddenPath = input?.overridePath;
   delete input?.overridePath;

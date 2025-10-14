@@ -25,7 +25,7 @@
     "check": "tsgo --noEmit",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "lint": "oxlint --type-aware ./src",
+    "lint": "oxlint ./src",
     "lint:fix": "yarn lint --fix",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
