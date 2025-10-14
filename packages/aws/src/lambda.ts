@@ -1,5 +1,4 @@
 import { createRequestHandler } from "@storybooker/core";
-import { CONTENT_TYPES, HEADERS } from "@storybooker/core/constants";
 import type {
   RequestHandlerOptions,
   StoryBookerUser,
@@ -44,7 +43,7 @@ export function createStoryBookerRouterHandler<User extends StoryBookerUser>(
     } catch (error) {
       return {
         body: JSON.stringify({ error, message: "Internal Server Error" }),
-        headers: { [HEADERS.contentType]: CONTENT_TYPES.JSON },
+        headers: { "content-type": "application/json" },
         statusCode: 500,
       };
     }
@@ -114,10 +113,10 @@ async function transformWebResponseToApiGatewayResult(
     }
   }
 
-  const contentType = response.headers.get(HEADERS.contentType);
+  const contentType = response.headers.get("content-type");
   if (
     contentType?.startsWith("text/") ||
-    contentType?.startsWith(CONTENT_TYPES.JSON)
+    contentType?.startsWith("application/json")
   ) {
     const body = await response.text();
 

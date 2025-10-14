@@ -6,7 +6,6 @@ export default defineConfig({
   dts: { tsgo: true },
   entry: {
     adapters: "./src/adapters.ts",
-    constants: "./src/utils/constants.ts",
     index: "./src/index.ts",
     translations: "./src/translations/index.ts",
     "translations/en-gb": "./src/translations/en-gb.ts",

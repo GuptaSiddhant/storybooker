@@ -28,6 +28,7 @@ router.registerGroup(buildsRoutes);
 router.registerGroup(accountRoutes);
 
 export { router };
+export { SERVICE_NAME } from "./utils/constants";
 
 export type {
   OpenAPIOptions,

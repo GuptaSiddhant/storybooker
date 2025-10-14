@@ -6,8 +6,11 @@ import type {
   SetupOptions,
   TimerFunctionOptions,
 } from "@azure/functions";
-import { createPurgeHandler, createRequestHandler } from "@storybooker/core";
-import { SERVICE_NAME } from "@storybooker/core/constants";
+import {
+  createPurgeHandler,
+  createRequestHandler,
+  SERVICE_NAME,
+} from "@storybooker/core";
 import type {
   ErrorParser,
   RequestHandlerOptions,

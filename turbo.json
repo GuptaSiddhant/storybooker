@@ -21,6 +21,7 @@
       "dependsOn": ["^build"],
       "outputLogs": "new-only"
     },
+    "publish:jsr": { "cache": false },
     "test": {
       "outputs": ["./node_modules/.vite/vitest"]
     },

@@ -1,18 +1,19 @@
-name: Publish
+name: Verify
 
 on:
   workflow_dispatch:
   push:
-    tags:
+    branches:
+      - "*"
+  pull_request:
+    branches:
       - "*"
 
-permissions:
-  contents: read
-  id-token: write
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  publish-all:
-    name: Publish all packages
+  verify:
+    name: Verify source
     runs-on: ubuntu-latest
     env:
       NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
@@ -30,9 +31,3 @@ jobs:
 
       - name: Verify
         run: yarn verify
-
-      - name: Publish on NPM
-        run: yarn publish:npm
-
-      - name: Publish on JSR
-        run: yarn publish:jsr

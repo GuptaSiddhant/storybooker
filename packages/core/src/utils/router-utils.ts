@@ -118,7 +118,7 @@ class Router {
   }
 }
 
-export const router = new Router();
+export const router: Router = new Router();
 
 // oxlint-disable-next-line max-params
 export function defineRoute<Method extends Methods, Path extends string>(

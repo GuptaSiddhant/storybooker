@@ -1,5 +1,5 @@
 import type { CosmosClient, Database } from "@azure/cosmos";
-import { SERVICE_NAME } from "@storybooker/core/constants";
+import { SERVICE_NAME } from "@storybooker/core";
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,

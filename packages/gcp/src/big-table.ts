@@ -1,5 +1,5 @@
 import type { Bigtable, Instance } from "@google-cloud/bigtable";
-import { SERVICE_NAME } from "@storybooker/core/constants";
+import { SERVICE_NAME } from "@storybooker/core";
 import type {
   DatabaseDocumentListOptions,
   DatabaseService,

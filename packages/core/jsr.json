@@ -1,0 +1,18 @@
+{
+  "$schema": "https://jsr.io/schema/config-file.v1.json",
+  "name": "@storybooker/core",
+  "version": "0.10.0",
+  "license": "MIT",
+  "publish": {
+    "include": ["src", "README.md", "dist/openapi.json"]
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./adapters": "./src/adapters.ts",
+    "./translations": "./src/translations/index.ts",
+    "./translations/en-gb": "./src/translations/en-gb.ts",
+    "./types": "./src/types/index.ts",
+    "./utils": "./src/utils/index.ts",
+    "./openapi.json": "./dist/openapi.json"
+  }
+}
