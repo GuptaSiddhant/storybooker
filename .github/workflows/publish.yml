@@ -30,10 +30,11 @@ jobs:
         run: yarn install --immutable
 
       - name: Verify
+        id: verify
         run: yarn verify
-
-      - name: Publish on NPM
-        run: yarn publish:npm
 
       - name: Publish on JSR
         run: yarn publish:jsr
+
+      - name: Publish on NPM
+        run: yarn publish:npm
