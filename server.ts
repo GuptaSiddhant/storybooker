@@ -52,6 +52,10 @@ class LocalAuthService implements AuthService {
       status: 302,
     });
   };
+  renderAccountDetails = (_request: Request, user: StoryBookerUser): string => {
+    return `<p style="padding:1rem">Place anything in this iFrame about the user</p>
+<pre style="padding:1rem">${JSON.stringify({ user }, null, 2)}</pre`;
+  };
 }
 
 const requestHandler = createRequestHandler({

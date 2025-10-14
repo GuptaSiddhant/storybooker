@@ -94,10 +94,9 @@ function UserInfo({
           alt={id}
           src={imageUrl}
           style={{
-            width: "8rem",
+            width: "100%",
             minWidth: "8rem",
-            height: "8rem",
-            borderRadius: "0.5rem",
+            aspectRatio: "1",
             overflow: "hidden",
             objectFit: "cover",
             border: "1px solid",

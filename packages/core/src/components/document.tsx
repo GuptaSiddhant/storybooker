@@ -2,12 +2,10 @@
 // oxlint-disable max-lines
 // oxlint-disable max-lines-per-function
 
-import { SERVICE_NAME } from "#constants";
+import { SERVICE_NAME, STYLESHEETS } from "#constants";
 import { getStore } from "#store";
 import { href, urlBuilder, URLS } from "#urls";
 import { urlJoin } from "#utils/url";
-import { globalFonts } from "./_fonts";
-import { globalStyleSheet } from "./_global";
 import { SBRLogo } from "./logo";
 
 type Children = JSX.Element | null | (JSX.Element | null)[];
@@ -23,11 +21,6 @@ export function DocumentLayout({
   footer?: JSX.Element | null;
   account?: JSX.Element | null;
 }): JSX.Element {
-  const { ui } = getStore();
-  const { darkTheme, lightTheme } = ui || {};
-  const safeStylesheet = globalStyleSheet({ darkTheme, lightTheme });
-  const safeFontsStylesheet = globalFonts();
-
   return (
     <>
       {"<!DOCTYPE html>"}
@@ -46,8 +39,10 @@ export function DocumentLayout({
             href="https://fonts.gstatic.com"
             crossorigin="true"
           />
-          <style>{safeStylesheet}</style>
-          <style>{safeFontsStylesheet}</style>
+          <link
+            href={urlBuilder.staticFile(STYLESHEETS.globalStyles)}
+            rel="stylesheet"
+          />
           <script
             src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"
             crossorigin="anonymous"
@@ -100,13 +95,13 @@ function Logo(): JSX.Element {
 
   // oxlint-disable-next-line no-nested-ternary
   const logoElement = logo ? (
-    logo.startsWith("http") ? (
+    logo.includes("<") && logo.includes(">") ? (
+      logo // HTML
+    ) : (
       <img
         src={logo}
         style="width:100%; object-fit:contain; background:white; padding:4px; border-radius: 4px;"
       />
-    ) : (
-      logo
     )
   ) : undefined;
 

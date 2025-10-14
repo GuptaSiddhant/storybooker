@@ -11,6 +11,7 @@ export const ISO_DATE_REGEXP =
 
 export const CONTENT_TYPES = {
   ANY: "*/*",
+  CSS: "text/css",
   FORM_ENCODED: "application/x-www-form-urlencoded",
   FORM_MULTIPART: "multipart/form-data",
   HTML: "text/html",
@@ -47,3 +48,5 @@ export const PATTERNS = {
     message?: string;
   }
 >;
+
+export const STYLESHEETS = { globalStyles: "sbr-style.css" };
