@@ -27,12 +27,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version-file: ".nvmrc"
+
       - name: Install dependencies
         run: yarn install --immutable
+
       - name: Verify
         run: yarn verify
 
@@ -42,6 +45,8 @@ jobs:
           count=$(find .changeset -name "*.md" | wc -l | tr -d '[:space:]')
           if [[ $count == 0 ]]; then
             echo "hasChangesets=false" >> $GITHUB_OUTPUT;
+            echo "No changesets found to publish"
+            exit 0;
           else 
             echo "hasChangesets=true" >> $GITHUB_OUTPUT;
           fi
