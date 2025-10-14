@@ -34,7 +34,9 @@ jobs:
         run: yarn verify
 
       - name: Publish on JSR
+        continue-on-error: true
         run: yarn publish:jsr
 
       - name: Publish on NPM
+        continue-on-error: true
         run: yarn publish:npm
