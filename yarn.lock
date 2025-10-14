@@ -7245,7 +7245,6 @@ __metadata:
   peerDependencies:
     "@aws-sdk/client-dynamodb": ^3.0.0
     "@aws-sdk/client-s3": ^3.0.0
-    "@storybooker/core": "workspace:^"
   peerDependenciesMeta:
     "@aws-sdk/client-dynamodb":
       optional: true
@@ -7274,7 +7273,6 @@ __metadata:
     "@azure/data-tables": ^13.0.0
     "@azure/functions": ^4.0.0
     "@azure/storage-blob": ^12.0.0
-    "@storybooker/core": "workspace:^"
   peerDependenciesMeta:
     "@azure/cosmos":
       optional: true
@@ -7327,7 +7325,6 @@ __metadata:
     "@google-cloud/bigtable": ^6.0.0
     "@google-cloud/firestore": ^7.0.0
     "@google-cloud/storage": ^7.0.0
-    "@storybooker/core": "workspace:^"
   peerDependenciesMeta:
     "@google-cloud/bigtable":
       optional: true
