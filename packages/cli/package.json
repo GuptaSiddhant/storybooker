@@ -10,8 +10,7 @@
   },
   "files": [
     "src",
-    "dist",
-    "CHANGELOG.md"
+    "dist"
   ],
   "homepage": "https://storybooker.js.org",
   "repository": {

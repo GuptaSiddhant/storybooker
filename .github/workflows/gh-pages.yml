@@ -7,7 +7,6 @@ on:
       - "main"
     paths:
       - "apps/website/**"
-      - ".changeset/**"
       - ".github/workflows/gh-pages.yml"
 
 jobs:

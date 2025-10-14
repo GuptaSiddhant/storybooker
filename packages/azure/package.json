@@ -19,8 +19,7 @@
   },
   "files": [
     "src",
-    "dist",
-    "CHANGELOG.md"
+    "dist"
   ],
   "engines": {
     "node": ">=22.0.0"

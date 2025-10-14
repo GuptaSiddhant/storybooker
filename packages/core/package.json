@@ -15,8 +15,7 @@
   },
   "files": [
     "src",
-    "dist",
-    "CHANGELOG.md"
+    "dist"
   ],
   "license": "MIT",
   "sideEffects": false,
@@ -80,11 +79,6 @@
       "import": "./dist/adapters.js",
       "require": "./dist/adapters.cjs"
     },
-    "./constants": {
-      "source": "./src/utils/constants.ts",
-      "import": "./dist/constants.js",
-      "require": "./dist/constants.cjs"
-    },
     "./translations": {
       "source": "./src/translations/index.ts",
       "import": "./dist/translations.js",
@@ -117,10 +111,6 @@
       "./adapters": {
         "import": "./dist/adapters.js",
         "require": "./dist/adapters.cjs"
-      },
-      "./constants": {
-        "import": "./dist/constants.js",
-        "require": "./dist/constants.cjs"
       },
       "./translations": {
         "import": "./dist/translations.js",

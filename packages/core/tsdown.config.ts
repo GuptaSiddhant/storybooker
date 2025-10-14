@@ -1,5 +1,5 @@
 import { argv } from "node:process";
-import { defineConfig } from "tsdown";
+import { defineConfig, type ResolvedOptions } from "tsdown";
 
 export default defineConfig({
   clean: !argv.includes("-w"),
@@ -15,16 +15,20 @@ export default defineConfig({
   exports: { devExports: "source" },
   format: ["esm", "cjs"],
   inputOptions: { jsx: "react-jsx" },
-  onSuccess: generateOpenApiSpec,
+  onSuccess,
   platform: "node",
   sourcemap: true,
   treeshake: true,
   unbundle: false,
 });
 
-async function generateOpenApiSpec(): Promise<void> {
-  const { router } = await import("./dist/index.js");
-  const { SERVICE_NAME } = await import("./dist/constants.js");
+async function onSuccess(config: ResolvedOptions): Promise<void> {
+  await generateOpenApiSpec(config);
+  await updateJsrToMatch(config);
+}
+
+async function generateOpenApiSpec(config: ResolvedOptions): Promise<void> {
+  const { router, SERVICE_NAME } = await import("./dist/index.js");
   const { createDocument } = await import("zod-openapi");
   const { readFile, writeFile } = await import("node:fs/promises");
 
@@ -41,6 +45,7 @@ async function generateOpenApiSpec(): Promise<void> {
   await writeFile(outputFilepath, JSON.stringify(openAPISpec, null, 2), {
     encoding: "utf8",
   });
+  config.logger.success(`Generated OpenAPI spec (${outputFilepath})`);
 
   const pkgJsonPath = "./package.json";
   const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8" }));
@@ -49,6 +54,36 @@ async function generateOpenApiSpec(): Promise<void> {
   await writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + "\n", {
     encoding: "utf8",
   });
+  config.logger.success("Updated package.json");
+
+  return;
+}
+
+async function updateJsrToMatch(config: ResolvedOptions): Promise<void> {
+  const { readFile, writeFile } = await import("node:fs/promises");
+  const pkgJsonPath = "./package.json";
+  const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8" }));
+  const exports: Record<string, string | { source: string }> =
+    pkgJson["exports"] || {};
+
+  const jsrExports: Record<string, string> = {};
+  for (const [key, value] of Object.entries(exports)) {
+    const source = typeof value === "string" ? value : value.source;
+    if (source !== pkgJsonPath) {
+      jsrExports[key] = source;
+    }
+  }
+
+  const jsrJsonPath = "./jsr.json";
+  const jsrJson = JSON.parse(await readFile(jsrJsonPath, { encoding: "utf8" }));
+  jsrJson["exports"] = jsrExports;
+
+  jsrJson["version"] = pkgJson["version"];
+  // oxlint-disable-next-line prefer-template
+  await writeFile(jsrJsonPath, JSON.stringify(jsrJson, null, 2) + "\n", {
+    encoding: "utf8",
+  });
+  config.logger.success("Updated jsr.json");
 
   return;
 }

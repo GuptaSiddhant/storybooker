@@ -4,7 +4,11 @@
   "version": "0.10.0",
   "license": "MIT",
   "publish": {
-    "include": ["src", "README.md", "dist/openapi.json"]
+    "include": [
+      "src",
+      "README.md",
+      "dist/openapi.json"
+    ]
   },
   "exports": {
     ".": "./src/index.ts",
