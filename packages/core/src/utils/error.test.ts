@@ -4,11 +4,11 @@ import { mockStore } from "../mocks/mock-store";
 import { parseErrorMessage } from "./error";
 
 // Mock #store and getStoreOrNull
-vi.mock("#store", () => ({
+vi.mock("./store", () => ({
   getStoreOrNull: vi.fn(),
 }));
 
-const { getStoreOrNull } = await import("#store");
+const { getStoreOrNull } = await import("./store");
 
 describe("parseErrorMessage", () => {
   beforeEach(() => {

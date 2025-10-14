@@ -1,5 +1,5 @@
-import { getStore } from "#store";
 import type { Translation } from "../translations";
+import { getStore } from "../utils/store";
 import { toTitleCase } from "./text-utils";
 
 export function getT<

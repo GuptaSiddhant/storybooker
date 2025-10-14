@@ -1,5 +1,5 @@
-import { getStore } from "#store";
-import { CONTENT_TYPES, HEADERS } from "#utils/constants";
+import { CONTENT_TYPES, HEADERS } from "../utils/constants";
+import { getStore } from "../utils/store";
 
 interface ErrorObject {
   message: string;

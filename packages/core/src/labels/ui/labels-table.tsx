@@ -1,13 +1,13 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
-import { Table } from "#components/table";
-import type { LabelType } from "#labels/schema";
-import type { ProjectType } from "#projects/schema";
-import { href, urlBuilder, URLS } from "#urls";
-import { commonT, getT } from "#utils/i18n";
-import { getStore } from "#utils/store";
-import { urlJoin } from "#utils/url";
+import { Table } from "../../components/table";
+import type { LabelType } from "../../labels/schema";
+import type { ProjectType } from "../../projects/schema";
+import { href, urlBuilder, URLS } from "../../urls";
+import { commonT, getT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
+import { urlJoin } from "../../utils/url";
 
 export interface LabelsTableProps {
   caption?: JSX.Element;

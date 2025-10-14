@@ -7,14 +7,14 @@ import {
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "#components/document";
-import { ErrorMessage } from "#components/error-message";
-import { ProjectsTable } from "#projects-ui/projects-table";
-import type { ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import { href, urlBuilder, URLS } from "#urls";
-import { commonT } from "#utils/i18n";
-import { toTitleCase } from "#utils/text-utils";
+} from "../components/document";
+import { ErrorMessage } from "../components/error-message";
+import type { ProjectType } from "../projects/schema";
+import { ProjectsTable } from "../projects/ui/projects-table";
+import { href, urlBuilder, URLS } from "../urls";
+import { commonT } from "../utils/i18n";
+import { getStore } from "../utils/store";
+import { toTitleCase } from "../utils/text-utils";
 
 export interface RootPageProps {
   projects: ProjectType[];

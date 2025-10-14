@@ -79,6 +79,7 @@ async function updateJsrToMatch(config: ResolvedOptions): Promise<void> {
   jsrJson["exports"] = jsrExports;
 
   jsrJson["version"] = pkgJson["version"];
+
   // oxlint-disable-next-line prefer-template
   await writeFile(jsrJsonPath, JSON.stringify(jsrJson, null, 2) + "\n", {
     encoding: "utf8",

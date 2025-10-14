@@ -1,9 +1,9 @@
-import type { Store } from "#store";
 import { describe, expect, it, vi } from "vitest";
 import { mockStore } from "../mocks/mock-store";
+import type { Store } from "../utils/store";
 import { commonT, getT } from "./i18n";
 
-vi.mock("#store", () => ({
+vi.mock("./store", () => ({
   getStore: (): Store => mockStore,
 }));
 

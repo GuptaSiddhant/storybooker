@@ -1,32 +1,32 @@
 // oxlint-disable max-lines
 
-import { BuildsModel } from "#builds/model";
-import { CONTENT_TYPES } from "#constants";
+import z from "zod";
+import { BuildsModel } from "../builds/model";
 import {
   renderLabelCreatePage,
   renderLabelDetailsPage,
   renderLabelsPage,
   renderLabelUpdatePage,
-} from "#labels-ui/render";
-import { ProjectsModel } from "#projects/model";
-import { defineRoute } from "#router";
-import { urlBuilder, URLS } from "#urls";
-import { authenticateOrThrow } from "#utils/auth";
+} from "../labels/ui/render";
+import { ProjectsModel } from "../projects/model";
+import { urlBuilder, URLS } from "../urls";
+import { authenticateOrThrow } from "../utils/auth";
+import { CONTENT_TYPES } from "../utils/constants";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
   validateIsFormEncodedRequest,
-} from "#utils/request";
+} from "../utils/request";
 import {
   commonErrorResponses,
   errorContent,
   responseError,
   responseHTML,
   responseRedirect,
-} from "#utils/response";
-import { LabelSlugSchema, ProjectIdSchema } from "#utils/shared-model";
-import { urlSearchParamsToObject } from "#utils/url";
-import z from "zod";
+} from "../utils/response";
+import { defineRoute } from "../utils/router-utils";
+import { LabelSlugSchema, ProjectIdSchema } from "../utils/shared-model";
+import { urlSearchParamsToObject } from "../utils/url";
 import { LabelsModel } from "./model";
 import {
   LabelCreateSchema,

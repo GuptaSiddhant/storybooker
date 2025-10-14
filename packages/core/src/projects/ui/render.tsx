@@ -1,22 +1,22 @@
 // oxlint-disable max-lines-per-function
 
-import { BuildsTable } from "#builds-ui/builds-table";
-import type { BuildType } from "#builds/schema";
-import { DestructiveButton, LinkButton } from "#components/button";
+import type { BuildType } from "../../builds/schema";
+import { BuildsTable } from "../../builds/ui/builds-table";
+import { DestructiveButton, LinkButton } from "../../components/button";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "#components/document";
-import { RawDataList } from "#components/raw-data";
-import { LabelsTable } from "#labels-ui/labels-table";
-import type { LabelType } from "#labels/schema";
-import type { ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import { href, urlBuilder, URLS } from "#urls";
-import { commonT, getT } from "#utils/i18n";
+} from "../../components/document";
+import { RawDataList } from "../../components/raw-data";
+import type { LabelType } from "../../labels/schema";
+import { LabelsTable } from "../../labels/ui/labels-table";
+import type { ProjectType } from "../../projects/schema";
+import { href, urlBuilder, URLS } from "../../urls";
+import { commonT, getT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
 

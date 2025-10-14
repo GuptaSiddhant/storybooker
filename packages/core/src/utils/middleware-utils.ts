@@ -2,7 +2,7 @@ import type {
   Middleware,
   RequestHandler,
   RequestHandlerOverrideOptions,
-} from "#types";
+} from "../types";
 
 export function createMiddlewaresPipelineRequestHandler(
   middlewares: Middleware[],

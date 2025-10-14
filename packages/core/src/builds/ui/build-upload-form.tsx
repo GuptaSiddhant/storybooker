@@ -5,13 +5,13 @@ import {
   buildUploadVariants,
   type BuildType,
   type BuildUploadVariant,
-} from "#builds/schema";
-import { LinkButton } from "#components/button";
-import { ErrorMessage } from "#components/error-message";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { CONTENT_TYPES } from "#utils/constants";
-import { commonT } from "#utils/i18n";
+} from "../../builds/schema";
+import { LinkButton } from "../../components/button";
+import { ErrorMessage } from "../../components/error-message";
+import { urlBuilder } from "../../urls";
+import { CONTENT_TYPES } from "../../utils/constants";
+import { commonT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 
 export interface BuildUploadFormProps {
   build: BuildType;

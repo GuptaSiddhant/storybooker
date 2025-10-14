@@ -8,8 +8,8 @@ import type {
   DatabaseServiceOptions,
   StorageService,
   StoryBookerDatabaseDocument,
-} from "#types";
-import { writeWebStreamToFile } from "#utils/file-utils";
+} from "./types";
+import { writeWebStreamToFile } from "./utils/file-utils";
 
 type Database = Record<string, Record<string, StoryBookerDatabaseDocument>>;
 

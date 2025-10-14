@@ -1,6 +1,8 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import { globalStyleSheet } from "../components/_global";
+import { authenticateOrThrow } from "../utils/auth";
 import {
   CACHE_CONTROL_PUBLIC_WEEK,
   CONTENT_TYPES,
@@ -8,11 +10,9 @@ import {
   HEADERS,
   SERVICE_NAME,
   STYLESHEETS,
-} from "#constants";
-import { getStore } from "#store";
-import { authenticateOrThrow } from "#utils/auth";
-import { getMimeType } from "#utils/mime-utils";
-import { globalStyleSheet } from "../components/_global";
+} from "../utils/constants";
+import { getMimeType } from "../utils/mime-utils";
+import { getStore } from "../utils/store";
 
 export async function handleStaticFileRoute(
   staticDirs: readonly string[] = DEFAULT_STATIC_DIRS,

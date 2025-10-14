@@ -1,11 +1,11 @@
-import { router } from "#router";
-import { getStore } from "#store";
-import { authenticateOrThrow } from "#utils/auth";
-import { SERVICE_NAME } from "#utils/constants";
-import { checkIsHTMLRequest } from "#utils/request";
-import { responseHTML } from "#utils/response";
-import { toTitleCase } from "#utils/text-utils";
 import { createDocument } from "zod-openapi";
+import { authenticateOrThrow } from "../utils/auth";
+import { SERVICE_NAME } from "../utils/constants";
+import { checkIsHTMLRequest } from "../utils/request";
+import { responseHTML } from "../utils/response";
+import { router } from "../utils/router-utils";
+import { getStore } from "../utils/store";
+import { toTitleCase } from "../utils/text-utils";
 
 export async function handleOpenAPIRoute(): Promise<Response> {
   const { prefix, request } = getStore();

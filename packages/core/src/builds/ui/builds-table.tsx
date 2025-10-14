@@ -1,13 +1,13 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
-import type { BuildType } from "#builds/schema";
-import { Table } from "#components/table";
-import type { LabelType } from "#labels/schema";
-import type { ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { commonT } from "#utils/i18n";
+import type { BuildType } from "../../builds/schema";
+import { Table } from "../../components/table";
+import type { LabelType } from "../../labels/schema";
+import type { ProjectType } from "../../projects/schema";
+import { urlBuilder } from "../../urls";
+import { commonT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 
 export interface BuildsTableProps {
   caption?: JSX.Element;

@@ -1,12 +1,12 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
-import { LinkButton } from "#components/button";
-import { ErrorMessage } from "#components/error-message";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { CONTENT_TYPES } from "#utils/constants";
-import { commonT } from "#utils/i18n";
+import { LinkButton } from "../../components/button";
+import { ErrorMessage } from "../../components/error-message";
+import { urlBuilder } from "../../urls";
+import { CONTENT_TYPES } from "../../utils/constants";
+import { commonT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 
 export interface BuildFormProps {
   projectId: string;

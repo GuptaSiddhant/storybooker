@@ -1,20 +1,20 @@
 // oxlint-disable no-nested-ternary
 // oxlint-disable max-lines-per-function
 
-import type { BuildType, BuildUploadVariant } from "#builds/schema";
-import { DestructiveButton, LinkButton } from "#components/button";
+import type { BuildType, BuildUploadVariant } from "../../builds/schema";
+import { DestructiveButton, LinkButton } from "../../components/button";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "#components/document";
-import { RawDataTabular } from "#components/raw-data";
-import type { ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { commonT, getT } from "#utils/i18n";
+} from "../../components/document";
+import { RawDataTabular } from "../../components/raw-data";
+import type { ProjectType } from "../../projects/schema";
+import { urlBuilder } from "../../urls";
+import { commonT, getT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildUploadForm } from "./build-upload-form";
 import { BuildsTable } from "./builds-table";

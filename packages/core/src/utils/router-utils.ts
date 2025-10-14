@@ -1,10 +1,10 @@
 import { RoutePattern, type Params } from "@remix-run/route-pattern";
-import { getStore } from "#store";
-import { responseError } from "#utils/response";
 import type {
   ZodOpenApiPathItemObject,
   ZodOpenApiPathsObject,
 } from "zod-openapi";
+import { responseError } from "../utils/response";
+import { getStore } from "../utils/store";
 
 type Methods =
   | "get"

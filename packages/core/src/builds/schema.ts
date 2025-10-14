@@ -1,5 +1,5 @@
-import { BuildSHASchema, LabelSlugSchema } from "#utils/shared-model";
 import z from "zod";
+import { BuildSHASchema, LabelSlugSchema } from "../utils/shared-model";
 
 export type BuildType = z.infer<typeof BuildSchema>;
 /** @private */

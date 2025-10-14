@@ -2,13 +2,13 @@
 // oxlint-disable explicit-function-return-type
 // oxlint-disable no-empty-function
 
-import { getStore } from "#store";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mockAuthService } from "../mocks/mock-auth-service";
 import { mockStore } from "../mocks/mock-store";
 import { authenticateOrThrow, checkAuthorisation } from "./auth";
+import { getStore } from "./store";
 
-vi.mock("#store");
+vi.mock("./store");
 
 describe("authenticateOrThrow", () => {
   beforeEach(() => {

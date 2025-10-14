@@ -1,11 +1,11 @@
 // oxlint-disable max-lines-per-function
 
-import { LinkButton } from "#components/button";
-import { ErrorMessage } from "#components/error-message";
-import { labelTypes, type LabelType } from "#labels/schema";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { commonT } from "#utils/i18n";
+import { LinkButton } from "../../components/button";
+import { ErrorMessage } from "../../components/error-message";
+import { labelTypes, type LabelType } from "../../labels/schema";
+import { urlBuilder } from "../../urls";
+import { commonT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 
 export interface LabelFormProps {
   label: LabelType | undefined;

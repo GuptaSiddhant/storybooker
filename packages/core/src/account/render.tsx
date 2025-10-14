@@ -1,21 +1,21 @@
 // oxlint-disable max-lines-per-function
 // oxlint-disable sort-keys
 
-import { DestructiveButton } from "#components/button";
+import { DestructiveButton } from "../components/button";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "#components/document";
-import { IFrameContainer } from "#components/iframe";
-import { RawDataList } from "#components/raw-data";
-import { getStore } from "#store";
-import type { StoryBookerUser } from "#types";
-import { href, URLS } from "#urls";
-import { commonT } from "#utils/i18n";
-import { toTitleCase } from "#utils/text-utils";
+} from "../components/document";
+import { IFrameContainer } from "../components/iframe";
+import { RawDataList } from "../components/raw-data";
+import type { StoryBookerUser } from "../types";
+import { href, URLS } from "../urls";
+import { commonT } from "../utils/i18n";
+import { getStore } from "../utils/store";
+import { toTitleCase } from "../utils/text-utils";
 
 // oxlint-disable-next-line max-lines-per-function
 export function renderAccountPage({

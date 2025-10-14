@@ -1,16 +1,16 @@
 // oxlint-disable max-lines-per-function
 
-import { LinkButton } from "#components/button";
-import { ErrorMessage } from "#components/error-message";
+import { LinkButton } from "../../components/button";
+import { ErrorMessage } from "../../components/error-message";
+import { ProjectSchema, type ProjectType } from "../../projects/schema";
+import { urlBuilder } from "../../urls";
 import {
   DEFAULT_GITHUB_BRANCH,
   DEFAULT_PURGE_AFTER_DAYS,
   PATTERNS,
-} from "#constants";
-import { ProjectSchema, type ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { commonT } from "#utils/i18n";
+} from "../../utils/constants";
+import { commonT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;

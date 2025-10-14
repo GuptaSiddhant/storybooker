@@ -1,7 +1,11 @@
-import { defineRoute } from "#router";
-import { getStore } from "#store";
-import { urlBuilder, URLS } from "#urls";
-import { responseError, responseHTML, responseRedirect } from "#utils/response";
+import { urlBuilder, URLS } from "../urls";
+import {
+  responseError,
+  responseHTML,
+  responseRedirect,
+} from "../utils/response";
+import { defineRoute } from "../utils/router-utils";
+import { getStore } from "../utils/store";
 import { renderAccountPage } from "./render";
 
 export const login = defineRoute("get", URLS.ui.login, undefined, async () => {

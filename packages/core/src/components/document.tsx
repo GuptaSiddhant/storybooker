@@ -2,10 +2,10 @@
 // oxlint-disable max-lines
 // oxlint-disable max-lines-per-function
 
-import { SERVICE_NAME, STYLESHEETS } from "#constants";
-import { getStore } from "#store";
-import { href, urlBuilder, URLS } from "#urls";
-import { urlJoin } from "#utils/url";
+import { href, urlBuilder, URLS } from "../urls";
+import { SERVICE_NAME, STYLESHEETS } from "../utils/constants";
+import { getStore } from "../utils/store";
+import { urlJoin } from "../utils/url";
 import { SBRLogo } from "./logo";
 
 type Children = JSX.Element | null | (JSX.Element | null)[];

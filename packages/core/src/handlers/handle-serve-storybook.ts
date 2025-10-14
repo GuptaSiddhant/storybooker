@@ -1,11 +1,15 @@
 import path from "node:path";
-import { CACHE_CONTROL_PUBLIC_YEAR, HEADERS, SERVICE_NAME } from "#constants";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { authenticateOrThrow } from "#utils/auth";
-import { getMimeType } from "#utils/mime-utils";
-import { responseError } from "#utils/response";
-import { generateStorageContainerId } from "#utils/shared-model";
+import { urlBuilder } from "../urls";
+import { authenticateOrThrow } from "../utils/auth";
+import {
+  CACHE_CONTROL_PUBLIC_YEAR,
+  HEADERS,
+  SERVICE_NAME,
+} from "../utils/constants";
+import { getMimeType } from "../utils/mime-utils";
+import { responseError } from "../utils/response";
+import { generateStorageContainerId } from "../utils/shared-model";
+import { getStore } from "../utils/store";
 
 export async function handleServeStoryBook({
   buildSHA,

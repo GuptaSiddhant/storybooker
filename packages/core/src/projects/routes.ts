@@ -1,26 +1,26 @@
 // oxlint-disable max-lines
 
-import { BuildsModel } from "#builds/model";
-import { CONTENT_TYPES } from "#constants";
-import { LabelsModel } from "#labels/model";
-import { defineRoute } from "#router";
-import { urlBuilder, URLS } from "#urls";
-import { authenticateOrThrow } from "#utils/auth";
+import z from "zod";
+import { BuildsModel } from "../builds/model";
+import { LabelsModel } from "../labels/model";
+import { urlBuilder, URLS } from "../urls";
+import { authenticateOrThrow } from "../utils/auth";
+import { CONTENT_TYPES } from "../utils/constants";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
   validateIsFormEncodedRequest,
-} from "#utils/request";
+} from "../utils/request";
 import {
   commonErrorResponses,
   errorContent,
   responseError,
   responseHTML,
   responseRedirect,
-} from "#utils/response";
-import { ProjectIdSchema } from "#utils/shared-model";
-import { urlSearchParamsToObject } from "#utils/url";
-import z from "zod";
+} from "../utils/response";
+import { defineRoute } from "../utils/router-utils";
+import { ProjectIdSchema } from "../utils/shared-model";
+import { urlSearchParamsToObject } from "../utils/url";
 import { ProjectsModel } from "./model";
 import {
   ProjectCreateSchema,

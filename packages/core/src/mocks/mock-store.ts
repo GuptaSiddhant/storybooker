@@ -1,9 +1,9 @@
 // oxlint-disable sort-keys
 
-import type { Store } from "#store";
-import type { DatabaseService, StorageService } from "#types";
 import { vi } from "vitest";
 import { translations_enGB } from "../translations";
+import type { DatabaseService, StorageService } from "../types";
+import type { Store } from "../utils/store";
 import { mockAuthService, mockUser } from "./mock-auth-service";
 
 export const mockStore: Store = {

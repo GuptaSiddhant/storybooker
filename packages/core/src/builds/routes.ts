@@ -1,32 +1,32 @@
 // oxlint-disable max-lines
 
+import z from "zod";
 import {
   renderBuildCreatePage,
   renderBuildDetailsPage,
   renderBuildsPage,
   renderBuildUploadPage,
-} from "#builds-ui/render";
-import { CONTENT_TYPES, QUERY_PARAMS } from "#constants";
-import { ProjectsModel } from "#projects/model";
-import { defineRoute } from "#router";
-import { href, urlBuilder, URLS } from "#urls";
-import { authenticateOrThrow, checkAuthorisation } from "#utils/auth";
+} from "../builds/ui/render";
+import { ProjectsModel } from "../projects/model";
+import { href, urlBuilder, URLS } from "../urls";
+import { authenticateOrThrow, checkAuthorisation } from "../utils/auth";
+import { CONTENT_TYPES, QUERY_PARAMS } from "../utils/constants";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
   validateBuildUploadZipBody,
   validateIsFormEncodedRequest,
-} from "#utils/request";
+} from "../utils/request";
 import {
   commonErrorResponses,
   errorContent,
   responseError,
   responseHTML,
   responseRedirect,
-} from "#utils/response";
-import { BuildSHASchema, ProjectIdSchema } from "#utils/shared-model";
-import { urlSearchParamsToObject } from "#utils/url";
-import z from "zod";
+} from "../utils/response";
+import { defineRoute } from "../utils/router-utils";
+import { BuildSHASchema, ProjectIdSchema } from "../utils/shared-model";
+import { urlSearchParamsToObject } from "../utils/url";
 import { BuildsModel } from "./model";
 import {
   BuildCreateSchema,

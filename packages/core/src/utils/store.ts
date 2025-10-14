@@ -1,10 +1,10 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { Translation } from "../translations";
 import type {
   LoggerService,
   RequestHandlerOptions,
   StoryBookerUser,
-} from "#types";
-import type { Translation } from "../translations";
+} from "../types";
 
 export interface Store
   extends Omit<RequestHandlerOptions<StoryBookerUser>, "staticDirs"> {

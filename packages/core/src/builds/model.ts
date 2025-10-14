@@ -6,20 +6,20 @@ import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { LabelsModel } from "#labels/model";
-import { ProjectsModel } from "#projects/model";
-import { getStore } from "#store";
-import type { StoryBookerFile } from "#types";
-import { writeStreamToFile } from "#utils/file-utils";
-import { getMimeType } from "#utils/mime-utils";
+import decompress from "decompress";
+import { LabelsModel } from "../labels/model";
+import { ProjectsModel } from "../projects/model";
+import type { StoryBookerFile } from "../types";
+import { writeStreamToFile } from "../utils/file-utils";
+import { getMimeType } from "../utils/mime-utils";
 import {
   generateDatabaseCollectionId,
   generateStorageContainerId,
   Model,
   type BaseModel,
   type ListOptions,
-} from "#utils/shared-model";
-import decompress from "decompress";
+} from "../utils/shared-model";
+import { getStore } from "../utils/store";
 import {
   BuildCreateSchema,
   BuildSchema,

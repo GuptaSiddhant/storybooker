@@ -1,10 +1,10 @@
-import { BuildsModel } from "#builds/model";
-import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "#constants";
-import { LabelsModel } from "#labels/model";
-import { ProjectsModel } from "#projects/model";
-import type { ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import type { LoggerService } from "#types";
+import { BuildsModel } from "../builds/model";
+import { LabelsModel } from "../labels/model";
+import { ProjectsModel } from "../projects/model";
+import type { ProjectType } from "../projects/schema";
+import type { LoggerService } from "../types";
+import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "../utils/constants";
+import { getStore } from "../utils/store";
 
 export type HandlePurge = (
   params: { projectId?: string },

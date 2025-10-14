@@ -1,12 +1,12 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
-import { Table } from "#components/table";
-import { DEFAULT_GITHUB_BRANCH } from "#constants";
-import type { ProjectType } from "#projects/schema";
-import { getStore } from "#store";
-import { urlBuilder } from "#urls";
-import { commonT, getT } from "#utils/i18n";
+import { Table } from "../../components/table";
+import type { ProjectType } from "../../projects/schema";
+import { urlBuilder } from "../../urls";
+import { DEFAULT_GITHUB_BRANCH } from "../../utils/constants";
+import { commonT, getT } from "../../utils/i18n";
+import { getStore } from "../../utils/store";
 
 export interface ProjectsTableProps {
   caption?: JSX.Element;

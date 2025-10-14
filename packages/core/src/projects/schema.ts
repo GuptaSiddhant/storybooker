@@ -1,9 +1,9 @@
+import z from "zod";
 import {
   DEFAULT_GITHUB_BRANCH,
   DEFAULT_PURGE_AFTER_DAYS,
-} from "#utils/constants";
-import { BuildSHASchema, ProjectIdSchema } from "#utils/shared-model";
-import z from "zod";
+} from "../utils/constants";
+import { BuildSHASchema, ProjectIdSchema } from "../utils/shared-model";
 
 export type ProjectType = z.infer<typeof ProjectSchema>;
 /** @private */

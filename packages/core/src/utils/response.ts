@@ -1,11 +1,11 @@
 import { Readable } from "node:stream";
 import { renderToStream } from "@kitajs/html/suspense";
-import { getStore } from "#store";
-import { CONTENT_TYPES, HEADERS } from "#utils/constants";
-import { checkIsHTMLRequest, checkIsHXRequest } from "#utils/request";
 import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { renderErrorPage } from "../root/render";
+import { CONTENT_TYPES, HEADERS } from "../utils/constants";
+import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
+import { getStore } from "../utils/store";
 import { parseErrorMessage } from "./error";
 import { toTitleCase } from "./text-utils";
 

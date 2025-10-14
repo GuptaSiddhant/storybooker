@@ -1,11 +1,11 @@
-import { LabelsModel } from "#labels/model";
+import { LabelsModel } from "../labels/model";
 import {
   generateDatabaseCollectionId,
   generateStorageContainerId,
   Model,
   type BaseModel,
   type ListOptions,
-} from "#utils/shared-model";
+} from "../utils/shared-model";
 import {
   ProjectCreateSchema,
   ProjectSchema,

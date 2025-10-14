@@ -1,8 +1,8 @@
 // oxlint-disable no-nested-ternary
 
-import { ISO_DATE_REGEXP } from "#constants";
-import { getStore } from "#store";
-import { camelCaseToSentenceCase } from "#utils/text-utils";
+import { ISO_DATE_REGEXP } from "../utils/constants";
+import { getStore } from "../utils/store";
+import { camelCaseToSentenceCase } from "../utils/text-utils";
 
 export function RawDataPreview({
   data,
