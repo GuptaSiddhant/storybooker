@@ -11,7 +11,6 @@
     "./packages/*"
   ],
   "scripts": {
-    "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
     "build": "turbo build",
     "change": "changeset",
     "check": "turbo check",
@@ -22,7 +21,7 @@
     "dev": "turbo dev",
     "docs": "yarn workspace website start",
     "fmt": "turbo fmt",
-    "functions": "yarn workspace azure-functions-app start",
+    "functions": "yarn workspace azure-functions-app dev",
     "lint": "turbo lint",
     "publish": "changeset version && yarn workspaces foreach -A --no-private npm publish && changeset tag",
     "server": "NODE_ENV=development deno serve -REW --unstable-sloppy-imports --watch ./server.ts",

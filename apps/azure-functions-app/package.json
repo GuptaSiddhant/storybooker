@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
+    "dev": "npm run azurite & npm run start",
     "start": "func start"
   },
   "dependencies": {

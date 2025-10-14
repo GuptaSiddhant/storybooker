@@ -1,8 +1,8 @@
 ---
 "@storybooker/azure": minor
 "@storybooker/core": minor
-"@storybooker/aws": patch
-"@storybooker/gcp": patch
+"@storybooker/aws": minor
+"@storybooker/gcp": minor
 ---
 
 Fix static file handling and encoding.
