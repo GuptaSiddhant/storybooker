@@ -10,6 +10,7 @@ const { values, positionals } = parseArgs({
   allowNegative: true,
   allowPositionals: true,
   options: {
+    message: { short: "m", type: "string" },
     tag: { default: true, type: "boolean" },
     version: { short: "v", type: "string" },
   },
@@ -75,7 +76,7 @@ for (const pkg of packages) {
 if (values.tag) {
   console.log("Releasing v%s", version);
   cp.execSync(`git add -A`);
-  cp.execSync(`git commit -m "release: v${version}"`);
+  cp.execSync(`git commit -m "release: v${version}\n${values.message || ""}"`);
   cp.execSync(`git tag "v${version}" -am "Version ${version}"`);
   cp.execSync(`git push --follow-tags`);
 }

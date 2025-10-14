@@ -1,5 +1,3 @@
-import { Readable } from "node:stream";
-import { renderToStream } from "@kitajs/html/suspense";
 import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { renderErrorPage } from "../root/render";
@@ -48,14 +46,7 @@ export async function responseHTML(
   };
 
   if (html instanceof Promise) {
-    if (getStore().ui?.streaming === false) {
-      return new Response(await html, responseInit);
-    }
-
-    return new Response(
-      Readable.toWeb(renderToStream(html)) as ReadableStream,
-      responseInit,
-    );
+    return new Response(await html, responseInit);
   }
 
   return new Response(html, responseInit);
