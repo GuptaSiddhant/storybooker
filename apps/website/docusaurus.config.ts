@@ -42,13 +42,8 @@ const config: Config = {
     [
       "classic",
       {
-        docs: {
-          sidebarPath: "./sidebars.ts",
-        },
-
-        theme: {
-          // customCss: "./src/css/custom.css",
-        },
+        docs: { sidebarPath: "./sidebars.ts" },
+        theme: {},
       } satisfies Preset.Options,
     ],
   ],
@@ -62,9 +57,8 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: "StoryBooker",
       logo: {
-        alt: "StoryBooker Logo",
+        alt: "StoryBooker",
         src: "img/StoryBooker_border.png",
       },
       items: [
