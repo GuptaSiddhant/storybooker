@@ -9,29 +9,26 @@ export default function OpenApi(): React.ReactNode {
 <html>
   <head>
     <title>StoryBooker API Reference</title>
-    <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1" />
+    <meta name="description" content="StoryBooker SwaggerUI"></meta>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1" ></meta>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css"></link>
+    <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js" crossorigin></script>
   </head>
 
-  <body>
-    <div id="app"></div>
-
-    <!-- Load the Script -->
-    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-
-    <!-- Initialize the Scalar API Reference -->
-    <script>
-      Scalar.createApiReference('#app', {        
-        url: '/openapi.json',
-        title: 'StoryBooker',
-        hideClientButton: true,
-        hideTestRequestButton: true,
-        showToolbar: 'never',
-      })
-    </script>
-  </body>
+<body style="position: relative;">
+  <div id="swagger-ui"></div>
+  <a style="position: absolute; top: 0; right: 0; padding-right: 16px; display: flex; gap: 0.5rem;"
+    href="/openapi.json">
+    Download
+  </a>
+  <script async defer>
+      window.swaggerUI = SwaggerUIBundle(${JSON.stringify({
+        dom_id: "#swagger-ui",
+        url: "/openapi.json",
+      })});
+  </script>
+</body>
 </html>`}
       />
     </Layout>
