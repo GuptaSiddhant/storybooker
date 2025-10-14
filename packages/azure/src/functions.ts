@@ -81,16 +81,18 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
 ): void {
   app.setup({ enableHttpStream: true });
 
-  const route = options.route || "";
-  const logger = options.logger ?? console;
-  const requestHandler = createRequestHandler({
-    ...options,
-    errorParser: options.errorParser ?? parseAzureRestError,
-    logger,
-    prefix: generatePrefixFromBaseRoute(route) || "/",
-  });
+  if (!options.errorParser) {
+    options.errorParser = parseAzureRestError;
+  }
+  const requestHandlerOptions: RequestHandlerOptions<User> = options;
+  if (options.route) {
+    requestHandlerOptions.prefix = generatePrefixFromBaseRoute(options.route);
+  }
 
-  logger.log("Registering Storybooker Router (route: %s)", route || "/");
+  const route = options.route || "";
+
+  const requestHandler = createRequestHandler(requestHandlerOptions);
+
   app.http(SERVICE_NAME, {
     authLevel: options.authLevel,
     handler: async (httpRequest, context) => {
@@ -108,12 +110,9 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
     const schedule = options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON;
     const purgeHandler = createPurgeHandler({
       database: options.database,
-      errorParser: options.errorParser ?? parseAzureRestError,
-      logger,
       storage: options.storage,
     });
 
-    logger.log("Registering Storybooker Timer-Purge (cron: %s)", schedule);
     app.timer(`${SERVICE_NAME}-timer_purge`, {
       // oxlint-disable-next-line require-await
       handler: async (_timer, context) => purgeHandler({}, { logger: context }),

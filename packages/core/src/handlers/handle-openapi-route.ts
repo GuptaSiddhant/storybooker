@@ -8,7 +8,7 @@ import { toTitleCase } from "#utils/text-utils";
 import { createDocument } from "zod-openapi";
 
 export async function handleOpenAPIRoute(): Promise<Response> {
-  const { prefix, request, openAPI } = getStore();
+  const { prefix, request } = getStore();
   await authenticateOrThrow({
     action: "read",
     projectId: undefined,
@@ -31,46 +31,10 @@ export async function handleOpenAPIRoute(): Promise<Response> {
   }
 
   if (checkIsHTMLRequest()) {
-    const paramsUI = new URL(request.url).searchParams.get("ui");
-    const ui = paramsUI ?? openAPI?.ui;
-    if (ui === "scalar") {
-      return await responseHTML(
-        generateOpenApiScalar({ content: openAPISpec }),
-      );
-    }
-
     return await responseHTML(generateOpenApiSwagger(openAPISpec));
   }
 
   return Response.json(openAPISpec);
-}
-
-function generateOpenApiScalar(
-  options: {
-    authentication?: { securitySchemes: object };
-    content: object;
-  },
-  title: string = SERVICE_NAME,
-): string {
-  const html = `
-    <!doctype html>
-    <html>
-      <head>
-        <title>${title}</title>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />        
-      </head>
-      <body>
-        <div id="app"></div>
-        <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
-        <script>
-          Scalar.createApiReference('#app', ${JSON.stringify(options)})
-        </script>
-      </body>
-    </html>
-  `;
-
-  return html;
 }
 
 function generateOpenApiSwagger(

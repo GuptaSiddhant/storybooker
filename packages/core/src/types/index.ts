@@ -120,12 +120,6 @@ export interface OpenAPIOptions {
       { enum?: [string, ...string[]]; default: string; description?: string }
     >;
   }[];
-
-  /**
-   * Which UI to load when OpenAPI endpoint is requested from browsers.
-   * @default swagger
-   */
-  ui?: "swagger" | "scalar";
 }
 
 export interface UIOptions {

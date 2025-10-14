@@ -19,7 +19,8 @@ export async function handleStaticFileRoute(
 ): Promise<Response> {
   const { logger, prefix, translation, ui, url } = getStore();
   const { pathname } = new URL(url);
-  const filepath = pathname.replace(prefix, "");
+  const filepath =
+    prefix && prefix !== "/" ? pathname.replace(prefix, "") : pathname;
 
   await authenticateOrThrow({
     action: "read",
@@ -54,18 +55,21 @@ export async function handleStaticFileRoute(
     );
   }
 
+  const contentType = getMimeType(staticFilepath) || CONTENT_TYPES.OCTET;
+
   logger.log(
-    "%s: '%s'",
+    "%s: '%s' (%s)",
     translation.messages.serving_static_file,
     staticFilepath,
+    contentType,
   );
 
-  const content = await fsp.readFile(staticFilepath, { encoding: "binary" });
+  const content = await fsp.readFile(staticFilepath);
 
-  return new Response(content, {
+  return new Response(new Uint8Array(content), {
     headers: {
       [HEADERS.cacheControl]: CACHE_CONTROL_PUBLIC_WEEK,
-      [HEADERS.contentType]: getMimeType(staticFilepath) || CONTENT_TYPES.OCTET,
+      [HEADERS.contentType]: contentType,
     },
     status: 200,
   });

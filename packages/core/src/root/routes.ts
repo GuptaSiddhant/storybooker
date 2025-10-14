@@ -1,4 +1,4 @@
-import { CONTENT_TYPES, SERVICE_NAME } from "#constants";
+import { CONTENT_TYPES } from "#constants";
 import { ProjectsModel } from "#projects/model";
 import { defineRoute } from "#router";
 import { getStore } from "#store";
@@ -107,23 +107,7 @@ export const serveStorybook = defineRoute(
 export const openapi = defineRoute(
   "get",
   URLS.ui.openapi,
-  {
-    responses: {
-      200: {
-        content: {
-          [CONTENT_TYPES.JSON]: {
-            example: { info: { title: SERVICE_NAME }, openapi: "3.1.0" },
-          },
-          [CONTENT_TYPES.HTML]: {
-            encoding: "utf8",
-            example: "<!DOCTYPE html>",
-            schema: { type: "string" },
-          },
-        },
-      },
-    },
-    summary: "OpenAPI spec",
-  },
+  undefined,
   handleOpenAPIRoute,
 );
 

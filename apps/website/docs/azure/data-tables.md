@@ -23,7 +23,7 @@ import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
 const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
 // Create the service adapter
 const database = new AzureDataTablesDatabaseService(
-  new TableServiceClient(connectionString),
+  TableServiceClient.fromConnectionString(connectionString),
   (tableName) => TableClient.fromConnectionString(connectionString, tableName),
 );
 

@@ -2,10 +2,17 @@
   "name": "azure-functions-app",
   "type": "module",
   "main": "index.js",
+  "scripts": {
+    "azurite": "npx -y azurite --skipApiVersionCheck -s -l ./.azurite",
+    "start": "func start"
+  },
   "dependencies": {
     "@azure/data-tables": "^13.0.0",
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
     "@storybooker/azure": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0"
   }
 }
