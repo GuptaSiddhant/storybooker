@@ -77,5 +77,5 @@ if (values.tag) {
   cp.execSync(`git add -A`);
   cp.execSync(`git commit -m "release: v${version}"`);
   cp.execSync(`git tag "v${version}" -am "Version ${version}"`);
-  // cp.execSync(`git push --follow-tags`);
+  cp.execSync(`git push --follow-tags`);
 }
