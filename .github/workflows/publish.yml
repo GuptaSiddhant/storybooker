@@ -6,14 +6,13 @@ on:
     tags:
       - "*"
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
   publish-all:
     name: Publish all packages
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     env:
       NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
     steps:
