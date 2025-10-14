@@ -2,7 +2,11 @@ import Layout from "@theme/Layout";
 
 export default function OpenApi(): React.ReactNode {
   const id = "app";
-  const options = { dom_id: `#${id}`, url: "/openapi.json" };
+  const options = {
+    dom_id: `#${id}`,
+    supportedSubmitMethods: [],
+    url: "/openapi.json",
+  };
 
   return (
     <Layout title="OpenAPI" description="StoryBooker OpenAPI">
