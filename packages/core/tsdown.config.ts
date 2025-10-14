@@ -24,7 +24,7 @@ export default defineConfig({
 
 async function onSuccess(config: ResolvedOptions): Promise<void> {
   await generateOpenApiSpec(config);
-  await updateJsrToMatch(config);
+  await updateDenoToMatch(config);
 }
 
 async function generateOpenApiSpec(config: ResolvedOptions): Promise<void> {
@@ -59,32 +59,34 @@ async function generateOpenApiSpec(config: ResolvedOptions): Promise<void> {
   return;
 }
 
-async function updateJsrToMatch(config: ResolvedOptions): Promise<void> {
+async function updateDenoToMatch(config: ResolvedOptions): Promise<void> {
   const { readFile, writeFile } = await import("node:fs/promises");
   const pkgJsonPath = "./package.json";
   const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8" }));
   const exports: Record<string, string | { source: string }> =
     pkgJson["exports"] || {};
 
-  const jsrExports: Record<string, string> = {};
+  const denoExports: Record<string, string> = {};
   for (const [key, value] of Object.entries(exports)) {
     const source = typeof value === "string" ? value : value.source;
     if (source !== pkgJsonPath) {
-      jsrExports[key] = source;
+      denoExports[key] = source;
     }
   }
 
-  const jsrJsonPath = "./jsr.json";
-  const jsrJson = JSON.parse(await readFile(jsrJsonPath, { encoding: "utf8" }));
-  jsrJson["exports"] = jsrExports;
+  const denoJsonPath = "./deno.json";
+  const denoJson = JSON.parse(
+    await readFile(denoJsonPath, { encoding: "utf8" }),
+  );
+  denoJson["exports"] = denoExports;
 
-  jsrJson["version"] = pkgJson["version"];
+  denoJson["version"] = pkgJson["version"];
 
   // oxlint-disable-next-line prefer-template
-  await writeFile(jsrJsonPath, JSON.stringify(jsrJson, null, 2) + "\n", {
+  await writeFile(denoJsonPath, JSON.stringify(denoJson, null, 2) + "\n", {
     encoding: "utf8",
   });
-  config.logger.success("Updated jsr.json");
+  config.logger.success("Updated deno.json");
 
   return;
 }
