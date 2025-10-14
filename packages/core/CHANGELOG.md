@@ -1,5 +1,11 @@
 # @storybooker/core
 
+## 0.9.2
+
+### Patch Changes
+
+- 3764743: Add label filter + css stylesheet
+
 ## 0.9.1
 
 ### Patch Changes

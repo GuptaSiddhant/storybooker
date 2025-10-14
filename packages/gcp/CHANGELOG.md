@@ -1,5 +1,13 @@
 # @storybooker/gcp
 
+## 0.3.2
+
+### Patch Changes
+
+- 3764743: Add label filter + css stylesheet
+- Updated dependencies [3764743]
+  - @storybooker/core@0.9.2
+
 ## 0.3.1
 
 ### Patch Changes
