@@ -23,20 +23,33 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
 
+      - name: Setup Turbo
+        run: |
+          npx -y turbo prune \
+            @storybooker/core \
+            @storybooker/aws \
+            @storybooker/azure \
+            @storybooker/gcp \
+            storybooker
+          cp tsconfig.base.json out/tsconfig.base.json
+
       - name: Install dependencies
+        working-directory: ./out
         run: yarn install --immutable
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Verify
-        id: verify
-        run: yarn verify
+        working-directory: ./out
+        run: npx turbo verify
 
       - name: Publish on JSR
+        working-directory: ./out
         continue-on-error: true
         run: yarn publish:jsr -- --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
+        working-directory: ./out
         continue-on-error: true
         run: yarn publish:npm
         env:

@@ -74,9 +74,17 @@ for (const pkg of packages) {
 }
 
 if (values.tag) {
-  console.log("Releasing v%s", version);
-  cp.execSync(`git add -A`);
-  cp.execSync(`git commit -m "release: v${version}\n${values.message || ""}"`);
-  cp.execSync(`git tag "v${version}" -am "Version ${version}"`);
-  cp.execSync(`git push --follow-tags`);
+  console.group(`Releasing v${version}`);
+  cp.execSync(`git add -A`, { encoding: "utf8" });
+  console.log("Committing all changes...");
+  cp.execSync(`git commit -m "release: v${version}\n${values.message || ""}"`, {
+    encoding: "utf8",
+  });
+  console.log("Tagging version...");
+  cp.execSync(`git tag "v${version}" -am "Version ${version}"`, {
+    encoding: "utf8",
+  });
+  console.log("Pushing to origin...");
+  cp.execSync(`git push --follow-tags`, { encoding: "utf8" });
+  console.groupEnd();
 }
