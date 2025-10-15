@@ -34,7 +34,7 @@ jobs:
 
       - name: Publish on JSR
         continue-on-error: true
-        run: yarn publish:jsr
+        run: yarn publish:jsr -- --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
         continue-on-error: true
