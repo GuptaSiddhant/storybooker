@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - "*"
+    paths:
+      - ./packages/**
+      - ./.github/workflows/verify.yml
+      - ./package.json
   pull_request:
     branches:
       - "*"

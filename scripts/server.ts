@@ -5,15 +5,15 @@
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "./packages/core/dist/adapters.js";
+} from "../packages/core/dist/adapters.js";
 import {
   createRequestHandler,
   type StoryBookerUser,
-} from "./packages/core/dist/index.js";
+} from "../packages/core/dist/index.js";
 import type {
   AuthService,
   AuthServiceAuthorise,
-} from "./packages/core/dist/types.d.ts";
+} from "../packages/core/dist/types";
 
 class LocalAuthService implements AuthService {
   #auth = true;
