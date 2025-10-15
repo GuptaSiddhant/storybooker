@@ -1,3 +1,5 @@
+import type { LoggerService } from ".";
+
 /**
  * Service adapter to manage authentication.
  *
@@ -125,4 +127,6 @@ export interface AuthServiceOptions {
   abortSignal?: AbortSignal;
   /** Incoming request (cloned) */
   request: Request;
+  /** Logger */
+  logger: LoggerService;
 }

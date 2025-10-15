@@ -1,3 +1,5 @@
+import type { LoggerService } from ".";
+
 /**
  * Service adapter to interact with file-storage.
  *
@@ -124,6 +126,8 @@ export interface StorageService {
 export interface StorageServiceOptions {
   /** A signal that can be used to cancel the request handling. */
   abortSignal?: AbortSignal;
+  /** Logger */
+  logger: LoggerService;
 }
 
 /** Shape of file/blob */

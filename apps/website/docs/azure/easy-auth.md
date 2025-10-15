@@ -27,8 +27,9 @@ const authorise: AuthServiceAuthorise = async (permission, { user }) => {
   // check permission against user (roles)
   return true; // or false
 };
+
 // Create the service adapter
-const auth = new AzureEasyAuthService(authorise);
+const auth = new AzureEasyAuthService({ authorise });
 
 // use as `auth` in StoryBooker options.
 ```

@@ -49,9 +49,9 @@ export function createRequestHandler<User extends StoryBookerUser>(
 ): RequestHandler {
   const logger = options.logger || console;
   const initPromises = Promise.allSettled([
-    options.auth?.init?.({}).catch(logger.error),
-    options.database.init?.({}).catch(logger.error),
-    options.storage.init?.({}).catch(logger.error),
+    options.auth?.init?.({ logger }).catch(logger.error),
+    options.database.init?.({ logger }).catch(logger.error),
+    options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {
@@ -64,6 +64,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
         DEFAULT_LOCALE;
       const user = await options.auth?.getUserDetails({
         abortSignal: overrideOptions?.abortSignal,
+        logger: overrideOptions?.logger ?? logger,
         request: request.clone(),
       });
 
@@ -115,8 +116,8 @@ export function createRequestHandler<User extends StoryBookerUser>(
 export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
   const logger = options.logger || console;
   const initPromises = Promise.allSettled([
-    options.database.init?.({}).catch(logger.error),
-    options.storage.init?.({}).catch(logger.error),
+    options.database.init?.({ logger }).catch(logger.error),
+    options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
   return async (...params: Parameters<HandlePurge>) => {

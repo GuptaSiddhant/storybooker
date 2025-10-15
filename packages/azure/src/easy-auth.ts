@@ -4,6 +4,7 @@
 import type {
   AuthService,
   AuthServiceAuthorise,
+  AuthServiceOptions,
   StoryBookerUser,
 } from "@storybooker/core/types";
 
@@ -25,7 +26,10 @@ export interface AzureEasyAuthUser extends StoryBookerUser {
 /**
  * Modify the final user details object created from EasyAuth Client Principal.
  */
-export type ModifyUserDetails = (user: AzureEasyAuthUser) => AzureEasyAuthUser;
+export type ModifyUserDetails = (
+  user: AzureEasyAuthUser,
+  options: AuthServiceOptions,
+) => AzureEasyAuthUser | Promise<AzureEasyAuthUser>;
 
 const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = ({
   permission,
@@ -69,10 +73,12 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
     this.modifyUserDetails = options?.modifyUserDetails || DEFAULT_MODIFY_USER;
   }
 
-  getUserDetails: AuthService<AzureEasyAuthUser>["getUserDetails"] = async ({
-    request,
-  }) => {
-    const principalHeader = request.headers.get("x-ms-client-principal");
+  getUserDetails: AuthService<AzureEasyAuthUser>["getUserDetails"] = async (
+    options,
+  ) => {
+    const principalHeader = options.request.headers.get(
+      "x-ms-client-principal",
+    );
     if (!principalHeader) {
       throw new Response(
         `Unauthorized access. Please provide a valid EasyAuth principal header.`,
@@ -91,13 +97,14 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
 
     const azpToken = claims.find((claim) => claim.typ === "azp")?.val;
     if (azpToken) {
-      return this.modifyUserDetails({
+      const user: AzureEasyAuthUser = {
         clientPrincipal,
         displayName: "App",
         id: azpToken,
         roles: null,
         type: "application",
-      });
+      };
+      return this.modifyUserDetails(user, options);
     }
 
     const name = claims.find((claim) => claim.typ === "name")?.val;
@@ -111,14 +118,15 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
       )
       .map((claim) => claim.val);
 
-    return this.modifyUserDetails({
+    const user: AzureEasyAuthUser = {
       clientPrincipal,
       displayName: name || "",
       id: email || "",
       roles,
       title: roles.join(", "),
       type: "user",
-    });
+    };
+    return this.modifyUserDetails(user, options);
   };
 
   login: AuthService<AzureEasyAuthUser>["login"] = async ({ request }) => {

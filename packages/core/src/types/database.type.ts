@@ -1,3 +1,5 @@
+import type { LoggerService } from ".";
+
 /**
  * Service adapter to interact with database.
  *
@@ -160,6 +162,8 @@ export interface StoryBookerDatabaseDocument {
 export interface DatabaseServiceOptions {
   /** A signal that can be used to cancel the request handling. */
   abortSignal?: AbortSignal;
+  /** Logger */
+  logger: LoggerService;
 }
 
 export interface DatabaseDocumentListOptions<Item extends { id: string }> {

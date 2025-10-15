@@ -25,7 +25,7 @@ export async function authenticateOrThrow(
   try {
     const response = await auth.authorise(
       { permission: { ...permission, key }, user },
-      { abortSignal, request: request.clone() },
+      { abortSignal, logger, request: request.clone() },
     );
 
     if (response === true) {

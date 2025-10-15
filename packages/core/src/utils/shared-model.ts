@@ -35,8 +35,8 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
     this.database = database;
     this.storage = storage;
     this.logger = logger;
-    this.dbOptions = { abortSignal };
-    this.storageOptions = { abortSignal };
+    this.dbOptions = { abortSignal, logger };
+    this.storageOptions = { abortSignal, logger };
   }
 
   log(message: string, ...args: unknown[]): void {

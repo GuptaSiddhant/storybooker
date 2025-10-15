@@ -27,7 +27,7 @@
     "release": "node ./scripts/release.ts",
     "server": "NODE_ENV=development deno serve -REW --unstable-sloppy-imports --watch ./scripts/server.ts",
     "test": "turbo test",
-    "verify": "turbo verify"
+    "verify": "turbo verify --filter='./packages/*'"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
