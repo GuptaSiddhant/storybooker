@@ -18,19 +18,19 @@ export const mockAuthService: AuthService = {
     // Allow all permissions for testing
     return true;
   },
-  getUserDetails: async (_request, _options) => {
+  getUserDetails: async (_options) => {
     // Always return the mock user
     return mockUser;
   },
-  login: async (_request, _options) => {
+  login: async (_options) => {
     // Return a mock Response
     return new Response("Logged in", { status: 200 });
   },
-  logout: async (_request, _user, _options) => {
+  logout: async (_user, _options) => {
     // Return a mock Response
     return new Response("Logged out", { status: 200 });
   },
-  renderAccountDetails: async (_request, _user, _options) => {
+  renderAccountDetails: async (_user, _options) => {
     // Return mock HTML
     return "<div>Mock Account Details</div>";
   },

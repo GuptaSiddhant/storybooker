@@ -4,18 +4,28 @@
 import type {
   AuthService,
   AuthServiceAuthorise,
-  Permission,
   StoryBookerUser,
 } from "@storybooker/core/types";
 
 export type { AuthServiceAuthorise } from "@storybooker/core/types";
 
+export interface AzureEasyAuthClientPrincipal {
+  claims: { typ: string; val: string }[];
+  auth_typ: string;
+  name_typ: string;
+  role_typ: string;
+}
+
 export interface AzureEasyAuthUser extends StoryBookerUser {
   roles: string[] | null;
   type: "application" | "user";
+  clientPrincipal?: AzureEasyAuthClientPrincipal;
 }
 
-export type AzureEasyAuthRoleMap = Map<string, Permission[]>;
+/**
+ * Modify the final user details object created from EasyAuth Client Principal.
+ */
+export type ModifyUserDetails = (user: AzureEasyAuthUser) => AzureEasyAuthUser;
 
 const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = ({
   permission,
@@ -36,18 +46,32 @@ const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = ({
   return Boolean(user.roles && user.roles.length > 0);
 };
 
+const DEFAULT_MODIFY_USER: ModifyUserDetails = (user) => user;
+
+/**
+ * StoryBooker Auth adapter for Azure EasyAuth.
+ */
 export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
   authorise: AuthService<AzureEasyAuthUser>["authorise"];
+  modifyUserDetails: ModifyUserDetails;
 
-  constructor(
-    authorise: AuthServiceAuthorise<AzureEasyAuthUser> = DEFAULT_AUTHORISE,
-  ) {
-    this.authorise = authorise;
+  constructor(options?: {
+    /**
+     * Custom function to authorise permission for user
+     */
+    authorise?: AuthServiceAuthorise<AzureEasyAuthUser>;
+    /**
+     * Modify the final user details object created from EasyAuth Client Principal.
+     */
+    modifyUserDetails?: ModifyUserDetails;
+  }) {
+    this.authorise = options?.authorise || DEFAULT_AUTHORISE;
+    this.modifyUserDetails = options?.modifyUserDetails || DEFAULT_MODIFY_USER;
   }
 
-  getUserDetails: AuthService<AzureEasyAuthUser>["getUserDetails"] = async (
+  getUserDetails: AuthService<AzureEasyAuthUser>["getUserDetails"] = async ({
     request,
-  ) => {
+  }) => {
     const principalHeader = request.headers.get("x-ms-client-principal");
     if (!principalHeader) {
       throw new Response(
@@ -61,22 +85,19 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
       "utf8",
     );
 
-    const clientPrincipal: {
-      claims: { typ: string; val: string }[];
-      auth_typ: string;
-      name_typ: string;
-      role_typ: string;
-    } = JSON.parse(decodedPrincipal);
+    const clientPrincipal: AzureEasyAuthClientPrincipal =
+      JSON.parse(decodedPrincipal);
     const claims = clientPrincipal?.claims || [];
 
     const azpToken = claims.find((claim) => claim.typ === "azp")?.val;
     if (azpToken) {
-      return {
+      return this.modifyUserDetails({
+        clientPrincipal,
         displayName: "App",
         id: azpToken,
         roles: null,
         type: "application",
-      };
+      });
     }
 
     const name = claims.find((claim) => claim.typ === "name")?.val;
@@ -90,16 +111,17 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
       )
       .map((claim) => claim.val);
 
-    return {
+    return this.modifyUserDetails({
+      clientPrincipal,
       displayName: name || "",
       id: email || "",
       roles,
       title: roles.join(", "),
       type: "user",
-    };
+    });
   };
 
-  login: AuthService<AzureEasyAuthUser>["login"] = async (request) => {
+  login: AuthService<AzureEasyAuthUser>["login"] = async ({ request }) => {
     const url = new URL("/.auth/login", request.url);
 
     return new Response(null, {
@@ -108,7 +130,10 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
     });
   };
 
-  logout: AuthService<AzureEasyAuthUser>["logout"] = async (request) => {
+  logout: AuthService<AzureEasyAuthUser>["logout"] = async (
+    _user,
+    { request },
+  ) => {
     const url = new URL("/.auth/logout", request.url);
 
     return new Response(null, {

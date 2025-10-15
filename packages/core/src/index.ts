@@ -62,8 +62,9 @@ export function createRequestHandler<User extends StoryBookerUser>(
       const locale =
         request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
         DEFAULT_LOCALE;
-      const user = await options.auth?.getUserDetails(request, {
+      const user = await options.auth?.getUserDetails({
         abortSignal: overrideOptions?.abortSignal,
+        request: request.clone(),
       });
 
       localStore.enterWith({

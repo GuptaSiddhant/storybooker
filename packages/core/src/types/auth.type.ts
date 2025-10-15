@@ -13,7 +13,7 @@ export interface AuthService<
    * @param options Common options like abortSignal.
    * @throws if an error occur during initialisation.
    */
-  init?: (options: AuthServiceOptions) => Promise<void>;
+  init?: (options: Omit<AuthServiceOptions, "request">) => Promise<void>;
 
   /**
    * This callback is called before every protected route and determines if user
@@ -33,10 +33,7 @@ export interface AuthService<
    *
    * @throws an error or response (redirect-to-login) if it is a unauthenticated/unauthorised request.
    */
-  getUserDetails: (
-    request: Request,
-    options: AuthServiceOptions,
-  ) => Promise<AuthUser | null>;
+  getUserDetails: (options: AuthServiceOptions) => Promise<AuthUser | null>;
 
   /**
    * Get user to login from UI. The returning response should create auth session.
@@ -44,10 +41,7 @@ export interface AuthService<
    *
    * @param options Common options like abortSignal.
    */
-  login?: (
-    request: Request,
-    options: AuthServiceOptions,
-  ) => Promise<Response> | Response;
+  login?: (options: AuthServiceOptions) => Promise<Response> | Response;
 
   /**
    * Get user to logout from UI. The returning response should clear auth session.
@@ -56,7 +50,6 @@ export interface AuthService<
    * @param options Common options like abortSignal.
    */
   logout?: (
-    request: Request,
     user: AuthUser,
     options: AuthServiceOptions,
   ) => Promise<Response> | Response;
@@ -67,7 +60,6 @@ export interface AuthService<
    * @param options Common options like abortSignal.
    */
   renderAccountDetails?: (
-    request: Request,
     user: AuthUser,
     options: AuthServiceOptions,
   ) => Promise<string> | string;
@@ -87,7 +79,6 @@ export type AuthServiceAuthorise<
 > = (
   params: {
     permission: PermissionWithKey;
-    request: Request;
     user: AuthUser;
   },
   options: AuthServiceOptions,
@@ -132,4 +123,6 @@ export interface StoryBookerUser {
 export interface AuthServiceOptions {
   /** A signal that can be used to cancel the request handling. */
   abortSignal?: AbortSignal;
+  /** Incoming request (cloned) */
+  request: Request;
 }

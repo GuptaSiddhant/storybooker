@@ -17,7 +17,7 @@ export const login = defineRoute("get", URLS.ui.login, undefined, async () => {
     );
   }
 
-  const response = await auth.login(request, { abortSignal });
+  const response = await auth.login({ abortSignal, request });
 
   if (response.status >= 400) {
     return response;
@@ -44,7 +44,7 @@ export const logout = defineRoute(
       );
     }
 
-    const response = await auth.logout(request, user, { abortSignal });
+    const response = await auth.logout(user, { abortSignal, request });
     if (response.status >= 400) {
       return response;
     }
@@ -80,8 +80,9 @@ export const account = defineRoute(
       return responseRedirect(serviceUrl, 404);
     }
 
-    const children = await auth.renderAccountDetails?.(request, user, {
+    const children = await auth.renderAccountDetails?.(user, {
       abortSignal,
+      request,
     });
 
     return await responseHTML(renderAccountPage({ children }));
