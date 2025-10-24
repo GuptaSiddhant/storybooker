@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
+  "name": "@storybooker/gcp",
+  "version": "0.11.1",
+  "license": "MIT",
+  "publish": {
+    "include": [
+      "src",
+      "README.md"
+    ]
+  },
+  "exports": {
+    "./big-table": "./src/big-table.ts",
+    "./firestore": "./src/firestore.ts",
+    "./storage": "./src/storage.ts"
+  }
+}
