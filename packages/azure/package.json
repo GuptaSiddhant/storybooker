@@ -46,28 +46,23 @@
   "exports": {
     "./blob-storage": {
       "source": "./src/blob-storage.ts",
-      "import": "./dist/blob-storage.js",
-      "require": "./dist/blob-storage.cjs"
+      "default": "./dist/blob-storage.js"
     },
     "./cosmos-db": {
       "source": "./src/cosmos-db.ts",
-      "import": "./dist/cosmos-db.js",
-      "require": "./dist/cosmos-db.cjs"
+      "default": "./dist/cosmos-db.js"
     },
     "./data-tables": {
       "source": "./src/data-tables.ts",
-      "import": "./dist/data-tables.js",
-      "require": "./dist/data-tables.cjs"
+      "default": "./dist/data-tables.js"
     },
     "./easy-auth": {
       "source": "./src/easy-auth.ts",
-      "import": "./dist/easy-auth.js",
-      "require": "./dist/easy-auth.cjs"
+      "default": "./dist/easy-auth.js"
     },
     "./functions": {
       "source": "./src/functions.ts",
-      "import": "./dist/functions.js",
-      "require": "./dist/functions.cjs"
+      "default": "./dist/functions.js"
     },
     "./package.json": "./package.json"
   },
@@ -120,26 +115,11 @@
   "types": "./dist/index.d.cts",
   "publishConfig": {
     "exports": {
-      "./blob-storage": {
-        "import": "./dist/blob-storage.js",
-        "require": "./dist/blob-storage.cjs"
-      },
-      "./cosmos-db": {
-        "import": "./dist/cosmos-db.js",
-        "require": "./dist/cosmos-db.cjs"
-      },
-      "./data-tables": {
-        "import": "./dist/data-tables.js",
-        "require": "./dist/data-tables.cjs"
-      },
-      "./easy-auth": {
-        "import": "./dist/easy-auth.js",
-        "require": "./dist/easy-auth.cjs"
-      },
-      "./functions": {
-        "import": "./dist/functions.js",
-        "require": "./dist/functions.cjs"
-      },
+      "./blob-storage": "./dist/blob-storage.js",
+      "./cosmos-db": "./dist/cosmos-db.js",
+      "./data-tables": "./dist/data-tables.js",
+      "./easy-auth": "./dist/easy-auth.js",
+      "./functions": "./dist/functions.js",
       "./package.json": "./package.json"
     }
   }

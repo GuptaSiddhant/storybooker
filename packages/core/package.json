@@ -50,69 +50,45 @@
     "tsdown": "^0.14.1",
     "vitest": "^3.2.4"
   },
-  "main": "./dist/index.cjs",
+  "main": "./dist/index.js",
   "module": "./dist/index.js",
-  "types": "./dist/index.d.cts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "default": "./dist/index.js"
     },
     "./adapters": {
       "source": "./src/adapters.ts",
-      "import": "./dist/adapters.js",
-      "require": "./dist/adapters.cjs"
+      "default": "./dist/adapters.js"
     },
     "./translations": {
       "source": "./src/translations/index.ts",
-      "import": "./dist/translations.js",
-      "require": "./dist/translations.cjs"
+      "default": "./dist/translations.js"
     },
     "./translations/en-gb": {
       "source": "./src/translations/en-gb.ts",
-      "import": "./dist/translations/en-gb.js",
-      "require": "./dist/translations/en-gb.cjs"
+      "default": "./dist/translations/en-gb.js"
     },
     "./types": {
       "source": "./src/types/index.ts",
-      "import": "./dist/types.js",
-      "require": "./dist/types.cjs"
+      "default": "./dist/types.js"
     },
     "./utils": {
       "source": "./src/utils/index.ts",
-      "import": "./dist/utils.js",
-      "require": "./dist/utils.cjs"
+      "default": "./dist/utils.js"
     },
     "./package.json": "./package.json",
     "./openapi.json": "./dist/openapi.json"
   },
   "publishConfig": {
     "exports": {
-      ".": {
-        "import": "./dist/index.js",
-        "require": "./dist/index.cjs"
-      },
-      "./adapters": {
-        "import": "./dist/adapters.js",
-        "require": "./dist/adapters.cjs"
-      },
-      "./translations": {
-        "import": "./dist/translations.js",
-        "require": "./dist/translations.cjs"
-      },
-      "./translations/en-gb": {
-        "import": "./dist/translations/en-gb.js",
-        "require": "./dist/translations/en-gb.cjs"
-      },
-      "./types": {
-        "import": "./dist/types.js",
-        "require": "./dist/types.cjs"
-      },
-      "./utils": {
-        "import": "./dist/utils.js",
-        "require": "./dist/utils.cjs"
-      },
+      ".": "./dist/index.js",
+      "./adapters": "./dist/adapters.js",
+      "./translations": "./dist/translations.js",
+      "./translations/en-gb": "./dist/translations/en-gb.js",
+      "./types": "./dist/types.js",
+      "./utils": "./dist/utils.js",
       "./package.json": "./package.json"
     }
   }

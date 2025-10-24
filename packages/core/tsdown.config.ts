@@ -13,7 +13,7 @@ export default defineConfig({
     utils: "./src/utils/index.ts",
   },
   exports: { devExports: "source" },
-  format: ["esm", "cjs"],
+  format: ["esm"],
   inputOptions: { jsx: "react-jsx" },
   onSuccess,
   platform: "node",

@@ -10,7 +10,7 @@ export default defineConfig({
     "./src/functions.ts",
   ],
   exports: { devExports: "source" },
-  format: ["esm", "cjs"],
+  format: ["esm"],
   onSuccess,
   platform: "node",
   sourcemap: true,

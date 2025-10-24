@@ -45,18 +45,15 @@
   "exports": {
     "./dynamo-db": {
       "source": "./src/dynamo-db.ts",
-      "import": "./dist/dynamo-db.js",
-      "require": "./dist/dynamo-db.cjs"
+      "default": "./dist/dynamo-db.js"
     },
     "./lambda": {
       "source": "./src/lambda.ts",
-      "import": "./dist/lambda.js",
-      "require": "./dist/lambda.cjs"
+      "default": "./dist/lambda.js"
     },
     "./s3": {
       "source": "./src/s3.ts",
-      "import": "./dist/s3.js",
-      "require": "./dist/s3.cjs"
+      "default": "./dist/s3.js"
     },
     "./package.json": "./package.json"
   },
@@ -66,8 +63,7 @@
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
-    "lint:fix": "yarn lint --fix",
-    "start": "func start"
+    "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
     "@storybooker/core": "workspace:^"
@@ -95,23 +91,11 @@
       "optional": true
     }
   },
-  "main": "./dist/dynamo-db.cjs",
-  "module": "./dist/dynamo-db.js",
-  "types": "./dist/dynamo-db.d.cts",
   "publishConfig": {
     "exports": {
-      "./dynamo-db": {
-        "import": "./dist/dynamo-db.js",
-        "require": "./dist/dynamo-db.cjs"
-      },
-      "./lambda": {
-        "import": "./dist/lambda.js",
-        "require": "./dist/lambda.cjs"
-      },
-      "./s3": {
-        "import": "./dist/s3.js",
-        "require": "./dist/s3.cjs"
-      },
+      "./dynamo-db": "./dist/dynamo-db.js",
+      "./lambda": "./dist/lambda.js",
+      "./s3": "./dist/s3.js",
       "./package.json": "./package.json"
     }
   }

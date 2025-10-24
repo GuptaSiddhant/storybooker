@@ -48,18 +48,15 @@
   "exports": {
     "./big-table": {
       "source": "./src/big-table.ts",
-      "import": "./dist/big-table.js",
-      "require": "./dist/big-table.cjs"
+      "default": "./dist/big-table.js"
     },
     "./firestore": {
       "source": "./src/firestore.ts",
-      "import": "./dist/firestore.js",
-      "require": "./dist/firestore.cjs"
+      "default": "./dist/firestore.js"
     },
     "./storage": {
       "source": "./src/storage.ts",
-      "import": "./dist/storage.js",
-      "require": "./dist/storage.cjs"
+      "default": "./dist/storage.js"
     },
     "./package.json": "./package.json"
   },
@@ -107,18 +104,9 @@
   "types": "./dist/storage.d.cts",
   "publishConfig": {
     "exports": {
-      "./big-table": {
-        "import": "./dist/big-table.js",
-        "require": "./dist/big-table.cjs"
-      },
-      "./firestore": {
-        "import": "./dist/firestore.js",
-        "require": "./dist/firestore.cjs"
-      },
-      "./storage": {
-        "import": "./dist/storage.js",
-        "require": "./dist/storage.cjs"
-      },
+      "./big-table": "./dist/big-table.js",
+      "./firestore": "./dist/firestore.js",
+      "./storage": "./dist/storage.js",
       "./package.json": "./package.json"
     }
   }
