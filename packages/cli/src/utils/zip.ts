@@ -14,20 +14,22 @@ const isWindows = process.platform === "win32";
  * It throws an error if the `zip` command is not available on Unix-like systems.
  */
 export function zip(inPath: string, outPath: fs.PathLike): void {
+  let _InPath = inPath;
+
   if (isWindows) {
     if (fs.statSync(inPath).isFile()) {
       const inFile = fs.readFileSync(inPath);
       const tmpPath = path.join(tmpdir(), `cross-zip-${Date.now()}`);
       fs.mkdirSync(tmpPath);
       fs.writeFileSync(path.join(tmpPath, path.basename(inPath)), inFile);
-      inPath = tmpPath;
+      _InPath = tmpPath;
     }
     fs.rmdirSync(outPath, { recursive: true, maxRetries: 3 });
   }
 
-  const cwd = path.dirname(inPath);
+  const cwd = path.dirname(_InPath);
   const zipCmd = getZipCommand();
-  const zipCmdArgs = getZipArgs(inPath, outPath);
+  const zipCmdArgs = getZipArgs(_InPath, outPath);
   try {
     execSync([zipCmd, ...zipCmdArgs].join(" "), {
       cwd,
