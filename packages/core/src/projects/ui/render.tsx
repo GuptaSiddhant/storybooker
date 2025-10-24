@@ -52,7 +52,11 @@ export function renderProjectsPage({
       <DocumentMain>
         <ProjectsTable projects={projects} caption={""} />
       </DocumentMain>
-      <DocumentSidebar />
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <a href={href(URLS.projects.create)}>
+          {commonT.Create()} {commonT.Project()}
+        </a>
+      </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>
   );

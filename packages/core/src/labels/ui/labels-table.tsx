@@ -1,11 +1,12 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
+import { LatestBuild } from "../../components/latest-build";
 import { Table } from "../../components/table";
 import type { LabelType } from "../../labels/schema";
 import type { ProjectType } from "../../projects/schema";
 import { href, urlBuilder, URLS } from "../../urls";
-import { commonT, getT } from "../../utils/i18n";
+import { commonT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
 import { urlJoin } from "../../utils/url";
 
@@ -116,39 +117,10 @@ export function LabelsTable({
         {
           id: "build",
           header: `${commonT.Latest()} ${commonT.Build()}`,
-          cell: (item) => {
-            if (!item.latestBuildSHA) {
-              return (
-                <span class="description">
-                  {getT("messages", "no_builds_available")}
-                </span>
-              );
-            }
-
-            return (
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                <span
-                  safe
-                  style={{ fontFamily: "monospace", fontSize: "0.9em" }}
-                >
-                  [{item.latestBuildSHA.slice(0, 7)}]
-                </span>
-                <a href={urlBuilder.buildSHA(project.id, item.latestBuildSHA)}>
-                  {commonT.Details()}
-                </a>
-                <a
-                  href={urlBuilder.storybookIndexHtml(
-                    project.id,
-                    item.latestBuildSHA,
-                  )}
-                >
-                  {commonT.StoryBook()}
-                </a>
-              </div>
-            );
-          },
+          cell: (item) => (
+            <LatestBuild projectId={project.id} sha={item.latestBuildSHA} />
+          ),
         },
-
         {
           id: "actions",
           header: commonT.Actions(),

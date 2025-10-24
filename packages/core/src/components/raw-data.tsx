@@ -1,3 +1,4 @@
+// oxlint-disable max-lines-per-function
 // oxlint-disable no-nested-ternary
 
 import { ISO_DATE_REGEXP } from "../utils/constants";
@@ -56,12 +57,22 @@ export function RawDataList({
           >
             {key.includes(" ") ? key : camelCaseToSentenceCase(key)}
           </dt>
-          <dd style={{ fontSize: "0.9em", margin: 0 }}>
-            {(typeof value === "string"
-              ? ISO_DATE_REGEXP.test(value)
-                ? new Date(value).toLocaleString(locale)
-                : value
-              : JSON.stringify(value)) || "-"}
+          <dd
+            style={{ fontSize: "0.9em", margin: 0, overflowWrap: "break-word" }}
+          >
+            {(typeof value === "string" ? (
+              ISO_DATE_REGEXP.test(value) ? (
+                new Date(value).toLocaleString(locale)
+              ) : value.startsWith("http") ? (
+                <a href={value} target="_blank">
+                  {value}
+                </a>
+              ) : (
+                value
+              )
+            ) : (
+              JSON.stringify(value)
+            )) || "-"}
           </dd>
         </div>
       ))}

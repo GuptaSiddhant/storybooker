@@ -47,6 +47,7 @@ export const translations_enGB = {
     purge: "purge",
     filter: "filter",
     clear: "clear",
+    timestamp: "timestamp",
   },
   errorMessages: {
     auth_setup_missing: "Auth is not setup",

@@ -100,6 +100,7 @@ function UserInfo({
             overflow: "hidden",
             objectFit: "cover",
             border: "1px solid",
+            maxWidth: "10rem",
           }}
         />
       ) : null}

@@ -41,7 +41,7 @@ export function globalStyleSheet(theme: {
   const { darkTheme = DEFAULT_DARK_THEME, lightTheme = DEFAULT_LIGHT_THEME } =
     theme || {};
 
-  return /*css*/ `
+  return /* css */ `
     :root {
       --color-bg-base: ${lightTheme.backgroundColor.base};
       --color-bg-card:${lightTheme.backgroundColor.card};
@@ -170,6 +170,9 @@ export function globalStyleSheet(theme: {
       }
       #logo {
         display: none;
+      }
+      #user {
+        width: 100% !important;        
       }
       #app > aside {
         width: 100%;

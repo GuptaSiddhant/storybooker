@@ -10,8 +10,9 @@ import {
 } from "../components/document";
 import { ErrorMessage } from "../components/error-message";
 import type { ProjectType } from "../projects/schema";
-import { ProjectsTable } from "../projects/ui/projects-table";
+import { ProjectsGrid } from "../projects/ui/projects-grid";
 import { href, urlBuilder, URLS } from "../urls";
+import { SERVICE_NAME } from "../utils/constants";
 import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "../utils/text-utils";
@@ -23,27 +24,52 @@ export function renderRootPage({ projects }: RootPageProps): JSX.Element {
   const pageTitle = commonT.Home();
 
   return (
-    <DocumentLayout title={pageTitle}>
-      <DocumentHeader
-        toolbar={
+    <DocumentLayout
+      title={pageTitle}
+      footer={
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
           <a href={href(URLS.ui.openapi)} target="_blank">
             OpenAPI
           </a>
+          <span
+            style={{
+              color: "var(--color-text-secondary)",
+              width: "100%",
+              fontSize: "0.8rem",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "end",
+            }}
+          >
+            {SERVICE_NAME} 2025
+          </span>
+        </div>
+      }
+    >
+      <DocumentHeader
+        toolbar={
+          <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
+            <a href={urlBuilder.allProjects()} target="_blank">
+              {commonT.All()} {commonT.Projects()}
+            </a>
+          </div>
         }
       >
         {pageTitle}
       </DocumentHeader>
       <DocumentMain style={{ padding: 0 }}>
-        <ProjectsTable
-          projects={projects}
-          toolbar={<a href={urlBuilder.allProjects()}>{commonT.ViewAll()}</a>}
-        />
+        <ProjectsGrid projects={projects} />
       </DocumentMain>
-      <DocumentSidebar style={{ padding: "1rem" }}>
-        <a href={href(URLS.projects.create)}>
-          {commonT.Create()} {commonT.Project()}
-        </a>
-      </DocumentSidebar>
+      <DocumentSidebar />
+
       <DocumentUserSection />
     </DocumentLayout>
   );

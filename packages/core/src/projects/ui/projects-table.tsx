@@ -1,6 +1,7 @@
 // oxlint-disable sort-keys
 // oxlint-disable max-lines-per-function
 
+import { LatestBuild } from "../../components/latest-build";
 import { Table } from "../../components/table";
 import type { ProjectType } from "../../projects/schema";
 import { urlBuilder } from "../../urls";
@@ -28,17 +29,32 @@ export function ProjectsTable({
       data={projects}
       columns={[
         {
-          id: "id",
-          header: commonT.ID(),
+          id: "name",
+          header: commonT.Name(),
           cell: (item) => {
             return (
-              <a safe href={urlBuilder.projectId(item.id)}>
-                {item.id}
+              <a
+                safe
+                href={urlBuilder.projectId(item.id)}
+                style={{
+                  fontWeight: "bold",
+                  minWidth: "12ch",
+                  width: "fit-content",
+                }}
+                title={item.id}
+              >
+                {item.name}
               </a>
             );
           },
         },
-        { id: "name", header: commonT.Name() },
+        {
+          id: "build",
+          header: `${commonT.Latest()} ${getT("dictionary", "build")}`,
+          cell: (item) => (
+            <LatestBuild projectId={item.id} sha={item.latestBuildSHA} />
+          ),
+        },
         {
           id: "gitHub",
           header: commonT.GitHub(),
@@ -60,66 +76,46 @@ export function ProjectsTable({
           },
         },
         {
-          id: "build",
-          header: `${commonT.Latest()} ${getT("dictionary", "build")}`,
-          cell: (item) => {
-            if (!item.latestBuildSHA) {
-              return (
-                <span class="description">
-                  {getT("messages", "no_builds_available")}
-                </span>
-              );
-            }
-
-            return (
-              <div
-                style={{ display: "flex", columnGap: "1rem", flexWrap: "wrap" }}
-              >
-                <span safe style={{ fontFamily: "monospace" }}>
-                  [{item.latestBuildSHA.slice(0, 7)}]
-                </span>
-                <a href={urlBuilder.buildSHA(item.id, item.latestBuildSHA)}>
-                  {commonT.Details()}
-                </a>
-                <a
-                  href={urlBuilder.storybookIndexHtml(
-                    item.id,
-                    item.latestBuildSHA,
-                  )}
-                >
-                  {commonT.StoryBook()}
-                </a>
-              </div>
-            );
-          },
-        },
-        {
           id: "updatedAt",
-          header: commonT.UpdatedAt(),
+          header: commonT.Timestamp(),
           cell: (item) => {
             if (!item.updatedAt) {
               return null;
             }
 
             return (
-              <time datetime={item.updatedAt} safe>
-                {new Date(item.updatedAt).toLocaleString(locale)}
-              </time>
-            );
-          },
-        },
-        {
-          id: "createdAt",
-          header: commonT.CreatedAt(),
-          cell: (item) => {
-            if (!item.createdAt) {
-              return null;
-            }
-
-            return (
-              <time datetime={item.createdAt} safe>
-                {new Date(item.createdAt).toLocaleString(locale)}
-              </time>
+              <div>
+                {item.updatedAt ? (
+                  <div>
+                    <span
+                      style={{
+                        color: "var(--color-text-secondary)",
+                        fontSize: "small",
+                      }}
+                    >
+                      {commonT.UpdatedAt()}:
+                    </span>{" "}
+                    <time datetime={item.updatedAt} safe>
+                      {new Date(item.updatedAt).toLocaleString(locale)}
+                    </time>
+                  </div>
+                ) : null}
+                {item.createdAt ? (
+                  <div>
+                    <span
+                      style={{
+                        color: "var(--color-text-secondary)",
+                        fontSize: "small",
+                      }}
+                    >
+                      {commonT.CreatedAt()}:
+                    </span>{" "}
+                    <time datetime={item.createdAt} safe>
+                      {new Date(item.createdAt).toLocaleString(locale)}
+                    </time>
+                  </div>
+                ) : null}
+              </div>
             );
           },
         },

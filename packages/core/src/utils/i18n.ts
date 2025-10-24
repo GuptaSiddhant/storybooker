@@ -54,6 +54,7 @@ export const commonT = {
   Reset: (): string => toTitleCase(getT("dictionary", "reset")),
   Slug: (): string => toTitleCase(getT("dictionary", "slug")),
   StoryBook: (): string => "StoryBook",
+  Timestamp: (): string => toTitleCase(getT("dictionary", "timestamp")),
   Type: (): string => toTitleCase(getT("dictionary", "type")),
   Update: (): string => toTitleCase(getT("dictionary", "update")),
   UpdatedAt: (): string => toTitleCase(getT("dictionary", "updated_at")),
