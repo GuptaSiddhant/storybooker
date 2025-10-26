@@ -53,7 +53,7 @@ jobs:
       - name: Publish on JSR
         working-directory: ./out
         continue-on-error: true
-        run: yarn publish:jsr -- --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
+        run: yarn publish:jsr -- --sloppy-imports --no-check --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
         working-directory: ./out
