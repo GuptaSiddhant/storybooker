@@ -32,6 +32,7 @@ jobs:
             @storybooker/gcp \
             storybooker
           cp tsconfig.base.json out/tsconfig.base.json
+          cp .oxlintrc.json out/.oxlintrc.json
 
       - name: Install dependencies
         working-directory: ./out
