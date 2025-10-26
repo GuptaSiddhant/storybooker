@@ -10,6 +10,14 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    strategy:
+      matrix:
+        packages:
+          - "./packages/core"
+          - "./packages/aws"
+          - "./packages/azure"
+          - "./packages/gcp"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,4 +28,5 @@ jobs:
           deno-version: v2.x
 
       - name: Publish to JSR
-        run: npx -y turbo publish:jsr -- --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
+        working-directory: ${{ matrix.packages }}
+        run: deno publish --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
