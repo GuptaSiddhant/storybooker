@@ -1,3 +1,4 @@
+import type { Buffer } from "node:buffer";
 import * as fs from "node:fs";
 import * as fsp from "node:fs/promises";
 import * as path from "node:path";
