@@ -64,7 +64,7 @@
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
-    "publish:jsr": "jsr publish"
+    "publish:jsr": "deno publish"
   },
   "dependencies": {
     "@storybooker/core": "workspace:^"
@@ -75,7 +75,6 @@
     "@types/aws-lambda": "^8.10.152",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "jsr": "latest",
     "oxlint": "^1.24.0",
     "oxlint-tsgolint": "^0.3.0",
     "prettier": "^3.6.2",
