@@ -27,6 +27,9 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Install deps
+        working-directory: ${{ matrix.packages }}
+        run: deno install
       - name: Publish to JSR
         working-directory: ${{ matrix.packages }}
         run: deno publish --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
