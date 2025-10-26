@@ -6956,6 +6956,7 @@ __metadata:
     "@types/aws-lambda": "npm:^8.10.152"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
+    jsr: "npm:latest"
     oxlint: "npm:^1.24.0"
     oxlint-tsgolint: "npm:^0.3.0"
     prettier: "npm:^3.6.2"
@@ -6982,6 +6983,7 @@ __metadata:
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
+    jsr: "npm:latest"
     oxlint: "npm:^1.24.0"
     oxlint-tsgolint: "npm:^0.3.0"
     prettier: "npm:^3.6.2"
@@ -7015,6 +7017,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^3.2.4"
     decompress: "npm:^4.0.0"
     glob: "npm:^10.0.0"
+    jsr: "npm:latest"
     oxlint: "npm:^1.24.0"
     oxlint-tsgolint: "npm:^0.3.0"
     prettier: "npm:^3.6.2"
@@ -7035,6 +7038,7 @@ __metadata:
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
+    jsr: "npm:latest"
     oxlint: "npm:^1.24.0"
     oxlint-tsgolint: "npm:^0.3.0"
     prettier: "npm:^3.6.2"
@@ -13630,6 +13634,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jsr@npm:latest":
+  version: 0.13.5
+  resolution: "jsr@npm:0.13.5"
+  dependencies:
+    node-stream-zip: "npm:^1.15.0"
+    semiver: "npm:^1.1.0"
+  bin:
+    jsr: dist/bin.js
+  checksum: 10c0/1be5adf5d98940091ec5ff89cdc3effeaf91ae0bd12d41ee49db8767b2221043ad2022d5f9a3acdd1dedb381ef3e31cb95f8fe874129cc91ec22df63b88ae373
+  languageName: node
+  linkType: hard
+
 "jwa@npm:^2.0.0":
   version: 2.0.1
   resolution: "jwa@npm:2.0.1"
@@ -15355,6 +15371,13 @@ __metadata:
   version: 2.0.23
   resolution: "node-releases@npm:2.0.23"
   checksum: 10c0/3fdcddb574a9d56c050469b027f3fd2b8830fd321edd12f34b862969b67d0a3d6713eb2af8916f91618d555354f6c7bd33ae39e3b37117b1e7ddf2e42bc3f4be
+  languageName: node
+  linkType: hard
+
+"node-stream-zip@npm:^1.15.0":
+  version: 1.15.0
+  resolution: "node-stream-zip@npm:1.15.0"
+  checksum: 10c0/429fce95d7e90e846adbe096c61d2ea8d18defc155c0345d25d0f98dd6fc72aeb95039318484a4e0a01dc3814b6d0d1ae0fe91847a29669dff8676ec064078c9
   languageName: node
   linkType: hard
 
@@ -18127,6 +18150,13 @@ __metadata:
   version: 1.1.0
   resolution: "semaphore@npm:1.1.0"
   checksum: 10c0/1eeb146c1ffe1283951573c356ba3a9b18a8513b18959ecbc0e3ba3a99e5da46edc509a9a5f0cb9d5d28895dcd828bdd6c29162c8e41a311ee79efaf3456a723
+  languageName: node
+  linkType: hard
+
+"semiver@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "semiver@npm:1.1.0"
+  checksum: 10c0/f208555fcdf8726d25a5d5acd5079b1f6a274a9be291da6981c70867cca9abd43721648b338bac914fbc7874e2594217a5943a2e91410ce24b5a80a641d4468b
   languageName: node
   linkType: hard
 
