@@ -20,9 +20,14 @@ export interface CreateStorybookerRouterOptions<User extends StoryBookerUser>
   route?: string;
 }
 
+export type APIGatewayProxyEventHandler = (
+  event: APIGatewayProxyEventV2,
+  _context: Context,
+) => Promise<APIGatewayProxyResult>;
+
 export function createStoryBookerRouterHandler<User extends StoryBookerUser>(
   options: CreateStorybookerRouterOptions<User>,
-) {
+): APIGatewayProxyEventHandler {
   const route = options.route || "";
 
   const requestHandler = createRequestHandler({
@@ -31,10 +36,7 @@ export function createStoryBookerRouterHandler<User extends StoryBookerUser>(
   });
 
   // Return a Lambda handler function
-  return async (
-    event: APIGatewayProxyEventV2,
-    _context: Context,
-  ): Promise<APIGatewayProxyResult> => {
+  return async (event) => {
     try {
       const request = transformApiGatewayEventToWebRequest(event);
       const response = await requestHandler(request);
