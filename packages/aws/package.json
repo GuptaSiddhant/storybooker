@@ -63,7 +63,8 @@
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
-    "lint:fix": "yarn lint --fix"
+    "lint:fix": "yarn lint --fix",
+    "publish:jsr": "npx -y jsr publish"
   },
   "dependencies": {
     "@storybooker/core": "workspace:^"

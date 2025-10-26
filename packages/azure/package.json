@@ -73,6 +73,7 @@
     "fmt": "prettier src --write --config ../../.prettierrc",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
+    "publish:jsr": "npx -y jsr publish",
     "start": "func start"
   },
   "dependencies": {
