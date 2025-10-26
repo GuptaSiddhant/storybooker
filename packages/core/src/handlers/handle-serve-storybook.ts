@@ -39,30 +39,30 @@ export async function handleServeStoryBook({
     headers.set(HEADERS.contentType, mimeType ?? getMimeType(filepath));
     headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
 
-    if (!filepath.endsWith("index.html")) {
-      if (ui?.streaming === false && content instanceof ReadableStream) {
-        const body = await new Response(content).arrayBuffer();
-        return new Response(body, { headers, status: 200 });
-      }
+    if (filepath.endsWith("index.html")) {
+      // Appending custom UI to index.html
+      const data =
+        typeof content === "string"
+          ? content
+          : await new Response(content).text();
+      const bodyWithBackButton = data.replace(
+        `</body>`,
+        `
+              <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
+              style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
+              ← ${SERVICE_NAME}
+              </a></div></body>`,
+      );
 
-      return new Response(content, { headers, status: 200 });
+      return new Response(bodyWithBackButton, { headers, status: 200 });
     }
 
-    // Appending custom UI to index.html
-    const data =
-      typeof content === "string"
-        ? content
-        : await new Response(content).text();
-    const bodyWithBackButton = data.replace(
-      `</body>`,
-      `
-            <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
-            style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
-            ← ${SERVICE_NAME}
-            </a></div></body>`,
-    );
+    if (ui?.streaming === false && content instanceof ReadableStream) {
+      const body = await new Response(content).arrayBuffer();
+      return new Response(body, { headers, status: 200 });
+    }
 
-    return new Response(bodyWithBackButton, { headers, status: 200 });
+    return new Response(content, { headers, status: 200 });
   } catch (error) {
     return await responseError(error, 404);
   }

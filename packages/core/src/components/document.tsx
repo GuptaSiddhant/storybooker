@@ -26,7 +26,7 @@ export function DocumentLayout({
       {"<!DOCTYPE html>"}
       <html lang="en">
         <head>
-          <title safe>
+          <title>
             {title} | {SERVICE_NAME}
           </title>
           <link
@@ -185,7 +185,7 @@ export function DocumentHeader({
             })}
           </ul>
         ) : null}
-        <div safe>{children}</div>
+        <div>{children}</div>
       </div>
 
       {toolbar ? (

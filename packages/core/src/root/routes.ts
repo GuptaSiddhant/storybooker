@@ -84,7 +84,7 @@ export const health = defineRoute(
 
 export const serveStorybook = defineRoute(
   "get",
-  "_/:projectId/:buildSHA/*",
+  "_/:projectId/:buildSHA/*filepath",
   {
     overridePath: ":projectId/:buildSHA/:filepath",
     requestParams: {
@@ -99,7 +99,7 @@ export const serveStorybook = defineRoute(
     tags: ["Serve"],
   },
   async ({ params }) => {
-    const { buildSHA, projectId, "*": filepath = "index.html" } = params;
+    const { buildSHA, projectId, filepath } = params;
     return await handleServeStoryBook({ buildSHA, filepath, projectId });
   },
 );

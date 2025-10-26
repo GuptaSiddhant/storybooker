@@ -9,7 +9,8 @@ import { Readable } from "node:stream";
 import decompress from "decompress";
 import { LabelsModel } from "../labels/model";
 import { ProjectsModel } from "../projects/model";
-import type { StoryBookerFile } from "../types";
+import type { PermissionAction, StoryBookerFile } from "../types";
+import { checkAuthorisation } from "../utils/auth";
 import { writeStreamToFile } from "../utils/file-utils";
 import { getMimeType } from "../utils/mime-utils";
 import {
@@ -24,6 +25,7 @@ import {
   BuildCreateSchema,
   BuildSchema,
   BuildUpdateSchema,
+  type BuildStoryType,
   type BuildType,
   type BuildUploadVariant,
 } from "./schema";
@@ -218,6 +220,12 @@ export class BuildsModel extends Model<BuildType> {
 
   id: BaseModel<BuildType>["id"] = (id: string) => {
     return {
+      checkAuth: (action) =>
+        checkAuthorisation({
+          action,
+          projectId: this.projectId,
+          resource: "build",
+        }),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
       has: this.has.bind(this, id),
@@ -225,6 +233,56 @@ export class BuildsModel extends Model<BuildType> {
       update: this.update.bind(this, id),
     };
   };
+
+  async checkAuth(action: PermissionAction): Promise<boolean> {
+    return await checkAuthorisation({
+      action,
+      projectId: this.projectId,
+      resource: "build",
+    });
+  }
+
+  async getStories(
+    shaOrBuild: string | BuildType,
+  ): Promise<BuildStoryType[] | null> {
+    const { hasStorybook, sha } =
+      typeof shaOrBuild === "string" ? await this.get(shaOrBuild) : shaOrBuild;
+
+    if (!hasStorybook) {
+      return null;
+    }
+
+    const { logger } = getStore();
+
+    try {
+      this.log("List stories '%s'...", sha);
+
+      const buildIndexJsonPath = `${sha}/storybook/index.json`;
+      const { content } = await this.storage.downloadFile(
+        generateStorageContainerId(this.projectId),
+        buildIndexJsonPath,
+        { logger },
+      );
+      const data: unknown =
+        typeof content === "string"
+          ? JSON.parse(content)
+          : await new Response(content).json();
+
+      if (
+        !data ||
+        typeof data !== "object" ||
+        !("entries" in data) ||
+        !Array.isArray(data.entries)
+      ) {
+        return [];
+      }
+
+      return Object.values(data.entries) as BuildStoryType[];
+    } catch (error) {
+      this.error(error);
+      return null;
+    }
+  }
 
   // helpers
   async listByLabel(labelSlug: string): Promise<BuildType[]> {

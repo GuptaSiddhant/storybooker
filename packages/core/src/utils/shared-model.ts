@@ -3,6 +3,7 @@ import type {
   DatabaseService,
   DatabaseServiceOptions,
   LoggerService,
+  PermissionAction,
   StorageService,
   StorageServiceOptions,
 } from "../types";
@@ -64,6 +65,7 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   abstract update(id: string, data: unknown): Promise<void>;
   abstract delete(id: string): Promise<void>;
   abstract id: (id: string) => BaseIdModel<Data>;
+  abstract checkAuth(action: PermissionAction): Promise<boolean>;
 }
 
 export interface BaseModel<Data extends Obj> {
@@ -73,6 +75,7 @@ export interface BaseModel<Data extends Obj> {
   has(id: string): Promise<boolean>;
   update(id: string, data: unknown): Promise<void>;
   delete(id: string): Promise<void>;
+  checkAuth(action: PermissionAction): Promise<boolean>;
   id: (id: string) => BaseIdModel<Data>;
 }
 
@@ -82,6 +85,7 @@ export interface BaseIdModel<Data extends Obj> {
   has(): Promise<boolean>;
   update(data: unknown): Promise<void>;
   delete(): Promise<void>;
+  checkAuth(action: PermissionAction): Promise<boolean>;
 }
 
 /** @private */

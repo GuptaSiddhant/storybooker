@@ -1,3 +1,5 @@
+// oxlint-disable sort-keys
+
 import z from "zod";
 import { BuildSHASchema, LabelSlugSchema } from "../utils/shared-model";
 
@@ -72,4 +74,16 @@ export type BuildsGetResultType = z.infer<typeof BuildsGetResultSchema>;
 export const BuildsGetResultSchema = z.object({
   build: BuildSchema,
   url: z.url(),
+});
+
+export type BuildStoryType = z.infer<typeof BuildStorySchema>;
+export const BuildStorySchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  name: z.string(),
+  importPath: z.string(),
+  tags: z.array(z.string()),
+  type: z.enum(["docs", "story"]),
+  componentPath: z.string().optional(),
+  storiesImports: z.array(z.string()).optional(),
 });

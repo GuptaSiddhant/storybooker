@@ -275,7 +275,8 @@ export class LocalFileStorage implements StorageService {
     filepath,
   ) => {
     const path = this.#genPath(containerId, filepath);
-    const content = await fsp.readFile(path, { encoding: "utf8" });
+    const buffer = await fsp.readFile(path);
+    const content = new Blob([buffer as Buffer<ArrayBuffer>]);
     return { content, path };
   };
 

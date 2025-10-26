@@ -17,16 +17,16 @@ export interface TableColumn<Item extends TableItem> {
 
 // oxlint-disable-next-line max-lines-per-function
 export function Table<Item extends TableItem>({
-  caption: safeCaption,
+  caption,
   columns,
   data,
-  toolbar: safeToolbar,
+  toolbar,
 }: TableProps<Item>): JSX.Element {
   const cols = columns.filter(Boolean) as TableColumn<Item>[];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-      {safeCaption || safeToolbar ? (
+      {caption || toolbar ? (
         <div
           style={{
             alignItems: "end",
@@ -36,10 +36,8 @@ export function Table<Item extends TableItem>({
             padding: "0.5rem 1rem 0",
           }}
         >
-          <div style={{ fontSize: "1.1em", fontWeight: "600" }}>
-            {safeCaption}
-          </div>
-          <div>{safeToolbar}</div>
+          <div style={{ fontSize: "1.1em", fontWeight: "600" }}>{caption}</div>
+          <div>{toolbar}</div>
         </div>
       ) : null}
 

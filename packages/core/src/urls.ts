@@ -160,12 +160,35 @@ export const urlBuilder = {
     );
     return url.toString();
   },
-  storybookIndexHtml: (projectId: string, sha: string): string => {
+  storybookIndexHtml: (
+    projectId: string,
+    sha: string,
+    storyId?: string,
+  ): string => {
     const { prefix, request } = getStore();
     const url = new URL(
       urlJoin(prefix, "_", projectId, sha, "storybook", "index.html"),
       request.url,
     );
+    if (storyId) {
+      url.searchParams.set("path", `/story/${storyId}`);
+    }
+    return url.toString();
+  },
+  storybookIFrameHtml: (
+    projectId: string,
+    sha: string,
+    storyId: string,
+  ): string => {
+    const { prefix, request } = getStore();
+    const url = new URL(
+      urlJoin(prefix, "_", projectId, sha, "storybook", "iframe.html"),
+      request.url,
+    );
+
+    url.searchParams.set("id", storyId);
+    url.searchParams.set("viewMode", "story");
+
     return url.toString();
   },
   storybookTestReport: (projectId: string, sha: string): string => {
@@ -188,6 +211,18 @@ export const urlBuilder = {
     const { prefix, request } = getStore();
     const url = new URL(
       urlJoin(prefix, "_", projectId, sha, "storybook.zip"),
+      request.url,
+    );
+    return url.toString();
+  },
+  storybookScreenshot: (
+    projectId: string,
+    sha: string,
+    ...filename: string[]
+  ): string => {
+    const { prefix, request } = getStore();
+    const url = new URL(
+      urlJoin(prefix, "_", projectId, sha, "screenshots", ...filename),
       request.url,
     );
     return url.toString();

@@ -40,13 +40,15 @@ export function BuildUploadForm({
 
         <div
           style={{
-            display: "grid",
-            gap: "0.5rem",
-            gridTemplateColumns: "repeat(3,1fr)",
+            display: "flex",
+            columnGap: "2rem",
+            flexWrap: "wrap",
           }}
         >
           {buildUploadVariants.map((variant) => {
             const id = `variant-${variant}`;
+            const disabled = checkIsVariantDisabled(build, variant);
+
             return (
               <div
                 style={{ alignItems: "center", display: "flex", gap: "0.5rem" }}
@@ -58,8 +60,11 @@ export function BuildUploadForm({
                   required
                   value={variant}
                   checked={variant === uploadVariant}
+                  disabled={disabled}
                 />
-                <label for={id}>{variant}</label>
+                <label for={id} style={{ opacity: disabled ? 0.5 : undefined }}>
+                  {variant}
+                </label>
               </div>
             );
           })}
@@ -87,4 +92,24 @@ export function BuildUploadForm({
       <ErrorMessage id="form-error" />
     </form>
   );
+}
+
+function checkIsVariantDisabled(build: BuildType, variant: BuildUploadVariant) {
+  switch (variant) {
+    case "coverage": {
+      return build.hasCoverage;
+    }
+    case "screenshots": {
+      return build.hasScreenshots;
+    }
+    case "storybook": {
+      return build.hasStorybook;
+    }
+    case "testReport": {
+      return build.hasTestReport;
+    }
+    default: {
+      return false;
+    }
+  }
 }

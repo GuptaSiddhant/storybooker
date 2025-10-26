@@ -1,5 +1,7 @@
 import { BuildsModel } from "../builds/model";
 import { ProjectsModel } from "../projects/model";
+import type { PermissionAction } from "../types";
+import { checkAuthorisation } from "../utils/auth";
 import {
   generateDatabaseCollectionId,
   Model,
@@ -112,8 +114,22 @@ export class LabelsModel extends Model<LabelType> {
     return;
   }
 
+  checkAuth = async (action: PermissionAction): Promise<boolean> => {
+    return await checkAuthorisation({
+      action,
+      projectId: this.projectId,
+      resource: "label",
+    });
+  };
+
   id: BaseModel<LabelType>["id"] = (id: string) => {
     return {
+      checkAuth: (action) =>
+        checkAuthorisation({
+          action,
+          projectId: this.projectId,
+          resource: "label",
+        }),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
       has: this.has.bind(this, id),

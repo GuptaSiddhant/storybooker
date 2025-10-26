@@ -1,7 +1,11 @@
 // oxlint-disable no-nested-ternary
 // oxlint-disable max-lines-per-function
 
-import type { BuildType, BuildUploadVariant } from "../../builds/schema";
+import type {
+  BuildStoryType,
+  BuildType,
+  BuildUploadVariant,
+} from "../../builds/schema";
 import { DestructiveButton, LinkButton } from "../../components/button";
 import {
   DocumentHeader,
@@ -10,12 +14,14 @@ import {
   DocumentSidebar,
   DocumentUserSection,
 } from "../../components/document";
-import { RawDataTabular } from "../../components/raw-data";
+import { RawDataList } from "../../components/raw-data";
 import type { ProjectType } from "../../projects/schema";
 import { urlBuilder } from "../../urls";
 import { commonT, getT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
 import { BuildCreateForm } from "./build-create-form";
+import { BuildLinksFooter } from "./build-links";
+import { BuildStories } from "./build-stories";
 import { BuildUploadForm } from "./build-upload-form";
 import { BuildsTable } from "./builds-table";
 
@@ -56,31 +62,52 @@ export function renderBuildsPage({
 export function renderBuildDetailsPage({
   build,
   projectId,
+  hasDeletePermission,
   hasUpdatePermission,
+  stories,
 }: {
   build: BuildType;
   projectId: string;
+  hasDeletePermission: boolean;
   hasUpdatePermission: boolean;
+  stories: BuildStoryType[] | null;
 }): JSX.Element {
   const { url } = getStore();
+  const shouldShowUpdateButton =
+    hasUpdatePermission &&
+    !build.hasCoverage &&
+    !build.hasScreenshots &&
+    !build.hasStorybook &&
+    !build.hasTestReport;
 
   return (
-    <DocumentLayout title={build.sha.slice(0, 7)}>
+    <DocumentLayout
+      title={build.sha.slice(0, 7)}
+      footer={
+        <BuildLinksFooter
+          build={build}
+          projectId={projectId}
+          hasUpdatePermission={hasUpdatePermission}
+        />
+      }
+    >
       <DocumentHeader
         breadcrumbs={[projectId, commonT.Builds()]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            {hasUpdatePermission ? (
+            {shouldShowUpdateButton ? (
               <LinkButton href={urlBuilder.buildUpload(projectId, build.id)}>
                 {commonT.Upload()}
               </LinkButton>
             ) : null}
-            <form
-              hx-delete={url}
-              hx-confirm={commonT.confirmDelete(commonT.Build(), build.sha)}
-            >
-              <DestructiveButton>{commonT.Delete()}</DestructiveButton>
-            </form>
+            {hasDeletePermission ? (
+              <form
+                hx-delete={url}
+                hx-confirm={commonT.confirmDelete(commonT.Build(), build.sha)}
+              >
+                <DestructiveButton>{commonT.Delete()}</DestructiveButton>
+              </form>
+            ) : null}
           </div>
         }
       >
@@ -88,90 +115,11 @@ export function renderBuildDetailsPage({
           ? `[${build.sha.slice(0, 7)}] ${build.message}`
           : build.sha.slice(0, 7)}
       </DocumentHeader>
-      <DocumentMain>
-        <RawDataTabular data={build} />
+      <DocumentMain style={{ padding: "1rem" }}>
+        <BuildStories build={build} projectId={projectId} stories={stories} />
       </DocumentMain>
-      <DocumentSidebar
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem",
-          padding: "1rem",
-        }}
-      >
-        {build.hasStorybook ? (
-          <a
-            href={urlBuilder.storybookIndexHtml(projectId, build.sha)}
-            target="_blank"
-          >
-            {commonT.View()} {commonT.StoryBook()}
-          </a>
-        ) : hasUpdatePermission ? (
-          <a
-            href={urlBuilder.buildUpload(projectId, build.sha, "storybook")}
-            class="description"
-          >
-            {commonT.Upload()} {commonT.StoryBook()}
-          </a>
-        ) : null}
-
-        {build.hasTestReport ? (
-          <a
-            href={urlBuilder.storybookTestReport(projectId, build.sha)}
-            target="_blank"
-          >
-            {commonT.View()} Test Report
-          </a>
-        ) : hasUpdatePermission ? (
-          <a
-            href={urlBuilder.buildUpload(projectId, build.sha, "testReport")}
-            class="description"
-          >
-            {commonT.Upload()} Test report
-          </a>
-        ) : null}
-
-        {build.hasCoverage ? (
-          <a
-            href={urlBuilder.storybookCoverage(projectId, build.sha)}
-            target="_blank"
-          >
-            {commonT.View()} Coverage report
-          </a>
-        ) : hasUpdatePermission ? (
-          <a
-            href={urlBuilder.buildUpload(projectId, build.sha, "coverage")}
-            class="description"
-          >
-            {commonT.Upload()} Coverage report
-          </a>
-        ) : null}
-
-        {build.hasScreenshots ? (
-          <a
-            href={urlBuilder.storybookScreenshotsDownload(projectId, build.sha)}
-            target="_blank"
-          >
-            {commonT.Download()} screenshots
-          </a>
-        ) : hasUpdatePermission ? (
-          <a
-            href={urlBuilder.buildUpload(projectId, build.sha, "screenshots")}
-            class="description"
-          >
-            {commonT.Upload()} Screenshots
-          </a>
-        ) : null}
-
-        {build.hasStorybook ? (
-          <a
-            href={urlBuilder.storybookDownload(projectId, build.sha)}
-            download={`storybook-${projectId}-${build.sha}.zip`}
-            target="_blank"
-          >
-            {commonT.Download()} {commonT.StoryBook()}
-          </a>
-        ) : null}
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <RawDataList data={build} />
       </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>

@@ -7,12 +7,14 @@ const DEFAULT_LIGHT_THEME: BrandTheme = {
     base: "#f2f2f2",
     card: "#ffffff",
     invert: "#000000",
+    destructive: "#ff0000",
   },
   textColor: {
     primary: "#09090b",
     secondary: "#71717b",
     accent: "#2b7fff",
     invert: "#ffffff",
+    destructive: "#ff0000",
   },
   borderColor: { default: "#e4e4e7" },
 };
@@ -22,12 +24,14 @@ const DEFAULT_DARK_THEME: BrandTheme = {
     base: "#09090b",
     card: "#18181b",
     invert: "#ffffff",
+    destructive: "#ff0000",
   },
   textColor: {
     primary: "#fafafa",
     secondary: "#9f9fa9",
     accent: "#2b7fff",
     invert: "#000000",
+    destructive: "#ff0000",
   },
   borderColor: { default: "#ffffff1a" },
 };
@@ -46,10 +50,12 @@ export function globalStyleSheet(theme: {
       --color-bg-base: ${lightTheme.backgroundColor.base};
       --color-bg-card:${lightTheme.backgroundColor.card};
       --color-bg-invert:${lightTheme.backgroundColor.invert};
+      --color-bg-destructive:${lightTheme.backgroundColor.destructive};
       --color-text-primary:${lightTheme.textColor.primary};
       --color-text-secondary: ${lightTheme.textColor.secondary};
       --color-text-accent: ${lightTheme.textColor.accent};
       --color-text-invert: ${lightTheme.textColor.invert};
+      --color-text-destructive: ${lightTheme.textColor.destructive};
       --color-border: ${lightTheme.borderColor.default};
     }
 
@@ -58,10 +64,12 @@ export function globalStyleSheet(theme: {
         --color-bg-base: ${darkTheme.backgroundColor.base};
         --color-bg-card:${darkTheme.backgroundColor.card};
         --color-bg-invert:${darkTheme.backgroundColor.invert};
+        --color-bg-destructive:${darkTheme.backgroundColor.destructive};
         --color-text-primary:${darkTheme.textColor.primary};
         --color-text-secondary: ${darkTheme.textColor.secondary};
         --color-text-accent: ${darkTheme.textColor.accent};
         --color-text-invert: ${darkTheme.textColor.invert};
+        --color-text-destructive: ${darkTheme.textColor.destructive};
         --color-border: ${darkTheme.borderColor.default};
       }
     }
@@ -151,6 +159,7 @@ export function globalStyleSheet(theme: {
       gap: 1rem;
       padding: 0 1rem;
       min-height: 3.5rem;
+      flex-wrap: wrap;
     }
 
     #app > aside {
@@ -387,7 +396,9 @@ export function globalStyleSheet(theme: {
     }
 
     button.destructive {
-      background: #f002;
+      border: 1px solid var(--color-bg-destructive);
+      color: var(--color-text-destructive);
+      background: none;
     }
   `.replaceAll(/\s+/g, " ");
 }

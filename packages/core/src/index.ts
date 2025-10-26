@@ -21,6 +21,10 @@ import { createMiddlewaresPipelineRequestHandler } from "./utils/middleware-util
 import { router } from "./utils/router-utils";
 import { localStore } from "./utils/store";
 
+if ("setEncoding" in process.stdout) {
+  process.stdout.setEncoding("utf8");
+}
+
 router.registerGroup(rootRoutes);
 router.registerGroup(projectsRoutes);
 router.registerGroup(labelsRoutes);

@@ -9,7 +9,7 @@ import {
 } from "../builds/ui/render";
 import { ProjectsModel } from "../projects/model";
 import { href, urlBuilder, URLS } from "../urls";
-import { authenticateOrThrow, checkAuthorisation } from "../utils/auth";
+import { authenticateOrThrow } from "../utils/auth";
 import { CONTENT_TYPES, QUERY_PARAMS } from "../utils/constants";
 import {
   checkIsHTMLRequest,
@@ -195,17 +195,25 @@ export const getBuild = defineRoute(
   async ({ params: { buildSHA, projectId }, request }) => {
     await authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
-    const build = await new BuildsModel(projectId).get(buildSHA);
+    const model = new BuildsModel(projectId);
+    const build = await model.get(buildSHA);
 
     if (checkIsHTMLRequest()) {
-      const hasUpdatePermission = await checkAuthorisation({
-        action: "update",
-        projectId,
-        resource: "build",
-      });
+      const [hasDeletePermission, hasUpdatePermission, stories] =
+        await Promise.all([
+          model.checkAuth("delete"),
+          model.checkAuth("update"),
+          model.getStories(build),
+        ]);
 
       return await responseHTML(
-        renderBuildDetailsPage({ build, hasUpdatePermission, projectId }),
+        renderBuildDetailsPage({
+          build,
+          hasDeletePermission,
+          hasUpdatePermission,
+          projectId,
+          stories,
+        }),
       );
     }
 
