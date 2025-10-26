@@ -19,7 +19,5 @@ jobs:
         with:
           deno-version: v2.x
 
-      - name: Publish on JSR
-        working-directory: ./out
-        continue-on-error: true
-        run: yarn publish:jsr -- --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
+      - name: Publish to JSR
+        run: npx -y turbo publish:jsr -- --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
