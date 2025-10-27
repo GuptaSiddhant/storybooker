@@ -1,6 +1,5 @@
 // oxlint-disable no-console
 
-import fs from "node:fs";
 import { checkJsrRepublish } from "./jsr-utils.ts";
 
 const path = import.meta.resolve("../packages/core/deno.json");
@@ -10,13 +9,7 @@ const { name, version } = data;
 const published = await checkJsrRepublish(name, version);
 
 if (published) {
-  console.log(`Pkg ${name}@${version} is already published to JSR.`);
-  const githubOutput = process.env.GITHUB_OUTPUT;
-  if (githubOutput) {
-    fs.appendFileSync(githubOutput, `isJsrPublished=true\n`);
-  } else {
-    console.error("GitHub output is not specified.");
-  }
+  throw new Error(`Pkg '${name}@${version}' is already published to JSR.`);
 } else {
-  console.log(`Pkg ${name}@${version} is not published to JSR.`);
+  console.log(`Pkg '${name}@${version}' is not published to JSR.`);
 }

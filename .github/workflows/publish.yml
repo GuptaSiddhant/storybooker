@@ -45,15 +45,12 @@ jobs:
         working-directory: ./out
         run: npx turbo verify
 
-      - name: Check JSR publishes
-        id: check-jsr
-        run: deno -REN ./scripts/core-jsr-check.ts
-
       - name: Publish on JSR
         working-directory: ./out
-        if: ${{ steps.check-jsr.outputs.isJsrPublished != 'true' }}
         continue-on-error: true
-        run: yarn publish:jsr -- --sloppy-imports --no-check --token ${{ secrets.JSR_API_TOKEN }}
+        run: |
+          node ./scripts/core-jsr-check.ts
+          yarn publish:jsr -- --sloppy-imports --no-check --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
         working-directory: ./out
