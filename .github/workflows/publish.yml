@@ -50,7 +50,7 @@ jobs:
         continue-on-error: true
         run: |
           node ./scripts/core-jsr-check.ts
-          yarn publish:jsr -- --no-check --token ${{ secrets.JSR_API_TOKEN }}
+          yarn publish:jsr -- --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
         working-directory: ./out
