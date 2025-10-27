@@ -23,11 +23,6 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
 
-      - name: Setup deno
-        uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
       - name: Setup Turbo
         run: |
           npx -y turbo prune \
@@ -50,14 +45,18 @@ jobs:
         working-directory: ./out
         run: npx turbo verify
 
+      - name: Check JSR publishes
+        id: check-jsr
+        run: deno -REN ./scripts/core-jsr-check.ts
+
       - name: Publish on JSR
         working-directory: ./out
+        if: ${{ steps.check-jsr.outputs.isJsrPublished != 'true' }}
         continue-on-error: true
         run: yarn publish:jsr -- --sloppy-imports --no-check --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
         working-directory: ./out
-        continue-on-error: true
         run: yarn publish:npm
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

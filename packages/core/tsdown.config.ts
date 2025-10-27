@@ -29,7 +29,7 @@ async function onSuccess(config: ResolvedOptions): Promise<void> {
   await generateOpenApiSpec(config, router.paths, SERVICE_NAME);
 
   const { updateDenoJsonToMatchPkgJson } = await import(
-    "../../scripts/deno-match-utils.ts"
+    "../../scripts/jsr-utils.ts"
   );
   await updateDenoJsonToMatchPkgJson(config);
 }
