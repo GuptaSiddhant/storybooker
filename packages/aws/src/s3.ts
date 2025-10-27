@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import * as S3 from "@aws-sdk/client-s3";
 import type { StorageService } from "@storybooker/core/types";
 

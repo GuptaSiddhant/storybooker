@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import type { File, Storage } from "@google-cloud/storage";

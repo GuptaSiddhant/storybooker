@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { createRequestHandler } from "@storybooker/core";
 import type {
   RequestHandlerOptions,
