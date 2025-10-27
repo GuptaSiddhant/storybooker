@@ -14,7 +14,6 @@ export default defineConfig({
   },
   exports: { devExports: "source" },
   format: ["esm"],
-  inputOptions: { jsx: "react-jsx" },
   onSuccess,
   platform: "node",
   sourcemap: true,
@@ -23,42 +22,14 @@ export default defineConfig({
 });
 
 async function onSuccess(config: ResolvedOptions): Promise<void> {
-  await generateOpenApiSpec(config);
+  const { generateOpenApiSpec } = await import(
+    "../../scripts/gen-openapi-json.ts"
+  );
+  const { router, SERVICE_NAME } = await import("./dist/index.js");
+  await generateOpenApiSpec(config, router.paths, SERVICE_NAME);
 
   const { updateDenoJsonToMatchPkgJson } = await import(
     "../../scripts/deno-match-utils.ts"
   );
   await updateDenoJsonToMatchPkgJson(config);
-}
-
-async function generateOpenApiSpec(config: ResolvedOptions): Promise<void> {
-  const { router, SERVICE_NAME } = await import("./dist/index.js");
-  const { createDocument } = await import("zod-openapi");
-  const { readFile, writeFile } = await import("node:fs/promises");
-
-  const openAPISpec = createDocument({
-    components: {},
-    info: { title: SERVICE_NAME, version: "" },
-    openapi: "3.1.0",
-    paths: router.paths,
-    security: [],
-    tags: [],
-  });
-
-  const outputFilepath = "./dist/openapi.json";
-  await writeFile(outputFilepath, JSON.stringify(openAPISpec, null, 2), {
-    encoding: "utf8",
-  });
-  config.logger.success(`Generated OpenAPI spec (${outputFilepath})`);
-
-  const pkgJsonPath = "./package.json";
-  const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8" }));
-  pkgJson["exports"]["./openapi.json"] = outputFilepath;
-  // oxlint-disable-next-line prefer-template
-  await writeFile(pkgJsonPath, JSON.stringify(pkgJson, null, 2) + "\n", {
-    encoding: "utf8",
-  });
-  config.logger.success("Updated package.json");
-
-  return;
 }

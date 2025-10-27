@@ -12,7 +12,7 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        packages:
+        package:
           - "./packages/core"
           - "./packages/aws"
           - "./packages/azure"
@@ -28,8 +28,14 @@ jobs:
           deno-version: v2.x
 
       - name: Install deps
-        working-directory: ${{ matrix.packages }}
+        working-directory: ${{ matrix.package }}
         run: deno install
+
+      - name: openapi.json
+        if: matrix.package == './packages/core'
+        working-directory: ${{ matrix.package }}
+        run: deno ./scripts/gen-openapi-json.ts
+
       - name: Publish to JSR
-        working-directory: ${{ matrix.packages }}
+        working-directory: ${{ matrix.package }}
         run: deno publish --sloppy-imports --token ${{ secrets.JSR_API_TOKEN }}
