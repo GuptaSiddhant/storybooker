@@ -139,7 +139,7 @@ export const purge = defineRoute(
     await authenticateOrThrow({
       action: "delete",
       projectId,
-      resource: "label",
+      resource: "tag",
     });
 
     await handlePurge({ projectId }, {});

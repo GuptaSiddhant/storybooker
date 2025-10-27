@@ -10,12 +10,12 @@ import { getStore } from "../../utils/store";
 
 export interface BuildFormProps {
   projectId: string;
-  labelSlug?: string;
+  tagSlug?: string;
 }
 
 export function BuildCreateForm({
   projectId,
-  labelSlug,
+  tagSlug,
 }: BuildFormProps): JSX.Element {
   const { url } = getStore();
 
@@ -56,20 +56,20 @@ export function BuildCreateForm({
       </fieldset>
 
       <fieldset>
-        <legend>{commonT.Labels()}</legend>
+        <legend>{commonT.Tags()}</legend>
 
         {Array.from({ length: 4 }).map((_ignore, index) => {
-          const id = `label-${index}`;
+          const id = `tag-${index}`;
           return (
             <div class="field">
               <label for={id}>
-                {commonT.Label()} {index + 1}
+                {commonT.Tag()} {index + 1}
               </label>
               <input
                 id={id}
-                name="labels"
+                name="tags"
                 required={index === 0}
-                value={index === 0 ? labelSlug : undefined}
+                value={index === 0 ? tagSlug : undefined}
               />
               {index === 0 ? (
                 <span class="description">{commonT.Required()}</span>

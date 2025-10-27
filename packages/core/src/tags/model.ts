@@ -9,19 +9,19 @@ import {
   type ListOptions,
 } from "../utils/shared-model";
 import {
-  LabelCreateSchema,
-  LabelSchema,
-  LabelUpdateSchema,
-  type LabelType,
+  TagCreateSchema,
+  TagSchema,
+  TagUpdateSchema,
+  type TagType,
 } from "./schema";
 
-export class LabelsModel extends Model<LabelType> {
+export class TagsModel extends Model<TagType> {
   constructor(projectId: string) {
-    super(projectId, generateDatabaseCollectionId(projectId, "Labels"));
+    super(projectId, generateDatabaseCollectionId(projectId, "Tags"));
   }
 
-  async list(options: ListOptions<LabelType> = {}): Promise<LabelType[]> {
-    this.log("List labels...");
+  async list(options: ListOptions<TagType> = {}): Promise<TagType[]> {
+    this.log("List tags...");
 
     const items = await this.database.listDocuments(
       this.collectionId,
@@ -29,16 +29,16 @@ export class LabelsModel extends Model<LabelType> {
       this.dbOptions,
     );
 
-    return LabelSchema.array().parse(items);
+    return TagSchema.array().parse(items);
   }
 
-  async create(data: unknown, withBuild = false): Promise<LabelType> {
-    const parsedData = LabelCreateSchema.parse(data);
-    this.log("Create label '%s'...", parsedData.value);
+  async create(data: unknown, withBuild = false): Promise<TagType> {
+    const parsedData = TagCreateSchema.parse(data);
+    this.log("Create tag '%s'...", parsedData.value);
 
-    const slug = LabelsModel.createSlug(parsedData.value);
+    const slug = TagsModel.createSlug(parsedData.value);
     const now = new Date().toISOString();
-    const label: LabelType = {
+    const tag: TagType = {
       ...parsedData,
       buildsCount: withBuild ? 1 : 0,
       createdAt: now,
@@ -46,17 +46,17 @@ export class LabelsModel extends Model<LabelType> {
       slug,
       updatedAt: now,
     };
-    await this.database.createDocument<LabelType>(
+    await this.database.createDocument<TagType>(
       this.collectionId,
-      label,
+      tag,
       this.dbOptions,
     );
 
-    return label;
+    return tag;
   }
 
-  async get(id: string): Promise<LabelType> {
-    this.log("Get label '%s'...", id);
+  async get(id: string): Promise<TagType> {
+    this.log("Get tag '%s'...", id);
 
     const item = await this.database.getDocument(
       this.collectionId,
@@ -64,11 +64,11 @@ export class LabelsModel extends Model<LabelType> {
       this.dbOptions,
     );
 
-    return LabelSchema.parse(item);
+    return TagSchema.parse(item);
   }
 
   async has(id: string): Promise<boolean> {
-    this.log("Check label '%s'...", id);
+    this.log("Check tag '%s'...", id);
     return await this.database.hasDocument(
       this.collectionId,
       id,
@@ -77,8 +77,8 @@ export class LabelsModel extends Model<LabelType> {
   }
 
   async update(id: string, data: unknown): Promise<void> {
-    this.log("Update label '%s'...", id);
-    const parsedData = LabelUpdateSchema.parse(data);
+    this.log("Update tag '%s'...", id);
+    const parsedData = TagUpdateSchema.parse(data);
 
     await this.database.updateDocument(
       this.collectionId,
@@ -91,13 +91,13 @@ export class LabelsModel extends Model<LabelType> {
   }
 
   async delete(slug: string): Promise<void> {
-    this.log("Delete label '%s'...", slug);
+    this.log("Delete tag '%s'...", slug);
 
     const { gitHubDefaultBranch } = await new ProjectsModel().get(
       this.projectId,
     );
-    if (slug === LabelsModel.createSlug(gitHubDefaultBranch)) {
-      const message = `Cannot delete the label associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
+    if (slug === TagsModel.createSlug(gitHubDefaultBranch)) {
+      const message = `Cannot delete the tag associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
       this.error(message);
       throw new Error(message);
     }
@@ -105,8 +105,8 @@ export class LabelsModel extends Model<LabelType> {
     await this.database.deleteDocument(this.collectionId, slug, this.dbOptions);
 
     try {
-      this.debug("Delete builds associated with label '%s'...", slug);
-      await new BuildsModel(this.projectId).deleteByLabel(slug, false);
+      this.debug("Delete builds associated with tag '%s'...", slug);
+      await new BuildsModel(this.projectId).deleteByTag(slug, false);
     } catch (error) {
       this.error(error);
     }
@@ -118,17 +118,17 @@ export class LabelsModel extends Model<LabelType> {
     return await checkAuthorisation({
       action,
       projectId: this.projectId,
-      resource: "label",
+      resource: "tag",
     });
   };
 
-  id: BaseModel<LabelType>["id"] = (id: string) => {
+  id: BaseModel<TagType>["id"] = (id: string) => {
     return {
       checkAuth: (action) =>
         checkAuthorisation({
           action,
           projectId: this.projectId,
-          resource: "label",
+          resource: "tag",
         }),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
@@ -142,7 +142,7 @@ export class LabelsModel extends Model<LabelType> {
     return value.trim().toLowerCase().replace(/\W+/, "-");
   }
 
-  static guessType(slug: string): LabelType["type"] {
+  static guessType(slug: string): TagType["type"] {
     if (/^\d+$/.test(slug)) {
       return "pr";
     }

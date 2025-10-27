@@ -22,8 +22,8 @@ export const translations_enGB = {
     update: "update",
     build: "build",
     builds: "builds",
-    label: "label",
-    labels: "labels",
+    tag: "tag",
+    tags: "tags",
     edit: "edit",
     delete: "delete",
     recent: "recent",
@@ -69,7 +69,7 @@ export const translations_enGB = {
     no_builds_available: "No builds available",
     serving_static_file: "Serving static file",
     create_project_info:
-      "A project is a collection of StoryBook builds and labels. One project corresponds to one StoryBook instance/project.",
+      "A project is a collection of StoryBook builds and tags. One project corresponds to one StoryBook instance/project.",
   },
   confirmations: {
     delete: "Are you sure about deleting the {{variant}} '{{name}}'?",

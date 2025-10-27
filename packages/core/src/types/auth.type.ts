@@ -98,12 +98,7 @@ export type PermissionWithKey = Permission & { key: PermissionKey };
 export type PermissionKey =
   `${PermissionResource}:${PermissionAction}:${string}`;
 /** Type of possible resources to check permissions for */
-export type PermissionResource =
-  | "project"
-  | "build"
-  | "label"
-  | "openapi"
-  | "ui";
+export type PermissionResource = "project" | "build" | "tag" | "openapi" | "ui";
 /** Type of possible actions to check permissions for */
 export type PermissionAction = "create" | "read" | "update" | "delete";
 

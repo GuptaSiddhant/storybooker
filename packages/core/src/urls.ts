@@ -29,11 +29,11 @@ export const URLS = {
     id: "projects/:projectId/builds/:buildSHA",
     upload: "projects/:projectId/builds/:buildSHA/upload",
   },
-  labels: {
-    all: "projects/:projectId/labels",
-    create: "projects/:projectId/labels/create",
-    id: "projects/:projectId/labels/:labelSlug",
-    update: "projects/:projectId/labels/:labelSlug/update",
+  tags: {
+    all: "projects/:projectId/tags",
+    create: "projects/:projectId/tags/create",
+    id: "projects/:projectId/tags/:tagSlug",
+    update: "projects/:projectId/tags/:tagSlug/update",
   },
   serve: {
     storybook: "_/:projectId/:buildSHA/storybook/*filepath",
@@ -94,14 +94,14 @@ export const urlBuilder = {
     );
     return url.toString();
   },
-  buildCreate: (projectId: string, labelSlug?: string): string => {
+  buildCreate: (projectId: string, tagSlug?: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
       urlJoin(prefix, "projects", projectId, "builds", "create"),
       request.url,
     );
-    if (labelSlug) {
-      url.searchParams.set(QUERY_PARAMS.labelSlug, labelSlug);
+    if (tagSlug) {
+      url.searchParams.set(QUERY_PARAMS.tagSlug, tagSlug);
     }
     return url.toString();
   },
@@ -120,42 +120,42 @@ export const urlBuilder = {
     }
     return url.toString();
   },
-  allLabels: (projectId: string): string => {
+  allTags: (projectId: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels"),
+      urlJoin(prefix, "projects", projectId, "tags"),
       request.url,
     );
     return url.toString();
   },
-  labelCreate: (projectId: string): string => {
+  tagCreate: (projectId: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels", "create"),
+      urlJoin(prefix, "projects", projectId, "tags", "create"),
       request.url,
     );
     return url.toString();
   },
-  labelSlug: (projectId: string, labelSlug: string): string => {
+  tagSlug: (projectId: string, tagSlug: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels", labelSlug),
+      urlJoin(prefix, "projects", projectId, "tags", tagSlug),
       request.url,
     );
     return url.toString();
   },
-  labelSlugUpdate: (projectId: string, labelSlug: string): string => {
+  tagSlugUpdate: (projectId: string, tagSlug: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels", labelSlug, "update"),
+      urlJoin(prefix, "projects", projectId, "tags", tagSlug, "update"),
       request.url,
     );
     return url.toString();
   },
-  labelSlugLatest: (projectId: string, labelSlug: string): string => {
+  tagSlugLatest: (projectId: string, tagSlug: string): string => {
     const { prefix, request } = getStore();
     const url = new URL(
-      urlJoin(prefix, "projects", projectId, "labels", labelSlug, "latest"),
+      urlJoin(prefix, "projects", projectId, "tags", tagSlug, "latest"),
       request.url,
     );
     return url.toString();

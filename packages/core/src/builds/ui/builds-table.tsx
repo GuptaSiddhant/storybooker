@@ -3,8 +3,8 @@
 
 import type { BuildType } from "../../builds/schema";
 import { Table } from "../../components/table";
-import type { LabelType } from "../../labels/schema";
 import type { ProjectType } from "../../projects/schema";
+import type { TagType } from "../../tags/schema";
 import { urlBuilder } from "../../urls";
 import { commonT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
@@ -13,7 +13,7 @@ export interface BuildsTableProps {
   caption?: JSX.Element;
   builds: BuildType[];
   project: ProjectType;
-  labels: LabelType[] | undefined;
+  tags: TagType[] | undefined;
   toolbar?: JSX.Element;
 }
 
@@ -22,7 +22,7 @@ export function BuildsTable({
   toolbar,
   builds,
   project,
-  labels,
+  tags,
 }: BuildsTableProps): JSX.Element {
   const { locale } = getStore();
 
@@ -59,27 +59,23 @@ export function BuildsTable({
             );
           },
         },
-        labels
+        tags
           ? {
-              id: "label",
-              header: commonT.Labels(),
+              id: "tag",
+              header: commonT.Tags(),
               cell: (item) => {
                 return (
                   <div>
-                    {item.labelSlugs.split(",").map((labelSlug, index, arr) => {
-                      const label = labels.find(
-                        (label) => label.slug === labelSlug,
-                      );
+                    {item.tagSlugs.split(",").map((slug, index, arr) => {
+                      const tag = tags.find((tag) => tag.slug === slug);
                       return (
                         <>
                           <a
                             safe
-                            href={urlBuilder.labelSlug(project.id, labelSlug)}
-                            title={labelSlug}
+                            href={urlBuilder.tagSlug(project.id, slug)}
+                            title={slug}
                           >
-                            {label
-                              ? `${label.value} (${label.type})`
-                              : labelSlug}
+                            {tag ? `${tag.value} (${tag.type})` : slug}
                           </a>
                           {index === arr.length - 1 ? null : <span>, </span>}
                         </>

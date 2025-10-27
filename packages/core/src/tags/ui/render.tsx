@@ -11,31 +11,31 @@ import {
   DocumentUserSection,
 } from "../../components/document";
 import { RawDataList } from "../../components/raw-data";
-import { labelTypes, type LabelType } from "../../labels/schema";
 import type { ProjectType } from "../../projects/schema";
 import { urlBuilder } from "../../urls";
 import { commonT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
-import { LabelForm } from "./label-form";
-import { LabelsTable } from "./labels-table";
+import { TagTypes, type TagType } from "../schema";
+import { TagForm } from "./tag-form";
+import { TagsTable } from "./tags-table";
 
-export function renderLabelsPage({
-  labels,
+export function renderTagsPage({
+  tags,
   project,
   defaultType,
 }: {
-  labels: LabelType[];
+  tags: TagType[];
   project: ProjectType;
   defaultType: string | null;
 }): JSX.Element {
-  const title = `${commonT.All()} ${commonT.Labels()} ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
+  const title = `${commonT.All()} ${commonT.Tags()} ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[project.name]}
         toolbar={
-          <LinkButton href={urlBuilder.labelCreate(project.id)}>
+          <LinkButton href={urlBuilder.tagCreate(project.id)}>
             + {commonT.Create()}
           </LinkButton>
         }
@@ -43,7 +43,7 @@ export function renderLabelsPage({
         {title}
       </DocumentHeader>
       <DocumentMain>
-        <LabelsTable caption={""} project={project} labels={labels} />
+        <TagsTable caption={""} project={project} tags={tags} />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
         <form
@@ -58,7 +58,7 @@ export function renderLabelsPage({
               <option value="">
                 {commonT.All()} {commonT.Type()}
               </option>
-              {labelTypes.map((type) => (
+              {TagTypes.map((type) => (
                 <option value={type} selected={defaultType === type}>
                   {type.toUpperCase()}
                 </option>
@@ -69,7 +69,7 @@ export function renderLabelsPage({
             <button style={{ height: "max-content" }}>
               {commonT.Filter()}
             </button>
-            <LinkButton href={urlBuilder.allLabels(project.id)} class="outline">
+            <LinkButton href={urlBuilder.allTags(project.id)} class="outline">
               {commonT.Clear()}
             </LinkButton>
           </div>
@@ -80,75 +80,75 @@ export function renderLabelsPage({
   );
 }
 
-export function renderLabelDetailsPage({
-  label,
+export function renderTagDetailsPage({
+  tag,
   project,
   builds,
 }: {
-  label: LabelType;
+  tag: TagType;
   project: ProjectType;
   builds: BuildType[];
 }): JSX.Element {
   const { url } = getStore();
 
   return (
-    <DocumentLayout title={`${commonT.Label()} ${label.value}`}>
+    <DocumentLayout title={`${commonT.Tag()} ${tag.value}`}>
       <DocumentHeader
-        breadcrumbs={[project.name, commonT.Labels()]}
+        breadcrumbs={[project.name, commonT.Tags()]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <LinkButton href={urlBuilder.buildCreate(project.id, label.id)}>
+            <LinkButton href={urlBuilder.buildCreate(project.id, tag.id)}>
               + {commonT.Create()} {commonT.Build()}
             </LinkButton>
-            <LinkButton href={urlBuilder.labelSlugUpdate(project.id, label.id)}>
+            <LinkButton href={urlBuilder.tagSlugUpdate(project.id, tag.id)}>
               {commonT.Edit()}
             </LinkButton>
             <form
               hx-delete={url}
-              hx-confirm={commonT.confirmDelete(commonT.Label(), label.slug)}
+              hx-confirm={commonT.confirmDelete(commonT.Tag(), tag.slug)}
             >
               <DestructiveButton>{commonT.Delete()}</DestructiveButton>
             </form>
           </div>
         }
-      >{`[${label.type}] ${label.value}`}</DocumentHeader>
+      >{`[${tag.type}] ${tag.value}`}</DocumentHeader>
       <DocumentMain>
         <BuildsTable
           builds={builds}
           project={project}
-          labels={undefined}
+          tags={undefined}
           toolbar={
             <a href={urlBuilder.allBuilds(project.id)}>{commonT.ViewAll()}</a>
           }
         />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
-        <RawDataList data={label} />
+        <RawDataList data={tag} />
       </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>
   );
 }
 
-export function renderLabelCreatePage({
+export function renderTagCreatePage({
   project,
 }: {
   project: ProjectType;
 }): JSX.Element {
-  const title = `${commonT.Create()} ${commonT.Label()}`;
+  const title = `${commonT.Create()} ${commonT.Tag()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectId(project.id), label: project.name },
-          { href: urlBuilder.allLabels(project.id), label: commonT.Labels() },
+          { href: urlBuilder.allTags(project.id), label: commonT.Tags() },
         ]}
       >
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <LabelForm label={undefined} projectId={project.id} />
+        <TagForm tag={undefined} projectId={project.id} />
       </DocumentMain>
       <DocumentSidebar></DocumentSidebar>
       <DocumentUserSection />
@@ -156,28 +156,28 @@ export function renderLabelCreatePage({
   );
 }
 
-export function renderLabelUpdatePage({
-  label,
+export function renderTagUpdatePage({
+  tag,
   projectId,
 }: {
-  label: LabelType;
+  tag: TagType;
   projectId: string;
 }): JSX.Element {
-  const title = `${commonT.Update()} ${commonT.Label()}`;
+  const title = `${commonT.Update()} ${commonT.Tag()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectId(projectId), label: projectId },
-          { href: urlBuilder.allLabels(projectId), label: commonT.Labels() },
-          { href: urlBuilder.labelSlug(projectId, label.id), label: label.id },
+          { href: urlBuilder.allTags(projectId), label: commonT.Tags() },
+          { href: urlBuilder.tagSlug(projectId, tag.id), label: tag.id },
         ]}
       >
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <LabelForm label={label} projectId={projectId} />
+        <TagForm tag={tag} projectId={projectId} />
       </DocumentMain>
       <DocumentSidebar></DocumentSidebar>
       <DocumentUserSection />

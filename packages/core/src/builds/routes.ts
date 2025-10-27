@@ -161,11 +161,10 @@ export const createBuildsForm = defineRoute(
       resource: "build",
     });
     const project = await new ProjectsModel().get(projectId);
-    const labelSlug =
-      new URL(request.url).searchParams.get(QUERY_PARAMS.labelSlug) ??
-      undefined;
+    const tagSlug =
+      new URL(request.url).searchParams.get(QUERY_PARAMS.tagSlug) ?? undefined;
 
-    return await responseHTML(renderBuildCreatePage({ labelSlug, project }));
+    return await responseHTML(renderBuildCreatePage({ project, tagSlug }));
   },
 );
 

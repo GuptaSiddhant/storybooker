@@ -11,9 +11,9 @@ import {
   DocumentUserSection,
 } from "../../components/document";
 import { RawDataList } from "../../components/raw-data";
-import type { LabelType } from "../../labels/schema";
-import { LabelsTable } from "../../labels/ui/labels-table";
 import type { ProjectType } from "../../projects/schema";
+import type { TagType } from "../../tags/schema";
+import { TagsTable } from "../../tags/ui/tags-table";
 import { href, urlBuilder, URLS } from "../../urls";
 import { commonT, getT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
@@ -65,11 +65,11 @@ export function renderProjectsPage({
 export function renderProjectDetailsPage({
   project,
   recentBuilds,
-  recentLabels,
+  recentTags,
 }: {
   project: ProjectType;
   recentBuilds: BuildType[];
-  recentLabels: LabelType[];
+  recentTags: TagType[];
 }): JSX.Element {
   const { url } = getStore();
 
@@ -108,17 +108,17 @@ export function renderProjectDetailsPage({
         {project.name}
       </DocumentHeader>
       <DocumentMain>
-        <LabelsTable
-          labels={recentLabels}
+        <TagsTable
+          tags={recentTags}
           project={project}
-          caption={`${commonT.Recent()} ${commonT.Labels()}`}
+          caption={`${commonT.Recent()} ${commonT.Tags()}`}
           toolbar={
-            <a href={urlBuilder.allLabels(project.id)}>{commonT.ViewAll()}</a>
+            <a href={urlBuilder.allTags(project.id)}>{commonT.ViewAll()}</a>
           }
         />
         <BuildsTable
           builds={recentBuilds}
-          labels={recentLabels}
+          tags={recentTags}
           project={project}
           caption={`${commonT.Recent()} ${commonT.Builds()}`}
           toolbar={

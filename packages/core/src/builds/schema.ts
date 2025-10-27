@@ -1,7 +1,7 @@
 // oxlint-disable sort-keys
 
 import z from "zod";
-import { BuildSHASchema, LabelSlugSchema } from "../utils/shared-model";
+import { BuildSHASchema, TagSlugSchema } from "../utils/shared-model";
 
 export type BuildType = z.infer<typeof BuildSchema>;
 /** @private */
@@ -18,7 +18,7 @@ export const BuildSchema = z
     hasStorybook: z.boolean().optional(),
     hasTestReport: z.boolean().optional(),
     id: BuildSHASchema,
-    labelSlugs: z.string(),
+    tagSlugs: z.string(),
     message: z.optional(z.string()),
     sha: BuildSHASchema,
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
@@ -34,12 +34,12 @@ export const BuildCreateSchema = BuildSchema.omit({
   hasStorybook: true,
   hasTestReport: true,
   id: true,
-  labelSlugs: true,
+  tagSlugs: true,
   updatedAt: true,
 }).extend({
-  labels: z.union([LabelSlugSchema.array(), LabelSlugSchema]).meta({
+  tags: z.union([TagSlugSchema.array(), TagSlugSchema]).meta({
     description:
-      "Label slugs associated with the build. Should be created beforehand.",
+      "Tag slugs associated with the build. Should be created beforehand.",
   }),
 });
 

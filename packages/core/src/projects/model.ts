@@ -1,4 +1,4 @@
-import { LabelsModel } from "../labels/model";
+import { TagsModel } from "../tags/model";
 import type { PermissionAction } from "../types";
 import { checkAuthorisation } from "../utils/auth";
 import {
@@ -58,16 +58,16 @@ export class ProjectsModel extends Model<ProjectType> {
       this.dbOptions,
     );
 
-    this.debug("Create project-labels collection");
+    this.debug("Create project-tags collection");
     await this.database.createCollection(
-      generateDatabaseCollectionId(projectId, "Labels"),
+      generateDatabaseCollectionId(projectId, "Tags"),
       this.dbOptions,
     );
     this.debug(
-      "Create default branch (%s) label",
+      "Create default branch (%s) tag",
       projectData.gitHubDefaultBranch,
     );
-    await new LabelsModel(projectId).create({
+    await new TagsModel(projectId).create({
       type: "branch",
       value: projectData.gitHubDefaultBranch,
     });
@@ -124,10 +124,10 @@ export class ProjectsModel extends Model<ProjectType> {
     if (project.gitHubDefaultBranch) {
       try {
         this.debug(
-          "Create default-branch label '%s'...",
+          "Create default-branch tag '%s'...",
           project.gitHubDefaultBranch,
         );
-        await new LabelsModel(id).create({
+        await new TagsModel(id).create({
           type: "branch",
           value: project.gitHubDefaultBranch,
         });
@@ -151,9 +151,9 @@ export class ProjectsModel extends Model<ProjectType> {
       this.dbOptions,
     );
 
-    this.debug("Delete project-labels collection");
+    this.debug("Delete project-tags collection");
     await this.database.deleteCollection(
-      generateDatabaseCollectionId(id, "Labels"),
+      generateDatabaseCollectionId(id, "Tags"),
       this.dbOptions,
     );
 

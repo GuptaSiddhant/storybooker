@@ -2,7 +2,7 @@
 
 import z from "zod";
 import { BuildsModel } from "../builds/model";
-import { LabelsModel } from "../labels/model";
+import { TagsModel } from "../tags/model";
 import { urlBuilder, URLS } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
 import { CONTENT_TYPES } from "../utils/constants";
@@ -186,10 +186,10 @@ export const getProject = defineRoute(
 
     if (checkIsHTMLRequest()) {
       const recentBuilds = await new BuildsModel(projectId).list({ limit: 10 });
-      const recentLabels = await new LabelsModel(projectId).list({ limit: 10 });
+      const recentTags = await new TagsModel(projectId).list({ limit: 10 });
 
       return await responseHTML(
-        renderProjectDetailsPage({ project, recentBuilds, recentLabels }),
+        renderProjectDetailsPage({ project, recentBuilds, recentTags }),
       );
     }
 

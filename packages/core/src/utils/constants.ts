@@ -21,7 +21,7 @@ export const CONTENT_TYPES = {
 } as const;
 
 export const QUERY_PARAMS = {
-  labelSlug: "labelSlug",
+  tagSlug: "tagSlug",
   uploadVariant: "uploadVariant",
 };
 

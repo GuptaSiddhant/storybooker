@@ -2,17 +2,17 @@
 
 import { LinkButton } from "../../components/button";
 import { ErrorMessage } from "../../components/error-message";
-import { labelTypes, type LabelType } from "../../labels/schema";
 import { urlBuilder } from "../../urls";
 import { commonT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
+import { TagTypes, type TagType } from "../schema";
 
-export interface LabelFormProps {
-  label: LabelType | undefined;
+export interface TagFormProps {
+  tag: TagType | undefined;
   projectId: string;
 }
 
-export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
+export function TagForm({ tag, projectId }: TagFormProps): JSX.Element {
   const { url } = getStore();
 
   return (
@@ -26,11 +26,11 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
       <fieldset>
         <legend>{commonT.Details()}</legend>
 
-        {label ? <input type="hidden" name="slug" value={label.slug} /> : null}
+        {tag ? <input type="hidden" name="slug" value={tag.slug} /> : null}
 
         <div class="field">
-          <label for="value">{commonT.Label()}</label>
-          <input id="value" name="value" required value={label?.value} />
+          <label for="value">{commonT.Tag()}</label>
+          <input id="value" name="value" required value={tag?.value} />
         </div>
       </fieldset>
 
@@ -44,7 +44,7 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
             gridTemplateColumns: "repeat(3,1fr)",
           }}
         >
-          {labelTypes.map((type) => {
+          {TagTypes.map((type) => {
             const id = `type-${type}`;
             return (
               <div
@@ -56,7 +56,7 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
                   type="radio"
                   required
                   value={type}
-                  checked={type === label?.type}
+                  checked={type === tag?.type}
                 />
                 <label for={id}>{type}</label>
               </div>
@@ -65,20 +65,20 @@ export function LabelForm({ label, projectId }: LabelFormProps): JSX.Element {
         </div>
 
         <span class="description">
-          Type of label defines behaviour of the label.
+          Type of tag defines behaviour of the tag.
         </span>
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="submit">
-          {label ? commonT.Update() : commonT.Create()} {commonT.Label()}
+          {tag ? commonT.Update() : commonT.Create()} {commonT.Tag()}
         </button>
         <button type="reset">{commonT.Reset()}</button>
         <LinkButton
           href={
-            label
-              ? urlBuilder.labelSlug(projectId, label.slug)
-              : urlBuilder.allLabels(projectId)
+            tag
+              ? urlBuilder.tagSlug(projectId, tag.slug)
+              : urlBuilder.allTags(projectId)
           }
         >
           {commonT.Cancel()}

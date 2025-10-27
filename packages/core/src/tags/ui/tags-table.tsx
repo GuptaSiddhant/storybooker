@@ -3,32 +3,32 @@
 
 import { LatestBuild } from "../../components/latest-build";
 import { Table } from "../../components/table";
-import type { LabelType } from "../../labels/schema";
 import type { ProjectType } from "../../projects/schema";
 import { href, urlBuilder, URLS } from "../../urls";
 import { commonT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
 import { urlJoin } from "../../utils/url";
+import type { TagType } from "../schema";
 
-export interface LabelsTableProps {
+export interface TagsTableProps {
   caption?: JSX.Element;
   project: ProjectType;
   toolbar?: JSX.Element;
-  labels: LabelType[];
+  tags: TagType[];
 }
 
-export function LabelsTable({
-  labels,
+export function TagsTable({
+  tags,
   project,
   toolbar,
   caption,
-}: LabelsTableProps): JSX.Element {
+}: TagsTableProps): JSX.Element {
   const { locale } = getStore();
 
   return (
     <Table
-      caption={caption ?? `${commonT.Labels()} (${labels.length})`}
-      data={labels}
+      caption={caption ?? `${commonT.Tags()} (${tags.length})`}
+      data={tags}
       toolbar={toolbar}
       columns={[
         {
@@ -52,9 +52,9 @@ export function LabelsTable({
           cell: (item) => {
             return (
               <a
-                href={href(URLS.labels.id, {
+                href={href(URLS.tags.id, {
                   projectId: project.id,
-                  labelSlug: item.slug,
+                  tagSlug: item.slug,
                 })}
               >
                 {item.slug}
@@ -64,7 +64,7 @@ export function LabelsTable({
         },
         {
           id: "value",
-          header: commonT.Label(),
+          header: commonT.Tag(),
           cell: (item) => {
             let href = "";
             switch (item.type) {
@@ -127,9 +127,9 @@ export function LabelsTable({
           cell: (item) => {
             return (
               <a
-                href={href(URLS.labels.id, {
+                href={href(URLS.tags.id, {
                   projectId: project.id,
-                  labelSlug: item.id,
+                  tagSlug: item.id,
                 })}
               >
                 {commonT.View()} {commonT.Builds()}

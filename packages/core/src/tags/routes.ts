@@ -2,12 +2,6 @@
 
 import z from "zod";
 import { BuildsModel } from "../builds/model";
-import {
-  renderLabelCreatePage,
-  renderLabelDetailsPage,
-  renderLabelsPage,
-  renderLabelUpdatePage,
-} from "../labels/ui/render";
 import { ProjectsModel } from "../projects/model";
 import { urlBuilder, URLS } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
@@ -25,23 +19,29 @@ import {
   responseRedirect,
 } from "../utils/response";
 import { defineRoute } from "../utils/router-utils";
-import { LabelSlugSchema, ProjectIdSchema } from "../utils/shared-model";
+import { ProjectIdSchema, TagSlugSchema } from "../utils/shared-model";
 import { urlSearchParamsToObject } from "../utils/url";
-import { LabelsModel } from "./model";
+import { TagsModel } from "./model";
 import {
-  LabelCreateSchema,
-  LabelsGetResultSchema,
-  LabelsListResultSchema,
-  LabelUpdateSchema,
-  type LabelsGetResultType,
-  type LabelsListResultType,
+  TagCreateSchema,
+  TagsGetResultSchema,
+  TagsListResultSchema,
+  TagUpdateSchema,
+  type TagsGetResultType,
+  type TagsListResultType,
 } from "./schema";
+import {
+  renderTagCreatePage,
+  renderTagDetailsPage,
+  renderTagsPage,
+  renderTagUpdatePage,
+} from "./ui/render";
 
-const tag = "Labels";
+const tag = "Tags";
 
-export const listLabels = defineRoute(
+export const listTags = defineRoute(
   "get",
-  URLS.labels.all,
+  URLS.tags.all,
   {
     requestParams: {
       path: z.object({ projectId: ProjectIdSchema }),
@@ -51,43 +51,43 @@ export const listLabels = defineRoute(
       200: {
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
-          [CONTENT_TYPES.JSON]: { schema: LabelsListResultSchema },
+          [CONTENT_TYPES.JSON]: { schema: TagsListResultSchema },
         },
-        description: "A list of labels.",
+        description: "A list of tags.",
       },
     },
-    summary: "List all labels for a project",
+    summary: "List all tags for a project",
     tags: [tag],
   },
   async ({ params: { projectId }, request }) => {
-    await authenticateOrThrow({ action: "read", projectId, resource: "label" });
+    await authenticateOrThrow({ action: "read", projectId, resource: "tag" });
 
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
 
-    const labels = await new LabelsModel(projectId).list({
+    const tags = await new TagsModel(projectId).list({
       filter: type ? (item): boolean => item.type === type : undefined,
     });
 
     if (checkIsHTMLRequest()) {
       const project = await new ProjectsModel().get(projectId);
       return await responseHTML(
-        renderLabelsPage({ defaultType: type, labels, project }),
+        renderTagsPage({ defaultType: type, project, tags }),
       );
     }
 
-    const result: LabelsListResultType = { labels };
+    const result: TagsListResultType = { tags: tags };
     return Response.json(result);
   },
 );
 
-export const createLabel = defineRoute(
+export const createTag = defineRoute(
   "post",
-  URLS.labels.create,
+  URLS.tags.create,
   {
     requestBody: {
-      content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: LabelCreateSchema } },
-      description: "Data about the label",
+      content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: TagCreateSchema } },
+      description: "Data about the tag",
       required: true,
     },
     requestParams: { path: z.object({ projectId: ProjectIdSchema }) },
@@ -95,18 +95,18 @@ export const createLabel = defineRoute(
       ...commonErrorResponses(),
       201: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: LabelsGetResultSchema },
+          [CONTENT_TYPES.JSON]: { schema: TagsGetResultSchema },
         },
-        description: "Label created successfully",
+        description: "Tag created successfully",
       },
       303: {
-        description: "Label created, redirecting...",
+        description: "Tag created, redirecting...",
         headers: { Location: z.url() },
       },
-      409: { content: errorContent, description: "Label already exists." },
+      409: { content: errorContent, description: "Tag already exists." },
       415: { description: "Unsupported Media Type" },
     },
-    summary: "Create a new label",
+    summary: "Create a new tag",
     tags: [tag],
   },
   async ({ params: { projectId }, request }) => {
@@ -126,25 +126,25 @@ export const createLabel = defineRoute(
     await authenticateOrThrow({
       action: "create",
       projectId,
-      resource: "label",
+      resource: "tag",
     });
 
-    const label = await new LabelsModel(projectId).create(
+    const tag = await new TagsModel(projectId).create(
       urlSearchParamsToObject(await request.formData()),
     );
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(urlBuilder.labelSlug(projectId, label.id), 303);
+      return responseRedirect(urlBuilder.tagSlug(projectId, tag.id), 303);
     }
 
-    const result: LabelsGetResultType = { label };
+    const result: TagsGetResultType = { tag };
     return Response.json(result, { status: 201 });
   },
 );
 
-export const createLabelForm = defineRoute(
+export const createTagForm = defineRoute(
   "get",
-  URLS.labels.create,
+  URLS.tags.create,
   {
     responses: {
       ...commonErrorResponses(),
@@ -152,140 +152,138 @@ export const createLabelForm = defineRoute(
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
         },
-        description: "Form to create label",
+        description: "Form to create tag",
       },
     },
-    summary: "Form to create label",
+    summary: "Form to create tag",
     tags: [tag],
   },
   async ({ params: { projectId } }) => {
     await authenticateOrThrow({
       action: "create",
       projectId: undefined,
-      resource: "label",
+      resource: "tag",
     });
     const project = await new ProjectsModel().get(projectId);
 
-    return await responseHTML(renderLabelCreatePage({ project }));
+    return await responseHTML(renderTagCreatePage({ project }));
   },
 );
 
-export const getLabel = defineRoute(
+export const getTag = defineRoute(
   "get",
-  URLS.labels.id,
+  URLS.tags.id,
   {
     requestParams: {
       path: z.object({
-        labelSlug: LabelSlugSchema,
         projectId: ProjectIdSchema,
+        tagSlug: TagSlugSchema,
       }),
     },
     responses: {
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: LabelsGetResultSchema },
+          [CONTENT_TYPES.JSON]: { schema: TagsGetResultSchema },
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
         },
-        description: "Label details retrieved successfully",
+        description: "Tag details retrieved successfully",
       },
     },
-    summary: "Get label details",
+    summary: "Get Tag details",
     tags: [tag],
   },
-  async ({ params: { labelSlug, projectId } }) => {
-    await authenticateOrThrow({ action: "read", projectId, resource: "label" });
+  async ({ params: { tagSlug, projectId } }) => {
+    await authenticateOrThrow({ action: "read", projectId, resource: "tag" });
 
-    const label = await new LabelsModel(projectId).get(labelSlug);
+    const tag = await new TagsModel(projectId).get(tagSlug);
 
     if (checkIsHTMLRequest()) {
       const project = await new ProjectsModel().get(projectId);
-      const builds = await new BuildsModel(projectId).listByLabel(label.id);
+      const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
-      return await responseHTML(
-        renderLabelDetailsPage({ builds, label, project }),
-      );
+      return await responseHTML(renderTagDetailsPage({ builds, project, tag }));
     }
 
-    const result: LabelsGetResultType = { label };
+    const result: TagsGetResultType = { tag };
     return Response.json(result);
   },
 );
 
-export const deleteLabel = defineRoute(
+export const deleteTag = defineRoute(
   "delete",
-  URLS.labels.id,
+  URLS.tags.id,
   {
     requestParams: {
       path: z.object({
-        labelSlug: LabelSlugSchema,
         projectId: ProjectIdSchema,
+        tagSlug: TagSlugSchema,
       }),
     },
     responses: {
       ...commonErrorResponses(),
-      204: { description: "Label deleted successfully" },
+      204: { description: "Tag deleted successfully" },
       303: {
-        description: "Label deleted, redirecting...",
+        description: "Tag deleted, redirecting...",
         headers: { Location: z.url() },
       },
-      404: { description: "Label not found" },
+      404: { description: "Tag not found" },
     },
-    summary: "Delete label",
+    summary: "Delete Tag",
     tags: [tag],
   },
-  async ({ params: { labelSlug, projectId } }) => {
+  async ({ params: { tagSlug, projectId } }) => {
     await authenticateOrThrow({
       action: "delete",
       projectId,
-      resource: "label",
+      resource: "tag",
     });
 
-    await new LabelsModel(projectId).delete(labelSlug);
+    await new TagsModel(projectId).delete(tagSlug);
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(urlBuilder.allLabels(projectId), 303);
+      return responseRedirect(urlBuilder.allTags(projectId), 303);
     }
 
     return new Response(null, { status: 204 });
   },
 );
 
-export const updateLabel = defineRoute(
+export const updateTag = defineRoute(
   "post",
-  URLS.labels.update,
+  URLS.tags.update,
   {
     requestBody: {
       content: {
-        [CONTENT_TYPES.FORM_ENCODED]: { schema: LabelUpdateSchema },
+        [CONTENT_TYPES.FORM_ENCODED]: { schema: TagUpdateSchema },
       },
-      description: "Updated label data",
+      description: "Updated tag data",
       required: true,
     },
     requestParams: {
       path: z.object({
-        labelSlug: LabelSlugSchema,
         projectId: ProjectIdSchema,
+        tagSlug: TagSlugSchema,
       }),
     },
     responses: {
       ...commonErrorResponses(),
-      202: { description: "Label updated successfully" },
+      202: { description: "Tag updated successfully" },
       303: {
-        description: "Label updated, redirecting...",
+        description: "Tag updated, redirecting...",
         headers: { Location: z.url() },
       },
-      404: { description: "Matching project or label not found." },
+      404: { description: "Matching project or Tag not found." },
       415: { description: "Unsupported Media Type" },
     },
-    summary: "Update label details",
+    summary: "Update Tag details",
     tags: [tag],
   },
-  async ({ params: { labelSlug, projectId }, request }) => {
+  async ({ params: { tagSlug, projectId }, request }) => {
     await authenticateOrThrow({
       action: "update",
       projectId,
-      resource: "label",
+      resource: "tag",
     });
 
     const validFormError = validateIsFormEncodedRequest(request);
@@ -293,22 +291,22 @@ export const updateLabel = defineRoute(
       return await responseError(validFormError.message, validFormError.status);
     }
 
-    await new LabelsModel(projectId).update(
-      labelSlug,
+    await new TagsModel(projectId).update(
+      tagSlug,
       urlSearchParamsToObject(await request.formData()),
     );
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(urlBuilder.labelSlug(projectId, labelSlug), 303);
+      return responseRedirect(urlBuilder.tagSlug(projectId, tagSlug), 303);
     }
 
     return new Response(null, { status: 202 });
   },
 );
 
-export const updateLabelForm = defineRoute(
+export const updateTagForm = defineRoute(
   "get",
-  URLS.labels.update,
+  URLS.tags.update,
   {
     responses: {
       ...commonErrorResponses(),
@@ -316,20 +314,20 @@ export const updateLabelForm = defineRoute(
         content: {
           [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
         },
-        description: "Form to update label",
+        description: "Form to update tag",
       },
     },
-    summary: "Form to update label",
+    summary: "Form to update tag",
     tags: [tag],
   },
-  async ({ params: { projectId, labelSlug } }) => {
+  async ({ params: { projectId, tagSlug } }) => {
     await authenticateOrThrow({
       action: "update",
       projectId: undefined,
-      resource: "label",
+      resource: "tag",
     });
-    const label = await new LabelsModel(projectId).get(labelSlug);
+    const tag = await new TagsModel(projectId).get(tagSlug);
 
-    return await responseHTML(renderLabelUpdatePage({ label, projectId }));
+    return await responseHTML(renderTagUpdatePage({ projectId, tag }));
   },
 );

@@ -104,16 +104,16 @@ export const BuildSHASchema = z
   .meta({ description: "The SHA of the build.", id: "buildSHA" });
 
 /** @private */
-export const LabelSlugSchema = z
+export const TagSlugSchema = z
   .string()
-  .meta({ description: "The slug of the label.", id: "labelSlug" });
+  .meta({ description: "The slug of the tag.", id: "tagSlug" });
 
 /** @private */
 export const EmptyObjectSchema = z.object();
 
 export function generateDatabaseCollectionId(
   projectId: string,
-  suffix: "Labels" | "Builds" | "",
+  suffix: "Tags" | "Builds" | "",
 ): string {
   if (!suffix) {
     return `${SERVICE_NAME}-${projectId}`;

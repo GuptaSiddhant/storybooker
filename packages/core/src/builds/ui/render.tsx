@@ -46,12 +46,7 @@ export function renderBuildsPage({
         {title}
       </DocumentHeader>
       <DocumentMain>
-        <BuildsTable
-          caption={""}
-          project={project}
-          builds={builds}
-          labels={[]}
-        />
+        <BuildsTable caption={""} project={project} builds={builds} tags={[]} />
       </DocumentMain>
       <DocumentSidebar></DocumentSidebar>
       <DocumentUserSection />
@@ -128,10 +123,10 @@ export function renderBuildDetailsPage({
 
 export function renderBuildCreatePage({
   project,
-  labelSlug,
+  tagSlug,
 }: {
   project: ProjectType;
-  labelSlug?: string;
+  tagSlug?: string;
 }): JSX.Element {
   const title = `${commonT.Create()} ${commonT.Build()}`;
 
@@ -146,7 +141,7 @@ export function renderBuildCreatePage({
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <BuildCreateForm projectId={project.id} labelSlug={labelSlug} />
+        <BuildCreateForm projectId={project.id} tagSlug={tagSlug} />
       </DocumentMain>
       <DocumentSidebar></DocumentSidebar>
       <DocumentUserSection />

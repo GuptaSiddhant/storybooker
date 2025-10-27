@@ -1,6 +1,7 @@
 // oxlint-disable max-lines-per-function
 
 import { Card, CardRow } from "../../components/card";
+import { ErrorMessage } from "../../components/error-message";
 import { urlBuilder } from "../../urls";
 import type { BuildStoryType, BuildType } from "../schema";
 
@@ -15,9 +16,14 @@ export function BuildStories({
 }): JSX.Element {
   const { hasStorybook, sha } = build;
 
-  if (!hasStorybook || !stories) {
+  if (!hasStorybook) {
     return (
       <p style={{ margin: "1rem" }}>The build does not have a StoryBook yet.</p>
+    );
+  }
+  if (!stories || stories.length === 0) {
+    return (
+      <ErrorMessage>Error loading stories from the StoryBook.</ErrorMessage>
     );
   }
 

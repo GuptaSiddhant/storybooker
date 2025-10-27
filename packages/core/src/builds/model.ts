@@ -7,8 +7,8 @@ import os from "node:os";
 import path from "node:path";
 import { Readable } from "node:stream";
 import decompress from "decompress";
-import { LabelsModel } from "../labels/model";
 import { ProjectsModel } from "../projects/model";
+import { TagsModel } from "../tags/model";
 import type { PermissionAction, StoryBookerFile } from "../types";
 import { checkAuthorisation } from "../utils/auth";
 import { writeStreamToFile } from "../utils/file-utils";
@@ -52,19 +52,13 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   async create(data: unknown): Promise<BuildType> {
-    const {
-      labels: parsedLabels,
-      sha,
-      ...rest
-    } = BuildCreateSchema.parse(data);
+    const { tags: parsedTags, sha, ...rest } = BuildCreateSchema.parse(data);
     this.log("Create build '%s'...", sha);
 
-    const labels = Array.isArray(parsedLabels)
-      ? parsedLabels
-      : parsedLabels.split(",");
-    const labelSlugs = await Promise.all(
-      labels.filter(Boolean).map(async (labelSlug) => {
-        return await this.#updateOrCreateLabel(labelSlug, sha);
+    const tags = Array.isArray(parsedTags) ? parsedTags : parsedTags.split(",");
+    const tagSlugs = await Promise.all(
+      tags.filter(Boolean).map(async (tagSlug) => {
+        return await this.#updateOrCreateTag(tagSlug, sha);
       }),
     );
 
@@ -77,9 +71,9 @@ export class BuildsModel extends Model<BuildType> {
       hasStorybook: false,
       hasTestReport: false,
       id: sha,
-      labelSlugs: labelSlugs.filter(Boolean).join(","),
       message: rest.message || "",
       sha,
+      tagSlugs: tagSlugs.filter(Boolean).join(","),
       updatedAt: now,
     };
     await this.database.createDocument<BuildType>(
@@ -91,7 +85,7 @@ export class BuildsModel extends Model<BuildType> {
     try {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
-      if (labels.includes(project.gitHubDefaultBranch)) {
+      if (tags.includes(project.gitHubDefaultBranch)) {
         await projectsModel.update(this.projectId, { latestBuildSHA: sha });
       }
     } catch (error) {
@@ -136,7 +130,7 @@ export class BuildsModel extends Model<BuildType> {
     return;
   }
 
-  async delete(buildId: string, updateLabel = true): Promise<void> {
+  async delete(buildId: string, updateTag = true): Promise<void> {
     this.log("Delete build '%s'...", buildId);
 
     const build = await this.get(buildId);
@@ -159,16 +153,16 @@ export class BuildsModel extends Model<BuildType> {
       this.error("Cannot delete container:", error);
     }
 
-    if (updateLabel) {
-      this.debug("Update labels for build '%s'", buildId);
-      const labelSlugs = build.labelSlugs.split(",");
-      const labelsModel = new LabelsModel(this.projectId);
+    if (updateTag) {
+      this.debug("Update tags for build '%s'", buildId);
+      const tagSlugs = build.tagSlugs.split(",");
+      const tagsModel = new TagsModel(this.projectId);
       await Promise.allSettled(
-        labelSlugs.map(async (labelSlug) => {
-          const label = await labelsModel.get(labelSlug);
-          if (label.latestBuildSHA === buildId) {
-            await labelsModel.update(labelSlug, {
-              buildsCount: Math.max(label.buildsCount - 1, 0),
+        tagSlugs.map(async (tagSlug) => {
+          const tag = await tagsModel.get(tagSlug);
+          if (tag.latestBuildSHA === buildId) {
+            await tagsModel.update(tagSlug, {
+              buildsCount: Math.max(tag.buildsCount - 1, 0),
               latestBuildSHA: undefined,
             });
           }
@@ -272,7 +266,7 @@ export class BuildsModel extends Model<BuildType> {
         !data ||
         typeof data !== "object" ||
         !("entries" in data) ||
-        !Array.isArray(data.entries)
+        !data.entries
       ) {
         return [];
       }
@@ -285,29 +279,29 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   // helpers
-  async listByLabel(labelSlug: string): Promise<BuildType[]> {
+  async listByTag(tagSlug: string): Promise<BuildType[]> {
     const builds = await this.list({
-      filter: (item) => item.labelSlugs.split(",").includes(labelSlug),
+      filter: (item) => item.tagSlugs.split(",").includes(tagSlug),
     });
 
     return builds;
   }
 
-  async deleteByLabel(labelSlug: string, force: boolean): Promise<void> {
-    const builds = await this.listByLabel(labelSlug);
+  async deleteByTag(tagSlug: string, force: boolean): Promise<void> {
+    const builds = await this.listByTag(tagSlug);
     this.log(
-      "Delete builds by label: '%s' (%d, force: %s)...",
-      labelSlug,
+      "Delete builds by tag: '%s' (%d, force: %s)...",
+      tagSlug,
       builds.length,
       force.valueOf(),
     );
 
     await Promise.allSettled(
       builds.map(async (build): Promise<void> => {
-        const buildLabelSlugs = build.labelSlugs.split(",");
-        if (!force && buildLabelSlugs.length > 1) {
-          const newSlugs = buildLabelSlugs.filter((slug) => slug !== labelSlug);
-          await this.update(build.id, { labelSlugs: newSlugs.join(",") });
+        const buildTagSlugs = build.tagSlugs.split(",");
+        if (!force && buildTagSlugs.length > 1) {
+          const newSlugs = buildTagSlugs.filter((slug) => slug !== tagSlug);
+          await this.update(build.id, { tagSlugs: newSlugs.join(",") });
         } else {
           await this.delete(build.id, false);
         }
@@ -315,40 +309,33 @@ export class BuildsModel extends Model<BuildType> {
     );
   }
 
-  async #updateOrCreateLabel(
-    labelSlug: string,
-    buildSHA: string,
-  ): Promise<string> {
-    const labelsModel = new LabelsModel(this.projectId);
-    // Either "my-label" or "my-label;branch" or "my-label;branch;My label"
-    const [slug = labelSlug, labelType, labelValue] = labelSlug
+  async #updateOrCreateTag(tagSlug: string, buildSHA: string): Promise<string> {
+    const tagsModel = new TagsModel(this.projectId);
+    // Either "my-tag" or "my-tag;branch" or "my-tag;branch;My tag"
+    const [slug = tagSlug, tagType, tagValue] = tagSlug
       .split(";")
       .map((part) => part.trim());
 
     try {
-      const existingLabel = await labelsModel.get(labelSlug);
-      await labelsModel.update(slug, {
-        buildsCount: existingLabel.buildsCount + 1,
+      const existingTag = await tagsModel.get(tagSlug);
+      await tagsModel.update(slug, {
+        buildsCount: existingTag.buildsCount + 1,
         latestBuildSHA: buildSHA,
       });
       return slug;
     } catch {
       try {
-        const type = labelType || LabelsModel.guessType(slug);
-        const value = labelValue || slug;
-        this.log("A new label '%s' (%s) is being created.", value, type);
-        const label = await labelsModel.create(
-          {
-            latestBuildSHA: buildSHA,
-            type,
-            value,
-          },
+        const type = tagType || TagsModel.guessType(slug);
+        const value = tagValue || slug;
+        this.log("A new tag '%s' (%s) is being created.", value, type);
+        const tag = await tagsModel.create(
+          { latestBuildSHA: buildSHA, type, value },
           true,
         );
 
-        return label.id;
+        return tag.id;
       } catch (error) {
-        this.error("Error creating slug:", error);
+        this.error("Error creating tag slug:", error);
         return slug;
       }
     }

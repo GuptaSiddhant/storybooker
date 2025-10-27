@@ -1,7 +1,7 @@
 import { BuildsModel } from "../builds/model";
-import { LabelsModel } from "../labels/model";
 import { ProjectsModel } from "../projects/model";
 import type { ProjectType } from "../projects/schema";
+import { TagsModel } from "../tags/model";
 import type { LoggerService } from "../types";
 import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "../utils/constants";
 import { getStore } from "../utils/store";
@@ -53,8 +53,8 @@ async function purgeProject(project: ProjectType): Promise<void> {
     `[Project: ${projectId}] Purged ${expiredBuilds.length} expired builds.`,
   );
 
-  const labelsModel = new LabelsModel(projectId);
-  const emptyLabels = await labelsModel.list({
+  const tagsModel = new TagsModel(projectId);
+  const emptyTags = await tagsModel.list({
     filter: (item) => {
       if (item.type === "branch" && item.value === gitHubDefaultBranch) {
         return false;
@@ -62,11 +62,11 @@ async function purgeProject(project: ProjectType): Promise<void> {
       return item.buildsCount === 0;
     },
   });
-  for (const label of emptyLabels) {
+  for (const tag of emptyTags) {
     // oxlint-disable-next-line no-await-in-loop
-    await labelsModel.delete(label.id);
+    await tagsModel.delete(tag.id);
   }
   logger.log(
-    `[Project: ${projectId}] Purged ${emptyLabels.length} empty labels...`,
+    `[Project: ${projectId}] Purged ${emptyTags.length} empty tags...`,
   );
 }
