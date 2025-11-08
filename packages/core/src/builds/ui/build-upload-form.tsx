@@ -34,6 +34,8 @@ export function BuildUploadForm({
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
       enctype={CONTENT_TYPES.FORM_MULTIPART}
+      hx-encoding={CONTENT_TYPES.FORM_MULTIPART}
+      hx-disabled-elt="find button"
     >
       <fieldset>
         <legend>{commonT.Variant()}</legend>
@@ -88,6 +90,11 @@ export function BuildUploadForm({
           {commonT.Cancel()}
         </LinkButton>
       </div>
+
+      <fieldset id="progress" style={{ display: "none" }}>
+        <span>Uploading: 0%</span>
+        <progress value="0" max="100" style={{ width: "100%" }}></progress>
+      </fieldset>
 
       <ErrorMessage id="form-error" />
     </form>

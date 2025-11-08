@@ -13,6 +13,7 @@ import {
 import type {
   AuthService,
   AuthServiceAuthorise,
+  AuthServiceOptions,
 } from "../packages/core/dist/types";
 
 class LocalAuthService implements AuthService {
@@ -36,7 +37,7 @@ class LocalAuthService implements AuthService {
     }
     return this.#user;
   };
-  login = async (request: Request): Promise<Response> => {
+  login = async ({ request }: AuthServiceOptions): Promise<Response> => {
     this.#auth = true;
     const url = new URL(request.url);
     return new Response(null, {
@@ -44,7 +45,10 @@ class LocalAuthService implements AuthService {
       status: 302,
     });
   };
-  logout = async (request: Request): Promise<Response> => {
+  logout = async (
+    _user: StoryBookerUser,
+    { request }: AuthServiceOptions,
+  ): Promise<Response> => {
     this.#auth = false;
     const url = new URL(request.url);
     return new Response(null, {
@@ -52,7 +56,7 @@ class LocalAuthService implements AuthService {
       status: 302,
     });
   };
-  renderAccountDetails = (_request: Request, user: StoryBookerUser): string => {
+  renderAccountDetails = (user: StoryBookerUser): string => {
     return `<p style="padding:1rem">Place anything in this iFrame about the user</p>
 <pre style="padding:1rem">${JSON.stringify({ user }, null, 2)}</pre`;
   };

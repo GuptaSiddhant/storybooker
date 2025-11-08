@@ -21,6 +21,7 @@ export function BuildLinksFooter({
         columnGap: "1rem",
         display: "flex",
         flexWrap: "wrap",
+        rowGap: "0.5rem",
       }}
     >
       {build.hasStorybook ? (

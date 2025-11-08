@@ -196,7 +196,8 @@ export function globalStyleSheet(theme: {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      overflow: auto;      
+      overflow: auto;    
+      position: relative;  
     }
 
     #app > footer {
@@ -399,6 +400,11 @@ export function globalStyleSheet(theme: {
       border: 1px solid var(--color-bg-destructive);
       color: var(--color-text-destructive);
       background: none;
+    }
+
+    button[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   `.replaceAll(/\s+/g, " ");
 }

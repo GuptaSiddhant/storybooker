@@ -1,13 +1,17 @@
+// oxlint-disable max-lines-per-function
+
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import { globalStyleSheet } from "../components/_global";
+import { globalScripts } from "../components/_scripts";
 import { authenticateOrThrow } from "../utils/auth";
 import {
   CACHE_CONTROL_PUBLIC_WEEK,
   CONTENT_TYPES,
   DEFAULT_STATIC_DIRS,
   HEADERS,
+  SCRIPTS,
   SERVICE_NAME,
   STYLESHEETS,
 } from "../utils/constants";
@@ -36,6 +40,18 @@ export async function handleStaticFileRoute(
       headers: {
         [HEADERS.cacheControl]: CACHE_CONTROL_PUBLIC_WEEK,
         [HEADERS.contentType]: CONTENT_TYPES.CSS,
+      },
+      status: 200,
+    });
+  }
+
+  if (filepath.startsWith(`/${SCRIPTS.globalScript}`)) {
+    const script = globalScripts();
+
+    return new Response(script, {
+      headers: {
+        [HEADERS.cacheControl]: CACHE_CONTROL_PUBLIC_WEEK,
+        [HEADERS.contentType]: CONTENT_TYPES.JS,
       },
       status: 200,
     });

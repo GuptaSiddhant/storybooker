@@ -3,7 +3,7 @@
 // oxlint-disable max-lines-per-function
 
 import { href, urlBuilder, URLS } from "../urls";
-import { SERVICE_NAME, STYLESHEETS } from "../utils/constants";
+import { SCRIPTS, SERVICE_NAME, STYLESHEETS } from "../utils/constants";
 import { getStore } from "../utils/store";
 import { urlJoin } from "../utils/url";
 import { SBRLogo } from "./logo";
@@ -51,6 +51,11 @@ export function DocumentLayout({
             src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2"
             crossorigin="anonymous"
           ></script>
+          <script
+            src={urlBuilder.staticFile(SCRIPTS.globalScript)}
+            defer
+            async
+          />
         </head>
         <body>
           <div id="app">

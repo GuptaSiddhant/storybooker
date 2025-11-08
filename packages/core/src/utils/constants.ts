@@ -15,6 +15,7 @@ export const CONTENT_TYPES = {
   FORM_ENCODED: "application/x-www-form-urlencoded",
   FORM_MULTIPART: "multipart/form-data",
   HTML: "text/html",
+  JS: "text/javascript",
   JSON: "application/json",
   OCTET: "application/octet-stream",
   ZIP: "application/zip",
@@ -50,3 +51,4 @@ export const PATTERNS = {
 >;
 
 export const STYLESHEETS = { globalStyles: "sbr-style.css" };
+export const SCRIPTS = { globalScript: "sbr-script.js" };

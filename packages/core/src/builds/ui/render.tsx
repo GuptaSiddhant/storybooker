@@ -76,16 +76,7 @@ export function renderBuildDetailsPage({
     !build.hasTestReport;
 
   return (
-    <DocumentLayout
-      title={build.sha.slice(0, 7)}
-      footer={
-        <BuildLinksFooter
-          build={build}
-          projectId={projectId}
-          hasUpdatePermission={hasUpdatePermission}
-        />
-      }
-    >
+    <DocumentLayout title={build.sha.slice(0, 7)}>
       <DocumentHeader
         breadcrumbs={[projectId, commonT.Builds()]}
         toolbar={
@@ -111,9 +102,20 @@ export function renderBuildDetailsPage({
           : build.sha.slice(0, 7)}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <BuildStories build={build} projectId={projectId} stories={stories} />
+        <BuildStories
+          build={build}
+          projectId={projectId}
+          stories={stories}
+          hasScreenshots={build.hasScreenshots ?? false}
+        />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
+        <BuildLinksFooter
+          build={build}
+          projectId={projectId}
+          hasUpdatePermission={hasUpdatePermission}
+        />
+        <hr style={{ margin: "1rem 0" }} />
         <RawDataList data={build} />
       </DocumentSidebar>
       <DocumentUserSection />

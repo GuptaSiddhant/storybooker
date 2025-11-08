@@ -3,16 +3,19 @@
 import { Card, CardRow } from "../../components/card";
 import { ErrorMessage } from "../../components/error-message";
 import { urlBuilder } from "../../urls";
+import { groupStoriesByTitle } from "../../utils/story-utils";
 import type { BuildStoryType, BuildType } from "../schema";
 
 export function BuildStories({
   build,
   projectId,
   stories,
+  hasScreenshots,
 }: {
   projectId: string;
   build: BuildType;
   stories: BuildStoryType[] | null;
+  hasScreenshots: boolean;
 }): JSX.Element {
   const { hasStorybook, sha } = build;
 
@@ -27,28 +30,51 @@ export function BuildStories({
     );
   }
 
-  const groups = Object.groupBy(stories, (story) => story.title);
+  const allGroups = groupStoriesByTitle(stories);
+  const isExpandedByDefault = Object.keys(allGroups).length <= 1;
 
   return (
     <>
-      {Object.entries(groups).map(([key, group]) => {
-        const groupedStories = group?.filter((story) => story.type === "story");
-
-        if (!groupedStories || groupedStories.length === 0) {
-          return null;
-        }
-
-        const groupTitle = key.replaceAll("/", " / ");
+      {Object.entries(allGroups).map(([groupTitle, group]) => {
+        const groupEntries = Object.entries(group);
 
         return (
-          <details open>
-            <summary style={{ fontWeight: "bold" }}>{groupTitle}</summary>
-
-            <CardRow>
-              {groupedStories.map((story) => (
-                <StoryCard projectId={projectId} sha={sha} story={story} />
-              ))}
-            </CardRow>
+          <details open={isExpandedByDefault}>
+            <summary style={{ fontWeight: "bold" }}>
+              {groupTitle} [{groupEntries.length}]
+            </summary>
+            <div
+              style={{
+                borderLeft: `1px solid var(--color-border)`,
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+                paddingLeft: "1rem",
+                paddingTop: "0.5rem",
+              }}
+            >
+              {groupEntries.map(([title, list]) => {
+                return (
+                  <details open={false}>
+                    <summary style={{ fontWeight: "normal" }}>
+                      {title} ({list.length})
+                    </summary>
+                    <CardRow
+                      style={{ borderLeft: `1px solid var(--color-border)` }}
+                    >
+                      {list.map((story) => (
+                        <StoryCard
+                          projectId={projectId}
+                          sha={sha}
+                          story={story}
+                          hasScreenshots={hasScreenshots}
+                        />
+                      ))}
+                    </CardRow>
+                  </details>
+                );
+              })}
+            </div>
           </details>
         );
       })}
@@ -60,10 +86,12 @@ function StoryCard({
   projectId,
   sha,
   story,
+  hasScreenshots,
 }: {
   projectId: string;
   sha: string;
   story: BuildStoryType;
+  hasScreenshots: boolean;
 }): JSX.Element {
   const storybookHref = urlBuilder.storybookIndexHtml(projectId, sha, story.id);
   const storybookIframeHref = urlBuilder.storybookIFrameHtml(
@@ -114,11 +142,16 @@ function StoryCard({
           overflow: "hidden",
         }}
       >
-        <img
-          src={screenshotSrc}
-          alt={`Screenshot for '${story.title}-${story.name}' Story`}
-          style={{ height: "100%", objectFit: "cover", width: "100%" }}
-        />
+        {hasScreenshots ? (
+          <img
+            alt={`Screenshot for '${story.title}-${story.name}' Story`}
+            loading="lazy"
+            src={screenshotSrc}
+            style={{ height: "100%", objectFit: "cover", width: "100%" }}
+          />
+        ) : (
+          <div style={{ padding: "0.5rem" }}>No screenshot available.</div>
+        )}
       </picture>
 
       {/* <footer
