@@ -25,6 +25,15 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) {
   throw new Error(`The version is ill-formatted (${version}).`);
 }
 
+const verifySpawn = cp.spawnSync(`yarn`, ["verify"], {
+  encoding: "utf8",
+  stdio: "inherit",
+});
+
+if (verifySpawn.status !== 0) {
+  throw new Error("Verification failed!");
+}
+
 const packages = fs
   .readdirSync("./packages/", { withFileTypes: true })
   .filter((entry) => {
