@@ -42,7 +42,7 @@ htmx.on('form', 'htmx:xhr:progress', function(evt) {
     htmx.find(field, 'span').innerText = "Processing files...";  
     htmx.find(field, 'progress').style.display="none";
   } else {
-    htmx.find(field, 'span').innerText = "Uploading: " + value + "%";  
+    htmx.find(field, 'span').innerText = "Uploading: " + value.toFixed(2) + "%";  
     htmx.find(field, 'progress').setAttribute('value', value);
   }
 });

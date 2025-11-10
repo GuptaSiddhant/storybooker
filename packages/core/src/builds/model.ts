@@ -163,7 +163,7 @@ export class BuildsModel extends Model<BuildType> {
           if (tag.latestBuildSHA === buildId) {
             await tagsModel.update(tagSlug, {
               buildsCount: Math.max(tag.buildsCount - 1, 0),
-              latestBuildSHA: undefined,
+              latestBuildSHA: "",
             });
           }
         }),
@@ -176,7 +176,7 @@ export class BuildsModel extends Model<BuildType> {
       if (project.latestBuildSHA === buildId) {
         this.debug("Update project for build '%s'", buildId);
         await projectsModel.update(this.projectId, {
-          latestBuildSHA: undefined,
+          latestBuildSHA: "",
         });
       }
     } catch (error) {
@@ -191,20 +191,22 @@ export class BuildsModel extends Model<BuildType> {
   ): Promise<void> {
     this.log("Upload build '%s' (%s)...", buildSHA, variant);
 
-    await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
-
     const variantCopy = variant;
     switch (variant) {
       case "coverage":
+        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasCoverage: true });
         return;
       case "screenshots":
+        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasScreenshots: true });
         return;
       case "testReport":
+        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasTestReport: true });
         return;
       case "storybook":
+        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasStorybook: true });
         return;
       default:
