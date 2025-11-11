@@ -6,7 +6,6 @@ import { handleProcessZip } from "../handlers/handle-process-zip";
 import { ProjectsModel } from "../projects/model";
 import { TagsModel } from "../tags/model";
 import type { PermissionAction } from "../types";
-import { href, URLS } from "../urls";
 import { checkAuthorisation } from "../utils/auth";
 import { CONTENT_TYPES } from "../utils/constants";
 import {
@@ -186,47 +185,36 @@ export class BuildsModel extends Model<BuildType> {
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
-    const { features, request } = getStore();
+    const { config } = getStore();
     this.log("Upload build '%s' (%s)...", buildSHA, variant);
     const variantCopy = variant; // for switch fallthrough/default
-
-    const initProcessZip = async (): Promise<void> => {
-      if (features?.queueZipProcessing) {
-        const url = new URL(
-          href(URLS.admin.processZip, null, {
-            project: this.projectId,
-            sha: buildSHA,
-            variant,
-          }),
-          request.url,
-        );
-        const headers = new Headers(request.headers);
-
-        this.log(
-          "Queue zip processing for '%s' (%s)...",
-          buildSHA,
-          variant,
-          JSON.stringify({
-            headers: Object.fromEntries(headers.entries()),
-            url,
-          }),
-        );
-
-        await fetch(url, { headers, method: "POST" });
-      } else {
-        await handleProcessZip(this.projectId, buildSHA, variant);
-      }
-    };
 
     switch (variant) {
       case "coverage":
       case "testReport":
       case "screenshots":
-      case "storybook":
-        await this.#uploadZipFile(buildSHA, variant, zipFile);
+      case "storybook": {
+        const size = await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { [variant]: "uploaded" });
-        await initProcessZip();
+
+        const {
+          maxInlineUploadProcessingSizeInBytes = 5 * 1024 * 1024,
+          queueZipProcessing = false,
+        } = config || {};
+        // Automatically process zip if feature is enabled and size is below 10MB
+        if (
+          !queueZipProcessing &&
+          size !== undefined &&
+          size <= maxInlineUploadProcessingSizeInBytes
+        ) {
+          await handleProcessZip(this.projectId, buildSHA, variant).catch(
+            (error: unknown) => {
+              this.error(error);
+            },
+          );
+        }
         return;
+      }
 
       default:
         throw new Error(`Unsupported upload variant: ${variantCopy}`);
@@ -366,7 +354,7 @@ export class BuildsModel extends Model<BuildType> {
     buildSHA: string,
     variant: BuildUploadVariant,
     zipFile?: File,
-  ): Promise<void> {
+  ): Promise<number | undefined> {
     const { request } = getStore();
     this.debug("(%s-%s) Uploading zip file", buildSHA, variant);
 
@@ -389,5 +377,12 @@ export class BuildsModel extends Model<BuildType> {
       ],
       this.storageOptions,
     );
+
+    if (!zipFile) {
+      const length = request.headers.get("Content-Length");
+      return length ? Number(length) : undefined;
+    }
+
+    return zipFile?.size;
   }
 }

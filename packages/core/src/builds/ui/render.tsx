@@ -21,6 +21,7 @@ import { commonT, getT } from "../../utils/i18n";
 import { getStore } from "../../utils/store";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildLinksFooter } from "./build-links";
+import { BuildProcessStatus } from "./build-process";
 import { BuildStories } from "./build-stories";
 import { BuildUploadForm } from "./build-upload-form";
 import { BuildsTable } from "./builds-table";
@@ -102,12 +103,12 @@ export function renderBuildDetailsPage({
           : build.sha.slice(0, 7)}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <BuildStories
+        <BuildProcessStatus
           build={build}
           projectId={projectId}
-          stories={stories}
-          hasScreenshots={build.screenshots === "ready"}
+          hasUpdatePermission={hasUpdatePermission}
         />
+        <BuildStories build={build} projectId={projectId} stories={stories} />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
         <BuildLinksFooter

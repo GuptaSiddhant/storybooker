@@ -31,13 +31,9 @@ export function BuildLinksFooter({
         >
           {commonT.View()} {commonT.StoryBook()}
         </a>
-      ) : hasUpdatePermission ? (
+      ) : hasUpdatePermission && build.storybook === "none" ? (
         <a
-          href={
-            build.storybook === "uploaded"
-              ? undefined
-              : urlBuilder.buildUpload(projectId, build.sha, "storybook")
-          }
+          href={urlBuilder.buildUpload(projectId, build.sha, "storybook")}
           class="description"
         >
           {commonT.Upload()} {commonT.StoryBook()}
@@ -51,13 +47,9 @@ export function BuildLinksFooter({
         >
           {commonT.View()} Test Report
         </a>
-      ) : hasUpdatePermission ? (
+      ) : hasUpdatePermission && build.testReport === "none" ? (
         <a
-          href={
-            build.testReport === "uploaded"
-              ? undefined
-              : urlBuilder.buildUpload(projectId, build.sha, "testReport")
-          }
+          href={urlBuilder.buildUpload(projectId, build.sha, "testReport")}
           class="description"
         >
           {commonT.Upload()} Test report
@@ -71,13 +63,9 @@ export function BuildLinksFooter({
         >
           {commonT.View()} Coverage report
         </a>
-      ) : hasUpdatePermission ? (
+      ) : hasUpdatePermission && build.coverage === "none" ? (
         <a
-          href={
-            build.coverage === "uploaded"
-              ? undefined
-              : urlBuilder.buildUpload(projectId, build.sha, "coverage")
-          }
+          href={urlBuilder.buildUpload(projectId, build.sha, "coverage")}
           class="description"
         >
           {commonT.Upload()} Coverage report
@@ -91,13 +79,9 @@ export function BuildLinksFooter({
         >
           {commonT.Download()} screenshots
         </a>
-      ) : hasUpdatePermission ? (
+      ) : hasUpdatePermission && build.screenshots === "none" ? (
         <a
-          href={
-            build.screenshots === "uploaded"
-              ? undefined
-              : urlBuilder.buildUpload(projectId, build.sha, "screenshots")
-          }
+          href={urlBuilder.buildUpload(projectId, build.sha, "screenshots")}
           class="description"
         >
           {commonT.Upload()} Screenshots

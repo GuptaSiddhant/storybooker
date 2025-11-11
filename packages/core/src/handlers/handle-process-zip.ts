@@ -1,3 +1,5 @@
+// oxlint-disable max-lines-per-function
+
 import { Buffer } from "node:buffer";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
@@ -19,8 +21,9 @@ export async function handleProcessZip(
   variant: BuildUploadVariant,
 ): Promise<string> {
   const { abortSignal, logger, storage } = getStore();
-  const debugLog = (...args: unknown[]): void =>
-    logger.debug?.(`(${projectId}-${buildSHA}-${variant})`, ...args);
+  const debugLog = (...args: unknown[]): void => {
+    logger.log(`(${projectId}-${buildSHA}-${variant})`, ...args);
+  };
 
   debugLog("Creating temp dir");
   const localDirpath = fs.mkdtempSync(

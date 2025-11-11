@@ -2,7 +2,7 @@
 
 import { Card, CardRow } from "../../components/card";
 import { ErrorMessage } from "../../components/error-message";
-import { urlBuilder } from "../../urls";
+import { href, urlBuilder, URLS } from "../../urls";
 import { groupStoriesByTitle } from "../../utils/story-utils";
 import type { BuildStoryType, BuildType } from "../schema";
 
@@ -10,12 +10,10 @@ export function BuildStories({
   build,
   projectId,
   stories,
-  hasScreenshots,
 }: {
   projectId: string;
   build: BuildType;
   stories: BuildStoryType[] | null;
-  hasScreenshots: boolean;
 }): JSX.Element {
   const { storybook, sha } = build;
 
@@ -24,12 +22,88 @@ export function BuildStories({
       <p style={{ margin: "1rem" }}>The build does not have a StoryBook yet.</p>
     );
   }
+
   if (storybook === "uploaded") {
     return (
-      <p style={{ margin: "1rem" }}>
-        The StoryBook is uploaded but not yet processed. It can be still
-        downloaded while it is being processed.
-      </p>
+      <div>
+        <p style={{ margin: "1rem" }}>
+          The StoryBook is uploaded but not yet processed. It can be still
+          downloaded while it is being processed.
+        </p>
+
+        <form
+          hx-post={href(URLS.admin.processZip, null, {
+            project: projectId,
+            sha: build.sha,
+            variant: "storybook",
+          })}
+        >
+          <button>{"Start processing storybook"}</button>
+        </form>
+      </div>
+    );
+  }
+
+  if (build.testReport === "uploaded") {
+    return (
+      <div>
+        <p style={{ margin: "1rem" }}>
+          The Test Report is uploaded but not yet processed. It can be still
+          downloaded while it is being processed.
+        </p>
+
+        <form
+          hx-post={href(URLS.admin.processZip, null, {
+            project: projectId,
+            sha: build.sha,
+            variant: "testReport",
+          })}
+        >
+          <button>{"Start processing test report"}</button>
+        </form>
+      </div>
+    );
+  }
+
+  if (build.coverage === "uploaded") {
+    return (
+      <div>
+        <p style={{ margin: "1rem" }}>
+          The Coverage report is uploaded but not yet processed. It can be still
+          downloaded while it is being processed.
+        </p>
+
+        <form
+          hx-post={href(URLS.admin.processZip, null, {
+            project: projectId,
+            sha: build.sha,
+            variant: "coverage",
+          })}
+        >
+          <button>{"Start processing coverage report"}</button>
+        </form>
+      </div>
+    );
+  }
+
+  if (build.screenshots === "uploaded") {
+    return (
+      <div>
+        <p style={{ margin: "1rem" }}>
+          The Screenshots report is uploaded but not yet processed. It can be
+          still downloaded while it is being processed.
+        </p>
+
+        <form
+          hx-post={href(URLS.admin.processZip, null, {
+            project: projectId,
+            sha: build.sha,
+            variant: "screenshots",
+          })}
+        >
+          <button>{"Start processing screenshots"}</button>
+        </form>
+      </div>
     );
   }
 
@@ -76,7 +150,7 @@ export function BuildStories({
                           projectId={projectId}
                           sha={sha}
                           story={story}
-                          hasScreenshots={hasScreenshots}
+                          hasScreenshots={build.screenshots === "ready"}
                         />
                       ))}
                     </CardRow>
