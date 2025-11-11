@@ -1,3 +1,4 @@
+// oxlint-disable max-lines-per-function
 // oxlint-disable max-lines
 // oxlint-disable switch-case-braces
 
@@ -185,9 +186,7 @@ export class BuildsModel extends Model<BuildType> {
   ): Promise<void> {
     const { request } = getStore();
     this.log("Upload build '%s' (%s)...", buildSHA, variant);
-    const initProcess = (): Promise<Response> => {
-      this.debug("Queue zip processing for '%s' (%s)...", buildSHA, variant);
-
+    const initProcessZip = (): Promise<Response> => {
       const url = new URL(
         href(URLS.admin.processZip, null, {
           project: this.projectId,
@@ -196,11 +195,21 @@ export class BuildsModel extends Model<BuildType> {
         }),
         request.url,
       );
+      const headers = new Headers(request.headers);
+      headers.set("x-original-url", URLS.admin.processZip);
+      headers.set("x-waws-unencoded-url", URLS.admin.processZip);
 
-      return fetch(url, {
-        headers: request.headers,
-        method: "POST",
-      });
+      this.log(
+        "Queue zip processing for '%s' (%s)...",
+        buildSHA,
+        variant,
+        JSON.stringify({
+          headers: Object.fromEntries(headers.entries()),
+          url,
+        }),
+      );
+
+      return fetch(url, { headers, method: "POST" });
     };
 
     const variantCopy = variant;
@@ -208,22 +217,22 @@ export class BuildsModel extends Model<BuildType> {
       case "coverage":
         await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasCoverage: true });
-        await initProcess();
+        await initProcessZip();
         return;
       case "screenshots":
         await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasScreenshots: true });
-        await initProcess();
+        await initProcessZip();
         return;
       case "testReport":
         await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasTestReport: true });
-        await initProcess();
+        await initProcessZip();
         return;
       case "storybook":
         await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasStorybook: true });
-        await initProcess();
+        await initProcessZip();
         return;
       default:
         throw new Error(`Unsupported upload variant: ${variantCopy}`);
