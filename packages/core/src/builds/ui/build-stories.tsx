@@ -17,20 +17,25 @@ export function BuildStories({
   stories: BuildStoryType[] | null;
   hasScreenshots: boolean;
 }): JSX.Element {
-  const { hasStorybook, sha } = build;
+  const { storybook, sha } = build;
 
-  if (!hasStorybook) {
+  if (storybook === "none") {
     return (
       <p style={{ margin: "1rem" }}>The build does not have a StoryBook yet.</p>
+    );
+  }
+  if (storybook === "uploaded") {
+    return (
+      <p style={{ margin: "1rem" }}>
+        The StoryBook is uploaded but not yet processed. It can be still
+        downloaded while it is being processed.
+      </p>
     );
   }
 
   if (!stories || stories.length === 0) {
     return (
-      <ErrorMessage>
-        Error loading stories from the StoryBook. Retry in sometime and if
-        problem persists, contact Admin.
-      </ErrorMessage>
+      <ErrorMessage>Error loading stories from the StoryBook.</ErrorMessage>
     );
   }
 

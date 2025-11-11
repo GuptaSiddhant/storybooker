@@ -20,6 +20,14 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
    * Return `undefined` from parser if the service should handle the error.
    */
   errorParser?: ErrorParser;
+  /** Toggle additional features */
+  features?: {
+    /**
+     * Enable queueing of zip file processing. Requires QueueAdapter and other setup.
+     * @default false
+     */
+    queueZipProcessing?: boolean;
+  };
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
   logger?: LoggerService;
   /**

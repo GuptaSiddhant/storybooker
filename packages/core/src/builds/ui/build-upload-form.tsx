@@ -103,18 +103,13 @@ export function BuildUploadForm({
 
 function checkIsVariantDisabled(build: BuildType, variant: BuildUploadVariant) {
   switch (variant) {
-    case "coverage": {
-      return build.hasCoverage;
-    }
-    case "screenshots": {
-      return build.hasScreenshots;
-    }
-    case "storybook": {
-      return build.hasStorybook;
-    }
+    case "coverage":
+    case "screenshots":
+    case "storybook":
     case "testReport": {
-      return build.hasTestReport;
+      return build[variant] !== "none";
     }
+
     default: {
       return false;
     }

@@ -90,7 +90,7 @@ export function BuildsTable({
           id: "storybook",
           header: commonT.StoryBook(),
           cell: (item) => {
-            if (!item.hasStorybook) {
+            if (item.storybook === "none") {
               return <span class="description">No StoryBook uploaded yet</span>;
             }
 
@@ -117,7 +117,7 @@ export function BuildsTable({
           id: "test",
           header: "Tests",
           cell: (item) => {
-            if (!item.hasTestReport) {
+            if (item.testReport === "none") {
               return (
                 <span class="description">
                   No test/coverage report uploaded yet

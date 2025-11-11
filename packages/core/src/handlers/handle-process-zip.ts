@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { Readable } from "node:stream";
 import decompress from "decompress";
+import { BuildsModel } from "../builds/model";
 import type { BuildUploadVariant } from "../builds/schema";
 import type { StoryBookerFile } from "../types";
 import { writeStreamToFile } from "../utils/file-utils";
@@ -26,6 +27,7 @@ export async function handleProcessZip(
     path.join(os.tmpdir(), `storybooker-${projectId}-${buildSHA}-`),
   );
   const localZipFilePath = path.join(localDirpath, `${variant}.zip`);
+  const outputDirpath = path.join(localDirpath, variant);
 
   const containerId = generateStorageContainerId(projectId);
 
@@ -51,14 +53,16 @@ export async function handleProcessZip(
     }
 
     debugLog("Decompress zip file");
-    await decompress(localZipFilePath, path.join(localDirpath, variant));
+    await decompress(localZipFilePath, outputDirpath);
 
     debugLog("Upload uncompressed dir");
     await storage.uploadFiles(
       containerId,
-      await dirpathToFiles(localDirpath, buildSHA),
+      await dirpathToFiles(outputDirpath, `${buildSHA}/${variant}`),
       { abortSignal, logger },
     );
+
+    await new BuildsModel(projectId).update(buildSHA, { [variant]: "ready" });
   } finally {
     debugLog("Cleaning up temp dir");
     await fsp

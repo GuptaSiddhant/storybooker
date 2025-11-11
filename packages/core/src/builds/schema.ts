@@ -3,6 +3,8 @@
 import z from "zod";
 import { BuildSHASchema, TagSlugSchema } from "../utils/shared-model";
 
+const buildContentAvailabilityOptions = ["none", "uploaded", "ready"] as const;
+
 export type BuildType = z.infer<typeof BuildSchema>;
 /** @private */
 export const BuildSchema = z
@@ -13,15 +15,15 @@ export const BuildSchema = z
       .meta({ description: "Email of the author" }),
     authorName: z.string(),
     createdAt: z.iso.datetime().default(new Date().toISOString()),
-    hasCoverage: z.boolean().optional(),
-    hasScreenshots: z.boolean().optional(),
-    hasStorybook: z.boolean().optional(),
-    hasTestReport: z.boolean().optional(),
     id: BuildSHASchema,
     tagSlugs: z.string(),
     message: z.optional(z.string()),
     sha: BuildSHASchema,
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
+    coverage: z.enum(buildContentAvailabilityOptions).default("none"),
+    screenshots: z.enum(buildContentAvailabilityOptions).default("none"),
+    storybook: z.enum(buildContentAvailabilityOptions).default("none"),
+    testReport: z.enum(buildContentAvailabilityOptions).default("none"),
   })
   .meta({ id: "build", title: "StoryBooker Build" });
 
@@ -29,10 +31,10 @@ export type BuildCreateType = z.infer<typeof BuildCreateSchema>;
 /** @private */
 export const BuildCreateSchema = BuildSchema.omit({
   createdAt: true,
-  hasCoverage: true,
-  hasScreenshots: true,
-  hasStorybook: true,
-  hasTestReport: true,
+  coverage: true,
+  screenshots: true,
+  storybook: true,
+  testReport: true,
   id: true,
   tagSlugs: true,
   updatedAt: true,

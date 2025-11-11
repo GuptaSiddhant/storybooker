@@ -68,12 +68,12 @@ export function renderBuildDetailsPage({
   stories: BuildStoryType[] | null;
 }): JSX.Element {
   const { url } = getStore();
-  const shouldShowUpdateButton =
+  const shouldShowUploadButton =
     hasUpdatePermission &&
-    !build.hasCoverage &&
-    !build.hasScreenshots &&
-    !build.hasStorybook &&
-    !build.hasTestReport;
+    (build.coverage === "none" ||
+      build.screenshots === "none" ||
+      build.storybook === "none" ||
+      build.testReport === "none");
 
   return (
     <DocumentLayout title={build.sha.slice(0, 7)}>
@@ -81,7 +81,7 @@ export function renderBuildDetailsPage({
         breadcrumbs={[projectId, commonT.Builds()]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            {shouldShowUpdateButton ? (
+            {shouldShowUploadButton ? (
               <LinkButton href={urlBuilder.buildUpload(projectId, build.id)}>
                 {commonT.Upload()}
               </LinkButton>
@@ -106,7 +106,7 @@ export function renderBuildDetailsPage({
           build={build}
           projectId={projectId}
           stories={stories}
-          hasScreenshots={build.hasScreenshots ?? false}
+          hasScreenshots={build.screenshots === "ready"}
         />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>

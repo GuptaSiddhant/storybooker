@@ -2,6 +2,7 @@
 // oxlint-disable max-lines
 // oxlint-disable switch-case-braces
 
+import { handleProcessZip } from "../handlers/handle-process-zip";
 import { ProjectsModel } from "../projects/model";
 import { TagsModel } from "../tags/model";
 import type { PermissionAction } from "../types";
@@ -58,13 +59,14 @@ export class BuildsModel extends Model<BuildType> {
     );
 
     const now = new Date().toISOString();
+    // oxlint-disable-next-line sort-keys
     const build: BuildType = {
       ...rest,
       createdAt: now,
-      hasCoverage: false,
-      hasScreenshots: false,
-      hasStorybook: false,
-      hasTestReport: false,
+      coverage: "none",
+      screenshots: "none",
+      storybook: "none",
+      testReport: "none",
       id: sha,
       message: rest.message || "",
       sha,
@@ -184,56 +186,48 @@ export class BuildsModel extends Model<BuildType> {
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
-    const { request } = getStore();
+    const { features, request } = getStore();
     this.log("Upload build '%s' (%s)...", buildSHA, variant);
-    const initProcessZip = (): Promise<Response> => {
-      const url = new URL(
-        href(URLS.admin.processZip, null, {
-          project: this.projectId,
-          sha: buildSHA,
+    const variantCopy = variant; // for switch fallthrough/default
+
+    const initProcessZip = async (): Promise<void> => {
+      if (features?.queueZipProcessing) {
+        const url = new URL(
+          href(URLS.admin.processZip, null, {
+            project: this.projectId,
+            sha: buildSHA,
+            variant,
+          }),
+          request.url,
+        );
+        const headers = new Headers(request.headers);
+
+        this.log(
+          "Queue zip processing for '%s' (%s)...",
+          buildSHA,
           variant,
-        }),
-        request.url,
-      );
-      const headers = new Headers(request.headers);
-      headers.set("x-original-url", URLS.admin.processZip);
-      headers.set("x-waws-unencoded-url", URLS.admin.processZip);
+          JSON.stringify({
+            headers: Object.fromEntries(headers.entries()),
+            url,
+          }),
+        );
 
-      this.log(
-        "Queue zip processing for '%s' (%s)...",
-        buildSHA,
-        variant,
-        JSON.stringify({
-          headers: Object.fromEntries(headers.entries()),
-          url,
-        }),
-      );
-
-      return fetch(url, { headers, method: "POST" });
+        await fetch(url, { headers, method: "POST" });
+      } else {
+        await handleProcessZip(this.projectId, buildSHA, variant);
+      }
     };
 
-    const variantCopy = variant;
     switch (variant) {
       case "coverage":
-        await this.#uploadZipFile(buildSHA, variant, zipFile);
-        await this.update(buildSHA, { hasCoverage: true });
-        await initProcessZip();
-        return;
-      case "screenshots":
-        await this.#uploadZipFile(buildSHA, variant, zipFile);
-        await this.update(buildSHA, { hasScreenshots: true });
-        await initProcessZip();
-        return;
       case "testReport":
-        await this.#uploadZipFile(buildSHA, variant, zipFile);
-        await this.update(buildSHA, { hasTestReport: true });
-        await initProcessZip();
-        return;
+      case "screenshots":
       case "storybook":
         await this.#uploadZipFile(buildSHA, variant, zipFile);
-        await this.update(buildSHA, { hasStorybook: true });
+        await this.update(buildSHA, { [variant]: "uploaded" });
         await initProcessZip();
         return;
+
       default:
         throw new Error(`Unsupported upload variant: ${variantCopy}`);
     }
@@ -266,10 +260,10 @@ export class BuildsModel extends Model<BuildType> {
   async getStories(
     shaOrBuild: string | BuildType,
   ): Promise<BuildStoryType[] | null> {
-    const { hasStorybook, sha } =
+    const { storybook, sha } =
       typeof shaOrBuild === "string" ? await this.get(shaOrBuild) : shaOrBuild;
 
-    if (!hasStorybook) {
+    if (storybook !== "ready") {
       return null;
     }
 
