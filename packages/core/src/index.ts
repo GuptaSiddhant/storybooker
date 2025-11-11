@@ -1,6 +1,7 @@
 // oxlint-disable max-lines-per-function
 
 import * as accountRoutes from "./account/routes";
+import * as adminRoutes from "./admin/routes";
 import * as buildsRoutes from "./builds/routes";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
@@ -26,6 +27,7 @@ if ("setEncoding" in process.stdout) {
 }
 
 router.registerGroup(rootRoutes);
+router.registerGroup(adminRoutes);
 router.registerGroup(projectsRoutes);
 router.registerGroup(tagsRoutes);
 router.registerGroup(buildsRoutes);

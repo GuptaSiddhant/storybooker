@@ -1,6 +1,5 @@
 import z from "zod";
 import { handleOpenAPIRoute } from "../handlers/handle-openapi-route";
-import { handlePurge } from "../handlers/handle-purge";
 import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
 import { ProjectsModel } from "../projects/model";
 import { URLS } from "../urls";
@@ -10,7 +9,7 @@ import { checkIsJSONRequest } from "../utils/request";
 import { commonErrorResponses, responseHTML } from "../utils/response";
 import { defineRoute } from "../utils/router-utils";
 import { getStore } from "../utils/store";
-import { urlJoin, urlSearchParamsToObject } from "../utils/url";
+import { urlJoin } from "../utils/url";
 import { renderRootPage } from "./render";
 
 const rootSchema = z.object({
@@ -78,6 +77,7 @@ export const health = defineRoute(
   {
     responses: { 200: { description: "Service is healthy." } },
     summary: "Health check",
+    tags: ["UI"],
   },
   () => new Response("Service is Healthy", { status: 200 }),
 );
@@ -96,7 +96,7 @@ export const serveStorybook = defineRoute(
     },
     responses: { 200: { summary: "Serving the uploaded file" } },
     summary: "Serve StoryBook",
-    tags: ["Serve"],
+    tags: ["UI"],
   },
   async ({ params }) => {
     const { buildSHA, projectId, filepath } = params;
@@ -109,41 +109,4 @@ export const openapi = defineRoute(
   URLS.ui.openapi,
   undefined,
   handleOpenAPIRoute,
-);
-
-const purgeSearchParams = z.object({ project: z.string().optional() }).loose();
-export const purge = defineRoute(
-  "post",
-  URLS.ui.purge,
-  {
-    requestParams: { query: purgeSearchParams },
-    responses: { 204: { description: "Purge complete" } },
-    summary: "Purge old data",
-  },
-  async ({ request }) => {
-    const { searchParams } = new URL(request.url);
-    const { project: projectId } = purgeSearchParams.parse(
-      urlSearchParamsToObject(searchParams),
-    );
-
-    await authenticateOrThrow({
-      action: "update",
-      projectId,
-      resource: "project",
-    });
-    await authenticateOrThrow({
-      action: "delete",
-      projectId,
-      resource: "build",
-    });
-    await authenticateOrThrow({
-      action: "delete",
-      projectId,
-      resource: "tag",
-    });
-
-    await handlePurge({ projectId }, {});
-
-    return new Response(null, { status: 204 });
-  },
 );

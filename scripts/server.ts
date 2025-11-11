@@ -67,7 +67,6 @@ const requestHandler = createRequestHandler({
   database: new LocalFileDatabase(".server/db.json"),
   staticDirs: [".server"],
   storage: new LocalFileStorage(".server"),
-  ui: { logo: "https://cos-admin.azurewebsites.net/icons/cos-logo.svg" },
 });
 
 export default {

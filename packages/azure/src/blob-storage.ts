@@ -100,17 +100,27 @@ export class AzureBlobStorageService implements StorageService {
   ) => {
     const containerName = genContainerNameFromContainerId(containerId);
     const containerClient = this.#client.getContainerClient(containerName);
-    // oxlint-disable-next-line require-await
-    const promises = files.map(async ({ content, path, mimeType }) =>
-      uploadFileToBlobStorage(
-        containerClient.getBlockBlobClient(path),
-        content,
-        mimeType,
-        options.abortSignal,
+
+    const { errors } = await promisePool(
+      files.map(
+        ({ content, path, mimeType }) =>
+          (): Promise<void> =>
+            uploadFileToBlobStorage(
+              containerClient.getBlockBlobClient(path),
+              content,
+              mimeType,
+              options.abortSignal,
+            ),
       ),
+      20,
     );
 
-    await Promise.allSettled(promises);
+    if (errors.length > 0) {
+      options.logger.error(
+        `Failed to upload ${errors.length} files. Errors:`,
+        errors,
+      );
+    }
   };
 
   hasFile: StorageService["hasFile"] = async (
@@ -198,4 +208,40 @@ async function uploadFileToBlobStorage(
   }
 
   throw new Error(`Unknown file type`);
+}
+
+async function promisePool<Result>(
+  tasks: (() => Promise<Result>)[],
+  concurrencyLimit: number,
+): Promise<{ errors: unknown[]; results: Result[] }> {
+  const promises: Promise<Result>[] = [];
+  const errors: unknown[] = [];
+  const executing = new Set();
+
+  for (const task of tasks) {
+    // Start the taskPromise
+    const promise = Promise.resolve().then(() => task());
+    promises.push(promise);
+
+    // Add to executing set
+    executing.add(promise);
+
+    // When the promise settles, remove it from executing
+    const cleanup = (): boolean => executing.delete(promise);
+    promise.then(cleanup).catch((error) => {
+      errors.push(error);
+      cleanup();
+    });
+
+    // If the number of running promises hit concurrencyLimit, wait for one to finish
+    if (executing.size >= concurrencyLimit) {
+      // oxlint-disable-next-line no-await-in-loop
+      await Promise.race(executing);
+    }
+  }
+
+  // Wait for all remaining tasks to finish
+  const results = await Promise.all(promises);
+
+  return { errors, results };
 }

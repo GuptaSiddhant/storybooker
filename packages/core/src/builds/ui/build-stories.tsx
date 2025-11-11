@@ -24,9 +24,13 @@ export function BuildStories({
       <p style={{ margin: "1rem" }}>The build does not have a StoryBook yet.</p>
     );
   }
+
   if (!stories || stories.length === 0) {
     return (
-      <ErrorMessage>Error loading stories from the StoryBook.</ErrorMessage>
+      <ErrorMessage>
+        Error loading stories from the StoryBook. Retry in sometime and if
+        problem persists, contact Admin.
+      </ErrorMessage>
     );
   }
 

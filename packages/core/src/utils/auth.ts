@@ -20,7 +20,7 @@ export async function authenticateOrThrow(
   }
 
   const key: PermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
-  logger.debug?.("[Auth] Check authorisation for '%s'.", key);
+  logger.debug?.("[Auth] Check authorisation for '%s'", key);
 
   try {
     const response = await auth.authorise(

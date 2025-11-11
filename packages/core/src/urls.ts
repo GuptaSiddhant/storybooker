@@ -14,8 +14,11 @@ export const URLS = {
     account: "account",
     login: "login",
     logout: "logout",
-    purge: "purge?project",
     catchAll: "*filepath",
+  },
+  admin: {
+    purge: "admin/purge",
+    processZip: "admin/process-zip",
   },
   projects: {
     all: "projects",

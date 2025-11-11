@@ -1,18 +1,12 @@
 // oxlint-disable max-lines
 // oxlint-disable switch-case-braces
 
-import fs from "node:fs";
-import fsp from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
-import { Readable } from "node:stream";
-import decompress from "decompress";
 import { ProjectsModel } from "../projects/model";
 import { TagsModel } from "../tags/model";
-import type { PermissionAction, StoryBookerFile } from "../types";
+import type { PermissionAction } from "../types";
+import { href, URLS } from "../urls";
 import { checkAuthorisation } from "../utils/auth";
-import { writeStreamToFile } from "../utils/file-utils";
-import { getMimeType } from "../utils/mime-utils";
+import { CONTENT_TYPES } from "../utils/constants";
 import {
   generateDatabaseCollectionId,
   generateStorageContainerId,
@@ -189,25 +183,47 @@ export class BuildsModel extends Model<BuildType> {
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
+    const { request } = getStore();
     this.log("Upload build '%s' (%s)...", buildSHA, variant);
+    const initProcess = (): Promise<Response> => {
+      this.debug("Queue zip processing for '%s' (%s)...", buildSHA, variant);
+
+      const url = new URL(
+        href(URLS.admin.processZip, null, {
+          project: this.projectId,
+          sha: buildSHA,
+          variant,
+        }),
+        request.url,
+      );
+
+      return fetch(url, {
+        headers: request.headers,
+        method: "POST",
+      });
+    };
 
     const variantCopy = variant;
     switch (variant) {
       case "coverage":
-        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
+        await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasCoverage: true });
+        await initProcess();
         return;
       case "screenshots":
-        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
+        await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasScreenshots: true });
+        await initProcess();
         return;
       case "testReport":
-        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
+        await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasTestReport: true });
+        await initProcess();
         return;
       case "storybook":
-        await this.#decompressAndUploadZip(buildSHA, variant, zipFile);
+        await this.#uploadZipFile(buildSHA, variant, zipFile);
         await this.update(buildSHA, { hasStorybook: true });
+        await initProcess();
         return;
       default:
         throw new Error(`Unsupported upload variant: ${variantCopy}`);
@@ -343,82 +359,32 @@ export class BuildsModel extends Model<BuildType> {
     }
   }
 
-  async #decompressAndUploadZip(
+  async #uploadZipFile(
     buildSHA: string,
-    variant: BuildUploadVariant = "storybook",
+    variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
     const { request } = getStore();
+    this.debug("(%s-%s) Uploading zip file", buildSHA, variant);
 
-    this.debug("(%s-%s) Creating temp dir", buildSHA, variant);
-    const dirpath = fs.mkdtempSync(
-      path.join(os.tmpdir(), `storybooker-${this.projectId}-${buildSHA}-`),
-    );
-    const zipFilePath = path.join(dirpath, `${variant}.zip`);
+    const content: string | Blob | ReadableStream | null = zipFile
+      ? zipFile.stream()
+      : request.body;
 
-    try {
-      this.debug("(%s-%s) Save zip file to disk", buildSHA, variant);
-      if (zipFile) {
-        await writeStreamToFile(zipFilePath, zipFile.stream());
-      } else {
-        if (!request.body) {
-          throw new Error("The body is required for upload.");
-        }
-        await writeStreamToFile(zipFilePath, request.body);
-      }
-
-      this.debug("(%s-%s) Decompress zip file", buildSHA, variant);
-      await decompress(zipFilePath, path.join(dirpath, variant));
-
-      this.debug("(%s-%s) Upload uncompressed dir", buildSHA, variant);
-      await this.storage.uploadFiles(
-        generateStorageContainerId(this.projectId),
-        await dirToFiles(dirpath, buildSHA),
-        this.storageOptions,
-      );
-    } catch (error) {
-      this.error(error);
-    } finally {
-      this.debug("(%s-%s) Cleaning up temp dir", buildSHA, variant);
-      await fsp
-        .rm(dirpath, { force: true, recursive: true })
-        .catch((error: unknown) => {
-          this.error(error);
-        });
+    if (!content) {
+      throw new Error(`No content found for zip file.`);
     }
 
-    return;
+    await this.storage.uploadFiles(
+      generateStorageContainerId(this.projectId),
+      [
+        {
+          content,
+          mimeType: CONTENT_TYPES.ZIP,
+          path: `${buildSHA}/${variant}.zip`,
+        },
+      ],
+      this.storageOptions,
+    );
   }
-}
-
-async function dirToFiles(
-  dirpath: string,
-  prefix: string,
-): Promise<StoryBookerFile[]> {
-  const { ui } = getStore();
-
-  const allEntriesInDir = await fsp.readdir(dirpath, {
-    encoding: "utf8",
-    recursive: true,
-    withFileTypes: true,
-  });
-  const allFilesInDir = allEntriesInDir
-    .filter((file) => file.isFile() && !file.name.startsWith("."))
-    .map((file) => path.join(file.parentPath, file.name));
-
-  return allFilesInDir.map((filepath): StoryBookerFile => {
-    const relativePath = filepath.replace(`${dirpath}/`, "");
-    const content =
-      ui?.streaming === false
-        ? fs.readFileSync(filepath, { encoding: "binary" })
-        : (Readable.toWeb(
-            fs.createReadStream(filepath, { encoding: "binary" }),
-          ) as ReadableStream);
-
-    return {
-      content,
-      mimeType: getMimeType(filepath),
-      path: path.posix.join(prefix, relativePath),
-    };
-  });
 }
