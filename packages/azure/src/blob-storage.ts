@@ -102,16 +102,14 @@ export class AzureBlobStorageService implements StorageService {
     const containerClient = this.#client.getContainerClient(containerName);
 
     const { errors } = await promisePool(
-      files.map(
-        ({ content, path, mimeType }) =>
-          (): Promise<void> =>
-            uploadFileToBlobStorage(
-              containerClient.getBlockBlobClient(path),
-              content,
-              mimeType,
-              options.abortSignal,
-            ),
-      ),
+      files.map(({ content, path, mimeType }) => async (): Promise<void> => {
+        await uploadFileToBlobStorage(
+          containerClient.getBlockBlobClient(path),
+          content,
+          mimeType,
+          options.abortSignal,
+        );
+      }),
       20,
     );
 
@@ -220,7 +218,7 @@ async function promisePool<Result>(
 
   for (const task of tasks) {
     // Start the taskPromise
-    const promise = Promise.resolve().then(() => task());
+    const promise = Promise.resolve().then(task);
     promises.push(promise);
 
     // Add to executing set
@@ -228,7 +226,7 @@ async function promisePool<Result>(
 
     // When the promise settles, remove it from executing
     const cleanup = (): boolean => executing.delete(promise);
-    promise.then(cleanup).catch((error) => {
+    promise.then(cleanup).catch((error: unknown) => {
       errors.push(error);
       cleanup();
     });
