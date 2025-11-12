@@ -19,7 +19,7 @@ export async function handleProcessZip(
   projectId: string,
   buildSHA: string,
   variant: BuildUploadVariant,
-): Promise<string> {
+): Promise<void> {
   const { abortSignal, logger, storage } = getStore();
   const debugLog = (...args: unknown[]): void => {
     logger.log(`(${projectId}-${buildSHA}-${variant})`, ...args);
@@ -73,7 +73,7 @@ export async function handleProcessZip(
       .catch(logger.error);
   }
 
-  return `${projectId}/${buildSHA}/${variant}.zip`;
+  return;
 }
 
 async function dirpathToFiles(

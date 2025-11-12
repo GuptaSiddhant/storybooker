@@ -2,9 +2,11 @@ import z from "zod";
 import { buildUploadVariants } from "../builds/schema";
 import { handleProcessZip } from "../handlers/handle-process-zip";
 import { handlePurge } from "../handlers/handle-purge";
-import { URLS } from "../urls";
+import { urlBuilder, URLS } from "../urls";
 import { urlSearchParamsToObject } from "../utils";
 import { authenticateOrThrow } from "../utils/auth";
+import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
+import { responseError, responseRedirect } from "../utils/response";
 import { defineRoute } from "../utils/router-utils";
 
 const tag = "Admin";
@@ -71,8 +73,16 @@ export const processZip = defineRoute(
       variant,
     } = processZipSearchParams.parse(urlSearchParamsToObject(searchParams));
 
-    const filepath = await handleProcessZip(projectId, sha, variant);
+    try {
+      await handleProcessZip(projectId, sha, variant);
 
-    return new Response(filepath, { status: 202 });
+      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        return responseRedirect(urlBuilder.buildSHA(projectId, sha), 303);
+      }
+
+      return new Response(null, { status: 204 });
+    } catch (error) {
+      return responseError(error);
+    }
   },
 );

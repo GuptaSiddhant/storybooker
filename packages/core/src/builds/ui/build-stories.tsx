@@ -2,7 +2,7 @@
 
 import { Card, CardRow } from "../../components/card";
 import { ErrorMessage } from "../../components/error-message";
-import { href, urlBuilder, URLS } from "../../urls";
+import { urlBuilder } from "../../urls";
 import { groupStoriesByTitle } from "../../utils/story-utils";
 import type { BuildStoryType, BuildType } from "../schema";
 
@@ -14,96 +14,20 @@ export function BuildStories({
   projectId: string;
   build: BuildType;
   stories: BuildStoryType[] | null;
-}): JSX.Element {
-  const { storybook, sha } = build;
-
-  if (storybook === "none") {
+}): JSX.Element | null {
+  if (build.storybook === "none") {
     return (
-      <p style={{ margin: "1rem" }}>The build does not have a StoryBook yet.</p>
+      <p style={{ margin: "1rem" }}>
+        The StoryBook is not yet uploaded for this build.
+      </p>
     );
   }
 
-  if (storybook === "uploaded") {
+  if (build.storybook === "uploaded") {
     return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The StoryBook is uploaded but not yet processed. It can be still
-          downloaded while it is being processed.
-        </p>
-
-        <form
-          hx-post={href(URLS.admin.processZip, null, {
-            project: projectId,
-            sha: build.sha,
-            variant: "storybook",
-          })}
-        >
-          <button>{"Start processing storybook"}</button>
-        </form>
-      </div>
-    );
-  }
-
-  if (build.testReport === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The Test Report is uploaded but not yet processed. It can be still
-          downloaded while it is being processed.
-        </p>
-
-        <form
-          hx-post={href(URLS.admin.processZip, null, {
-            project: projectId,
-            sha: build.sha,
-            variant: "testReport",
-          })}
-        >
-          <button>{"Start processing test report"}</button>
-        </form>
-      </div>
-    );
-  }
-
-  if (build.coverage === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The Coverage report is uploaded but not yet processed. It can be still
-          downloaded while it is being processed.
-        </p>
-
-        <form
-          hx-post={href(URLS.admin.processZip, null, {
-            project: projectId,
-            sha: build.sha,
-            variant: "coverage",
-          })}
-        >
-          <button>{"Start processing coverage report"}</button>
-        </form>
-      </div>
-    );
-  }
-
-  if (build.screenshots === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The Screenshots report is uploaded but not yet processed. It can be
-          still downloaded while it is being processed.
-        </p>
-
-        <form
-          hx-post={href(URLS.admin.processZip, null, {
-            project: projectId,
-            sha: build.sha,
-            variant: "screenshots",
-          })}
-        >
-          <button>{"Start processing screenshots"}</button>
-        </form>
-      </div>
+      <p style={{ margin: "1rem" }}>
+        The StoryBook is not yet ready/processed for this build.
+      </p>
     );
   }
 
@@ -148,7 +72,7 @@ export function BuildStories({
                       {list.map((story) => (
                         <StoryCard
                           projectId={projectId}
-                          sha={sha}
+                          sha={build.sha}
                           story={story}
                           hasScreenshots={build.screenshots === "ready"}
                         />

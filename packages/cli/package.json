@@ -1,6 +1,6 @@
 {
   "name": "storybooker",
-  "version": "0.14.3",
+  "version": "0.15.0",
   "type": "module",
   "bin": "./dist/index.js",
   "description": "Storybooker CLI for uploading builds and files.",

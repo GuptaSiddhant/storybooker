@@ -108,6 +108,7 @@ export function renderBuildDetailsPage({
           projectId={projectId}
           hasUpdatePermission={hasUpdatePermission}
         />
+        <hr style={{ margin: "0.5rem 0" }} />
         <BuildStories build={build} projectId={projectId} stories={stories} />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>

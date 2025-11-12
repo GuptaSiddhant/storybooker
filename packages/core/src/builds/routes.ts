@@ -196,6 +196,7 @@ export const getBuild = defineRoute(
 
     const model = new BuildsModel(projectId);
     const build = await model.get(buildSHA);
+    const project = await new ProjectsModel().get(projectId);
 
     if (checkIsHTMLRequest()) {
       const [hasDeletePermission, hasUpdatePermission, stories] =
@@ -205,10 +206,13 @@ export const getBuild = defineRoute(
           model.getStories(build),
         ]);
 
+      const canDeleteBuild =
+        hasDeletePermission && project.latestBuildSHA !== build.sha;
+
       return await responseHTML(
         renderBuildDetailsPage({
           build,
-          hasDeletePermission,
+          hasDeletePermission: canDeleteBuild,
           hasUpdatePermission,
           projectId,
           stories,

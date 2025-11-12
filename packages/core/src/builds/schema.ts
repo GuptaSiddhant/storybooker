@@ -20,10 +20,10 @@ export const BuildSchema = z
     message: z.optional(z.string()),
     sha: BuildSHASchema,
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
-    coverage: z.enum(buildContentAvailabilityOptions).default("none"),
-    screenshots: z.enum(buildContentAvailabilityOptions).default("none"),
-    storybook: z.enum(buildContentAvailabilityOptions).default("none"),
-    testReport: z.enum(buildContentAvailabilityOptions).default("none"),
+    coverage: z.enum(buildContentAvailabilityOptions),
+    screenshots: z.enum(buildContentAvailabilityOptions),
+    storybook: z.enum(buildContentAvailabilityOptions),
+    testReport: z.enum(buildContentAvailabilityOptions),
   })
   .meta({ id: "build", title: "StoryBooker Build" });
 

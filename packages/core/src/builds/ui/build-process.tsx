@@ -1,7 +1,10 @@
+// oxlint-disable no-nested-ternary
 // oxlint-disable max-lines-per-function
 
+import { Card, CardGrid } from "../../components/card";
 import { href, URLS } from "../../urls";
-import type { BuildType } from "../schema";
+import { toTitleCase } from "../../utils/text-utils";
+import type { BuildType, BuildUploadVariant } from "../schema";
 
 export function BuildProcessStatus({
   build,
@@ -12,103 +15,73 @@ export function BuildProcessStatus({
   projectId: string;
   hasUpdatePermission: boolean;
 }): JSX.Element | null {
-  if (build.storybook === "none") {
-    return (
-      <p style={{ margin: "1rem" }}>The build does not have a StoryBook yet.</p>
-    );
+  return (
+    <CardGrid style={{ padding: 0 }}>
+      <BuildVariantStatus
+        build={build}
+        variant="storybook"
+        projectId={projectId}
+        hasUpdatePermission={hasUpdatePermission}
+      />
+      <BuildVariantStatus
+        build={build}
+        variant="testReport"
+        projectId={projectId}
+        hasUpdatePermission={hasUpdatePermission}
+      />
+      <BuildVariantStatus
+        build={build}
+        variant="coverage"
+        projectId={projectId}
+        hasUpdatePermission={hasUpdatePermission}
+      />
+      <BuildVariantStatus
+        build={build}
+        variant="screenshots"
+        projectId={projectId}
+        hasUpdatePermission={hasUpdatePermission}
+      />
+    </CardGrid>
+  );
+}
+
+function BuildVariantStatus({
+  build,
+  variant,
+  projectId,
+  hasUpdatePermission,
+}: {
+  build: BuildType;
+  projectId: string;
+  variant: BuildUploadVariant;
+  hasUpdatePermission: boolean;
+}): JSX.Element | null {
+  if (build[variant] !== "uploaded") {
+    return null;
   }
 
-  if (build.storybook === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The StoryBook is uploaded but not yet processed. It can be still
-          downloaded while it is being processed.
-        </p>
+  const url = href(URLS.admin.processZip, null, {
+    project: projectId,
+    sha: build.sha,
+    variant,
+  });
+  return (
+    <Card style={{ minHeight: "8rem" }}>
+      <span style={{ fontSize: "0.9rem" }}>
+        The {toTitleCase(variant)} is uploaded but not yet processed. It can be
+        still downloaded while it is being processed.
+      </span>
 
-        {hasUpdatePermission ? (
-          <form
-            hx-post={href(URLS.admin.processZip, null, {
-              project: projectId,
-              sha: build.sha,
-              variant: "storybook",
-            })}
-          >
-            <button>{"Start processing storybook"}</button>
-          </form>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (build.testReport === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The Test Report is uploaded but not yet processed. It can be still
-          downloaded while it is being processed.
-        </p>
-
-        {hasUpdatePermission ? (
-          <form
-            hx-post={href(URLS.admin.processZip, null, {
-              project: projectId,
-              sha: build.sha,
-              variant: "testReport",
-            })}
-          >
-            <button>{"Start processing test report"}</button>
-          </form>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (build.coverage === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The Coverage report is uploaded but not yet processed. It can be still
-          downloaded while it is being processed.
-        </p>
-
-        {hasUpdatePermission ? (
-          <form
-            hx-post={href(URLS.admin.processZip, null, {
-              project: projectId,
-              sha: build.sha,
-              variant: "coverage",
-            })}
-          >
-            <button>{"Start processing coverage report"}</button>
-          </form>
-        ) : null}
-      </div>
-    );
-  }
-
-  if (build.screenshots === "uploaded") {
-    return (
-      <div>
-        <p style={{ margin: "1rem" }}>
-          The Screenshots report is uploaded but not yet processed. It can be
-          still downloaded while it is being processed.
-        </p>
-
-        {hasUpdatePermission ? (
-          <form
-            hx-post={href(URLS.admin.processZip, null, {
-              project: projectId,
-              sha: build.sha,
-              variant: "screenshots",
-            })}
-          >
-            <button>{"Start processing screenshots"}</button>
-          </form>
-        ) : null}
-      </div>
-    );
-  }
-
-  return null;
+      {hasUpdatePermission ? (
+        <form
+          method="POST"
+          action={url}
+          hx-post={url}
+          hx-disabled-elt="find button"
+        >
+          <button>{`Start processing ${variant}`}</button>
+        </form>
+      ) : null}
+    </Card>
+  );
 }

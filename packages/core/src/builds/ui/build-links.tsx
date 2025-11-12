@@ -88,7 +88,7 @@ export function BuildLinksFooter({
         </a>
       ) : null}
 
-      {build.storybook === "uploaded" ? (
+      {build.storybook === "none" ? null : (
         <a
           href={urlBuilder.storybookDownload(projectId, build.sha)}
           download={`storybook-${projectId}-${build.sha}.zip`}
@@ -96,7 +96,7 @@ export function BuildLinksFooter({
         >
           {commonT.Download()} {commonT.StoryBook()}
         </a>
-      ) : null}
+      )}
     </div>
   );
 }
