@@ -97,7 +97,7 @@ async function dirpathToFiles(
     const relativePath = filepath.replace(`${dirpath}/`, "");
     const content =
       ui?.streaming === false
-        ? fs.readFileSync(filepath, { encoding: "binary" })
+        ? new Blob([Buffer.from(fs.readFileSync(filepath))])
         : createWebReadableStream(filepath);
 
     return {
@@ -109,7 +109,7 @@ async function dirpathToFiles(
 }
 
 function createWebReadableStream(filepath: string): ReadableStream {
-  const readStream = fs.createReadStream(filepath, { encoding: "binary" });
+  const readStream = fs.createReadStream(filepath);
 
   return new ReadableStream({
     cancel() {

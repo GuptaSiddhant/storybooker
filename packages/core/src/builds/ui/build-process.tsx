@@ -75,14 +75,20 @@ function BuildVariantStatus({
           The {toTitleCase(variant)} is currently being processed. Refresh page
           to check status.
         </p>
-      ) : hasUpdatePermission ? (
+      ) : null}
+
+      {hasUpdatePermission ? (
         <form
           method="POST"
           action={url}
           hx-post={url}
           hx-disabled-elt="find button"
         >
-          <button>{`Start processing ${variant}`}</button>
+          <button>
+            {isProcessing
+              ? `Force reprocess ${variant}`
+              : `Start processing ${variant}`}
+          </button>
         </form>
       ) : null}
     </Card>
