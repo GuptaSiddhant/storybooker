@@ -5,7 +5,6 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { Readable } from "node:stream";
 import decompress from "decompress";
 import { BuildsModel } from "../builds/model";
 import type { BuildUploadVariant } from "../builds/schema";
@@ -99,14 +98,35 @@ async function dirpathToFiles(
     const content =
       ui?.streaming === false
         ? fs.readFileSync(filepath, { encoding: "binary" })
-        : (Readable.toWeb(
-            fs.createReadStream(filepath, { encoding: "binary" }),
-          ) as ReadableStream);
+        : createWebReadableStream(filepath);
 
     return {
       content,
       mimeType: getMimeType(filepath),
       path: path.posix.join(prefix, relativePath),
     };
+  });
+}
+
+function createWebReadableStream(filepath: string): ReadableStream {
+  const readStream = fs.createReadStream(filepath, { encoding: "binary" });
+
+  return new ReadableStream({
+    cancel() {
+      readStream.destroy();
+    },
+    start(controller) {
+      readStream.on("data", (chunk) => {
+        controller.enqueue(chunk);
+      });
+
+      readStream.on("end", () => {
+        controller.close();
+      });
+
+      readStream.on("error", (error) => {
+        controller.error(error);
+      });
+    },
   });
 }
