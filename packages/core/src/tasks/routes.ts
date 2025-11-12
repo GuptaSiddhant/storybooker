@@ -9,12 +9,12 @@ import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
 import { defineRoute } from "../utils/router-utils";
 
-const tag = "Admin";
+const tag = "Tasks";
 
 const purgeSearchParams = z.object({ project: z.string().optional() }).loose();
 export const purge = defineRoute(
   "post",
-  URLS.admin.purge,
+  URLS.tasks.purge,
   {
     requestParams: { query: purgeSearchParams },
     responses: { 204: { description: "Purge complete" } },
@@ -58,7 +58,7 @@ const processZipSearchParams = z
   .loose();
 export const processZip = defineRoute(
   "post",
-  URLS.admin.processZip,
+  URLS.tasks.processZip,
   {
     requestParams: { query: processZipSearchParams },
     responses: { 202: { summary: "Request to process zip file accepter" } },

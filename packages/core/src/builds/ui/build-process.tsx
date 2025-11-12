@@ -2,7 +2,7 @@
 // oxlint-disable max-lines-per-function
 
 import { Card, CardGrid } from "../../components/card";
-import { href, URLS } from "../../urls";
+import { urlBuilder } from "../../urls";
 import { toTitleCase } from "../../utils/text-utils";
 import type { BuildType, BuildUploadVariant } from "../schema";
 
@@ -56,15 +56,13 @@ function BuildVariantStatus({
   variant: BuildUploadVariant;
   hasUpdatePermission: boolean;
 }): JSX.Element | null {
-  if (build[variant] !== "uploaded") {
+  if (build[variant] === "ready" || build[variant] === "none") {
     return null;
   }
 
-  const url = href(URLS.admin.processZip, null, {
-    project: projectId,
-    sha: build.sha,
-    variant,
-  });
+  const url = urlBuilder.taskProcessZip(projectId, build.sha, variant);
+  const isProcessing = build[variant] === "processing";
+
   return (
     <Card style={{ minHeight: "8rem" }}>
       <span style={{ fontSize: "0.9rem" }}>
@@ -72,7 +70,12 @@ function BuildVariantStatus({
         still downloaded while it is being processed.
       </span>
 
-      {hasUpdatePermission ? (
+      {isProcessing ? (
+        <p>
+          The {toTitleCase(variant)} is currently being processed. Refresh page
+          to check status.
+        </p>
+      ) : hasUpdatePermission ? (
         <form
           method="POST"
           action={url}

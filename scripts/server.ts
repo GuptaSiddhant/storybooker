@@ -64,6 +64,7 @@ class LocalAuthService implements AuthService {
 
 const requestHandler = createRequestHandler({
   auth: new LocalAuthService(),
+  config: { queueLargeZipFileProcessing: true },
   database: new LocalFileDatabase(".server/db.json"),
   staticDirs: [".server"],
   storage: new LocalFileStorage(".server"),

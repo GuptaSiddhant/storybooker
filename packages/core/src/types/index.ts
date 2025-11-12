@@ -23,10 +23,11 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   /** Additional configs */
   config?: {
     /**
-     * Enable queueing of zip file processing. Requires QueueAdapter and other setup.
+     * Enable queueing of zip file processing for files larger than the maximum inline upload processing size.
+     * Requires QueueAdapter and other setup.
      * @default false
      */
-    queueZipProcessing?: boolean;
+    queueLargeZipFileProcessing?: boolean;
     /** Maximum upload size in bytes for processing zip files while uploading.
      * @default "5 * 1024 * 1024" (5MB)
      */

@@ -33,8 +33,11 @@ export async function handleProcessZip(
   const outputDirpath = path.join(localDirpath, variant);
 
   const containerId = generateStorageContainerId(projectId);
+  const buildSHAModel = new BuildsModel(projectId).id(buildSHA);
 
   try {
+    await buildSHAModel.update({ [variant]: "processing" });
+
     debugLog("Downloading zip file");
     const file = await storage.downloadFile(
       containerId,
@@ -65,7 +68,7 @@ export async function handleProcessZip(
       { abortSignal, logger },
     );
 
-    await new BuildsModel(projectId).update(buildSHA, { [variant]: "ready" });
+    await buildSHAModel.update({ [variant]: "ready" });
   } finally {
     debugLog("Cleaning up temp dir");
     await fsp

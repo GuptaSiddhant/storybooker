@@ -23,7 +23,7 @@ export function BuildStories({
     );
   }
 
-  if (build.storybook === "uploaded") {
+  if (build.storybook !== "ready") {
     return (
       <p style={{ margin: "1rem" }}>
         The StoryBook is not yet ready/processed for this build.

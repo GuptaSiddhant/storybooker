@@ -3,7 +3,12 @@
 import z from "zod";
 import { BuildSHASchema, TagSlugSchema } from "../utils/shared-model";
 
-const buildContentAvailabilityOptions = ["none", "uploaded", "ready"] as const;
+const buildContentAvailabilityOptions = [
+  "none",
+  "uploaded",
+  "processing",
+  "ready",
+] as const;
 
 export type BuildType = z.infer<typeof BuildSchema>;
 /** @private */

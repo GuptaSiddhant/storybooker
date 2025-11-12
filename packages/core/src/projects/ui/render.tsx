@@ -37,7 +37,7 @@ export function renderProjectsPage({
               + {commonT.Create()}
             </LinkButton>
             <form
-              hx-post={href(URLS.admin.purge)}
+              hx-post={href(URLS.tasks.purge)}
               hx-confirm={commonT.confirmPurge()}
             >
               <DestructiveButton>
@@ -88,7 +88,7 @@ export function renderProjectDetailsPage({
               {commonT.Edit()}
             </LinkButton>
             <form
-              hx-post={href(URLS.admin.purge, null, { project: project.id })}
+              hx-post={href(URLS.tasks.purge, null, { project: project.id })}
               hx-confirm={commonT.confirmPurge()}
             >
               <DestructiveButton>{commonT.Purge()}</DestructiveButton>

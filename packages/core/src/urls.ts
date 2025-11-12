@@ -16,9 +16,9 @@ export const URLS = {
     logout: "logout",
     catchAll: "*filepath",
   },
-  admin: {
-    purge: "admin/purge",
-    processZip: "admin/process-zip",
+  tasks: {
+    purge: "tasks/purge",
+    processZip: "tasks/process-zip",
   },
   projects: {
     all: "projects",
@@ -244,6 +244,17 @@ export const urlBuilder = {
       "https://github.com",
     );
     return url.toString();
+  },
+  taskProcessZip: (
+    projectId: string,
+    buildSHA: string,
+    variant: BuildUploadVariant,
+  ): string => {
+    return href(URLS.tasks.processZip, null, {
+      project: projectId,
+      sha: buildSHA,
+      variant,
+    });
   },
   // oxlint-disable-next-line no-explicit-any
 } satisfies Record<string, (...args: any[]) => string>;

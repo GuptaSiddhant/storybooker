@@ -6,6 +6,7 @@ import { handleProcessZip } from "../handlers/handle-process-zip";
 import { ProjectsModel } from "../projects/model";
 import { TagsModel } from "../tags/model";
 import type { PermissionAction } from "../types";
+import { urlBuilder } from "../urls";
 import { checkAuthorisation } from "../utils/auth";
 import { CONTENT_TYPES } from "../utils/constants";
 import {
@@ -39,7 +40,15 @@ export class BuildsModel extends Model<BuildType> {
 
     const items = await this.database.listDocuments(
       this.collectionId,
-      options,
+      {
+        sort: (itemA, itemB) => {
+          return (
+            new Date(itemB.updatedAt).getTime() -
+            new Date(itemA.updatedAt).getTime()
+          );
+        },
+        ...options,
+      },
       this.dbOptions,
     );
 
@@ -185,7 +194,7 @@ export class BuildsModel extends Model<BuildType> {
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
-    const { config } = getStore();
+    const { config, request } = getStore();
     this.log("Upload build '%s' (%s)...", buildSHA, variant);
     const variantCopy = variant; // for switch fallthrough/default
 
@@ -199,11 +208,11 @@ export class BuildsModel extends Model<BuildType> {
 
         const {
           maxInlineUploadProcessingSizeInBytes = 5 * 1024 * 1024,
-          queueZipProcessing = false,
+          queueLargeZipFileProcessing = false,
         } = config || {};
-        // Automatically process zip if feature is enabled and size is below 10MB
+
+        // Automatically process zip if feature is enabled and size is below limit
         if (
-          !queueZipProcessing &&
           size !== undefined &&
           size <= maxInlineUploadProcessingSizeInBytes
         ) {
@@ -212,7 +221,29 @@ export class BuildsModel extends Model<BuildType> {
               this.error(error);
             },
           );
+          return;
         }
+
+        // Otherwise queue processing task if enabled
+        if (queueLargeZipFileProcessing) {
+          this.log(
+            "Queue processing for build '%s' (%s)...",
+            buildSHA,
+            variant,
+          );
+          const url = urlBuilder.taskProcessZip(
+            this.projectId,
+            buildSHA,
+            variant,
+          );
+          // Do not await fetch to avoid blocking
+          fetch(url, { headers: request.headers, method: "POST" }).catch(
+            (error: unknown) => {
+              this.error(error);
+            },
+          );
+        }
+
         return;
       }
 
