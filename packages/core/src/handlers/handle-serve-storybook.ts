@@ -1,3 +1,5 @@
+// oxlint-disable max-lines-per-function
+
 import path from "node:path";
 import { urlBuilder } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
@@ -48,10 +50,29 @@ export async function handleServeStoryBook({
       const bodyWithBackButton = data.replace(
         `</body>`,
         `
-              <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
-              style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
-              ← ${SERVICE_NAME}
-              </a></div></body>`,
+  <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
+  style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
+  ← ${SERVICE_NAME}
+  </a></div>
+  
+  ${relativeHrefScripts}
+</body>`,
+      );
+
+      return new Response(bodyWithBackButton, { headers, status: 200 });
+    }
+
+    if (filepath.endsWith("iframe.html")) {
+      // Appending custom UI to index.html
+      const data =
+        typeof content === "string"
+          ? content
+          : await new Response(content).text();
+      const bodyWithBackButton = data.replace(
+        `</body>`,
+        `
+${relativeHrefScripts}
+</body>`,
       );
 
       return new Response(bodyWithBackButton, { headers, status: 200 });
@@ -67,3 +88,25 @@ export async function handleServeStoryBook({
     return await responseError(error, 404);
   }
 }
+
+const relativeHrefScripts = `
+<script defer>
+// script to replace absolute links with relative links 
+window.addEventListener('load', () => {
+  const linkElements = document.querySelectorAll("[href^='/']");
+  linkElements.forEach((el) => {
+    const href = typeof el.href === "string" ? el.href : el.href.baseVal;
+    const newHref = "." + href.replace(origin, "");
+    el.setAttribute("href", newHref);
+  });
+  const mediaElements = document.querySelectorAll("[src^='/']");
+  mediaElements.forEach((el) => {    
+    const newSrc = el.src.replace(origin, ".");
+    el.setAttribute("src", newSrc);
+    if (el.hasAttribute("srcset")) {
+      const newSrcset = el.srcset.replaceAll(origin, ".");
+      el.setAttribute("srcset", newSrcset);
+    }
+  });
+}, { once: true });
+</script>`;
