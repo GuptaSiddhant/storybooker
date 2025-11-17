@@ -1,5 +1,6 @@
 // oxlint-disable sort-keys
 
+import path from "node:path";
 import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
 import type { BuildUploadVariant } from "./models/builds-schema";
 import { QUERY_PARAMS } from "./utils/constants";
@@ -37,11 +38,14 @@ export const URLS = {
     create: "projects/:projectId/tags/create",
     id: "projects/:projectId/tags/:tagSlug",
     update: "projects/:projectId/tags/:tagSlug/update",
+    latest: "projects/:projectId/tags/:tagSlug/latest",
   },
   serve: {
+    all: "_/:projectId/:buildSHA/*filepath",
     storybook: "_/:projectId/:buildSHA/storybook/*filepath",
     coverage: "_/:projectId/:buildSHA/coverage/*filepath",
     testReport: "_/:projectId/:buildSHA/testReport/*filepath",
+    screenshots: "_/:projectId/:buildSHA/screenshots/*filepath",
   },
 } as const;
 
@@ -82,161 +86,112 @@ export const urlBuilder = {
     return href(URLS.projects.update, { projectId });
   },
   allBuilds: (projectId: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "builds"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.builds.all, { projectId });
   },
   buildSHA: (projectId: string, sha: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "builds", sha),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.builds.id, { buildSHA: sha, projectId });
   },
   buildCreate: (projectId: string, tagSlug?: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "builds", "create"),
-      request.url,
-    );
+    const searchParams: Record<string, string> = {};
     if (tagSlug) {
-      url.searchParams.set(QUERY_PARAMS.tagSlug, tagSlug);
+      searchParams[QUERY_PARAMS.tagSlug] = tagSlug;
     }
-    return url.toString();
+    return href(URLS.builds.create, { projectId }, searchParams);
   },
   buildUpload: (
     projectId: string,
     sha: string,
     variant?: BuildUploadVariant,
   ): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "builds", sha, "upload"),
-      request.url,
-    );
+    const searchParams: Record<string, string> = {};
     if (variant) {
-      url.searchParams.set(QUERY_PARAMS.uploadVariant, variant);
+      searchParams[QUERY_PARAMS.uploadVariant] = variant;
     }
-    return url.toString();
+    return href(URLS.builds.upload, { buildSHA: sha, projectId }, searchParams);
   },
   allTags: (projectId: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "tags"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.tags.all, { projectId });
   },
   tagCreate: (projectId: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "tags", "create"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.tags.create, { projectId });
   },
   tagSlug: (projectId: string, tagSlug: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "tags", tagSlug),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.tags.id, { projectId, tagSlug });
   },
   tagSlugUpdate: (projectId: string, tagSlug: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "tags", tagSlug, "update"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.tags.update, { projectId, tagSlug });
   },
   tagSlugLatest: (projectId: string, tagSlug: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "projects", projectId, "tags", tagSlug, "latest"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.tags.latest, { projectId, tagSlug });
   },
   storybookIndexHtml: (
     projectId: string,
     sha: string,
     storyId?: string,
   ): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "storybook", "index.html"),
-      request.url,
-    );
+    const searchParams: Record<string, string> = {};
     if (storyId) {
-      url.searchParams.set("path", `/story/${storyId}`);
+      searchParams["path"] = `/story/${storyId}`;
     }
-    return url.toString();
+    return href(
+      URLS.serve.storybook,
+      { projectId, buildSHA: sha, filepath: "index.html" },
+      searchParams,
+    );
   },
   storybookIFrameHtml: (
     projectId: string,
     sha: string,
     storyId: string,
   ): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "storybook", "iframe.html"),
-      request.url,
-    );
+    const searchParams: Record<string, string> = {};
+    searchParams["viewMode"] = "story";
+    searchParams["id"] = storyId;
 
-    url.searchParams.set("id", storyId);
-    url.searchParams.set("viewMode", "story");
-
-    return url.toString();
-  },
-  storybookTestReport: (projectId: string, sha: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "testReport", "index.html"),
-      request.url,
+    return href(
+      URLS.serve.storybook,
+      { projectId, buildSHA: sha, filepath: "iframe.html" },
+      searchParams,
     );
-    return url.toString();
-  },
-  storybookCoverage: (projectId: string, sha: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "coverage", "index.html"),
-      request.url,
-    );
-    return url.toString();
   },
   storybookDownload: (projectId: string, sha: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "storybook.zip"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.serve.all, {
+      projectId,
+      buildSHA: sha,
+      filepath: "storybook.zip",
+    });
+  },
+  storybookTestReport: (projectId: string, sha: string): string => {
+    return href(URLS.serve.testReport, {
+      projectId,
+      buildSHA: sha,
+      filepath: "index.html",
+    });
+  },
+  storybookCoverage: (projectId: string, sha: string): string => {
+    return href(URLS.serve.coverage, {
+      projectId,
+      buildSHA: sha,
+      filepath: "index.html",
+    });
   },
   storybookScreenshot: (
     projectId: string,
     sha: string,
     ...filename: string[]
   ): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "screenshots", ...filename),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.serve.screenshots, {
+      projectId,
+      buildSHA: sha,
+      filepath: path.posix.join(...filename),
+    });
   },
   storybookScreenshotsDownload: (projectId: string, sha: string): string => {
-    const { prefix, request } = getStore();
-    const url = new URL(
-      urlJoin(prefix, "_", projectId, sha, "screenshots.zip"),
-      request.url,
-    );
-    return url.toString();
+    return href(URLS.serve.all, {
+      projectId,
+      buildSHA: sha,
+      filepath: "screenshots.zip",
+    });
   },
   gitHub: (gitHubRepo: string, ...pathnames: string[]): string => {
     const url = new URL(

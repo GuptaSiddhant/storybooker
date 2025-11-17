@@ -1,4 +1,4 @@
-import type { Translation } from "../translations";
+import type { Translation } from "../types";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "./text-utils";
 

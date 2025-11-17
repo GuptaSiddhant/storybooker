@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { LoggerAdapter } from "@storybooker/adapter/logger";
-import type { Translation } from "../translations";
 import type { RequestHandlerOptions, StoryBookerUser } from "../types";
+import type { Translation } from "../ui/translations";
 
 export interface Store
   extends Omit<RequestHandlerOptions<StoryBookerUser>, "staticDirs"> {

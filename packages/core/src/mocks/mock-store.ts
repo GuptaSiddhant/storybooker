@@ -2,7 +2,7 @@
 
 import type { DatabaseAdapter, StorageAdapter } from "@storybooker/adapter";
 import { vi } from "vitest";
-import { translations_enGB } from "../translations";
+import { translations_enGB } from "../ui/translations";
 import type { Store } from "../utils/store";
 import { mockAuthService, mockUser } from "./mock-auth-service";
 

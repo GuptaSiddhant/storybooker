@@ -5,9 +5,10 @@ import type {
   StorageAdapter,
   StoryBookerUser,
 } from "@storybooker/adapter";
-import type { Translation } from "./translations";
+import type { Translation } from "./ui/translations";
 
 export type { StoryBookerUser } from "@storybooker/adapter/auth";
+export type { Translation };
 
 /**
  * Options for creating a request handler.
@@ -124,7 +125,8 @@ export interface OpenAPIOptions {
 }
 
 export interface UIOptions {
-  /** Valid HTML string to place a logo/text in Header. */ logo?: string;
+  /** Valid HTML string to place a logo/text in Header. */
+  logo?: string;
   /** Dark mode theme */
   darkTheme?: BrandTheme;
   /** Light mode theme */

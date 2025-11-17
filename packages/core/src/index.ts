@@ -7,12 +7,12 @@ import * as projectsRoutes from "./routers/projects-routes";
 import * as rootRoutes from "./routers/root-routes";
 import * as tagsRoutes from "./routers/tags-routes";
 import * as tasksRoutes from "./routers/tasks-routes";
-import { translations_enGB } from "./translations/en-gb";
 import type {
   PurgeHandlerOptions,
   RequestHandler,
   RequestHandlerOptions,
 } from "./types";
+import { translations_enGB } from "./ui/translations/en-gb";
 import { DEFAULT_LOCALE, HEADERS } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "./utils/middleware-utils";
