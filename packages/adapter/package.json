@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/adapter",
-  "version": "0.15.4",
+  "version": "0.16.0",
   "type": "module",
   "description": "Storybooker adapters interface for external services.",
   "author": {
