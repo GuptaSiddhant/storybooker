@@ -7,7 +7,9 @@
   },
   "rules": {
     "promise-function-async": "allow",
-    "typescript/no-base-to-string": "allow"
+    "typescript/no-base-to-string": "allow",
+    "max-lines-per-function": "allow",
+    "max-lines-per-file": "allow"
   },
   "overrides": [
     {
