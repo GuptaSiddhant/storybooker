@@ -2,27 +2,27 @@
 
 import * as Dynamo from "@aws-sdk/client-dynamodb";
 import type {
+  DatabaseAdapter,
+  DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
-  DatabaseService,
-  DatabaseServiceOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/core/types";
+} from "@storybooker/adapter/database";
 
-export class AwsDynamoDatabaseService implements DatabaseService {
+export class AwsDynamoDatabaseService implements DatabaseAdapter {
   #client: Dynamo.DynamoDBClient;
 
   constructor(client: Dynamo.DynamoDBClient) {
     this.#client = client;
   }
 
-  listCollections: DatabaseService["listCollections"] = async (options) => {
+  listCollections: DatabaseAdapter["listCollections"] = async (options) => {
     const response = await this.#client.send(new Dynamo.ListTablesCommand({}), {
       abortSignal: options.abortSignal,
     });
     return response.TableNames ?? [];
   };
 
-  createCollection: DatabaseService["createCollection"] = async (
+  createCollection: DatabaseAdapter["createCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -37,7 +37,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     );
   };
 
-  hasCollection: DatabaseService["hasCollection"] = async (
+  hasCollection: DatabaseAdapter["hasCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -52,7 +52,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     }
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -62,12 +62,12 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     );
   };
 
-  listDocuments: DatabaseService["listDocuments"] = async <
+  listDocuments: DatabaseAdapter["listDocuments"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     _listOptions: DatabaseDocumentListOptions<Document>,
-    options: DatabaseServiceOptions,
+    options: DatabaseAdapterOptions,
   ) => {
     const response = await this.#client.send(
       new Dynamo.ScanCommand({ TableName: collectionId }),
@@ -83,12 +83,12 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     });
   };
 
-  getDocument: DatabaseService["getDocument"] = async <
+  getDocument: DatabaseAdapter["getDocument"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     documentId: string,
-    options: DatabaseServiceOptions,
+    options: DatabaseAdapterOptions,
   ): Promise<Document> => {
     const response = await this.#client.send(
       new Dynamo.GetItemCommand({
@@ -116,7 +116,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     );
   };
 
-  createDocument: DatabaseService["createDocument"] = async (
+  createDocument: DatabaseAdapter["createDocument"] = async (
     collectionId,
     documentData,
     options,
@@ -135,7 +135,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     );
   };
 
-  hasDocument: DatabaseService["hasDocument"] = async (
+  hasDocument: DatabaseAdapter["hasDocument"] = async (
     collectionId,
     documentId,
     options,
@@ -150,7 +150,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
     return !!response.Item;
   };
 
-  deleteDocument: DatabaseService["deleteDocument"] = async (
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
     collectionId,
     documentId,
     options,
@@ -165,7 +165,7 @@ export class AwsDynamoDatabaseService implements DatabaseService {
   };
 
   // oxlint-disable-next-line max-params
-  updateDocument: DatabaseService["updateDocument"] = async (
+  updateDocument: DatabaseAdapter["updateDocument"] = async (
     collectionId,
     documentId,
     documentData,

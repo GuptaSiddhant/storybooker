@@ -26,7 +26,7 @@ export interface AuthAdapter<
    * - Respond with `false` to block user.
    * - Respond with `Response` to return custom response
    */
-  authorise: AuthServiceAuthorise<AuthUser>;
+  authorise: AuthAdapterAuthorise<AuthUser>;
 
   /**
    * Get details about the user based on incoming request.
@@ -76,31 +76,42 @@ export interface AuthAdapter<
  * - false - returns 403 response
  * - Response - returns the specified HTTP response
  */
-export type AuthServiceAuthorise<
+export type AuthAdapterAuthorise<
   AuthUser extends StoryBookerUser = StoryBookerUser,
 > = (
   params: {
-    permission: PermissionWithKey;
+    permission: StoryBookerPermissionWithKey;
     user: AuthUser;
   },
   options: AuthAdapterOptions,
 ) => Promise<boolean | Response> | boolean | Response;
 
 /**  Type of permission to check */
-export interface Permission {
-  action: PermissionAction;
+export interface StoryBookerPermission {
+  action: StoryBookerPermissionAction;
   projectId: string | undefined;
-  resource: PermissionResource;
+  resource: StoryBookerPermissionResource;
 }
 /** Permission object with key */
-export type PermissionWithKey = Permission & { key: PermissionKey };
+export type StoryBookerPermissionWithKey = StoryBookerPermission & {
+  key: StoryBookerPermissionKey;
+};
 /** Permission in a string format */
-export type PermissionKey =
-  `${PermissionResource}:${PermissionAction}:${string}`;
+export type StoryBookerPermissionKey =
+  `${StoryBookerPermissionResource}:${StoryBookerPermissionAction}:${string}`;
 /** Type of possible resources to check permissions for */
-export type PermissionResource = "project" | "build" | "tag" | "openapi" | "ui";
+export type StoryBookerPermissionResource =
+  | "project"
+  | "build"
+  | "tag"
+  | "openapi"
+  | "ui";
 /** Type of possible actions to check permissions for */
-export type PermissionAction = "create" | "read" | "update" | "delete";
+export type StoryBookerPermissionAction =
+  | "create"
+  | "read"
+  | "update"
+  | "delete";
 
 /**
  * Base representation of a generic User

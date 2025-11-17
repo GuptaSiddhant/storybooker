@@ -1,14 +1,14 @@
+import type { LoggerAdapter } from "@storybooker/adapter/logger";
 import { BuildsModel } from "../builds/model";
 import { ProjectsModel } from "../projects/model";
 import type { ProjectType } from "../projects/schema";
 import { TagsModel } from "../tags/model";
-import type { LoggerService } from "../types";
 import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "../utils/constants";
 import { getStore } from "../utils/store";
 
 export type HandlePurge = (
   params: { projectId?: string },
-  options: { abortSignal?: AbortSignal; logger?: LoggerService },
+  options: { abortSignal?: AbortSignal; logger?: LoggerAdapter },
 ) => Promise<void>;
 
 export const handlePurge: HandlePurge = async ({ projectId }) => {

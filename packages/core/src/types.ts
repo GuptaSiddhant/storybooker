@@ -1,20 +1,22 @@
-import type { Translation } from "../translations";
-import type { AuthService, StoryBookerUser } from "./auth.type";
-import type { DatabaseService } from "./database.type";
-import type { StorageService } from "./storage.type";
+import type {
+  AuthAdapter,
+  DatabaseAdapter,
+  LoggerAdapter,
+  StorageAdapter,
+  StoryBookerUser,
+} from "@storybooker/adapter";
+import type { Translation } from "./translations";
 
-export type * from "./auth.type";
-export type * from "./database.type";
-export type * from "./storage.type";
+export type { StoryBookerUser } from "@storybooker/adapter/auth";
 
 /**
  * Options for creating a request handler.
  */
 export interface RequestHandlerOptions<User extends StoryBookerUser> {
   /** Adapter for Auth service. Provides authentication to the service. */
-  auth?: AuthService<User>;
+  auth?: AuthAdapter<User>;
   /** Adapter for Database service. Provides access to storing data to the service. */
-  database: DatabaseService;
+  database: DatabaseAdapter;
   /**
    * A function for parsing custom errors.
    * Return `undefined` from parser if the service should handle the error.
@@ -34,7 +36,7 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
     maxInlineUploadProcessingSizeInBytes?: number;
   };
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
-  logger?: LoggerService;
+  logger?: LoggerAdapter;
   /**
    * List of middlewares that run before a request is handled.
    * Run middleware to modify incoming Request or outgoing Response.
@@ -50,23 +52,23 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
    */
   staticDirs?: readonly string[];
   /** Adapter for Storage service. Provides access to storing files to the service. */
-  storage: StorageService;
+  storage: StorageAdapter;
   /** Options to customise StoryBooker UI. */
   ui?: UIOptions;
 }
 
 export interface PurgeHandlerOptions {
   /** Adapter for Database service. Provides access to storing data to the service. */
-  database: DatabaseService;
+  database: DatabaseAdapter;
   /**
    * A function for parsing custom errors.
    * Return `undefined` from parser if the service should handle the error.
    */
   errorParser?: ErrorParser;
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
-  logger?: LoggerService;
+  logger?: LoggerAdapter;
   /** Adapter for Storage service. Provides access to storing files to the service. */
-  storage: StorageService;
+  storage: StorageAdapter;
 }
 
 export type RequestHandler = (
@@ -78,7 +80,7 @@ export interface RequestHandlerOverrideOptions {
   /** A abort signal that can be used to cancel the request handling. */
   abortSignal?: AbortSignal;
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
-  logger?: LoggerService;
+  logger?: LoggerAdapter;
 }
 
 /**
@@ -102,20 +104,6 @@ export interface ParsedError {
   errorMessage: string;
   errorStatus?: number;
   errorType: string;
-}
-
-/**
- * Service to log to desired destination.
- *
- * The service should contain method to `log` and report `error`.
- * It can optionally have `debug` callback for debug messages.
- *
- * @default NodeJS.console
- */
-export interface LoggerService {
-  error: (...args: unknown[]) => void;
-  debug?: (...args: unknown[]) => void;
-  log: (...args: unknown[]) => void;
 }
 
 /**

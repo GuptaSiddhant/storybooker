@@ -2,16 +2,16 @@ import { Buffer } from "node:buffer";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import type { File, Storage } from "@google-cloud/storage";
-import type { StorageService } from "@storybooker/core/types";
+import type { StorageAdapter } from "@storybooker/adapter/storage";
 
-export class GcpGcsStorageService implements StorageService {
+export class GcpGcsStorageService implements StorageAdapter {
   #client: Storage;
 
   constructor(client: Storage) {
     this.#client = client;
   }
 
-  createContainer: StorageService["createContainer"] = async (
+  createContainer: StorageAdapter["createContainer"] = async (
     containerId,
     _options,
   ) => {
@@ -19,7 +19,7 @@ export class GcpGcsStorageService implements StorageService {
     await this.#client.createBucket(bucketName, {});
   };
 
-  deleteContainer: StorageService["deleteContainer"] = async (
+  deleteContainer: StorageAdapter["deleteContainer"] = async (
     containerId,
     _options,
   ) => {
@@ -27,7 +27,7 @@ export class GcpGcsStorageService implements StorageService {
     await this.#client.bucket(bucketName).delete();
   };
 
-  hasContainer: StorageService["hasContainer"] = async (
+  hasContainer: StorageAdapter["hasContainer"] = async (
     containerId,
     _options,
   ) => {
@@ -36,12 +36,12 @@ export class GcpGcsStorageService implements StorageService {
     return exists;
   };
 
-  listContainers: StorageService["listContainers"] = async (_options) => {
+  listContainers: StorageAdapter["listContainers"] = async (_options) => {
     const [buckets] = await this.#client.getBuckets();
     return buckets.map((bucket) => bucket.name);
   };
 
-  deleteFiles: StorageService["deleteFiles"] = async (
+  deleteFiles: StorageAdapter["deleteFiles"] = async (
     containerId,
     filePathsOrPrefix,
     _options,
@@ -63,7 +63,7 @@ export class GcpGcsStorageService implements StorageService {
     }
   };
 
-  uploadFiles: StorageService["uploadFiles"] = async (
+  uploadFiles: StorageAdapter["uploadFiles"] = async (
     containerId,
     files,
     _options,
@@ -78,7 +78,7 @@ export class GcpGcsStorageService implements StorageService {
     );
   };
 
-  hasFile: StorageService["hasFile"] = async (
+  hasFile: StorageAdapter["hasFile"] = async (
     containerId,
     filepath,
     _options,
@@ -89,7 +89,7 @@ export class GcpGcsStorageService implements StorageService {
     return exists;
   };
 
-  downloadFile: StorageService["downloadFile"] = async (
+  downloadFile: StorageAdapter["downloadFile"] = async (
     containerId,
     filepath,
     _options,

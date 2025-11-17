@@ -5,16 +5,16 @@ import type {
   BlobServiceClient,
   BlockBlobClient,
 } from "@azure/storage-blob";
-import type { StorageService } from "@storybooker/core/types";
+import type { StorageAdapter } from "@storybooker/adapter/storage";
 
-export class AzureBlobStorageService implements StorageService {
+export class AzureBlobStorageService implements StorageAdapter {
   #client: BlobServiceClient;
 
   constructor(client: BlobServiceClient) {
     this.#client = client;
   }
 
-  createContainer: StorageService["createContainer"] = async (
+  createContainer: StorageAdapter["createContainer"] = async (
     containerId,
     options,
   ) => {
@@ -24,7 +24,7 @@ export class AzureBlobStorageService implements StorageService {
     });
   };
 
-  deleteContainer: StorageService["deleteContainer"] = async (
+  deleteContainer: StorageAdapter["deleteContainer"] = async (
     containerId,
     options,
   ) => {
@@ -34,7 +34,7 @@ export class AzureBlobStorageService implements StorageService {
     });
   };
 
-  hasContainer: StorageService["hasContainer"] = async (
+  hasContainer: StorageAdapter["hasContainer"] = async (
     containerId,
     options,
   ) => {
@@ -44,7 +44,7 @@ export class AzureBlobStorageService implements StorageService {
     });
   };
 
-  listContainers: StorageService["listContainers"] = async (options) => {
+  listContainers: StorageAdapter["listContainers"] = async (options) => {
     const containers: string[] = [];
     for await (const item of this.#client.listContainers({
       abortSignal: options.abortSignal,
@@ -55,7 +55,7 @@ export class AzureBlobStorageService implements StorageService {
     return containers;
   };
 
-  deleteFiles: StorageService["deleteFiles"] = async (
+  deleteFiles: StorageAdapter["deleteFiles"] = async (
     containerId,
     filePathsOrPrefix,
     options,
@@ -93,7 +93,7 @@ export class AzureBlobStorageService implements StorageService {
     return;
   };
 
-  uploadFiles: StorageService["uploadFiles"] = async (
+  uploadFiles: StorageAdapter["uploadFiles"] = async (
     containerId,
     files,
     options,
@@ -121,7 +121,7 @@ export class AzureBlobStorageService implements StorageService {
     }
   };
 
-  hasFile: StorageService["hasFile"] = async (
+  hasFile: StorageAdapter["hasFile"] = async (
     containerId,
     filepath,
     options,
@@ -132,7 +132,7 @@ export class AzureBlobStorageService implements StorageService {
     return await blockBlobClient.exists({ abortSignal: options.abortSignal });
   };
 
-  downloadFile: StorageService["downloadFile"] = async (
+  downloadFile: StorageAdapter["downloadFile"] = async (
     containerId,
     filepath,
     options,

@@ -5,11 +5,10 @@ export default defineConfig({
   clean: !argv.includes("-w"),
   dts: { tsgo: true },
   entry: {
-    adapters: "./src/adapters.ts",
     index: "./src/index.ts",
     translations: "./src/translations/index.ts",
     "translations/en-gb": "./src/translations/en-gb.ts",
-    types: "./src/types/index.ts",
+    types: "./src/types.ts",
     utils: "./src/utils/index.ts",
   },
   exports: { devExports: "source" },

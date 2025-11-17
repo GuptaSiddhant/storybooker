@@ -1,5 +1,5 @@
+import type { StoryBookerPermissionAction } from "@storybooker/adapter/auth";
 import { TagsModel } from "../tags/model";
-import type { PermissionAction } from "../types";
 import { checkAuthorisation } from "../utils/auth";
 import {
   generateDatabaseCollectionId,
@@ -166,7 +166,7 @@ export class ProjectsModel extends Model<ProjectType> {
     return;
   }
 
-  async checkAuth(action: PermissionAction): Promise<boolean> {
+  async checkAuth(action: StoryBookerPermissionAction): Promise<boolean> {
     return await checkAuthorisation({
       action,
       projectId: this.projectId || undefined,

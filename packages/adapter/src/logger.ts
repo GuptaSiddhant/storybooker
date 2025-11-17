@@ -10,13 +10,13 @@ export interface LoggerAdapter {
   /**
    * Optional debug logs
    */
-  debug?: (...args: unknown[]) => void | Promise<void>;
+  debug?: (...args: unknown[]) => void;
   /**
    * Error logs
    */
-  error: (...args: unknown[]) => void | Promise<void>;
+  error: (...args: unknown[]) => void;
   /**
    * Normal logs
    */
-  log: (...args: unknown[]) => void | Promise<void>;
+  log: (...args: unknown[]) => void;
 }

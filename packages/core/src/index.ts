@@ -1,5 +1,6 @@
 // oxlint-disable max-lines-per-function
 
+import type { AuthAdapter, StoryBookerUser } from "@storybooker/adapter/auth";
 import * as accountRoutes from "./account/routes";
 import * as buildsRoutes from "./builds/routes";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
@@ -10,11 +11,9 @@ import * as tagsRoutes from "./tags/routes";
 import * as tasksRoutes from "./tasks/routes";
 import { translations_enGB } from "./translations/en-gb";
 import type {
-  AuthService,
   PurgeHandlerOptions,
   RequestHandler,
   RequestHandlerOptions,
-  StoryBookerUser,
 } from "./types";
 import { DEFAULT_LOCALE, HEADERS } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
@@ -35,15 +34,7 @@ router.registerGroup(accountRoutes);
 
 export { router };
 export { SERVICE_NAME } from "./utils/constants";
-
-export type {
-  OpenAPIOptions,
-  RequestHandler,
-  RequestHandlerOptions,
-  RequestHandlerOverrideOptions,
-  StoryBookerUser,
-  UIOptions,
-} from "./types";
+export type * from "./types";
 
 /**
  * Callback to create a request-handler based on provided options.
@@ -77,7 +68,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
       localStore.enterWith({
         ...options,
         abortSignal: overrideOptions?.abortSignal ?? request.signal,
-        auth: options.auth as AuthService | undefined,
+        auth: options.auth as AuthAdapter | undefined,
         locale,
         logger: overrideOptions?.logger ?? logger,
         prefix: options.prefix || "",

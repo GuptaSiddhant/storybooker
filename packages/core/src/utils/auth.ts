@@ -1,9 +1,12 @@
-import type { Permission, PermissionKey } from "../types";
+import type {
+  StoryBookerPermission,
+  StoryBookerPermissionKey,
+} from "@storybooker/adapter/auth";
 import { getStore } from "../utils/store";
 import { responseError } from "./response";
 
 export async function authenticateOrThrow(
-  permission: Permission,
+  permission: StoryBookerPermission,
 ): Promise<void> {
   const { abortSignal, auth, logger, request, translation, user } = getStore();
 
@@ -19,7 +22,7 @@ export async function authenticateOrThrow(
     );
   }
 
-  const key: PermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
+  const key: StoryBookerPermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
   logger.debug?.("[Auth] Check authorisation for '%s'", key);
 
   try {
@@ -47,7 +50,7 @@ export async function authenticateOrThrow(
 }
 
 export async function checkAuthorisation(
-  permission: Permission,
+  permission: StoryBookerPermission,
 ): Promise<boolean> {
   try {
     await authenticateOrThrow(permission);

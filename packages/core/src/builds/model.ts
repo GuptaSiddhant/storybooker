@@ -2,10 +2,10 @@
 // oxlint-disable max-lines
 // oxlint-disable switch-case-braces
 
+import type { StoryBookerPermissionAction } from "@storybooker/adapter/auth";
 import { handleProcessZip } from "../handlers/handle-process-zip";
 import { ProjectsModel } from "../projects/model";
 import { TagsModel } from "../tags/model";
-import type { PermissionAction } from "../types";
 import { urlBuilder } from "../urls";
 import { checkAuthorisation } from "../utils/auth";
 import { CONTENT_TYPES } from "../utils/constants";
@@ -268,7 +268,7 @@ export class BuildsModel extends Model<BuildType> {
     };
   };
 
-  async checkAuth(action: PermissionAction): Promise<boolean> {
+  async checkAuth(action: StoryBookerPermissionAction): Promise<boolean> {
     return await checkAuthorisation({
       action,
       projectId: this.projectId,

@@ -6946,7 +6946,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybooker/adapter@workspace:packages/adapter":
+"@storybooker/adapter@workspace:^, @storybooker/adapter@workspace:packages/adapter":
   version: 0.0.0-use.local
   resolution: "@storybooker/adapter@workspace:packages/adapter"
   dependencies:
@@ -6965,6 +6965,7 @@ __metadata:
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:^3.895.0"
     "@aws-sdk/client-s3": "npm:^3.895.0"
+    "@storybooker/adapter": "workspace:^"
     "@storybooker/core": "workspace:^"
     "@types/aws-lambda": "npm:^8.10.152"
     "@types/node": "npm:^22.0.0"
@@ -6992,6 +6993,7 @@ __metadata:
     "@azure/data-tables": "npm:^13.0.0"
     "@azure/functions": "npm:^4.0.0"
     "@azure/storage-blob": "npm:^12.0.0"
+    "@storybooker/adapter": "workspace:^"
     "@storybooker/core": "workspace:^"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
@@ -7022,6 +7024,7 @@ __metadata:
   dependencies:
     "@kitajs/html": "npm:^4.0.0"
     "@remix-run/route-pattern": "npm:^0.10.0"
+    "@storybooker/adapter": "workspace:^"
     "@types/decompress": "npm:^4.0.0"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
@@ -7045,7 +7048,7 @@ __metadata:
     "@google-cloud/bigtable": "npm:^6.4.1"
     "@google-cloud/firestore": "npm:^7.11.5"
     "@google-cloud/storage": "npm:^7.17.1"
-    "@storybooker/core": "workspace:^"
+    "@storybooker/adapter": "workspace:^"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
     oxlint: "npm:^1.24.0"

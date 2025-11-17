@@ -1,27 +1,26 @@
 import type { CosmosClient, Database } from "@azure/cosmos";
-import { SERVICE_NAME } from "@storybooker/core";
 import type {
+  DatabaseAdapter,
+  DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
-  DatabaseService,
-  DatabaseServiceOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/core/types";
+} from "@storybooker/adapter/database";
 
-export class AzureCosmosDatabaseService implements DatabaseService {
+export class AzureCosmosDatabaseService implements DatabaseAdapter {
   #db: Database;
 
-  constructor(client: CosmosClient, dbName = SERVICE_NAME) {
+  constructor(client: CosmosClient, dbName = "StoryBooker") {
     this.#db = client.database(dbName);
   }
 
-  init: DatabaseService["init"] = async (options) => {
+  init: DatabaseAdapter["init"] = async (options) => {
     await this.#db.client.databases.createIfNotExists(
       { id: this.#db.id },
       { abortSignal: options.abortSignal },
     );
   };
 
-  listCollections: DatabaseService["listCollections"] = async (options) => {
+  listCollections: DatabaseAdapter["listCollections"] = async (options) => {
     const response = await this.#db.containers
       .readAll({ abortSignal: options.abortSignal })
       .fetchAll();
@@ -32,7 +31,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return collections;
   };
 
-  createCollection: DatabaseService["createCollection"] = async (
+  createCollection: DatabaseAdapter["createCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -43,7 +42,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return;
   };
 
-  hasCollection: DatabaseService["hasCollection"] = async (
+  hasCollection: DatabaseAdapter["hasCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -57,7 +56,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     }
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -67,12 +66,12 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return;
   };
 
-  listDocuments: DatabaseService["listDocuments"] = async <
+  listDocuments: DatabaseAdapter["listDocuments"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     _listOptions: DatabaseDocumentListOptions<Document>,
-    options: DatabaseServiceOptions,
+    options: DatabaseAdapterOptions,
   ) => {
     const items = await this.#db
       .container(collectionId)
@@ -81,12 +80,12 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return items.resources as Document[];
   };
 
-  getDocument: DatabaseService["getDocument"] = async <
+  getDocument: DatabaseAdapter["getDocument"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     documentId: string,
-    options: DatabaseServiceOptions,
+    options: DatabaseAdapterOptions,
   ) => {
     const item = this.#db.container(collectionId).item(documentId);
     const response = await item.read({ abortSignal: options.abortSignal });
@@ -95,7 +94,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return document;
   };
 
-  createDocument: DatabaseService["createDocument"] = async (
+  createDocument: DatabaseAdapter["createDocument"] = async (
     collectionId,
     documentData,
     options,
@@ -106,7 +105,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return;
   };
 
-  hasDocument: DatabaseService["hasDocument"] = async (
+  hasDocument: DatabaseAdapter["hasDocument"] = async (
     collectionId,
     documentId,
     options,
@@ -116,7 +115,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
     return !!response.resource;
   };
 
-  deleteDocument: DatabaseService["deleteDocument"] = async (
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
     collectionId,
     documentId,
     options,
@@ -129,7 +128,7 @@ export class AzureCosmosDatabaseService implements DatabaseService {
   };
 
   // oxlint-disable-next-line max-params
-  updateDocument: DatabaseService["updateDocument"] = async (
+  updateDocument: DatabaseAdapter["updateDocument"] = async (
     collectionId,
     documentId,
     documentData,

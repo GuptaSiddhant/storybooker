@@ -1,7 +1,7 @@
 // oxlint-disable require-await
 // oxlint-disable sort-keys
 
-import type { AuthService, StoryBookerUser } from "../types/auth.type";
+import type { AuthAdapter, StoryBookerUser } from "@storybooker/adapter/auth";
 
 export const mockUser: StoryBookerUser = {
   displayName: "Test User",
@@ -10,7 +10,7 @@ export const mockUser: StoryBookerUser = {
   title: "Tester",
 };
 
-export const mockAuthService: AuthService = {
+export const mockAuthService: AuthAdapter = {
   init: async (_options) => {
     // Mock init logic if needed
   },

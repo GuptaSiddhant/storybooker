@@ -1,32 +1,32 @@
 import type { Firestore } from "@google-cloud/firestore";
 import type {
+  DatabaseAdapter,
+  DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
-  DatabaseService,
-  DatabaseServiceOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/core/types";
+} from "@storybooker/adapter/database";
 
-export class GcpFirestoreDatabaseService implements DatabaseService {
+export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
   #instance: Firestore;
 
   constructor(instance: Firestore) {
     this.#instance = instance;
   }
 
-  listCollections: DatabaseService["listCollections"] = async (_options) => {
+  listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
     const collections = await this.#instance.listCollections();
     return collections.map((col) => col.id);
   };
 
   // oxlint-disable-next-line class-methods-use-this --- NOOP
-  createCollection: DatabaseService["createCollection"] = async (
+  createCollection: DatabaseAdapter["createCollection"] = async (
     _collectionId,
     _options,
   ) => {
     // Firestore creates collections implicitly when you add a document.
   };
 
-  hasCollection: DatabaseService["hasCollection"] = async (
+  hasCollection: DatabaseAdapter["hasCollection"] = async (
     collectionId,
     _options,
   ) => {
@@ -35,7 +35,7 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     return !snapshot.empty;
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
     collectionId,
     _options,
   ) => {
@@ -53,12 +53,12 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     await batch.commit();
   };
 
-  listDocuments: DatabaseService["listDocuments"] = async <
+  listDocuments: DatabaseAdapter["listDocuments"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     _listOptions: DatabaseDocumentListOptions<Document>,
-    _options: DatabaseServiceOptions,
+    _options: DatabaseAdapterOptions,
   ) => {
     const col = this.#instance.collection(collectionId);
     const snapshot = await col.get();
@@ -71,12 +71,12 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     return list;
   };
 
-  getDocument: DatabaseService["getDocument"] = async <
+  getDocument: DatabaseAdapter["getDocument"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     documentId: string,
-    _options: DatabaseServiceOptions,
+    _options: DatabaseAdapterOptions,
   ) => {
     const docRef = this.#instance.collection(collectionId).doc(documentId);
     const doc = await docRef.get();
@@ -86,7 +86,7 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     return { ...doc.data(), id: doc.id } as Document;
   };
 
-  createDocument: DatabaseService["createDocument"] = async (
+  createDocument: DatabaseAdapter["createDocument"] = async (
     collectionId,
     documentData,
     _options,
@@ -95,7 +95,7 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     await docRef.create(documentData);
   };
 
-  hasDocument: DatabaseService["hasDocument"] = async (
+  hasDocument: DatabaseAdapter["hasDocument"] = async (
     collectionId,
     documentId,
     _options,
@@ -105,7 +105,7 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     return doc.exists;
   };
 
-  deleteDocument: DatabaseService["deleteDocument"] = async (
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
     collectionId,
     documentId,
     _options,
@@ -114,7 +114,7 @@ export class GcpFirestoreDatabaseService implements DatabaseService {
     await docRef.delete();
   };
 
-  updateDocument: DatabaseService["updateDocument"] = async (
+  updateDocument: DatabaseAdapter["updateDocument"] = async (
     collectionId,
     documentId,
     documentData,

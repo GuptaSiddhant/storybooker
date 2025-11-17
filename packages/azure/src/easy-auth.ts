@@ -3,13 +3,13 @@
 
 import { Buffer } from "node:buffer";
 import type {
-  AuthService,
-  AuthServiceAuthorise,
-  AuthServiceOptions,
+  AuthAdapter,
+  AuthAdapterAuthorise,
+  AuthAdapterOptions,
   StoryBookerUser,
-} from "@storybooker/core/types";
+} from "@storybooker/adapter/auth";
 
-export type { AuthServiceAuthorise } from "@storybooker/core/types";
+export type { AuthAdapterAuthorise } from "@storybooker/adapter/auth";
 
 export interface AzureEasyAuthClientPrincipal {
   claims: { typ: string; val: string }[];
@@ -29,10 +29,10 @@ export interface AzureEasyAuthUser extends StoryBookerUser {
  */
 export type ModifyUserDetails = (
   user: AzureEasyAuthUser,
-  options: AuthServiceOptions,
+  options: AuthAdapterOptions,
 ) => AzureEasyAuthUser | Promise<AzureEasyAuthUser>;
 
-const DEFAULT_AUTHORISE: AuthServiceAuthorise<AzureEasyAuthUser> = ({
+const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = ({
   permission,
   user,
 }) => {
@@ -56,15 +56,15 @@ const DEFAULT_MODIFY_USER: ModifyUserDetails = (user) => user;
 /**
  * StoryBooker Auth adapter for Azure EasyAuth.
  */
-export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
-  authorise: AuthService<AzureEasyAuthUser>["authorise"];
+export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
+  authorise: AuthAdapter<AzureEasyAuthUser>["authorise"];
   modifyUserDetails: ModifyUserDetails;
 
   constructor(options?: {
     /**
      * Custom function to authorise permission for user
      */
-    authorise?: AuthServiceAuthorise<AzureEasyAuthUser>;
+    authorise?: AuthAdapterAuthorise<AzureEasyAuthUser>;
     /**
      * Modify the final user details object created from EasyAuth Client Principal.
      */
@@ -74,7 +74,7 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
     this.modifyUserDetails = options?.modifyUserDetails || DEFAULT_MODIFY_USER;
   }
 
-  getUserDetails: AuthService<AzureEasyAuthUser>["getUserDetails"] = async (
+  getUserDetails: AuthAdapter<AzureEasyAuthUser>["getUserDetails"] = async (
     options,
   ) => {
     const principalHeader = options.request.headers.get(
@@ -130,7 +130,7 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
     return this.modifyUserDetails(user, options);
   };
 
-  login: AuthService<AzureEasyAuthUser>["login"] = async ({ request }) => {
+  login: AuthAdapter<AzureEasyAuthUser>["login"] = async ({ request }) => {
     const url = new URL("/.auth/login", request.url);
 
     return new Response(null, {
@@ -139,7 +139,7 @@ export class AzureEasyAuthService implements AuthService<AzureEasyAuthUser> {
     });
   };
 
-  logout: AuthService<AzureEasyAuthUser>["logout"] = async (
+  logout: AuthAdapter<AzureEasyAuthUser>["logout"] = async (
     _user,
     { request },
   ) => {

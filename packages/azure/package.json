@@ -76,6 +76,7 @@
     "start": "func start"
   },
   "dependencies": {
+    "@storybooker/adapter": "workspace:^",
     "@storybooker/core": "workspace:^"
   },
   "devDependencies": {

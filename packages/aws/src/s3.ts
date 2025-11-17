@@ -1,15 +1,15 @@
 import { Buffer } from "node:buffer";
 import * as S3 from "@aws-sdk/client-s3";
-import type { StorageService } from "@storybooker/core/types";
+import type { StorageAdapter } from "@storybooker/adapter/storage";
 
-export class AwsS3StorageService implements StorageService {
+export class AwsS3StorageService implements StorageAdapter {
   #client: S3.S3Client;
 
   constructor(client: S3.S3Client) {
     this.#client = client;
   }
 
-  createContainer: StorageService["createContainer"] = async (
+  createContainer: StorageAdapter["createContainer"] = async (
     containerId,
     options,
   ) => {
@@ -21,7 +21,7 @@ export class AwsS3StorageService implements StorageService {
     );
   };
 
-  deleteContainer: StorageService["deleteContainer"] = async (
+  deleteContainer: StorageAdapter["deleteContainer"] = async (
     containerId,
     options,
   ) => {
@@ -33,7 +33,7 @@ export class AwsS3StorageService implements StorageService {
     );
   };
 
-  hasContainer: StorageService["hasContainer"] = async (
+  hasContainer: StorageAdapter["hasContainer"] = async (
     containerId,
     options,
   ) => {
@@ -45,7 +45,7 @@ export class AwsS3StorageService implements StorageService {
     );
   };
 
-  listContainers: StorageService["listContainers"] = async (options) => {
+  listContainers: StorageAdapter["listContainers"] = async (options) => {
     const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
@@ -53,7 +53,7 @@ export class AwsS3StorageService implements StorageService {
     return buckets.Buckets?.map((bucket) => bucket.Name!) ?? [];
   };
 
-  deleteFiles: StorageService["deleteFiles"] = async (
+  deleteFiles: StorageAdapter["deleteFiles"] = async (
     containerId,
     filePathsOrPrefix,
     options,
@@ -86,7 +86,7 @@ export class AwsS3StorageService implements StorageService {
     );
   };
 
-  uploadFiles: StorageService["uploadFiles"] = async (
+  uploadFiles: StorageAdapter["uploadFiles"] = async (
     containerId,
     files,
     options,
@@ -109,7 +109,7 @@ export class AwsS3StorageService implements StorageService {
     await Promise.allSettled(promises);
   };
 
-  hasFile: StorageService["hasFile"] = async (
+  hasFile: StorageAdapter["hasFile"] = async (
     containerId,
     filepath,
     options,
@@ -128,7 +128,7 @@ export class AwsS3StorageService implements StorageService {
     }
   };
 
-  downloadFile: StorageService["downloadFile"] = async (
+  downloadFile: StorageAdapter["downloadFile"] = async (
     containerId,
     filepath,
     options,

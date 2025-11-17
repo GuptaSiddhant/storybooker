@@ -4,15 +4,15 @@ import type {
   TableServiceClient,
 } from "@azure/data-tables";
 import type {
+  DatabaseAdapter,
+  DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
-  DatabaseService,
-  DatabaseServiceOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/core/types";
+} from "@storybooker/adapter/database";
 
 export type TableClientGenerator = (tableName: string) => TableClient;
 
-export class AzureDataTablesDatabaseService implements DatabaseService {
+export class AzureDataTablesDatabaseService implements DatabaseAdapter {
   #serviceClient: TableServiceClient;
   #tableClientGenerator: TableClientGenerator;
   constructor(
@@ -23,7 +23,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     this.#tableClientGenerator = tableClientGenerator;
   }
 
-  listCollections: DatabaseService["listCollections"] = async (options) => {
+  listCollections: DatabaseAdapter["listCollections"] = async (options) => {
     const collections: string[] = [];
     for await (const table of this.#serviceClient.listTables({
       abortSignal: options.abortSignal,
@@ -36,7 +36,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return collections;
   };
 
-  createCollection: DatabaseService["createCollection"] = async (
+  createCollection: DatabaseAdapter["createCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -47,7 +47,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return;
   };
 
-  hasCollection: DatabaseService["hasCollection"] = async (
+  hasCollection: DatabaseAdapter["hasCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -69,7 +69,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     }
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
     collectionId,
     options,
   ) => {
@@ -80,12 +80,12 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return;
   };
 
-  listDocuments: DatabaseService["listDocuments"] = async <
+  listDocuments: DatabaseAdapter["listDocuments"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     listOptions: DatabaseDocumentListOptions<Document>,
-    options: DatabaseServiceOptions,
+    options: DatabaseAdapterOptions,
   ): Promise<Document[]> => {
     const { filter, limit, select, sort } = listOptions || {};
 
@@ -124,12 +124,12 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return items;
   };
 
-  getDocument: DatabaseService["getDocument"] = async <
+  getDocument: DatabaseAdapter["getDocument"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     documentId: string,
-    options: DatabaseServiceOptions,
+    options: DatabaseAdapterOptions,
   ): Promise<Document> => {
     const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = this.#tableClientGenerator(tableName);
@@ -140,7 +140,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return entityToItem<Document>(entity);
   };
 
-  hasDocument: DatabaseService["hasDocument"] = async (
+  hasDocument: DatabaseAdapter["hasDocument"] = async (
     collectionId,
     documentId,
     options,
@@ -152,7 +152,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     }
   };
 
-  createDocument: DatabaseService["createDocument"] = async (
+  createDocument: DatabaseAdapter["createDocument"] = async (
     collectionId,
     documentData,
     options,
@@ -171,7 +171,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
     return;
   };
 
-  deleteDocument: DatabaseService["deleteDocument"] = async (
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
     collectionId,
     documentId,
     options,
@@ -186,7 +186,7 @@ export class AzureDataTablesDatabaseService implements DatabaseService {
   };
 
   // oxlint-disable-next-line max-params
-  updateDocument: DatabaseService["updateDocument"] = async (
+  updateDocument: DatabaseAdapter["updateDocument"] = async (
     collectionId,
     documentId,
     documentData,

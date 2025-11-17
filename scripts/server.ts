@@ -2,21 +2,19 @@
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
+import type {
+  AuthAdapter,
+  AuthAdapterAuthorise,
+  AuthAdapterOptions,
+  StoryBookerUser,
+} from "../packages/adapter/dist/index.d.ts";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "../packages/core/dist/adapters.js";
-import {
-  createRequestHandler,
-  type StoryBookerUser,
-} from "../packages/core/dist/index.js";
-import type {
-  AuthService,
-  AuthServiceAuthorise,
-  AuthServiceOptions,
-} from "../packages/core/dist/types";
+} from "../packages/adapter/dist/index.js";
+import { createRequestHandler } from "../packages/core/dist/index.js";
 
-class LocalAuthService implements AuthService {
+class LocalAuthAdapter implements AuthAdapter {
   #auth = true;
   #user: StoryBookerUser | null = null;
 
@@ -30,14 +28,14 @@ class LocalAuthService implements AuthService {
     };
   };
 
-  authorise: AuthServiceAuthorise = () => true;
+  authorise: AuthAdapterAuthorise = () => true;
   getUserDetails = async (): Promise<StoryBookerUser | null> => {
     if (!this.#auth) {
       return null;
     }
     return this.#user;
   };
-  login = async ({ request }: AuthServiceOptions): Promise<Response> => {
+  login = async ({ request }: AuthAdapterOptions): Promise<Response> => {
     this.#auth = true;
     const url = new URL(request.url);
     return new Response(null, {
@@ -47,7 +45,7 @@ class LocalAuthService implements AuthService {
   };
   logout = async (
     _user: StoryBookerUser,
-    { request }: AuthServiceOptions,
+    { request }: AuthAdapterOptions,
   ): Promise<Response> => {
     this.#auth = false;
     const url = new URL(request.url);
@@ -63,13 +61,11 @@ class LocalAuthService implements AuthService {
 }
 
 const requestHandler = createRequestHandler({
-  auth: new LocalAuthService(),
+  auth: new LocalAuthAdapter(),
   config: { queueLargeZipFileProcessing: true },
   database: new LocalFileDatabase(".server/db.json"),
   staticDirs: [".server"],
   storage: new LocalFileStorage(".server"),
 });
 
-export default {
-  fetch: requestHandler,
-};
+export default { fetch: requestHandler };

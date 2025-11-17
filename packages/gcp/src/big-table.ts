@@ -1,23 +1,22 @@
 import type { Bigtable, Instance } from "@google-cloud/bigtable";
-import { SERVICE_NAME } from "@storybooker/core";
 import type {
+  DatabaseAdapter,
+  DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
-  DatabaseService,
-  DatabaseServiceOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/core/types";
+} from "@storybooker/adapter/database";
 
 type ColumnFamily = "cf1";
 const COLUMN_FAMILY: ColumnFamily = "cf1";
 
-export class GcpBigtableDatabaseService implements DatabaseService {
+export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
   #instance: Instance;
 
-  constructor(client: Bigtable, instanceName: string = SERVICE_NAME) {
+  constructor(client: Bigtable, instanceName = "StoryBooker") {
     this.#instance = client.instance(instanceName);
   }
 
-  init: DatabaseService["init"] = async (_options) => {
+  init: DatabaseAdapter["init"] = async (_options) => {
     // Bigtable instances are typically created outside of app code (via console/IaC)
     // Optionally, check if instance exists
     const [exists] = await this.#instance.exists();
@@ -28,12 +27,12 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     }
   };
 
-  listCollections: DatabaseService["listCollections"] = async (_options) => {
+  listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
     const [tables] = await this.#instance.getTables();
     return tables.map((table) => table.id);
   };
 
-  createCollection: DatabaseService["createCollection"] = async (
+  createCollection: DatabaseAdapter["createCollection"] = async (
     collectionId,
     _options,
   ) => {
@@ -42,7 +41,7 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     });
   };
 
-  hasCollection: DatabaseService["hasCollection"] = async (
+  hasCollection: DatabaseAdapter["hasCollection"] = async (
     collectionId,
     _options,
   ) => {
@@ -51,7 +50,7 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     return exists;
   };
 
-  deleteCollection: DatabaseService["deleteCollection"] = async (
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
     collectionId,
     _options,
   ) => {
@@ -59,12 +58,12 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     await table.delete();
   };
 
-  listDocuments: DatabaseService["listDocuments"] = async <
+  listDocuments: DatabaseAdapter["listDocuments"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     _listOptions: DatabaseDocumentListOptions<Document>,
-    _options: DatabaseServiceOptions,
+    _options: DatabaseAdapterOptions,
   ) => {
     const table = this.#instance.table(collectionId);
     const [rows] = await table.getRows();
@@ -78,12 +77,12 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     return list;
   };
 
-  getDocument: DatabaseService["getDocument"] = async <
+  getDocument: DatabaseAdapter["getDocument"] = async <
     Document extends StoryBookerDatabaseDocument,
   >(
     collectionId: string,
     documentId: string,
-    _options: DatabaseServiceOptions,
+    _options: DatabaseAdapterOptions,
   ) => {
     const table = this.#instance.table(collectionId);
     const row = table.row(documentId);
@@ -97,7 +96,7 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     return { ...rowData, id: documentId };
   };
 
-  createDocument: DatabaseService["createDocument"] = async (
+  createDocument: DatabaseAdapter["createDocument"] = async (
     collectionId,
     documentData,
     _options,
@@ -107,7 +106,7 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     await row.create({ entry: { [COLUMN_FAMILY]: documentData } });
   };
 
-  hasDocument: DatabaseService["hasDocument"] = async (
+  hasDocument: DatabaseAdapter["hasDocument"] = async (
     collectionId,
     documentId,
     _options,
@@ -118,7 +117,7 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     return exists;
   };
 
-  deleteDocument: DatabaseService["deleteDocument"] = async (
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
     collectionId,
     documentId,
     _options,
@@ -128,7 +127,7 @@ export class GcpBigtableDatabaseService implements DatabaseService {
     await row.delete();
   };
 
-  updateDocument: DatabaseService["updateDocument"] = async (
+  updateDocument: DatabaseAdapter["updateDocument"] = async (
     collectionId,
     documentId,
     documentData,

@@ -1,12 +1,12 @@
-import z from "zod";
 import type {
-  DatabaseService,
-  DatabaseServiceOptions,
-  LoggerService,
-  PermissionAction,
-  StorageService,
-  StorageServiceOptions,
-} from "../types";
+  DatabaseAdapter,
+  DatabaseAdapterOptions,
+  LoggerAdapter,
+  StorageAdapter,
+  StorageAdapterOptions,
+  StoryBookerPermissionAction,
+} from "@storybooker/adapter";
+import z from "zod";
 import { getStore } from "../utils/store";
 import { PATTERNS, SERVICE_NAME } from "./constants";
 import { parseErrorMessage } from "./error";
@@ -23,11 +23,11 @@ export interface ListOptions<Item extends Record<string, unknown>> {
 export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   projectId: string;
   collectionId: string;
-  database: DatabaseService;
-  storage: StorageService;
-  logger: LoggerService;
-  dbOptions: DatabaseServiceOptions;
-  storageOptions: StorageServiceOptions;
+  database: DatabaseAdapter;
+  storage: StorageAdapter;
+  logger: LoggerAdapter;
+  dbOptions: DatabaseAdapterOptions;
+  storageOptions: StorageAdapterOptions;
 
   constructor(projectId: string | null, collectionId: string) {
     const { abortSignal, database, storage, logger } = getStore();
@@ -65,7 +65,7 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   abstract update(id: string, data: unknown): Promise<void>;
   abstract delete(id: string): Promise<void>;
   abstract id: (id: string) => BaseIdModel<Data>;
-  abstract checkAuth(action: PermissionAction): Promise<boolean>;
+  abstract checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
 }
 
 export interface BaseModel<Data extends Obj> {
@@ -75,7 +75,7 @@ export interface BaseModel<Data extends Obj> {
   has(id: string): Promise<boolean>;
   update(id: string, data: unknown): Promise<void>;
   delete(id: string): Promise<void>;
-  checkAuth(action: PermissionAction): Promise<boolean>;
+  checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
   id: (id: string) => BaseIdModel<Data>;
 }
 
@@ -85,7 +85,7 @@ export interface BaseIdModel<Data extends Obj> {
   has(): Promise<boolean>;
   update(data: unknown): Promise<void>;
   delete(): Promise<void>;
-  checkAuth(action: PermissionAction): Promise<boolean>;
+  checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
 }
 
 /** @private */

@@ -1,8 +1,8 @@
 // oxlint-disable sort-keys
 
+import type { DatabaseAdapter, StorageAdapter } from "@storybooker/adapter";
 import { vi } from "vitest";
 import { translations_enGB } from "../translations";
-import type { DatabaseService, StorageService } from "../types";
 import type { Store } from "../utils/store";
 import { mockAuthService, mockUser } from "./mock-auth-service";
 
@@ -16,10 +16,10 @@ export const mockStore: Store = {
   },
   request: {} as Request,
   translation: translations_enGB,
-  database: {} as DatabaseService,
+  database: {} as DatabaseAdapter,
   locale: "en",
   prefix: "/",
-  storage: {} as StorageService,
+  storage: {} as StorageAdapter,
   url: "http://localhost/",
   user: mockUser,
 };

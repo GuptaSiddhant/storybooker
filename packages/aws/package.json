@@ -66,6 +66,7 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
+    "@storybooker/adapter": "workspace:^",
     "@storybooker/core": "workspace:^"
   },
   "devDependencies": {
