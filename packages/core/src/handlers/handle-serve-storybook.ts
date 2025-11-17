@@ -1,7 +1,6 @@
-// oxlint-disable max-lines-per-function
-
 import path from "node:path";
 import { urlBuilder } from "../urls";
+import { generateStorageContainerId } from "../utils/adapter-utils";
 import { authenticateOrThrow } from "../utils/auth";
 import {
   CACHE_CONTROL_PUBLIC_YEAR,
@@ -10,7 +9,6 @@ import {
 } from "../utils/constants";
 import { getMimeType } from "../utils/mime-utils";
 import { responseError } from "../utils/response";
-import { generateStorageContainerId } from "../utils/shared-model";
 import { getStore } from "../utils/store";
 
 export async function handleServeStoryBook({

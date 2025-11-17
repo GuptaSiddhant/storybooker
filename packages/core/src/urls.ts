@@ -1,7 +1,7 @@
 // oxlint-disable sort-keys
 
 import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
-import type { BuildUploadVariant } from "./builds/schema";
+import type { BuildUploadVariant } from "./models/builds-schema";
 import { QUERY_PARAMS } from "./utils/constants";
 import { getStore } from "./utils/store";
 import { urlJoin } from "./utils/url";

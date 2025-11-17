@@ -1,4 +1,5 @@
 export const SERVICE_NAME = "StoryBooker";
+export const SERVICE_SHORT_NAME = "SBR";
 export const CACHE_CONTROL_PUBLIC_YEAR = "public, max-age=31536000, immutable";
 export const CACHE_CONTROL_PUBLIC_WEEK = "public, max-age=604800, immutable";
 export const DEFAULT_PURGE_AFTER_DAYS = 30;

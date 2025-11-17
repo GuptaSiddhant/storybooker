@@ -1,10 +1,8 @@
-// oxlint-disable max-lines-per-function
-
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { globalStyleSheet } from "../components/_global";
-import { globalScripts } from "../components/_scripts";
+import { generateGlobalScript } from "../ui/scripts/global-script";
+import { generateGlobalStyleSheet } from "../ui/styles/global-style";
 import { authenticateOrThrow } from "../utils/auth";
 import {
   CACHE_CONTROL_PUBLIC_WEEK,
@@ -34,7 +32,7 @@ export async function handleStaticFileRoute(
 
   if (filepath.startsWith(`/${STYLESHEETS.globalStyles}`)) {
     const { darkTheme, lightTheme } = ui || {};
-    const stylesheet = globalStyleSheet({ darkTheme, lightTheme });
+    const stylesheet = generateGlobalStyleSheet({ darkTheme, lightTheme });
 
     return new Response(stylesheet, {
       headers: {
@@ -46,7 +44,7 @@ export async function handleStaticFileRoute(
   }
 
   if (filepath.startsWith(`/${SCRIPTS.globalScript}`)) {
-    const script = globalScripts();
+    const script = generateGlobalScript();
 
     return new Response(script, {
       headers: {

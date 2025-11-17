@@ -1,4 +1,3 @@
-// oxlint-disable max-lines
 interface TypeMap {
   // oxlint-disable-next-line consistent-indexed-object-style
   [key: string]: string[];

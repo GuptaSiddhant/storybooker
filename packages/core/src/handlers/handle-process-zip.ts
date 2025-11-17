@@ -1,5 +1,3 @@
-// oxlint-disable max-lines-per-function
-
 import { Buffer } from "node:buffer";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
@@ -7,11 +5,11 @@ import os from "node:os";
 import path from "node:path";
 import type { StoryBookerFile } from "@storybooker/adapter/storage";
 import decompress from "decompress";
-import { BuildsModel } from "../builds/model";
-import type { BuildUploadVariant } from "../builds/schema";
+import { BuildsModel } from "../models/builds-model";
+import type { BuildUploadVariant } from "../models/builds-schema";
+import { generateStorageContainerId } from "../utils/adapter-utils";
 import { writeStreamToFile } from "../utils/file-utils";
 import { getMimeType } from "../utils/mime-utils";
-import { generateStorageContainerId } from "../utils/shared-model";
 import { getStore } from "../utils/store";
 
 export async function handleProcessZip(

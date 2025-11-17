@@ -1,8 +1,8 @@
 import type { LoggerAdapter } from "@storybooker/adapter/logger";
-import { BuildsModel } from "../builds/model";
-import { ProjectsModel } from "../projects/model";
-import type { ProjectType } from "../projects/schema";
-import { TagsModel } from "../tags/model";
+import { BuildsModel } from "../models/builds-model";
+import { ProjectsModel } from "../models/projects-model";
+import type { ProjectType } from "../models/projects-schema";
+import { TagsModel } from "../models/tags-model";
 import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "../utils/constants";
 import { getStore } from "../utils/store";
 

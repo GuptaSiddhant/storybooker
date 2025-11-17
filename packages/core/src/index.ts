@@ -1,14 +1,12 @@
-// oxlint-disable max-lines-per-function
-
 import type { AuthAdapter, StoryBookerUser } from "@storybooker/adapter/auth";
-import * as accountRoutes from "./account/routes";
-import * as buildsRoutes from "./builds/routes";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
-import * as projectsRoutes from "./projects/routes";
-import * as rootRoutes from "./root/routes";
-import * as tagsRoutes from "./tags/routes";
-import * as tasksRoutes from "./tasks/routes";
+import * as accountRoutes from "./routers/accounts-routes";
+import * as buildsRoutes from "./routers/builds-routes";
+import * as projectsRoutes from "./routers/projects-routes";
+import * as rootRoutes from "./routers/root-routes";
+import * as tagsRoutes from "./routers/tags-routes";
+import * as tasksRoutes from "./routers/tasks-routes";
 import { translations_enGB } from "./translations/en-gb";
 import type {
   PurgeHandlerOptions,

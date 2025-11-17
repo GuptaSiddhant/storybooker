@@ -1,6 +1,6 @@
 import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
-import { renderErrorPage } from "../root/render";
+import { renderErrorPage } from "../ui/root-pages";
 import { CONTENT_TYPES, HEADERS } from "../utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
 import { getStore } from "../utils/store";
