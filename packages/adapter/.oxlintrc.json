@@ -1,0 +1,20 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "rules": {
+    "max-classes-per-file": "allow",
+    "max-lines": "allow",
+    "max-params": "allow",
+    "no-await-in-loop": "allow",
+    "no-unsafe-assignment": "allow",
+    "require-await": "allow",
+    "typescript/no-unsafe-assignment": "allow",
+    "typescript/require-await": "allow",
+    "promise-function-async": "allow",
+    "typescript/no-base-to-string": "allow"
+  }
+}

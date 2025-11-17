@@ -6946,6 +6946,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybooker/adapter@workspace:packages/adapter":
+  version: 0.0.0-use.local
+  resolution: "@storybooker/adapter@workspace:packages/adapter"
+  dependencies:
+    "@types/node": "npm:^22.0.0"
+    "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
+    oxlint: "npm:^1.24.0"
+    oxlint-tsgolint: "npm:^0.3.0"
+    prettier: "npm:^3.6.2"
+    tsdown: "npm:^0.15.9"
+  languageName: unknown
+  linkType: soft
+
 "@storybooker/aws@workspace:*, @storybooker/aws@workspace:packages/aws":
   version: 0.0.0-use.local
   resolution: "@storybooker/aws@workspace:packages/aws"

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
+  "name": "@storybooker/adapter",
+  "version": "0.15.4",
+  "license": "MIT",
+  "publish": {
+    "include": [
+      "src",
+      "README.md"
+    ]
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./auth": "./src/auth.ts",
+    "./database": "./src/database.ts",
+    "./logger": "./src/logger.ts",
+    "./queue": "./src/queue.ts",
+    "./storage": "./src/storage.ts"
+  }
+}

@@ -26,6 +26,7 @@ jobs:
       - name: Setup Turbo
         run: |
           npx -y turbo prune \
+            @storybooker/adapter \
             @storybooker/core \
             @storybooker/aws \
             @storybooker/azure \
@@ -45,12 +46,15 @@ jobs:
         working-directory: ./out
         run: npx turbo verify
 
-      - name: Publish on JSR
-        working-directory: ./out
+      - name: Publish on JSR - Adapter
+        working-directory: ./out/packages/adapter
         continue-on-error: true
-        run: |
-          node ./scripts/core-jsr-check.ts
-          yarn publish:jsr -- --token ${{ secrets.JSR_API_TOKEN }}
+        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }}
+
+      - name: Publish on JSR - Core
+        working-directory: ./out/packages/core
+        continue-on-error: true
+        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on NPM
         working-directory: ./out
