@@ -1,12 +1,10 @@
-// oxlint-disable sort-keys
-
 import type { BuildType } from "../models/builds-schema";
 import type { ProjectType } from "../models/projects-schema";
 import type { TagType } from "../models/tags-schema";
 import { urlBuilder } from "../urls";
-import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { Table } from "./components/table";
+import { commonT } from "./translations/i18n";
 
 export interface BuildsTableProps {
   caption?: JSX.Element;

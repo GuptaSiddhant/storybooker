@@ -15,7 +15,6 @@ export interface TableColumn<Item extends TableItem> {
   style?: JSX.HtmlTag["style"];
 }
 
-// oxlint-disable-next-line max-lines-per-function
 export function Table<Item extends TableItem>({
   caption,
   columns,

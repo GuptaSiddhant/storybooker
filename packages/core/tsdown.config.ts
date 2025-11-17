@@ -6,8 +6,9 @@ export default defineConfig({
   dts: { tsgo: true },
   entry: {
     index: "./src/index.ts",
-    translations: "./src/translations/index.ts",
-    "translations/en-gb": "./src/translations/en-gb.ts",
+    mimetype: "./src/utils/mime-utils.ts",
+    translations: "./src/ui/translations/index.ts",
+    "translations/en-gb": "./src/ui/translations/en-gb.ts",
     types: "./src/types.ts",
     utils: "./src/utils/index.ts",
   },

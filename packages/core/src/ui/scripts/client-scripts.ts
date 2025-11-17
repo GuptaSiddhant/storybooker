@@ -1,5 +1,4 @@
 // oxlint-disable ban-types
-// oxlint-disable sort-keys
 // oxlint-disable no-new-func
 
 class ClientScript {

@@ -1,12 +1,10 @@
-// oxlint-disable sort-keys
-
 import type { ProjectType } from "../models/projects-schema";
 import { urlBuilder } from "../urls";
 import { DEFAULT_GITHUB_BRANCH } from "../utils/constants";
-import { commonT, getT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { LatestBuild } from "./components/latest-build";
 import { Table } from "./components/table";
+import { commonT, getT } from "./translations/i18n";
 
 export interface ProjectsTableProps {
   caption?: JSX.Element;

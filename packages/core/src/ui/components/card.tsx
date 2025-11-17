@@ -1,4 +1,3 @@
-// oxlint-disable sort-keys
 export function Card({ children, style, ...props }: JSX.HtmlTag): JSX.Element {
   return (
     <article

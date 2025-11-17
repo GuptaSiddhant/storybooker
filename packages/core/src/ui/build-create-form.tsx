@@ -1,11 +1,9 @@
-// oxlint-disable sort-keys
-
 import { urlBuilder } from "../urls";
 import { CONTENT_TYPES } from "../utils/constants";
-import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { LinkButton } from "./components/button";
 import { ErrorMessage } from "./components/error-message";
+import { commonT } from "./translations/i18n";
 
 export interface BuildFormProps {
   projectId: string;

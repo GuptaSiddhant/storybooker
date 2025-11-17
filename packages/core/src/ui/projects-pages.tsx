@@ -3,7 +3,6 @@ import type { ProjectType } from "../models/projects-schema";
 import type { TagType } from "../models/tags-schema";
 import { TagsTable } from "../ui/tags-table";
 import { href, urlBuilder, URLS } from "../urls";
-import { commonT, getT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { BuildsTable } from "./builds-table";
 import { DestructiveButton, LinkButton } from "./components/button";
@@ -17,6 +16,7 @@ import {
 import { RawDataList } from "./components/raw-data";
 import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
+import { commonT, getT } from "./translations/i18n";
 
 export function renderProjectsPage({
   projects,

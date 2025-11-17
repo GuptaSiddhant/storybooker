@@ -1,5 +1,3 @@
-// oxlint-disable no-nested-ternary
-
 import type { BuildType, BuildUploadVariant } from "../models/builds-schema";
 import { urlBuilder } from "../urls";
 import { toTitleCase } from "../utils/text-utils";

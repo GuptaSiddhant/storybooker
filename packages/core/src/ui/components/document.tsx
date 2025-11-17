@@ -1,5 +1,3 @@
-// oxlint-disable sort-keys
-
 import { href, urlBuilder, URLS } from "../../urls";
 import { SCRIPTS, SERVICE_NAME, STYLESHEETS } from "../../utils/constants";
 import { getStore } from "../../utils/store";
@@ -96,7 +94,6 @@ function Logo(): JSX.Element {
   const { ui } = getStore();
   const { logo } = ui || {};
 
-  // oxlint-disable-next-line no-nested-ternary
   const logoElement = logo ? (
     logo.includes("<") && logo.includes(">") ? (
       logo // HTML

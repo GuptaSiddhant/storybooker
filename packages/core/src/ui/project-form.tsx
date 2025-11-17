@@ -5,10 +5,10 @@ import {
   DEFAULT_PURGE_AFTER_DAYS,
   PATTERNS,
 } from "../utils/constants";
-import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { LinkButton } from "./components/button";
 import { ErrorMessage } from "./components/error-message";
+import { commonT } from "./translations/i18n";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;

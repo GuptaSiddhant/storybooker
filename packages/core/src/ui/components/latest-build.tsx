@@ -1,5 +1,5 @@
 import { urlBuilder } from "../../urls";
-import { commonT, getT } from "../../utils/i18n";
+import { commonT, getT } from "../translations/i18n";
 
 export function LatestBuild({
   projectId,

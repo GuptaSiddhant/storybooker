@@ -1,8 +1,6 @@
-// oxlint-disable no-nested-ternary
-
 import type { BuildType } from "../models/builds-schema";
 import { urlBuilder } from "../urls";
-import { commonT } from "../utils/i18n";
+import { commonT } from "./translations/i18n";
 
 export function BuildLinksFooter({
   build,

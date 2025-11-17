@@ -1,6 +1,6 @@
-import type { Translation } from "../types";
-import { getStore } from "../utils/store";
-import { toTitleCase } from "./text-utils";
+import type { Translation } from "../../types";
+import { getStore } from "../../utils/store";
+import { toTitleCase } from "../../utils/text-utils";
 
 export function getT<
   Category extends keyof Translation,

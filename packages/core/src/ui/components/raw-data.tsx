@@ -1,5 +1,3 @@
-// oxlint-disable no-nested-ternary
-
 import { ISO_DATE_REGEXP } from "../../utils/constants";
 import { getStore } from "../../utils/store";
 import { camelCaseToSentenceCase } from "../../utils/text-utils";

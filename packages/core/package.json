@@ -58,12 +58,16 @@
       "source": "./src/index.ts",
       "default": "./dist/index.js"
     },
+    "./mimetype": {
+      "source": "./src/utils/mime-utils.ts",
+      "default": "./dist/mimetype.js"
+    },
     "./translations": {
-      "source": "./src/translations/index.ts",
+      "source": "./src/ui/translations/index.ts",
       "default": "./dist/translations.js"
     },
     "./translations/en-gb": {
-      "source": "./src/translations/en-gb.ts",
+      "source": "./src/ui/translations/en-gb.ts",
       "default": "./dist/translations/en-gb.js"
     },
     "./types": {
@@ -80,6 +84,7 @@
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
+      "./mimetype": "./dist/mimetype.js",
       "./translations": "./dist/translations.js",
       "./translations/en-gb": "./dist/translations/en-gb.js",
       "./types": "./dist/types.js",

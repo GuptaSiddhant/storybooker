@@ -1,8 +1,5 @@
-// oxlint-disable sort-keys
-
 import type { StoryBookerUser } from "../types";
 import { href, URLS } from "../urls";
-import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "../utils/text-utils";
 import { DestructiveButton } from "./components/button";
@@ -15,8 +12,8 @@ import {
 } from "./components/document";
 import { IFrameContainer } from "./components/iframe";
 import { RawDataList } from "./components/raw-data";
+import { commonT } from "./translations/i18n";
 
-// oxlint-disable-next-line max-lines-per-function
 export function renderAccountPage({
   children,
 }: {

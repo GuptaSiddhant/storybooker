@@ -2,7 +2,6 @@ import type { BuildType } from "../models/builds-schema";
 import type { ProjectType } from "../models/projects-schema";
 import { TagTypes, type TagType } from "../models/tags-schema";
 import { urlBuilder } from "../urls";
-import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { BuildsTable } from "./builds-table";
 import { DestructiveButton, LinkButton } from "./components/button";
@@ -16,6 +15,7 @@ import {
 import { RawDataList } from "./components/raw-data";
 import { TagForm } from "./tag-form";
 import { TagsTable } from "./tags-table";
+import { commonT } from "./translations/i18n";
 
 export function renderTagsPage({
   tags,

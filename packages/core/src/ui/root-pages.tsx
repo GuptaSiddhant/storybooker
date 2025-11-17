@@ -1,9 +1,6 @@
-// oxlint-disable sort-keys
-
 import type { ProjectType } from "../models/projects-schema";
 import { href, urlBuilder, URLS } from "../urls";
 import { SERVICE_NAME } from "../utils/constants";
-import { commonT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "../utils/text-utils";
 import {
@@ -15,6 +12,7 @@ import {
 } from "./components/document";
 import { ErrorMessage } from "./components/error-message";
 import { ProjectsGrid } from "./projects-grid";
+import { commonT } from "./translations/i18n";
 
 export interface RootPageProps {
   projects: ProjectType[];

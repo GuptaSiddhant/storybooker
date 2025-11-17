@@ -36,6 +36,14 @@
         "sort-keys": "allow",
         "typescript/require-await": "allow"
       }
+    },
+    {
+      "files": ["src/**/*.tsx"],
+      "rules": {
+        "sort-keys": "allow",
+        "no-nested-ternary": "allow",
+        "unicorn/no-nested-ternary": "allow"
+      }
     }
   ]
 }

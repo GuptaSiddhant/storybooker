@@ -124,17 +124,17 @@ export const router: Router = new Router();
 export function defineRoute<Method extends Methods, Path extends string>(
   method: Method,
   pathname: Path,
-  input:
+  openapi:
     | (ZodOpenApiPathItemObject[Method] & { overridePath?: string })
     | undefined,
   handler: Handler<NoInfer<Path>>,
 ): RegisterRouteOptions<Method, Path> {
-  const overriddenPath = input?.overridePath;
-  delete input?.overridePath;
+  const overriddenPath = openapi?.overridePath;
+  delete openapi?.overridePath;
 
   return {
     handler,
-    input,
+    input: openapi,
     method,
     overriddenPath,
     pathname,

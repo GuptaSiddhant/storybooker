@@ -1,5 +1,3 @@
-// oxlint-disable no-nested-ternary
-
 import type {
   BuildStoryType,
   BuildType,
@@ -7,7 +5,6 @@ import type {
 } from "../models/builds-schema";
 import type { ProjectType } from "../models/projects-schema";
 import { urlBuilder } from "../urls";
-import { commonT, getT } from "../utils/i18n";
 import { getStore } from "../utils/store";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildLinksFooter } from "./build-links";
@@ -24,6 +21,7 @@ import {
   DocumentUserSection,
 } from "./components/document";
 import { RawDataList } from "./components/raw-data";
+import { commonT, getT } from "./translations/i18n";
 
 export function renderBuildsPage({
   builds,
