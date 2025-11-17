@@ -19,7 +19,7 @@ import {
 } from "../ui/projects-pages";
 import { urlBuilder, URLS } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
-import { CONTENT_TYPES } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
@@ -45,8 +45,8 @@ export const listProjects = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
-          [CONTENT_TYPES.JSON]: { schema: ProjectsListResultSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: ProjectsListResultSchema },
         },
         description: "A list of projects.",
       },
@@ -77,7 +77,7 @@ export const createProject = defineRoute(
   {
     requestBody: {
       content: {
-        [CONTENT_TYPES.FORM_ENCODED]: { schema: ProjectCreateSchema },
+        [mimes.formEncoded]: { schema: ProjectCreateSchema },
       },
       description: "Data about the project",
       required: true,
@@ -86,7 +86,7 @@ export const createProject = defineRoute(
       ...commonErrorResponses(),
       201: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: ProjectGetResultSchema },
+          [mimes.json]: { schema: ProjectGetResultSchema },
         },
         description: "Project created successfully",
       },
@@ -133,7 +133,7 @@ export const createProjectForm = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Form to create project",
       },
@@ -163,8 +163,8 @@ export const getProject = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
-          [CONTENT_TYPES.JSON]: { schema: ProjectGetResultSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: ProjectGetResultSchema },
         },
         description: "Project details retrieved successfully",
       },
@@ -233,7 +233,7 @@ export const updateProject = defineRoute(
   {
     requestBody: {
       content: {
-        [CONTENT_TYPES.FORM_ENCODED]: { schema: ProjectUpdateSchema },
+        [mimes.formEncoded]: { schema: ProjectUpdateSchema },
       },
       description: "Updated project data",
       required: true,
@@ -287,7 +287,7 @@ export const updateProjectForm = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Form to update project",
       },

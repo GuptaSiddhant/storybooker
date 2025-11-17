@@ -4,7 +4,7 @@ import {
   type BuildUploadVariant,
 } from "../models/builds-schema";
 import { urlBuilder } from "../urls";
-import { CONTENT_TYPES } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
 import { LinkButton } from "./components/button";
 import { ErrorMessage } from "./components/error-message";
@@ -30,8 +30,8 @@ export function BuildUploadForm({
       hx-post={url}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
-      enctype={CONTENT_TYPES.FORM_MULTIPART}
-      hx-encoding={CONTENT_TYPES.FORM_MULTIPART}
+      enctype={mimes.formMultipart}
+      hx-encoding={mimes.formMultipart}
       hx-disabled-elt="find button"
     >
       <fieldset>
@@ -72,12 +72,7 @@ export function BuildUploadForm({
 
       <fieldset>
         <legend>Zip file</legend>
-        <input
-          type="file"
-          name="file"
-          accept={CONTENT_TYPES.ZIP}
-          multiple={false}
-        />
+        <input type="file" name="file" accept={mimes.zip} multiple={false} />
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>

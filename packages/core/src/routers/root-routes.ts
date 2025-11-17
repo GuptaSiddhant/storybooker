@@ -5,7 +5,7 @@ import { ProjectsModel } from "../models/projects-model";
 import { renderRootPage } from "../ui/root-pages";
 import { URLS } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
-import { CONTENT_TYPES } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import { checkIsJSONRequest } from "../utils/request";
 import { commonErrorResponses, responseHTML } from "../utils/response";
 import { defineRoute } from "../utils/router-utils";
@@ -25,8 +25,8 @@ export const root = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
-          [CONTENT_TYPES.JSON]: { schema: rootSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: rootSchema },
         },
         description: "Root endpoint",
       },

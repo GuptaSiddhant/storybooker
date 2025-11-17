@@ -1,10 +1,11 @@
+import SuperHeaders from "@remix-run/headers";
 import z from "zod";
 import type { ZodOpenApiResponsesObject } from "zod-openapi";
 import { renderErrorPage } from "../ui/root-pages";
-import { CONTENT_TYPES, HEADERS } from "../utils/constants";
 import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
 import { getStore } from "../utils/store";
 import { parseErrorMessage } from "./error";
+import { mimes } from "./mime-utils";
 import { toTitleCase } from "./text-utils";
 
 export const errorSchema = z
@@ -37,8 +38,9 @@ export async function responseHTML(
   html: JSX.Element,
   init?: ResponseInit,
 ): Promise<Response> {
-  const headers = new Headers(init?.headers);
-  headers.set(HEADERS.contentType, CONTENT_TYPES.HTML);
+  const headers = new SuperHeaders(init?.headers);
+  headers.contentType = mimes.html;
+
   const responseInit: ResponseInit = {
     ...init,
     headers,

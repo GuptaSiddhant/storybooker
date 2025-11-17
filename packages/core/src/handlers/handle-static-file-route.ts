@@ -1,19 +1,18 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import SuperHeaders from "@remix-run/headers";
 import { generateGlobalScript } from "../ui/scripts/global-script";
 import { generateGlobalStyleSheet } from "../ui/styles/global-style";
 import { authenticateOrThrow } from "../utils/auth";
 import {
   CACHE_CONTROL_PUBLIC_WEEK,
-  CONTENT_TYPES,
   DEFAULT_STATIC_DIRS,
-  HEADERS,
   SCRIPTS,
   SERVICE_NAME,
   STYLESHEETS,
 } from "../utils/constants";
-import { getMimeType } from "../utils/mime-utils";
+import { getMimeType, mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
 
 export async function handleStaticFileRoute(
@@ -35,10 +34,10 @@ export async function handleStaticFileRoute(
     const stylesheet = generateGlobalStyleSheet({ darkTheme, lightTheme });
 
     return new Response(stylesheet, {
-      headers: {
-        [HEADERS.cacheControl]: CACHE_CONTROL_PUBLIC_WEEK,
-        [HEADERS.contentType]: CONTENT_TYPES.CSS,
-      },
+      headers: new SuperHeaders({
+        cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
+        contentType: mimes.css,
+      }),
       status: 200,
     });
   }
@@ -47,10 +46,10 @@ export async function handleStaticFileRoute(
     const script = generateGlobalScript();
 
     return new Response(script, {
-      headers: {
-        [HEADERS.cacheControl]: CACHE_CONTROL_PUBLIC_WEEK,
-        [HEADERS.contentType]: CONTENT_TYPES.JS,
-      },
+      headers: new SuperHeaders({
+        cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
+        contentType: mimes.js,
+      }),
       status: 200,
     });
   }
@@ -69,7 +68,7 @@ export async function handleStaticFileRoute(
     );
   }
 
-  const contentType = getMimeType(staticFilepath) || CONTENT_TYPES.OCTET;
+  const contentType = getMimeType(staticFilepath);
 
   logger.log(
     "%s: '%s' (%s)",
@@ -81,10 +80,10 @@ export async function handleStaticFileRoute(
   const content = await fsp.readFile(staticFilepath);
 
   return new Response(new Uint8Array(content), {
-    headers: {
-      [HEADERS.cacheControl]: CACHE_CONTROL_PUBLIC_WEEK,
-      [HEADERS.contentType]: contentType,
-    },
+    headers: new SuperHeaders({
+      cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
+      contentType,
+    }),
     status: 200,
   });
 }

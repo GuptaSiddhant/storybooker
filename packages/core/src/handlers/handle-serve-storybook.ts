@@ -1,12 +1,9 @@
 import path from "node:path";
+import SuperHeaders from "@remix-run/headers";
 import { urlBuilder } from "../urls";
 import { generateStorageContainerId } from "../utils/adapter-utils";
 import { authenticateOrThrow } from "../utils/auth";
-import {
-  CACHE_CONTROL_PUBLIC_YEAR,
-  HEADERS,
-  SERVICE_NAME,
-} from "../utils/constants";
+import { CACHE_CONTROL_PUBLIC_YEAR, SERVICE_NAME } from "../utils/constants";
 import { getMimeType } from "../utils/mime-utils";
 import { responseError } from "../utils/response";
 import { getStore } from "../utils/store";
@@ -35,9 +32,9 @@ export async function handleServeStoryBook({
       return await responseError("File does not contain any content", 404);
     }
 
-    const headers = new Headers();
-    headers.set(HEADERS.contentType, mimeType ?? getMimeType(filepath));
-    headers.append(HEADERS.cacheControl, CACHE_CONTROL_PUBLIC_YEAR);
+    const headers = new SuperHeaders();
+    headers.contentType = mimeType ?? getMimeType(filepath);
+    headers.cacheControl = CACHE_CONTROL_PUBLIC_YEAR;
 
     if (filepath.endsWith("index.html")) {
       // Appending custom UI to index.html

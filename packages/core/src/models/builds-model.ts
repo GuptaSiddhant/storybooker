@@ -8,7 +8,7 @@ import {
   generateStorageContainerId,
 } from "../utils/adapter-utils";
 import { checkAuthorisation } from "../utils/auth";
-import { CONTENT_TYPES } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
 import { Model, type BaseModel, type ListOptions } from "./~model";
 import {
@@ -398,7 +398,7 @@ export class BuildsModel extends Model<BuildType> {
       [
         {
           content,
-          mimeType: CONTENT_TYPES.ZIP,
+          mimeType: mimes.zip,
           path: `${buildSHA}/${variant}.zip`,
         },
       ],

@@ -1,3 +1,4 @@
+import { SuperHeaders } from "@remix-run/headers";
 import type { AuthAdapter, StoryBookerUser } from "@storybooker/adapter/auth";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
@@ -13,7 +14,7 @@ import type {
   RequestHandlerOptions,
 } from "./types";
 import { translations_enGB } from "./ui/translations/en-gb";
-import { DEFAULT_LOCALE, HEADERS } from "./utils/constants";
+import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "./utils/middleware-utils";
 import { router } from "./utils/router-utils";
@@ -54,9 +55,8 @@ export function createRequestHandler<User extends StoryBookerUser>(
     await initPromises;
 
     try {
-      const locale =
-        request.headers.get(HEADERS.acceptLanguage)?.split(",").at(0) ||
-        DEFAULT_LOCALE;
+      const headers = new SuperHeaders(request.headers);
+      const locale = headers.acceptLanguage.languages[0] || DEFAULT_LOCALE;
       const user = await options.auth?.getUserDetails({
         abortSignal: overrideOptions?.abortSignal,
         logger: overrideOptions?.logger ?? logger,
@@ -67,6 +67,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
         ...options,
         abortSignal: overrideOptions?.abortSignal ?? request.signal,
         auth: options.auth as AuthAdapter | undefined,
+        headers,
         locale,
         logger: overrideOptions?.logger ?? logger,
         prefix: options.prefix || "",
@@ -124,6 +125,7 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
         abortSignal: params[1].abortSignal,
         database: options.database,
         errorParser: options.errorParser,
+        headers: new SuperHeaders(),
         locale: DEFAULT_LOCALE,
         logger: params[1]?.logger ?? logger,
         prefix: "/",

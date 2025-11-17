@@ -20,7 +20,7 @@ import {
 } from "../ui/tags-pages";
 import { urlBuilder, URLS } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
-import { CONTENT_TYPES } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
@@ -49,8 +49,8 @@ export const listTags = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
-          [CONTENT_TYPES.JSON]: { schema: TagsListResultSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: TagsListResultSchema },
         },
         description: "A list of tags.",
       },
@@ -85,7 +85,7 @@ export const createTag = defineRoute(
   URLS.tags.create,
   {
     requestBody: {
-      content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: TagCreateSchema } },
+      content: { [mimes.formEncoded]: { schema: TagCreateSchema } },
       description: "Data about the tag",
       required: true,
     },
@@ -94,7 +94,7 @@ export const createTag = defineRoute(
       ...commonErrorResponses(),
       201: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: TagsGetResultSchema },
+          [mimes.json]: { schema: TagsGetResultSchema },
         },
         description: "Tag created successfully",
       },
@@ -149,7 +149,7 @@ export const createTagForm = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Form to create tag",
       },
@@ -183,8 +183,8 @@ export const getTag = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: TagsGetResultSchema },
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: TagsGetResultSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Tag details retrieved successfully",
       },
@@ -254,7 +254,7 @@ export const updateTag = defineRoute(
   {
     requestBody: {
       content: {
-        [CONTENT_TYPES.FORM_ENCODED]: { schema: TagUpdateSchema },
+        [mimes.formEncoded]: { schema: TagUpdateSchema },
       },
       description: "Updated tag data",
       required: true,
@@ -311,7 +311,7 @@ export const updateTagForm = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Form to update tag",
       },

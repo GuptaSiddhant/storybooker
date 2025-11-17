@@ -21,7 +21,8 @@ import {
 } from "../ui/builds-pages";
 import { href, urlBuilder, URLS } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
-import { CONTENT_TYPES, QUERY_PARAMS } from "../utils/constants";
+import { QUERY_PARAMS } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import {
   checkIsHTMLRequest,
   checkIsHXRequest,
@@ -51,8 +52,8 @@ export const listBuilds = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
-          [CONTENT_TYPES.JSON]: { schema: BuildsListResultSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: BuildsListResultSchema },
         },
         description: "A list of builds.",
       },
@@ -79,7 +80,7 @@ export const createBuild = defineRoute(
   URLS.builds.create,
   {
     requestBody: {
-      content: { [CONTENT_TYPES.FORM_ENCODED]: { schema: BuildCreateSchema } },
+      content: { [mimes.formEncoded]: { schema: BuildCreateSchema } },
       description: "Data about the build",
       required: true,
     },
@@ -90,7 +91,7 @@ export const createBuild = defineRoute(
       ...commonErrorResponses(),
       201: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: BuildsGetResultSchema },
+          [mimes.json]: { schema: BuildsGetResultSchema },
         },
         description: "Build created successfully",
       },
@@ -145,7 +146,7 @@ export const createBuildsForm = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Form to create build",
       },
@@ -181,8 +182,8 @@ export const getBuild = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.JSON]: { schema: BuildsGetResultSchema },
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.json]: { schema: BuildsGetResultSchema },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Build details retrieved successfully",
       },
@@ -269,8 +270,8 @@ export const uploadBuild = defineRoute(
     description: "Upload build files in a compressed zip",
     requestBody: {
       content: {
-        [CONTENT_TYPES.FORM_MULTIPART]: { schema: BuildUploadFormBodySchema },
-        [CONTENT_TYPES.ZIP]: {
+        [mimes.formMultipart]: { schema: BuildUploadFormBodySchema },
+        [mimes.zip]: {
           example: "storybook.zip",
           schema: { format: "binary", type: "string" },
         },
@@ -317,7 +318,7 @@ export const uploadBuild = defineRoute(
 
     const redirectUrl = href(URLS.builds.id, { buildSHA, projectId });
 
-    if (contentType.startsWith(CONTENT_TYPES.FORM_MULTIPART)) {
+    if (contentType.startsWith(mimes.formMultipart)) {
       const { file, variant } = BuildUploadFormBodySchema.parse(
         urlSearchParamsToObject(await request.formData()),
       );
@@ -331,7 +332,7 @@ export const uploadBuild = defineRoute(
       return new Response(null, { status: 204 });
     }
 
-    if (contentType.startsWith(CONTENT_TYPES.ZIP)) {
+    if (contentType.startsWith(mimes.zip)) {
       const bodyError = validateBuildUploadZipBody(request);
       if (bodyError) {
         return await responseError(bodyError.message, bodyError.status);
@@ -351,7 +352,7 @@ export const uploadBuild = defineRoute(
     }
 
     return await responseError(
-      `Invalid content type, expected ${CONTENT_TYPES.ZIP} or ${CONTENT_TYPES.FORM_MULTIPART}.`,
+      `Invalid content type, expected ${mimes.zip} or ${mimes.formMultipart}.`,
       415,
     );
   },
@@ -371,7 +372,7 @@ export const uploadBuildForm = defineRoute(
       ...commonErrorResponses(),
       200: {
         content: {
-          [CONTENT_TYPES.HTML]: { example: "<!DOCTYPE html>" },
+          [mimes.html]: { example: "<!DOCTYPE html>" },
         },
         description: "Form to upload build",
       },

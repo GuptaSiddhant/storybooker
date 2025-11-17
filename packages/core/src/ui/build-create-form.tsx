@@ -1,5 +1,5 @@
 import { urlBuilder } from "../urls";
-import { CONTENT_TYPES } from "../utils/constants";
+import { mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
 import { LinkButton } from "./components/button";
 import { ErrorMessage } from "./components/error-message";
@@ -23,7 +23,7 @@ export function BuildCreateForm({
       hx-post={url}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
-      enctype={CONTENT_TYPES.FORM_ENCODED}
+      enctype={mimes.formEncoded}
     >
       <fieldset>
         <legend>{commonT.Details()}</legend>

@@ -10,32 +10,10 @@ export const DEFAULT_STATIC_DIRS = ["./public"];
 export const ISO_DATE_REGEXP =
   /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?/;
 
-export const CONTENT_TYPES = {
-  ANY: "*/*",
-  CSS: "text/css",
-  FORM_ENCODED: "application/x-www-form-urlencoded",
-  FORM_MULTIPART: "multipart/form-data",
-  HTML: "text/html",
-  JS: "text/javascript",
-  JSON: "application/json",
-  OCTET: "application/octet-stream",
-  ZIP: "application/zip",
-} as const;
-
 export const QUERY_PARAMS = {
   tagSlug: "tagSlug",
   uploadVariant: "uploadVariant",
 };
-
-export const HEADERS = {
-  accept: "Accept",
-  acceptLanguage: "Accept-Language",
-  cacheControl: "Cache-Control",
-  contentLength: "Content-Length",
-  contentType: "Content-Type",
-  cookie: "Cookie",
-  setCookie: "Set-Cookie",
-} as const;
 
 export const PATTERNS = {
   projectId: {

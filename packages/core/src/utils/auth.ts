@@ -9,7 +9,6 @@ export async function authenticateOrThrow(
   permission: StoryBookerPermission,
 ): Promise<void> {
   const { abortSignal, auth, logger, request, translation, user } = getStore();
-
   if (!auth) {
     // No authentication service configured, allow all actions
     return;
@@ -28,7 +27,7 @@ export async function authenticateOrThrow(
   try {
     const response = await auth.authorise(
       { permission: { ...permission, key }, user },
-      { abortSignal, logger, request: request.clone() },
+      { abortSignal, logger, request },
     );
 
     if (response === true) {

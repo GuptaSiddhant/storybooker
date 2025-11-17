@@ -1,5 +1,6 @@
-import { CONTENT_TYPES, HEADERS } from "../utils/constants";
+import SuperHeaders from "@remix-run/headers";
 import { getStore } from "../utils/store";
+import { mimes } from "./mime-utils";
 
 interface ErrorObject {
   message: string;
@@ -14,31 +15,33 @@ export function checkIsHXRequest(request?: Request): boolean {
 export function checkIsHTMLRequest(request?: Request): boolean {
   const req = request || getStore().request;
   const accept = req.headers.get("accept");
-  return !!accept?.includes(CONTENT_TYPES.HTML);
+  return !!accept?.includes(mimes.html);
 }
 
 export function checkIsJSONRequest(request?: Request): boolean {
   const req = request || getStore().request;
   const accept = req.headers.get("accept");
-  return !!accept?.includes(CONTENT_TYPES.JSON);
+  return !!accept?.includes(mimes.json);
 }
 
 export function validateIsFormEncodedRequest(
   request?: Request,
 ): undefined | ErrorObject {
   const store = getStore();
-  const req = request || store.request;
+  const { contentType } = request
+    ? new SuperHeaders(request.headers)
+    : store.headers;
 
-  const contentType = req.headers.get(HEADERS.contentType);
   if (!contentType) {
     return {
       message: store.translation.errorMessages.header_content_length_required,
       status: 400,
     };
   }
-  if (!contentType.includes(CONTENT_TYPES.FORM_ENCODED)) {
+
+  if (!contentType.mediaType?.includes(mimes.formEncoded)) {
     return {
-      message: `${store.translation.errorMessages.header_content_type_invalid}, ${store.translation.dictionary.expected} ${CONTENT_TYPES.FORM_ENCODED}`,
+      message: `${store.translation.errorMessages.header_content_type_invalid}, ${store.translation.dictionary.expected} ${mimes.formEncoded}`,
       status: 415,
     };
   }
@@ -49,7 +52,7 @@ export function validateIsFormEncodedRequest(
 export function validateBuildUploadZipBody(
   request: Request,
 ): ErrorObject | undefined {
-  const { translation } = getStore();
+  const { translation, headers: storeHeaders } = getStore();
   const { body } = request;
 
   if (!body) {
@@ -58,14 +61,18 @@ export function validateBuildUploadZipBody(
       status: 400,
     };
   }
-  const contentLength = request.headers.get(HEADERS.contentLength);
-  if (!contentLength) {
+
+  const { contentLength } = request
+    ? new SuperHeaders(request.headers)
+    : storeHeaders;
+
+  if (contentLength === null) {
     return {
       message: translation.errorMessages.header_content_length_required,
       status: 411,
     };
   }
-  if (Number.parseInt(contentLength, 10) === 0) {
+  if (contentLength === 0) {
     return {
       message: translation.errorMessages.header_content_length_non_zero,
       status: 400,
@@ -81,7 +88,7 @@ export function parseRequestCookieHeader(
   const cookieHeader =
     typeof cookieHeaderOrRequest === "string"
       ? cookieHeaderOrRequest
-      : new Headers(cookieHeaderOrRequest.headers).get(HEADERS.cookie);
+      : new Headers(cookieHeaderOrRequest.headers).get("cookie");
 
   const cookies: Record<string, string> = {};
 
