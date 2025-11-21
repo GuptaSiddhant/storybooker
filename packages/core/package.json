@@ -63,6 +63,10 @@
       "source": "./src/utils/mime-utils.ts",
       "default": "./dist/mimetype.js"
     },
+    "./router": {
+      "source": "./src/routers/_app-router.ts",
+      "default": "./dist/router.js"
+    },
     "./translations": {
       "source": "./src/ui/translations/index.ts",
       "default": "./dist/translations.js"
@@ -79,12 +83,14 @@
       "source": "./src/utils/index.ts",
       "default": "./dist/utils.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./openapi.json": "./dist/openapi.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
       "./mimetype": "./dist/mimetype.js",
+      "./router": "./dist/router.js",
       "./translations": "./dist/translations.js",
       "./translations/en-gb": "./dist/translations/en-gb.js",
       "./types": "./dist/types.js",

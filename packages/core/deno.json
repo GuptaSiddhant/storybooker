@@ -17,6 +17,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./mimetype": "./src/utils/mime-utils.ts",
+    "./router": "./src/routers/_app-router.ts",
     "./translations": "./src/ui/translations/index.ts",
     "./translations/en-gb": "./src/ui/translations/en-gb.ts",
     "./types": "./src/types.ts",

@@ -7,6 +7,7 @@ export default defineConfig({
   entry: {
     index: "./src/index.ts",
     mimetype: "./src/utils/mime-utils.ts",
+    router: "./src/routers/_app-router.ts",
     translations: "./src/ui/translations/index.ts",
     "translations/en-gb": "./src/ui/translations/en-gb.ts",
     types: "./src/types.ts",
@@ -14,7 +15,7 @@ export default defineConfig({
   },
   exports: { devExports: "source" },
   format: ["esm"],
-  // onSuccess,
+  onSuccess,
   platform: "node",
   sourcemap: true,
   treeshake: true,
@@ -25,8 +26,16 @@ async function onSuccess(config: ResolvedOptions): Promise<void> {
   const { generateOpenApiSpec } = await import(
     "../../scripts/gen-openapi-json.ts"
   );
-  const { router, SERVICE_NAME } = await import("./dist/index.js");
-  await generateOpenApiSpec(config, router.paths, SERVICE_NAME);
+  const { appRouter } = await import("./dist/router.js");
+  const { SERVICE_NAME } = await import("./dist/index.js");
+  const pkgJson = await import("./package.json", {
+    with: { type: "json" },
+  });
+
+  await generateOpenApiSpec(config, appRouter, {
+    title: SERVICE_NAME,
+    version: pkgJson.default.version,
+  });
 
   const { updateDenoJsonToMatchPkgJson } = await import(
     "../../scripts/jsr-utils.ts"

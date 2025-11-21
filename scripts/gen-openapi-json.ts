@@ -1,21 +1,18 @@
+import type { OpenAPIHono } from "@hono/zod-openapi";
+import type { Hono } from "hono";
+import type { oas31 } from "openapi3-ts";
 import type { ResolvedOptions } from "tsdown";
-import type { ZodOpenApiPathItemObject } from "zod-openapi";
 
 export async function generateOpenApiSpec(
   config: ResolvedOptions | undefined,
-  paths: Record<string, ZodOpenApiPathItemObject>,
-  SERVICE_NAME: string,
+  router: Hono,
+  info: oas31.InfoObject,
 ): Promise<void> {
-  const { createDocument } = await import("zod-openapi");
   const { readFile, writeFile } = await import("node:fs/promises");
 
-  const openAPISpec = createDocument({
-    components: {},
-    info: { title: SERVICE_NAME, version: "" },
+  const openAPISpec = (router as OpenAPIHono).getOpenAPI31Document({
+    info,
     openapi: "3.1.0",
-    paths,
-    security: [],
-    tags: [],
   });
 
   const outputFilepath = "./dist/openapi.json";
