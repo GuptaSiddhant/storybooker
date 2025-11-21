@@ -1,6 +1,6 @@
 import type { ProjectType } from "../models/projects-schema";
 import type { TagType } from "../models/tags-schema";
-import { href, urlBuilder, URLS } from "../urls";
+import { urlBuilder } from "../urls";
 import { getStore } from "../utils/store";
 import { urlJoin } from "../utils/url-utils";
 import { LatestBuild } from "./components/latest-build";
@@ -48,12 +48,7 @@ export function TagsTable({
           header: commonT.Slug(),
           cell: (item) => {
             return (
-              <a
-                href={href(URLS.tags.id, {
-                  projectId: project.id,
-                  tagSlug: item.slug,
-                })}
-              >
+              <a href={urlBuilder.tagDetails(project.id, item.id)}>
                 {item.slug}
               </a>
             );
@@ -123,12 +118,7 @@ export function TagsTable({
           header: commonT.Actions(),
           cell: (item) => {
             return (
-              <a
-                href={href(URLS.tags.id, {
-                  projectId: project.id,
-                  tagSlug: item.id,
-                })}
-              >
+              <a href={urlBuilder.tagDetails(project.id, item.id)}>
                 {commonT.View()} {commonT.Builds()}
               </a>
             );

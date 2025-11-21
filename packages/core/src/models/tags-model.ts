@@ -5,10 +5,10 @@ import { Model, type BaseModel, type ListOptions } from "./~model";
 import { BuildsModel } from "./builds-model";
 import { ProjectsModel } from "./projects-model";
 import {
-  TagCreateSchema,
   TagSchema,
-  TagUpdateSchema,
+  type TagCreateType,
   type TagType,
+  type TagUpdateType,
 } from "./tags-schema";
 
 export class TagsModel extends Model<TagType> {
@@ -28,14 +28,13 @@ export class TagsModel extends Model<TagType> {
     return TagSchema.array().parse(items);
   }
 
-  async create(data: unknown, withBuild = false): Promise<TagType> {
-    const parsedData = TagCreateSchema.parse(data);
-    this.log("Create tag '%s'...", parsedData.value);
+  async create(data: TagCreateType, withBuild = false): Promise<TagType> {
+    this.log("Create tag '%s'...", data.value);
 
-    const slug = TagsModel.createSlug(parsedData.value);
+    const slug = TagsModel.createSlug(data.value);
     const now = new Date().toISOString();
     const tag: TagType = {
-      ...parsedData,
+      ...data,
       buildsCount: withBuild ? 1 : 0,
       createdAt: now,
       id: slug,
@@ -72,14 +71,13 @@ export class TagsModel extends Model<TagType> {
     );
   }
 
-  async update(id: string, data: unknown): Promise<void> {
+  async update(id: string, data: TagUpdateType): Promise<void> {
     this.log("Update tag '%s'...", id);
-    const parsedData = TagUpdateSchema.parse(data);
 
     await this.database.updateDocument(
       this.collectionId,
       id,
-      { ...parsedData, updatedAt: new Date().toISOString() },
+      { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
 

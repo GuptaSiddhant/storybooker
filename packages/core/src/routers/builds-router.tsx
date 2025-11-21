@@ -92,7 +92,7 @@ export const buildsRouter = new OpenAPIHono()
       tags: [buildTag],
       request: {
         params: projectIdPathParams,
-        query: z.object({ [QUERY_PARAMS.tagSlug]: z.string().optional() }),
+        query: z.object({ [QUERY_PARAMS.tagId]: z.string().optional() }),
       },
       responses: {
         200: {
@@ -111,11 +111,9 @@ export const buildsRouter = new OpenAPIHono()
       });
 
       const project = await new ProjectsModel().get(projectId);
-      const tagSlug = context.req.query(QUERY_PARAMS.tagSlug);
+      const tagId = context.req.query(QUERY_PARAMS.tagId);
 
-      return context.html(
-        <BuildCreatePage project={project} tagSlug={tagSlug} />,
-      );
+      return context.html(<BuildCreatePage project={project} tagId={tagId} />);
     },
   )
   .openapi(
@@ -267,7 +265,7 @@ export const buildsRouter = new OpenAPIHono()
           return responseRedirect(urlBuilder.buildsList(projectId), 303);
         }
 
-        return new Response(null, { status: 202 });
+        return new Response(null, { status: 204 });
       } catch {
         return context.notFound();
       }
@@ -319,7 +317,7 @@ export const buildsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Upload project action",
+      summary: "Upload build action",
       method: "post",
       path: "/projects/{projectId}/builds/{buildId}/upload",
       tags: [buildTag],

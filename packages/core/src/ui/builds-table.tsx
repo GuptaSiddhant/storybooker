@@ -69,7 +69,7 @@ export function BuildsTable({
                         <>
                           <a
                             safe
-                            href={urlBuilder.tagSlug(project.id, slug)}
+                            href={urlBuilder.tagDetails(project.id, slug)}
                             title={slug}
                           >
                             {tag ? `${tag.value} (${tag.type})` : slug}

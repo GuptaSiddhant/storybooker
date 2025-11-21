@@ -4,6 +4,7 @@ import { BuildSHASchema, TagSlugSchema } from "./~shared-schema";
 export { TagSlugSchema };
 
 export const TagTypes = ["branch", "pr", "jira"] as const;
+export type TagVariant = (typeof TagTypes)[number];
 
 export type TagType = z.infer<typeof TagSchema>;
 export const TagSchema = z

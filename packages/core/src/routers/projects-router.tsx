@@ -217,7 +217,7 @@ export const projectsRouter = new OpenAPIHono()
           return responseRedirect(urlBuilder.projectsList(), 303);
         }
 
-        return new Response(null, { status: 202 });
+        return new Response(null, { status: 204 });
       } catch {
         return context.notFound();
       }

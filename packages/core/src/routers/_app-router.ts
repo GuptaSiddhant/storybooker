@@ -6,10 +6,11 @@ import { handleStaticFileRoute } from "../handlers/handle-static-file-route";
 import { buildsRouter } from "./builds-router";
 import { projectsRouter } from "./projects-router";
 import { rootRouter } from "./root-router";
+import { tagsRouter } from "./tags-router";
 
 export const appRouter = new OpenAPIHono({ strict: false })
-  .doc("/openapi.json", {
-    openapi: "3.0.0",
+  .doc31("/openapi.json", {
+    openapi: "3.1.0",
     info: { version: "1.0.0", title: SERVICE_NAME },
   })
   .use(logger())
@@ -17,6 +18,7 @@ export const appRouter = new OpenAPIHono({ strict: false })
   .route("/", rootRouter)
   .route("/", projectsRouter)
   .route("/", buildsRouter)
-  .get("/{filepath{.+}}", () => handleStaticFileRoute());
+  .route("/", tagsRouter)
+  .get("/:filepath{.+}", () => handleStaticFileRoute());
 
 export type AppRouter = typeof appRouter;

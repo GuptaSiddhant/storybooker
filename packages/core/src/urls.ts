@@ -3,6 +3,7 @@
 import path from "node:path";
 import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
 import type { BuildUploadVariant } from "./models/builds-schema";
+import type { TagVariant } from "./models/tags-schema";
 import { getStore } from "./utils/store";
 import { linkRoute, urlJoin } from "./utils/url-utils";
 
@@ -19,13 +20,6 @@ export const URLS = {
   tasks: {
     purge: "tasks/purge",
     processZip: "tasks/process-zip",
-  },
-  tags: {
-    all: "projects/:projectId/tags",
-    create: "projects/:projectId/tags/create",
-    id: "projects/:projectId/tags/:tagSlug",
-    update: "projects/:projectId/tags/:tagSlug/update",
-    latest: "projects/:projectId/tags/:tagSlug/latest",
   },
   serve: {
     all: "_/:projectId/:buildSHA/*filepath",
@@ -56,7 +50,7 @@ export const urlBuilder = {
   },
   staticFile(filepath: string): string {
     return linkRoute((client) =>
-      client["{filepath{.+}}"].$url({ param: { filepath } }),
+      client[":filepath{.+}"].$url({ param: { filepath } }),
     );
   },
 
@@ -101,11 +95,11 @@ export const urlBuilder = {
       }),
     );
   },
-  buildCreate: (projectId: string, tagSlug?: string): string => {
+  buildCreate: (projectId: string, tagId?: string): string => {
     return linkRoute((client) =>
       client.projects[":projectId"].builds.create.$url({
         param: { projectId },
-        query: { tagSlug },
+        query: { tagId },
       }),
     );
   },
@@ -130,21 +124,49 @@ export const urlBuilder = {
   },
 
   // tags
-  allTags: (projectId: string): string => {
-    return href(URLS.tags.all, { projectId });
+  tagsList: (projectId: string, type?: TagVariant): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].tags.$url({
+        param: { projectId },
+        query: { type },
+      }),
+    );
   },
   tagCreate: (projectId: string): string => {
-    return href(URLS.tags.create, { projectId });
+    return linkRoute((client) =>
+      client.projects[":projectId"].tags.create.$url({
+        param: { projectId },
+      }),
+    );
   },
-  tagSlug: (projectId: string, tagSlug: string): string => {
-    return href(URLS.tags.id, { projectId, tagSlug });
+  tagDetails: (projectId: string, tagId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].tags[":tagId"].$url({
+        param: { projectId, tagId },
+      }),
+    );
   },
-  tagSlugUpdate: (projectId: string, tagSlug: string): string => {
-    return href(URLS.tags.update, { projectId, tagSlug });
+  tagDelete: (projectId: string, tagId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].tags[":tagId"].delete.$url({
+        param: { projectId, tagId },
+      }),
+    );
   },
-  tagSlugLatest: (projectId: string, tagSlug: string): string => {
-    return href(URLS.tags.latest, { projectId, tagSlug });
+  tagUpdate: (projectId: string, tagId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].tags[":tagId"].update.$url({
+        param: { projectId, tagId },
+      }),
+    );
   },
+  // tagLatest: (projectId: string, tagId: string): string => {
+  //   return linkRoute((client) =>
+  //     client.projects[":projectId"].tags[":tagId"].latest.$url({
+  //       param: { projectId, tagId },
+  //     }),
+  //   );
+  // },
 
   // tasks
   taskProcessZip: (

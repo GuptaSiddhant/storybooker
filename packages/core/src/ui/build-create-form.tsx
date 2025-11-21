@@ -7,12 +7,12 @@ import { commonT } from "./translations/i18n";
 
 export interface BuildFormProps {
   projectId: string;
-  tagSlug?: string;
+  tagId?: string;
 }
 
 export function BuildCreateForm({
   projectId,
-  tagSlug,
+  tagId,
 }: BuildFormProps): JSXElement {
   const { url } = getStore();
 
@@ -66,7 +66,7 @@ export function BuildCreateForm({
                 id={id}
                 name="tags"
                 required={index === 0}
-                value={index === 0 ? tagSlug : undefined}
+                value={index === 0 ? tagId : undefined}
               />
               {index === 0 ? (
                 <span class="description">{commonT.Required()}</span>

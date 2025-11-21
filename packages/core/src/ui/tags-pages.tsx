@@ -2,7 +2,6 @@ import type { BuildType } from "../models/builds-schema";
 import type { ProjectType } from "../models/projects-schema";
 import { TagTypes, type TagType } from "../models/tags-schema";
 import { urlBuilder } from "../urls";
-import { getStore } from "../utils/store";
 import { BuildsTable } from "./builds-table";
 import { DestructiveButton, LinkButton } from "./components/button";
 import {
@@ -17,14 +16,14 @@ import { TagForm } from "./tag-form";
 import { TagsTable } from "./tags-table";
 import { commonT } from "./translations/i18n";
 
-export function renderTagsPage({
+export function TagsListPage({
   tags,
   project,
   defaultType,
 }: {
   tags: TagType[];
   project: ProjectType;
-  defaultType: string | null;
+  defaultType: string | null | undefined;
 }): JSXElement {
   const title = `${commonT.All()} ${commonT.Tags()} ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
 
@@ -67,7 +66,7 @@ export function renderTagsPage({
             <button style={{ height: "max-content" }}>
               {commonT.Filter()}
             </button>
-            <LinkButton href={urlBuilder.allTags(project.id)} class="outline">
+            <LinkButton href={urlBuilder.tagsList(project.id)} class="outline">
               {commonT.Clear()}
             </LinkButton>
           </div>
@@ -78,7 +77,7 @@ export function renderTagsPage({
   );
 }
 
-export function renderTagDetailsPage({
+export function TagDetailsPage({
   tag,
   project,
   builds,
@@ -87,7 +86,7 @@ export function renderTagDetailsPage({
   project: ProjectType;
   builds: BuildType[];
 }): JSXElement {
-  const { url } = getStore();
+  const deleteUrl = urlBuilder.tagDelete(project.id, tag.id);
 
   return (
     <DocumentLayout title={`${commonT.Tag()} ${tag.value}`}>
@@ -98,11 +97,13 @@ export function renderTagDetailsPage({
             <LinkButton href={urlBuilder.buildCreate(project.id, tag.id)}>
               + {commonT.Create()} {commonT.Build()}
             </LinkButton>
-            <LinkButton href={urlBuilder.tagSlugUpdate(project.id, tag.id)}>
+            <LinkButton href={urlBuilder.tagUpdate(project.id, tag.id)}>
               {commonT.Edit()}
             </LinkButton>
             <form
-              hx-delete={url}
+              method="post"
+              action={deleteUrl}
+              hx-post={deleteUrl}
               hx-confirm={commonT.confirmDelete(commonT.Tag(), tag.slug)}
             >
               <DestructiveButton>{commonT.Delete()}</DestructiveButton>
@@ -128,7 +129,7 @@ export function renderTagDetailsPage({
   );
 }
 
-export function renderTagCreatePage({
+export function TagCreatePage({
   project,
 }: {
   project: ProjectType;
@@ -140,7 +141,7 @@ export function renderTagCreatePage({
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectDetails(project.id), label: project.name },
-          { href: urlBuilder.allTags(project.id), label: commonT.Tags() },
+          { href: urlBuilder.tagsList(project.id), label: commonT.Tags() },
         ]}
       >
         {title}
@@ -154,7 +155,7 @@ export function renderTagCreatePage({
   );
 }
 
-export function renderTagUpdatePage({
+export function TagUpdatePage({
   tag,
   projectId,
 }: {
@@ -168,8 +169,8 @@ export function renderTagUpdatePage({
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectDetails(projectId), label: projectId },
-          { href: urlBuilder.allTags(projectId), label: commonT.Tags() },
-          { href: urlBuilder.tagSlug(projectId, tag.id), label: tag.id },
+          { href: urlBuilder.tagsList(projectId), label: commonT.Tags() },
+          { href: urlBuilder.tagDetails(projectId, tag.id), label: tag.id },
         ]}
       >
         {title}

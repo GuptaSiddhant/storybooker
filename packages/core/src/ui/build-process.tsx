@@ -76,7 +76,7 @@ function BuildVariantStatus({
 
       {hasUpdatePermission ? (
         <form
-          method="POST"
+          method="post"
           action={url}
           hx-post={url}
           hx-disabled-elt="find button"

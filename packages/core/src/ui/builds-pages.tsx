@@ -5,7 +5,6 @@ import type {
 } from "../models/builds-schema";
 import type { ProjectType } from "../models/projects-schema";
 import { urlBuilder } from "../urls";
-import { getStore } from "../utils/store";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildLinksFooter } from "./build-links";
 import { BuildProcessStatus } from "./build-process";
@@ -65,13 +64,14 @@ export function BuildDetailsPage({
   hasUpdatePermission: boolean;
   stories: BuildStoryType[] | null;
 }): JSXElement {
-  const { url } = getStore();
   const shouldShowUploadButton =
     hasUpdatePermission &&
     (build.coverage === "none" ||
       build.screenshots === "none" ||
       build.storybook === "none" ||
       build.testReport === "none");
+
+  const deleteUrl = urlBuilder.buildDelete(projectId, build.id);
 
   return (
     <DocumentLayout title={build.sha.slice(0, 7)}>
@@ -86,7 +86,9 @@ export function BuildDetailsPage({
             ) : null}
             {hasDeletePermission ? (
               <form
-                hx-delete={url}
+                method="post"
+                action={deleteUrl}
+                hx-post={deleteUrl}
                 hx-confirm={commonT.confirmDelete(commonT.Build(), build.sha)}
               >
                 <DestructiveButton>{commonT.Delete()}</DestructiveButton>
@@ -124,10 +126,10 @@ export function BuildDetailsPage({
 
 export function BuildCreatePage({
   project,
-  tagSlug,
+  tagId,
 }: {
   project: ProjectType;
-  tagSlug?: string;
+  tagId?: string;
 }): JSXElement {
   const title = `${commonT.Create()} ${commonT.Build()}`;
 
@@ -142,7 +144,7 @@ export function BuildCreatePage({
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <BuildCreateForm projectId={project.id} tagSlug={tagSlug} />
+        <BuildCreateForm projectId={project.id} tagId={tagId} />
       </DocumentMain>
       <DocumentSidebar></DocumentSidebar>
       <DocumentUserSection />

@@ -75,8 +75,8 @@ export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
         <LinkButton
           href={
             tag
-              ? urlBuilder.tagSlug(projectId, tag.slug)
-              : urlBuilder.allTags(projectId)
+              ? urlBuilder.tagDetails(projectId, tag.slug)
+              : urlBuilder.tagsList(projectId)
           }
         >
           {commonT.Cancel()}

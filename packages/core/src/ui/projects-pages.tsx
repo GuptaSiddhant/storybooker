@@ -3,7 +3,6 @@ import type { ProjectType } from "../models/projects-schema";
 import type { TagType } from "../models/tags-schema";
 import { TagsTable } from "../ui/tags-table";
 import { href, urlBuilder, URLS } from "../urls";
-import { getStore } from "../utils/store";
 import { BuildsTable } from "./builds-table";
 import { DestructiveButton, LinkButton } from "./components/button";
 import {
@@ -51,7 +50,7 @@ export function ProjectsPage({
         <ProjectsTable projects={projects} caption={""} />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
-        <a href={href(URLS.projects.create)}>
+        <a href={urlBuilder.projectCreate()}>
           {commonT.Create()} {commonT.Project()}
         </a>
       </DocumentSidebar>
@@ -69,7 +68,7 @@ export function ProjectDetailsPage({
   recentBuilds: BuildType[];
   recentTags: TagType[];
 }): JSXElement {
-  const { url } = getStore();
+  const deleteUrl = urlBuilder.projectDelete(project.id);
 
   return (
     <DocumentLayout title={project.name}>
@@ -92,7 +91,9 @@ export function ProjectDetailsPage({
               <DestructiveButton>{commonT.Purge()}</DestructiveButton>
             </form>
             <form
-              hx-delete={url}
+              method="post"
+              action={deleteUrl}
+              hx-post={deleteUrl}
               hx-confirm={commonT.confirmDelete(
                 commonT.Project(),
                 project.name,
@@ -111,7 +112,7 @@ export function ProjectDetailsPage({
           project={project}
           caption={`${commonT.Recent()} ${commonT.Tags()}`}
           toolbar={
-            <a href={urlBuilder.allTags(project.id)}>{commonT.ViewAll()}</a>
+            <a href={urlBuilder.tagsList(project.id)}>{commonT.ViewAll()}</a>
           }
         />
         <BuildsTable
