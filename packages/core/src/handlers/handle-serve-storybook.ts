@@ -45,7 +45,7 @@ export async function handleServeStoryBook({
       const bodyWithBackButton = data.replace(
         `</body>`,
         `
-  <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
+  <div><a id="view-all" href="${urlBuilder.buildsList(projectId)}"
   style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
   ← ${SERVICE_NAME}
   </a></div>

@@ -81,7 +81,7 @@ export function BuildCreateForm({
           {commonT.Create()} {commonT.Build()}
         </button>
         <button type="reset">{commonT.Reset()}</button>
-        <LinkButton href={urlBuilder.allBuilds(projectId)}>
+        <LinkButton href={urlBuilder.buildsList(projectId)}>
           {commonT.Cancel()}
         </LinkButton>
       </div>

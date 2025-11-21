@@ -23,7 +23,7 @@ import {
 import { RawDataList } from "./components/raw-data";
 import { commonT, getT } from "./translations/i18n";
 
-export function renderBuildsPage({
+export function BuildsListPage({
   builds,
   project,
 }: {
@@ -52,7 +52,7 @@ export function renderBuildsPage({
   );
 }
 
-export function renderBuildDetailsPage({
+export function BuildDetailsPage({
   build,
   projectId,
   hasDeletePermission,
@@ -122,7 +122,7 @@ export function renderBuildDetailsPage({
   );
 }
 
-export function renderBuildCreatePage({
+export function BuildCreatePage({
   project,
   tagSlug,
 }: {
@@ -135,8 +135,8 @@ export function renderBuildCreatePage({
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.projectId(project.id), label: project.name },
-          { href: urlBuilder.allBuilds(project.id), label: commonT.Builds() },
+          { href: urlBuilder.projectDetails(project.id), label: project.name },
+          { href: urlBuilder.buildsList(project.id), label: commonT.Builds() },
         ]}
       >
         {title}
@@ -150,7 +150,7 @@ export function renderBuildCreatePage({
   );
 }
 
-export function renderBuildUploadPage({
+export function BuildUploadPage({
   build,
   projectId,
   uploadVariant,
@@ -165,10 +165,10 @@ export function renderBuildUploadPage({
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.projectId(projectId), label: projectId },
-          { href: urlBuilder.allBuilds(projectId), label: commonT.Builds() },
+          { href: urlBuilder.projectDetails(projectId), label: projectId },
+          { href: urlBuilder.buildsList(projectId), label: commonT.Builds() },
           {
-            href: urlBuilder.buildSHA(projectId, build.id),
+            href: urlBuilder.buildDetails(projectId, build.id),
             label: build.id.slice(0, 7),
           },
         ]}

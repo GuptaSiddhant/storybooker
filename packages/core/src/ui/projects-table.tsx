@@ -32,7 +32,7 @@ export function ProjectsTable({
             return (
               <a
                 safe
-                href={urlBuilder.projectId(item.id)}
+                href={urlBuilder.projectDetails(item.id)}
                 style={{
                   fontWeight: "bold",
                   minWidth: "12ch",

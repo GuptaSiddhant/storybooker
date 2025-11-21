@@ -127,10 +127,13 @@ export const createBuild = defineRoute(
 
     const data = urlSearchParamsToObject(await request.formData());
     const build = await new BuildsModel(projectId).create(data);
-    const url = urlBuilder.buildSHA(projectId, build.id);
+    const url = urlBuilder.buildDetails(projectId, build.id);
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(urlBuilder.buildSHA(projectId, build.id), 303);
+      return responseRedirect(
+        urlBuilder.buildDetails(projectId, build.id),
+        303,
+      );
     }
 
     const result: BuildsGetResultType = { build, url };
@@ -256,7 +259,7 @@ export const deleteBuild = defineRoute(
     await new BuildsModel(projectId).delete(buildSHA, true);
 
     if (checkIsHTMLRequest() || checkIsHXRequest()) {
-      return responseRedirect(urlBuilder.allBuilds(projectId), 303);
+      return responseRedirect(urlBuilder.buildsList(projectId), 303);
     }
 
     return new Response(null, { status: 204 });

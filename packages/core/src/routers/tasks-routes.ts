@@ -77,7 +77,7 @@ export const processZip = defineRoute(
       await handleProcessZip(projectId, sha, variant);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(urlBuilder.buildSHA(projectId, sha), 303);
+        return responseRedirect(urlBuilder.buildDetails(projectId, sha), 303);
       }
 
       return new Response(null, { status: 204 });

@@ -50,7 +50,7 @@ export function BuildsTable({
           header: "SHA",
           cell: (item) => {
             return (
-              <a safe href={urlBuilder.buildSHA(project.id, item.sha)}>
+              <a safe href={urlBuilder.buildDetails(project.id, item.sha)}>
                 {item.sha.slice(0, 7)}
               </a>
             );

@@ -22,7 +22,7 @@ function ProjectCard({ project }: { project: ProjectType }): JSXElement {
   return (
     <Card>
       <a
-        href={urlBuilder.projectId(project.id)}
+        href={urlBuilder.projectDetails(project.id)}
         style={{ fontSize: "1.5em", fontWeight: "bold" }}
       >
         {project.name}

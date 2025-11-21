@@ -12,11 +12,11 @@ import { mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
 import { Model, type BaseModel, type ListOptions } from "./~model";
 import {
-  BuildCreateSchema,
   BuildSchema,
-  BuildUpdateSchema,
+  type BuildCreateType,
   type BuildStoryType,
   type BuildType,
+  type BuildUpdateType,
   type BuildUploadVariant,
 } from "./builds-schema";
 import { ProjectsModel } from "./projects-model";
@@ -51,8 +51,8 @@ export class BuildsModel extends Model<BuildType> {
     return BuildSchema.array().parse(items);
   }
 
-  async create(data: unknown): Promise<BuildType> {
-    const { tags: parsedTags, sha, ...rest } = BuildCreateSchema.parse(data);
+  async create(data: BuildCreateType): Promise<BuildType> {
+    const { tags: parsedTags, sha, ...rest } = data;
     this.log("Create build '%s'...", sha);
 
     const tags = Array.isArray(parsedTags) ? parsedTags : parsedTags.split(",");
@@ -118,13 +118,13 @@ export class BuildsModel extends Model<BuildType> {
     );
   }
 
-  async update(id: string, data: Partial<BuildType>): Promise<void> {
+  async update(id: string, data: BuildUpdateType): Promise<void> {
     this.log("Update build '%s''...", id);
-    const parsedData = BuildUpdateSchema.parse(data);
+
     await this.database.updateDocument(
       this.collectionId,
       id,
-      { ...parsedData, updatedAt: new Date().toISOString() },
+      { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
 

@@ -128,7 +128,7 @@ export const projectsRouter = new OpenAPIHono()
       const project = await new ProjectsModel().create(data);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(urlBuilder.projectId(project.id), 303);
+        return responseRedirect(urlBuilder.projectDetails(project.id), 303);
       }
 
       return context.json({ project });
@@ -138,12 +138,12 @@ export const projectsRouter = new OpenAPIHono()
     createRoute({
       summary: "Project details",
       method: "get",
-      path: "/projects/:projectId",
+      path: "/projects/{projectId}",
       tags: [projectTag],
       request: { params: projectIdPathParams },
       responses: {
         200: {
-          description: "Project details retrieved successfully",
+          description: "Details of the project",
           content: {
             [mimes.json]: { schema: ProjectGetResultSchema },
             ...openapiResponsesHtml,
@@ -189,7 +189,7 @@ export const projectsRouter = new OpenAPIHono()
     createRoute({
       summary: "Delete project action",
       method: "post",
-      path: "/projects/:projectId/delete",
+      path: "/projects/{projectId}/delete",
       tags: [projectTag],
       request: { params: projectIdPathParams },
       responses: {
@@ -227,7 +227,7 @@ export const projectsRouter = new OpenAPIHono()
     createRoute({
       summary: "Update project UI",
       method: "get",
-      path: "/projects/:projectId/update",
+      path: "/projects/{projectId}/update",
       tags: [projectTag],
       request: { params: projectIdPathParams },
       responses: {
@@ -258,7 +258,7 @@ export const projectsRouter = new OpenAPIHono()
     createRoute({
       summary: "Update project action",
       method: "post",
-      path: "/projects/:projectId/update",
+      path: "/projects/{projectId}/update",
       tags: [projectTag],
       request: {
         params: projectIdPathParams,
@@ -292,7 +292,7 @@ export const projectsRouter = new OpenAPIHono()
       await new ProjectsModel().update(projectId, data);
 
       if (checkIsHTMLRequest() || checkIsHXRequest()) {
-        return responseRedirect(urlBuilder.projectId(projectId), 303);
+        return responseRedirect(urlBuilder.projectDetails(projectId), 303);
       }
 
       return new Response(null, { status: 202 });

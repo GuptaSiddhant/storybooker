@@ -137,7 +137,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
         <LinkButton
           href={
             project
-              ? urlBuilder.projectId(project.id)
+              ? urlBuilder.projectDetails(project.id)
               : urlBuilder.projectsList()
           }
         >

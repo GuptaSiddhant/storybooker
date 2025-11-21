@@ -78,7 +78,7 @@ export function BuildUploadForm({
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="submit">{commonT.Upload()} file</button>
         <button type="reset">{commonT.Reset()}</button>
-        <LinkButton href={urlBuilder.buildSHA(projectId, build.id)}>
+        <LinkButton href={urlBuilder.buildDetails(projectId, build.id)}>
           {commonT.Cancel()}
         </LinkButton>
       </div>

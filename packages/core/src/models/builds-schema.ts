@@ -32,7 +32,7 @@ export const BuildSchema = z
     storybook: z.enum(buildContentAvailabilityOptions),
     testReport: z.enum(buildContentAvailabilityOptions),
   })
-  .meta({ id: "build", title: "StoryBooker Build" });
+  .meta({ id: "Build", description: "A StoryBooker Build" });
 
 export type BuildCreateType = z.infer<typeof BuildCreateSchema>;
 /** @private */
@@ -71,7 +71,7 @@ export const BuildUploadQueryParamsSchema = z.object({
   variant: z.enum(buildUploadVariants).default("storybook"),
 });
 export const BuildUploadFormBodySchema = z.object({
-  file: z.file(),
+  file: z.file().openapi({ type: "object" }),
   variant: z.enum(buildUploadVariants).default("storybook"),
 });
 

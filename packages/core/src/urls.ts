@@ -3,7 +3,6 @@
 import path from "node:path";
 import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
 import type { BuildUploadVariant } from "./models/builds-schema";
-import { QUERY_PARAMS } from "./utils/constants";
 import { getStore } from "./utils/store";
 import { linkRoute, urlJoin } from "./utils/url-utils";
 
@@ -20,12 +19,6 @@ export const URLS = {
   tasks: {
     purge: "tasks/purge",
     processZip: "tasks/process-zip",
-  },
-  builds: {
-    all: "projects/:projectId/builds",
-    create: "projects/:projectId/builds/create",
-    id: "projects/:projectId/builds/:buildSHA",
-    upload: "projects/:projectId/builds/:buildSHA/upload",
   },
   tags: {
     all: "projects/:projectId/tags",
@@ -63,7 +56,7 @@ export const urlBuilder = {
   },
   staticFile(filepath: string): string {
     return linkRoute((client) =>
-      client[":filepath{.+}"].$url({ param: { filepath } }),
+      client["{filepath{.+}}"].$url({ param: { filepath } }),
     );
   },
 
@@ -79,46 +72,61 @@ export const urlBuilder = {
   projectCreate(): string {
     return linkRoute((client) => client.projects.create.$url());
   },
-  projectId(projectId: string): string {
+  projectDetails(projectId: string): string {
     return linkRoute((client) =>
       client.projects[":projectId"].$url({ param: { projectId } }),
     );
   },
-  projectIdUpdate(projectId: string): string {
+  projectUpdate(projectId: string): string {
     return linkRoute((client) =>
       client.projects[":projectId"].update.$url({ param: { projectId } }),
     );
   },
-  projectIdDelete(projectId: string): string {
+  projectDelete(projectId: string): string {
     return linkRoute((client) =>
       client.projects[":projectId"].delete.$url({ param: { projectId } }),
     );
   },
 
   // builds
-  allBuilds: (projectId: string): string => {
-    return href(URLS.builds.all, { projectId });
+  buildsList: (projectId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].builds.$url({ param: { projectId } }),
+    );
   },
-  buildSHA: (projectId: string, sha: string): string => {
-    return href(URLS.builds.id, { buildSHA: sha, projectId });
+  buildDetails: (projectId: string, buildId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].builds[":buildId"].$url({
+        param: { buildId, projectId },
+      }),
+    );
   },
   buildCreate: (projectId: string, tagSlug?: string): string => {
-    const searchParams: Record<string, string> = {};
-    if (tagSlug) {
-      searchParams[QUERY_PARAMS.tagSlug] = tagSlug;
-    }
-    return href(URLS.builds.create, { projectId }, searchParams);
+    return linkRoute((client) =>
+      client.projects[":projectId"].builds.create.$url({
+        param: { projectId },
+        query: { tagSlug },
+      }),
+    );
+  },
+  buildDelete: (projectId: string, buildId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].builds[":buildId"].delete.$url({
+        param: { projectId, buildId },
+      }),
+    );
   },
   buildUpload: (
     projectId: string,
-    sha: string,
+    buildId: string,
     variant?: BuildUploadVariant,
   ): string => {
-    const searchParams: Record<string, string> = {};
-    if (variant) {
-      searchParams[QUERY_PARAMS.uploadVariant] = variant;
-    }
-    return href(URLS.builds.upload, { buildSHA: sha, projectId }, searchParams);
+    return linkRoute((client) =>
+      client.projects[":projectId"].builds[":buildId"].upload.$url({
+        param: { buildId, projectId },
+        query: { variant },
+      }),
+    );
   },
 
   // tags
@@ -141,12 +149,12 @@ export const urlBuilder = {
   // tasks
   taskProcessZip: (
     projectId: string,
-    buildSHA: string,
+    buildId: string,
     variant: BuildUploadVariant,
   ): string => {
     return href(URLS.tasks.processZip, null, {
       project: projectId,
-      sha: buildSHA,
+      sha: buildId,
       variant,
     });
   },
@@ -154,103 +162,102 @@ export const urlBuilder = {
   // serve
   storybookIndexHtml: (
     projectId: string,
-    sha: string,
+    buildId: string,
     storyId?: string,
   ): string => {
-    const searchParams: Record<string, string> = {};
-    if (storyId) {
-      searchParams["path"] = `/story/${storyId}`;
-    }
-
-    return linkRoute(
-      (client) =>
-        client._[":projectId"][":buildSHA"][":filepath"].$url({
-          param: {
-            projectId,
-            buildSHA: sha,
-            filepath: "storybook/index.html",
-          },
-        }),
-      searchParams,
+    return linkRoute((client) =>
+      client._[":projectId"][":buildSHA"][":filepath"].$url({
+        param: {
+          projectId,
+          buildSHA: buildId,
+          filepath: "storybook/index.html",
+        },
+        query: {
+          path: storyId ? `/story/${storyId}` : undefined,
+        },
+      }),
     );
   },
   storybookIFrameHtml: (
     projectId: string,
-    sha: string,
+    buildId: string,
     storyId: string,
   ): string => {
-    const searchParams: Record<string, string> = {};
-    searchParams["viewMode"] = "story";
-    searchParams["id"] = storyId;
-
-    return linkRoute(
-      (client) =>
-        client._[":projectId"][":buildSHA"][":filepath"].$url({
-          param: {
-            projectId,
-            buildSHA: sha,
-            filepath: "storybook/iframe.html",
-          },
-        }),
-      searchParams,
-    );
-  },
-  storybookDownload: (projectId: string, sha: string): string => {
     return linkRoute((client) =>
       client._[":projectId"][":buildSHA"][":filepath"].$url({
         param: {
           projectId,
-          buildSHA: sha,
+          buildSHA: buildId,
+          filepath: "storybook/iframe.html",
+        },
+        query: { id: storyId, viewMode: "story" },
+      }),
+    );
+  },
+  storybookDownload: (projectId: string, buildId: string): string => {
+    return linkRoute((client) =>
+      client._[":projectId"][":buildSHA"][":filepath"].$url({
+        param: {
+          projectId,
+          buildSHA: buildId,
           filepath: "storybook.zip",
         },
+        query: {},
       }),
     );
   },
-  storybookTestReport: (projectId: string, sha: string): string => {
+  storybookTestReport: (projectId: string, buildId: string): string => {
     return linkRoute((client) =>
       client._[":projectId"][":buildSHA"][":filepath"].$url({
         param: {
           projectId,
-          buildSHA: sha,
+          buildSHA: buildId,
           filepath: "testReport/index.html",
         },
+        query: {},
       }),
     );
   },
-  storybookCoverage: (projectId: string, sha: string): string => {
+  storybookCoverage: (projectId: string, buildId: string): string => {
     return linkRoute((client) =>
       client._[":projectId"][":buildSHA"][":filepath"].$url({
         param: {
           projectId,
-          buildSHA: sha,
+          buildSHA: buildId,
           filepath: "coverage/index.html",
         },
+        query: {},
       }),
     );
   },
   storybookScreenshot: (
     projectId: string,
-    sha: string,
+    buildId: string,
     ...filename: string[]
   ): string => {
     return linkRoute((client) =>
       client._[":projectId"][":buildSHA"][":filepath"].$url({
         param: {
           projectId,
-          buildSHA: sha,
+          buildSHA: buildId,
           filepath: path.posix.join("screenshots", ...filename),
         },
+        query: {},
       }),
     );
   },
-  storybookScreenshotsDownload: (projectId: string, sha: string): string => {
+  storybookScreenshotsDownload: (
+    projectId: string,
+    buildId: string,
+  ): string => {
     return linkRoute((client) =>
       client._[":projectId"][":buildSHA"][":filepath"].$url({
         param: {
           projectId,
-          buildSHA: sha,
+          buildSHA: buildId,
           filepath: "screenshots.zip",
         },
+        query: {},
       }),
     );
   },

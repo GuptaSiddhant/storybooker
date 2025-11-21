@@ -82,7 +82,7 @@ export function ProjectDetailsPage({
             <LinkButton href={urlBuilder.buildCreate(project.id)}>
               + {commonT.Create()} {commonT.Build()}
             </LinkButton>
-            <LinkButton href={urlBuilder.projectIdUpdate(project.id)}>
+            <LinkButton href={urlBuilder.projectUpdate(project.id)}>
               {commonT.Edit()}
             </LinkButton>
             <form
@@ -120,7 +120,7 @@ export function ProjectDetailsPage({
           project={project}
           caption={`${commonT.Recent()} ${commonT.Builds()}`}
           toolbar={
-            <a href={urlBuilder.allBuilds(project.id)}>{commonT.ViewAll()}</a>
+            <a href={urlBuilder.buildsList(project.id)}>{commonT.ViewAll()}</a>
           }
         />
       </DocumentMain>
@@ -167,7 +167,7 @@ export function ProjectUpdatePage({
       <DocumentHeader
         breadcrumbs={[
           { href: urlBuilder.projectsList(), label: commonT.Projects() },
-          { href: urlBuilder.projectId(project.id), label: project.name },
+          { href: urlBuilder.projectDetails(project.id), label: project.name },
         ]}
       >
         {title}

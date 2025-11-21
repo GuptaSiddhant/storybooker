@@ -116,7 +116,7 @@ export function renderTagDetailsPage({
           project={project}
           tags={undefined}
           toolbar={
-            <a href={urlBuilder.allBuilds(project.id)}>{commonT.ViewAll()}</a>
+            <a href={urlBuilder.buildsList(project.id)}>{commonT.ViewAll()}</a>
           }
         />
       </DocumentMain>
@@ -139,7 +139,7 @@ export function renderTagCreatePage({
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.projectId(project.id), label: project.name },
+          { href: urlBuilder.projectDetails(project.id), label: project.name },
           { href: urlBuilder.allTags(project.id), label: commonT.Tags() },
         ]}
       >
@@ -167,7 +167,7 @@ export function renderTagUpdatePage({
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.projectId(projectId), label: projectId },
+          { href: urlBuilder.projectDetails(projectId), label: projectId },
           { href: urlBuilder.allTags(projectId), label: commonT.Tags() },
           { href: urlBuilder.tagSlug(projectId, tag.id), label: tag.id },
         ]}

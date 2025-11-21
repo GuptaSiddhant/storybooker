@@ -20,7 +20,9 @@ export function LatestBuild({
         {sha.slice(0, 7)}
       </div>
       <div>
-        <a href={urlBuilder.buildSHA(projectId, sha)}>{commonT.Details()}</a>
+        <a href={urlBuilder.buildDetails(projectId, sha)}>
+          {commonT.Details()}
+        </a>
         {" / "}
         <a href={urlBuilder.storybookIndexHtml(projectId, sha)}>
           {commonT.StoryBook()}

@@ -64,6 +64,13 @@ export const rootRouter = new OpenAPIHono()
           buildSHA: z.string(),
           filepath: z.string(),
         }),
+        query: z
+          .object({
+            id: z.string(),
+            path: z.string(),
+            viewMode: z.enum(["story"]),
+          })
+          .partial(),
       },
       responses: {
         200: {

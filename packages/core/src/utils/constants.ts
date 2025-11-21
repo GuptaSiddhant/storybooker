@@ -12,8 +12,8 @@ export const ISO_DATE_REGEXP =
 
 export const QUERY_PARAMS = {
   tagSlug: "tagSlug",
-  uploadVariant: "uploadVariant",
-};
+  uploadVariant: "variant",
+} as const;
 
 export const PATTERNS = {
   projectId: {

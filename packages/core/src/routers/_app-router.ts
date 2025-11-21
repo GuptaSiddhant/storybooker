@@ -3,6 +3,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "hono/logger";
 import { SERVICE_NAME } from "..";
 import { handleStaticFileRoute } from "../handlers/handle-static-file-route";
+import { buildsRouter } from "./builds-router";
 import { projectsRouter } from "./projects-router";
 import { rootRouter } from "./root-router";
 
@@ -15,6 +16,7 @@ export const appRouter = new OpenAPIHono({ strict: false })
   .get("/openapi", swaggerUI({ url: "/openapi.json" }))
   .route("/", rootRouter)
   .route("/", projectsRouter)
-  .get("/:filepath{.+}", () => handleStaticFileRoute());
+  .route("/", buildsRouter)
+  .get("/{filepath{.+}}", () => handleStaticFileRoute());
 
 export type AppRouter = typeof appRouter;
