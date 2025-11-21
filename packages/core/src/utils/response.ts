@@ -35,7 +35,7 @@ export function commonErrorResponses(): ZodOpenApiResponsesObject {
 }
 
 export async function responseHTML(
-  html: JSX.Element,
+  html: JSXElement,
   init?: ResponseInit,
 ): Promise<Response> {
   const headers = new SuperHeaders(init?.headers);

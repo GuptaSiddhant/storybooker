@@ -14,7 +14,7 @@ export default defineConfig({
   },
   exports: { devExports: "source" },
   format: ["esm"],
-  onSuccess,
+  // onSuccess,
   platform: "node",
   sourcemap: true,
   treeshake: true,

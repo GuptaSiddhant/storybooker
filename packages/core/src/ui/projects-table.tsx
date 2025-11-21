@@ -7,8 +7,8 @@ import { Table } from "./components/table";
 import { commonT, getT } from "./translations/i18n";
 
 export interface ProjectsTableProps {
-  caption?: JSX.Element;
-  toolbar?: JSX.Element;
+  caption?: JSXChildren;
+  toolbar?: JSXChildren;
   projects: ProjectType[];
 }
 
@@ -16,7 +16,7 @@ export function ProjectsTable({
   caption,
   toolbar,
   projects,
-}: ProjectsTableProps): JSX.Element {
+}: ProjectsTableProps): JSXElement {
   const { locale } = getStore();
 
   return (

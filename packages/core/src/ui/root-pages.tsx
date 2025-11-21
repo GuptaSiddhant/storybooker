@@ -1,8 +1,8 @@
 import type { ProjectType } from "../models/projects-schema";
-import { href, urlBuilder, URLS } from "../urls";
 import { SERVICE_NAME } from "../utils/constants";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "../utils/text-utils";
+import { linkRoute } from "../utils/url-utils";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -17,7 +17,7 @@ import { commonT } from "./translations/i18n";
 export interface RootPageProps {
   projects: ProjectType[];
 }
-export function renderRootPage({ projects }: RootPageProps): JSX.Element {
+export function RootPage({ projects }: RootPageProps): JSXElement {
   const pageTitle = commonT.Home();
 
   return (
@@ -32,7 +32,10 @@ export function renderRootPage({ projects }: RootPageProps): JSX.Element {
             height: "100%",
           }}
         >
-          <a href={href(URLS.ui.openapi)} target="_blank">
+          <a
+            href={linkRoute((client) => client.openapi.$url())}
+            target="_blank"
+          >
             OpenAPI
           </a>
           <span
@@ -54,7 +57,7 @@ export function renderRootPage({ projects }: RootPageProps): JSX.Element {
       <DocumentHeader
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <a href={urlBuilder.allProjects()} target="_blank">
+            <a href={linkRoute((client) => client.projects.$url())}>
               {commonT.All()} {commonT.Projects()}
             </a>
           </div>
@@ -78,7 +81,7 @@ export function renderErrorPage({
 }: {
   title: string;
   message: string;
-}): JSX.Element {
+}): JSXElement {
   const { translation } = getStore();
 
   return (

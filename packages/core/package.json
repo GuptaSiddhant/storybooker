@@ -31,11 +31,13 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@kitajs/html": "^4.0.0",
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^1.1.5",
     "@remix-run/headers": "^0.16.0",
     "@remix-run/route-pattern": "^0.10.0",
     "@storybooker/adapter": "workspace:^",
     "decompress": "^4.0.0",
+    "hono": "^4.10.6",
     "zod": "^4.0.0",
     "zod-openapi": "^5.0.0"
   },
@@ -79,8 +81,7 @@
       "source": "./src/utils/index.ts",
       "default": "./dist/utils.js"
     },
-    "./package.json": "./package.json",
-    "./openapi.json": "./dist/openapi.json"
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {

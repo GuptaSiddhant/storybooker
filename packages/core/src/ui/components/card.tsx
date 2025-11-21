@@ -1,4 +1,4 @@
-export function Card({ children, style, ...props }: JSX.HtmlTag): JSX.Element {
+export function Card({ children, style, ...props }: JSX.HtmlTag): JSXElement {
   return (
     <article
       {...props}
@@ -29,7 +29,7 @@ export function CardGrid({
   children,
   style,
   ...props
-}: JSX.HtmlTag): JSX.Element {
+}: JSX.HtmlTag): JSXElement {
   return (
     <div
       {...props}
@@ -56,7 +56,7 @@ export function CardRow({
   children,
   style,
   ...props
-}: JSX.HtmlTag): JSX.Element {
+}: JSX.HtmlTag): JSXElement {
   return (
     <div
       {...props}

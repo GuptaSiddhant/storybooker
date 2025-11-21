@@ -1,18 +1,20 @@
+import type { JSX } from "hono/jsx";
+
 export type TableItem = Record<string, unknown>;
 
 export interface TableProps<Item extends TableItem> {
   data: Item[];
   columns: (TableColumn<NoInfer<Item>> | undefined)[];
-  caption?: JSX.Element;
-  toolbar?: JSX.Element;
+  caption?: JSXChildren;
+  toolbar?: JSXChildren;
 }
 
 export interface TableColumn<Item extends TableItem> {
   // oxlint-disable-next-line ban-types
   id: keyof Item | (string & {});
-  header?: JSX.Element;
-  cell?: (item: Item) => JSX.Element | null;
-  style?: JSX.HtmlTag["style"];
+  header?: JSXChildren;
+  cell?: (item: Item) => JSXElement;
+  style?: JSX.CSSProperties;
 }
 
 export function Table<Item extends TableItem>({
@@ -20,7 +22,7 @@ export function Table<Item extends TableItem>({
   columns,
   data,
   toolbar,
-}: TableProps<Item>): JSX.Element {
+}: TableProps<Item>): JSXElement {
   const cols = columns.filter(Boolean) as TableColumn<Item>[];
 
   return (
@@ -59,28 +61,7 @@ export function Table<Item extends TableItem>({
                 <tr>
                   {cols.map((col) => {
                     const value = col.cell?.(item) || item[col.id];
-                    if (!value) {
-                      return <td></td>;
-                    }
-
-                    if (typeof value === "string") {
-                      const safeValue = value;
-                      return <td style={col.style}>{safeValue}</td>;
-                    }
-
-                    if (typeof value === "object") {
-                      return (
-                        <td safe style={col.style}>
-                          {JSON.stringify(value)}
-                        </td>
-                      );
-                    }
-
-                    return (
-                      <td safe style={col.style}>
-                        {String(value)}
-                      </td>
-                    );
+                    return <td style={col.style}>{value}</td>;
                   })}
                 </tr>
               );

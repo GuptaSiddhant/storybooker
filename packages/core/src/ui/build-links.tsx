@@ -10,7 +10,7 @@ export function BuildLinksFooter({
   build: BuildType;
   projectId: string;
   hasUpdatePermission: boolean;
-}): JSX.Element {
+}): JSXElement {
   return (
     <div
       style={{

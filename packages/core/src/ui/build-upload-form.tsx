@@ -20,7 +20,7 @@ export function BuildUploadForm({
   build,
   projectId,
   uploadVariant,
-}: BuildUploadFormProps): JSX.Element {
+}: BuildUploadFormProps): JSXElement {
   const { url } = getStore();
 
   return (

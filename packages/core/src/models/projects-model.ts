@@ -9,7 +9,9 @@ import {
   ProjectCreateSchema,
   ProjectSchema,
   ProjectUpdateSchema,
+  type ProjectCreateType,
   type ProjectType,
+  type ProjectUpdateType,
 } from "./projects-schema";
 import { TagsModel } from "./tags-model";
 
@@ -35,7 +37,7 @@ export class ProjectsModel extends Model<ProjectType> {
     }
   }
 
-  async create(data: unknown): Promise<ProjectType> {
+  async create(data: ProjectCreateType): Promise<ProjectType> {
     this.log("Create project...");
 
     const projectData = ProjectCreateSchema.parse(data);
@@ -108,7 +110,7 @@ export class ProjectsModel extends Model<ProjectType> {
     );
   }
 
-  async update(id: string, data: unknown): Promise<void> {
+  async update(id: string, data: ProjectUpdateType): Promise<void> {
     this.log("Update project '%s'...", id);
 
     const project = ProjectUpdateSchema.parse(data);

@@ -18,11 +18,11 @@ import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
 import { commonT, getT } from "./translations/i18n";
 
-export function renderProjectsPage({
+export function ProjectsPage({
   projects,
 }: {
   projects: ProjectType[];
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.All()} ${commonT.Projects()}`;
 
   return (
@@ -60,7 +60,7 @@ export function renderProjectsPage({
   );
 }
 
-export function renderProjectDetailsPage({
+export function ProjectDetailsPage({
   project,
   recentBuilds,
   recentTags,
@@ -68,14 +68,14 @@ export function renderProjectDetailsPage({
   project: ProjectType;
   recentBuilds: BuildType[];
   recentTags: TagType[];
-}): JSX.Element {
+}): JSXElement {
   const { url } = getStore();
 
   return (
     <DocumentLayout title={project.name}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.allProjects(), label: commonT.Projects() },
+          { href: urlBuilder.projectsList(), label: commonT.Projects() },
         ]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
@@ -132,14 +132,14 @@ export function renderProjectDetailsPage({
   );
 }
 
-export function renderProjectCreatePage(): JSX.Element {
+export function ProjectCreatePage(): JSXElement {
   const title = `${commonT.Create()} ${commonT.Project()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.allProjects(), label: commonT.Projects() },
+          { href: urlBuilder.projectsList(), label: commonT.Projects() },
         ]}
       >
         {title}
@@ -155,18 +155,18 @@ export function renderProjectCreatePage(): JSX.Element {
   );
 }
 
-export function renderProjectUpdatePage({
+export function ProjectUpdatePage({
   project,
 }: {
   project: ProjectType;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.Update()} ${commonT.Project()}`;
 
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[
-          { href: urlBuilder.allProjects(), label: commonT.Projects() },
+          { href: urlBuilder.projectsList(), label: commonT.Projects() },
           { href: urlBuilder.projectId(project.id), label: project.name },
         ]}
       >

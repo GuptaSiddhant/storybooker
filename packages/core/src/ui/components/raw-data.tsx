@@ -9,8 +9,8 @@ export function RawDataPreview({
 }: {
   data: unknown;
   open?: boolean;
-  summary?: JSX.Element;
-}): JSX.Element {
+  summary?: JSXElement;
+}): JSXElement {
   const content = (
     <pre safe class="raw-data">
       {JSON.stringify(data, null, 2)}
@@ -36,8 +36,8 @@ export function RawDataList({
 }: {
   data: Record<string, unknown>;
   open?: boolean;
-  summary?: JSX.Element;
-}): JSX.Element {
+  summary?: JSXElement;
+}): JSXElement {
   const { locale } = getStore();
 
   const content = (
@@ -95,8 +95,8 @@ export function RawDataTabular({
 }: {
   data: Record<string, unknown>;
   open?: boolean;
-  summary?: JSX.Element;
-}): JSX.Element {
+  summary?: JSXElement;
+}): JSXElement {
   const content = (
     <table>
       <thead>

@@ -2,15 +2,15 @@ import type { ProjectType } from "../models/projects-schema";
 import type { TagType } from "../models/tags-schema";
 import { href, urlBuilder, URLS } from "../urls";
 import { getStore } from "../utils/store";
-import { urlJoin } from "../utils/url";
+import { urlJoin } from "../utils/url-utils";
 import { LatestBuild } from "./components/latest-build";
 import { Table } from "./components/table";
 import { commonT } from "./translations/i18n";
 
 export interface TagsTableProps {
-  caption?: JSX.Element;
+  caption?: JSXChildren;
   project: ProjectType;
-  toolbar?: JSX.Element;
+  toolbar?: JSXChildren;
   tags: TagType[];
 }
 
@@ -19,7 +19,7 @@ export function TagsTable({
   project,
   toolbar,
   caption,
-}: TagsTableProps): JSX.Element {
+}: TagsTableProps): JSXElement {
   const { locale } = getStore();
 
   return (
@@ -91,7 +91,7 @@ export function TagsTable({
             }
 
             if (!href) {
-              return item.value;
+              return <>{item.value}</>;
             }
 
             return (

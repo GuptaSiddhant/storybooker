@@ -10,7 +10,7 @@ export interface TagFormProps {
   projectId: string;
 }
 
-export function TagForm({ tag, projectId }: TagFormProps): JSX.Element {
+export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
   const { url } = getStore();
 
   return (

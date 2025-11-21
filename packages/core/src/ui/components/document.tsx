@@ -1,10 +1,10 @@
+import { html } from "hono/html";
+import type { JSX } from "hono/jsx";
 import { href, urlBuilder, URLS } from "../../urls";
 import { SCRIPTS, SERVICE_NAME, STYLESHEETS } from "../../utils/constants";
 import { getStore } from "../../utils/store";
-import { urlJoin } from "../../utils/url";
+import { urlJoin } from "../../utils/url-utils";
 import { SBRLogo } from "./logo";
-
-type Children = JSX.Element | null | (JSX.Element | null)[];
 
 export function DocumentLayout({
   title,
@@ -13,13 +13,13 @@ export function DocumentLayout({
 }: {
   id?: string;
   title: string;
-  children: Children;
-  footer?: JSX.Element | null;
-  account?: JSX.Element | null;
-}): JSX.Element {
+  children: JSXChildren;
+  footer?: JSXChildren;
+  account?: JSXChildren;
+}): JSXElement {
   return (
     <>
-      {"<!DOCTYPE html>"}
+      {html`<!DOCTYPE html>`}
       <html lang="en">
         <head>
           <title>
@@ -30,11 +30,7 @@ export function DocumentLayout({
             href={"https://storybooker.js.org/img/SBR_white_128.jpg"}
           />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link
-            rel="preconnect"
-            href="https://fonts.gstatic.com"
-            crossorigin="true"
-          />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
             href={urlBuilder.staticFile(STYLESHEETS.globalStyles)}
             rel="stylesheet"
@@ -90,7 +86,7 @@ export function DocumentLayout({
   );
 }
 
-function Logo(): JSX.Element {
+function Logo(): JSXElement {
   const { ui } = getStore();
   const { logo } = ui || {};
 
@@ -107,7 +103,7 @@ function Logo(): JSX.Element {
 
   return (
     <a
-      href={urlBuilder.root()}
+      href={urlBuilder.homepage()}
       title="Home"
       style={{
         display: "flex",
@@ -158,9 +154,9 @@ export function DocumentHeader({
   toolbar,
 }: {
   breadcrumbs?: string[] | Array<{ label: string; href?: string }>;
-  children: Children;
-  toolbar?: JSX.Element | null;
-}): JSX.Element {
+  children: JSXChildren;
+  toolbar?: JSXElement | null;
+}): JSXElement {
   const store = getStore();
 
   return (
@@ -209,8 +205,8 @@ export function DocumentMain({
   style,
 }: {
   style?: JSX.CSSProperties;
-  children: Children;
-}): JSX.Element {
+  children: JSXChildren;
+}): JSXElement {
   return <main style={style}>{children}</main>;
 }
 
@@ -219,12 +215,12 @@ export function DocumentSidebar({
   style,
 }: {
   style?: JSX.CSSProperties;
-  children?: Children;
-}): JSX.Element {
+  children?: JSXChildren;
+}): JSXElement {
   return <aside style={style}>{children}</aside>;
 }
 
-export function DocumentUserSection(): JSX.Element {
+export function DocumentUserSection(): JSXElement {
   const { auth, user } = getStore();
 
   if (!user) {

@@ -13,7 +13,7 @@ export interface BuildFormProps {
 export function BuildCreateForm({
   projectId,
   tagSlug,
-}: BuildFormProps): JSX.Element {
+}: BuildFormProps): JSXElement {
   const { url } = getStore();
 
   return (

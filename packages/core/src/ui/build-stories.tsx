@@ -12,7 +12,7 @@ export function BuildStories({
   projectId: string;
   build: BuildType;
   stories: BuildStoryType[] | null;
-}): JSX.Element | null {
+}): JSXElement | null {
   if (build.storybook === "none") {
     return (
       <p style={{ margin: "1rem" }}>
@@ -97,7 +97,7 @@ function StoryCard({
   sha: string;
   story: BuildStoryType;
   hasScreenshots: boolean;
-}): JSX.Element {
+}): JSXElement {
   const storybookHref = urlBuilder.storybookIndexHtml(projectId, sha, story.id);
   const storybookIframeHref = urlBuilder.storybookIFrameHtml(
     projectId,

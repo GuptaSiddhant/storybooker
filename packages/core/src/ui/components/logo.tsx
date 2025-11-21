@@ -1,4 +1,4 @@
-export function SBRLogo(props: JSX.HtmlSvgTag): JSX.Element {
+export function SBRLogo(props: JSX.HtmlSvgTag): JSXElement {
   return (
     <svg
       width="465"

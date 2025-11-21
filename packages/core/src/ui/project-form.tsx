@@ -14,7 +14,7 @@ export interface ProjectsFormProps {
   project: ProjectType | undefined;
 }
 
-export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
+export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
   const { url } = getStore();
   return (
     <form
@@ -138,7 +138,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSX.Element {
           href={
             project
               ? urlBuilder.projectId(project.id)
-              : urlBuilder.allProjects()
+              : urlBuilder.projectsList()
           }
         >
           {commonT.Cancel()}

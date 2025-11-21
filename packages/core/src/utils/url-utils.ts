@@ -1,3 +1,48 @@
+import { hc } from "hono/client";
+import type { AppRouter } from "../routers/_app-router";
+import { getStore } from "./store";
+
+type HonoClient = ReturnType<typeof hc<AppRouter>>;
+
+export function linkRoute(
+  link: ((client: HonoClient) => URL) | URL | string,
+  options: { baseUrl?: string; searchParams?: URLSearchParams } = {},
+): string {
+  const { baseUrl, searchParams } = options;
+
+  if (typeof link === "string") {
+    if (baseUrl !== undefined) {
+      return appendSearchParamsToURL(
+        new URL(link, baseUrl),
+        searchParams,
+      ).toString();
+    }
+    return link;
+  }
+
+  if (link instanceof URL) {
+    return appendSearchParamsToURL(link, searchParams).toString();
+  }
+
+  const client = hc<AppRouter>(
+    baseUrl ?? new URL(getStore().request.url).origin,
+  );
+
+  return appendSearchParamsToURL(link(client), searchParams).toString();
+}
+
+function appendSearchParamsToURL(
+  url: URL,
+  searchParams: URLSearchParams | undefined,
+): URL {
+  // oxlint-disable-next-line no-array-for-each
+  searchParams?.forEach((value, key) => {
+    url.searchParams.append(key, value);
+  });
+
+  return url;
+}
+
 export function urlSearchParamsToObject(
   query: URLSearchParams | FormData,
 ): Record<string, unknown> {

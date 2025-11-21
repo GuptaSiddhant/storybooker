@@ -7,11 +7,11 @@ import { Table } from "./components/table";
 import { commonT } from "./translations/i18n";
 
 export interface BuildsTableProps {
-  caption?: JSX.Element;
+  caption?: JSXChildren;
   builds: BuildType[];
   project: ProjectType;
   tags: TagType[] | undefined;
-  toolbar?: JSX.Element;
+  toolbar?: JSXChildren;
 }
 
 export function BuildsTable({
@@ -20,7 +20,7 @@ export function BuildsTable({
   builds,
   project,
   tags,
-}: BuildsTableProps): JSX.Element {
+}: BuildsTableProps): JSXElement {
   const { locale } = getStore();
 
   return (

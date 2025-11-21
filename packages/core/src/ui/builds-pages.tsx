@@ -29,7 +29,7 @@ export function renderBuildsPage({
 }: {
   builds: BuildType[];
   project: ProjectType;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.All()} ${commonT.Builds()}`;
   return (
     <DocumentLayout title={title}>
@@ -64,7 +64,7 @@ export function renderBuildDetailsPage({
   hasDeletePermission: boolean;
   hasUpdatePermission: boolean;
   stories: BuildStoryType[] | null;
-}): JSX.Element {
+}): JSXElement {
   const { url } = getStore();
   const shouldShowUploadButton =
     hasUpdatePermission &&
@@ -128,7 +128,7 @@ export function renderBuildCreatePage({
 }: {
   project: ProjectType;
   tagSlug?: string;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.Create()} ${commonT.Build()}`;
 
   return (
@@ -158,7 +158,7 @@ export function renderBuildUploadPage({
   build: BuildType;
   projectId: string;
   uploadVariant?: BuildUploadVariant;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.Upload()} ${commonT.Build()} ${getT("dictionary", "files")}`;
 
   return (

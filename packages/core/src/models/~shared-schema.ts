@@ -3,12 +3,12 @@ import { PATTERNS } from "../utils/constants";
 
 export const TagSlugSchema = z
   .string()
-  .meta({ description: "The slug of the tag.", id: "tagSlug" });
+  .meta({ description: "The slug of the tag.", id: "TagID" });
 
 export const BuildSHASchema = z
   .string()
   .check(z.minLength(7))
-  .meta({ description: "The SHA of the build.", id: "buildSHA" });
+  .meta({ description: "The SHA of the build.", id: "BuildID" });
 
 export const ProjectIdSchema = z
   .string()
@@ -16,4 +16,4 @@ export const ProjectIdSchema = z
     (val) => new RegExp(PATTERNS.projectId.pattern).test(val),
     PATTERNS.projectId.message,
   )
-  .meta({ description: "The ID of the project.", id: "projectId" });
+  .meta({ description: "The ID of the project.", id: "ProjectID" });

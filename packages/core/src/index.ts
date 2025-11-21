@@ -1,13 +1,7 @@
 import { SuperHeaders } from "@remix-run/headers";
 import type { AuthAdapter, StoryBookerUser } from "@storybooker/adapter/auth";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
-import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
-import * as accountRoutes from "./routers/accounts-routes";
-import * as buildsRoutes from "./routers/builds-routes";
-import * as projectsRoutes from "./routers/projects-routes";
-import * as rootRoutes from "./routers/root-routes";
-import * as tagsRoutes from "./routers/tags-routes";
-import * as tasksRoutes from "./routers/tasks-routes";
+import { appRouter } from "./routers/_app-router";
 import type {
   PurgeHandlerOptions,
   RequestHandler,
@@ -17,23 +11,14 @@ import { translations_enGB } from "./ui/translations/en-gb";
 import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "./utils/middleware-utils";
-import { router } from "./utils/router-utils";
 import { localStore } from "./utils/store";
+
+export { SERVICE_NAME } from "./utils/constants";
+export type * from "./types";
 
 if ("setEncoding" in process.stdout) {
   process.stdout.setEncoding("utf8");
 }
-
-router.registerGroup(rootRoutes);
-router.registerGroup(tasksRoutes);
-router.registerGroup(projectsRoutes);
-router.registerGroup(tagsRoutes);
-router.registerGroup(buildsRoutes);
-router.registerGroup(accountRoutes);
-
-export { router };
-export { SERVICE_NAME } from "./utils/constants";
-export type * from "./types";
 
 /**
  * Callback to create a request-handler based on provided options.
@@ -77,19 +62,17 @@ export function createRequestHandler<User extends StoryBookerUser>(
         user,
       });
 
-      const response = await router.handleRequest();
-      if (response) {
-        return response;
-      }
-
-      return await handleStaticFileRoute(options.staticDirs);
+      return await appRouter.fetch(request, process.env);
     } catch (error) {
       if (error instanceof Response) {
         return error;
       }
 
-      const { errorMessage } = parseErrorMessage(error, options.errorParser);
-      return new Response(errorMessage, { status: 500 });
+      const { errorMessage, errorStatus = 500 } = parseErrorMessage(
+        error,
+        options.errorParser,
+      );
+      return new Response(errorMessage, { status: errorStatus });
     }
   };
 

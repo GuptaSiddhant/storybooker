@@ -11,7 +11,7 @@ export function BuildProcessStatus({
   build: BuildType;
   projectId: string;
   hasUpdatePermission: boolean;
-}): JSX.Element | null {
+}): JSXElement | null {
   return (
     <CardGrid style={{ padding: 0 }}>
       <BuildVariantStatus
@@ -52,7 +52,7 @@ function BuildVariantStatus({
   projectId: string;
   variant: BuildUploadVariant;
   hasUpdatePermission: boolean;
-}): JSX.Element | null {
+}): JSXElement | null {
   if (build[variant] === "ready" || build[variant] === "none") {
     return null;
   }

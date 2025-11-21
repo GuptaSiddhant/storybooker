@@ -7,7 +7,7 @@ export function LatestBuild({
 }: {
   projectId: string;
   sha: string | undefined;
-}): JSX.Element {
+}): JSXElement {
   if (!sha) {
     return (
       <span class="description">{getT("messages", "no_builds_available")}</span>

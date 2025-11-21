@@ -2,7 +2,7 @@ export type IFrameProps = JSX.HtmlIFrameTag;
 export function IFrameContainer({
   children,
   ...props
-}: IFrameProps): JSX.Element {
+}: IFrameProps): JSXElement {
   return (
     <iframe
       srcdoc={`

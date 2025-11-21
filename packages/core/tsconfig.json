@@ -7,7 +7,7 @@
     "rootDir": "src",
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "@kitajs/html",
+    "jsxImportSource": "hono/jsx",
     "noEmit": true,
     "types": ["node", "@kitajs/html/htmx.d.ts"]
   }

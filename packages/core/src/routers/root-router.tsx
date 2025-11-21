@@ -1,0 +1,79 @@
+import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import z from "zod";
+import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
+import { ProjectsModel } from "../models/projects-model";
+import { RootPage } from "../ui/root-pages";
+import { authenticateOrThrow } from "../utils/auth";
+import { mimes } from "../utils/mime-utils";
+import { openapiResponsesHtml } from "../utils/openapi-utils";
+import { checkIsJSONRequest } from "../utils/request";
+
+export const rootRouter = new OpenAPIHono()
+  .openapi(
+    createRoute({
+      summary: "Homepage",
+      method: "get",
+      path: "/",
+      responses: {
+        200: {
+          content: {
+            ...openapiResponsesHtml,
+            [mimes.json]: { schema: z.object({}) },
+          },
+          description: "Render homepage or return a list of endpoint-urls.",
+        },
+      },
+    }),
+    async (context) => {
+      if (checkIsJSONRequest()) {
+        return context.json({});
+      }
+
+      await authenticateOrThrow({
+        action: "read",
+        projectId: undefined,
+        resource: "ui",
+      });
+
+      const projects = await new ProjectsModel().list({ limit: 5 });
+
+      return context.html(<RootPage projects={projects} />);
+    },
+  )
+  .openapi(
+    createRoute({
+      summary: "Health check",
+      method: "get",
+      path: "/health",
+      responses: {
+        200: { description: "Health check status" },
+      },
+    }),
+    (context) => {
+      return context.text("Service is healthy.");
+    },
+  )
+  .openapi(
+    createRoute({
+      summary: "Serve StoryBook",
+      method: "get",
+      path: "_/{projectId}/{buildSHA}/{filepath}",
+      request: {
+        params: z.object({
+          projectId: z.string(),
+          buildSHA: z.string(),
+          filepath: z.string(),
+        }),
+      },
+      responses: {
+        200: {
+          description: "Serving the uploaded file",
+          content: { "*/*": { schema: z.string() } },
+        },
+      },
+    }),
+    (context) => {
+      const { buildSHA, filepath, projectId } = context.req.param();
+      return handleServeStoryBook({ buildSHA, filepath, projectId });
+    },
+  );

@@ -25,7 +25,7 @@ export function renderTagsPage({
   tags: TagType[];
   project: ProjectType;
   defaultType: string | null;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.All()} ${commonT.Tags()} ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
 
   return (
@@ -86,7 +86,7 @@ export function renderTagDetailsPage({
   tag: TagType;
   project: ProjectType;
   builds: BuildType[];
-}): JSX.Element {
+}): JSXElement {
   const { url } = getStore();
 
   return (
@@ -132,7 +132,7 @@ export function renderTagCreatePage({
   project,
 }: {
   project: ProjectType;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.Create()} ${commonT.Tag()}`;
 
   return (
@@ -160,7 +160,7 @@ export function renderTagUpdatePage({
 }: {
   tag: TagType;
   projectId: string;
-}): JSX.Element {
+}): JSXElement {
   const title = `${commonT.Update()} ${commonT.Tag()}`;
 
   return (

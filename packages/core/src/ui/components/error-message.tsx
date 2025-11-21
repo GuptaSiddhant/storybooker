@@ -4,7 +4,7 @@ export function ErrorMessage({
 }: {
   id?: string;
   children?: string;
-}): JSX.Element {
+}): JSXElement {
   return (
     <pre
       id={id}

@@ -8,7 +8,7 @@ export function ProjectsGrid({
   projects,
 }: {
   projects: ProjectType[];
-}): JSX.Element {
+}): JSXElement {
   return (
     <CardGrid>
       {projects.map((project) => (
@@ -18,7 +18,7 @@ export function ProjectsGrid({
   );
 }
 
-function ProjectCard({ project }: { project: ProjectType }): JSX.Element {
+function ProjectCard({ project }: { project: ProjectType }): JSXElement {
   return (
     <Card>
       <a

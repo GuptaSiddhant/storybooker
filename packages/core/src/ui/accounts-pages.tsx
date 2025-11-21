@@ -18,7 +18,7 @@ export function renderAccountPage({
   children,
 }: {
   children: string | undefined;
-}): JSX.Element {
+}): JSXElement {
   const { auth, translation, user } = getStore();
   const pageTitle = toTitleCase(translation.dictionary.account);
   // oxlint-disable-next-line no-non-null-assertion
@@ -75,7 +75,7 @@ function UserInfo({
   id,
   imageUrl,
   title,
-}: StoryBookerUser): JSX.Element {
+}: StoryBookerUser): JSXElement {
   return (
     <div
       style={{
