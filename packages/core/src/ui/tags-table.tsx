@@ -44,13 +44,11 @@ export function TagsTable({
           },
         },
         {
-          id: "slug",
-          header: commonT.Slug(),
+          id: "id",
+          header: commonT.ID(),
           cell: (item) => {
             return (
-              <a href={urlBuilder.tagDetails(project.id, item.id)}>
-                {item.slug}
-              </a>
+              <a href={urlBuilder.tagDetails(project.id, item.id)}>{item.id}</a>
             );
           },
         },

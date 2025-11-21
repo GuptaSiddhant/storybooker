@@ -1,4 +1,4 @@
-import SuperHeaders from "@remix-run/headers";
+import { SuperHeaders } from "@remix-run/headers";
 import { getStore } from "../utils/store";
 import { mimes } from "./mime-utils";
 

@@ -50,7 +50,6 @@ export const commonT = {
   Recent: (): string => toTitleCase(getT("dictionary", "recent")),
   Required: (): string => toTitleCase(getT("dictionary", "required")),
   Reset: (): string => toTitleCase(getT("dictionary", "reset")),
-  Slug: (): string => toTitleCase(getT("dictionary", "slug")),
   StoryBook: (): string => "StoryBook",
   Tag: (): string => toTitleCase(getT("dictionary", "tag")),
   Tags: (): string => toTitleCase(getT("dictionary", "tags")),

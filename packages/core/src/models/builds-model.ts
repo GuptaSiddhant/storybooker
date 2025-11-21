@@ -21,6 +21,7 @@ import {
 } from "./builds-schema";
 import { ProjectsModel } from "./projects-model";
 import { TagsModel } from "./tags-model";
+import type { TagVariant } from "./tags-schema";
 
 export class BuildsModel extends Model<BuildType> {
   constructor(projectId: string) {
@@ -361,7 +362,7 @@ export class BuildsModel extends Model<BuildType> {
       return slug;
     } catch {
       try {
-        const type = tagType || TagsModel.guessType(slug);
+        const type = (tagType as TagVariant) || TagsModel.guessType(slug);
         const value = tagValue || slug;
         this.log("A new tag '%s' (%s) is being created.", value, type);
         const tag = await tagsModel.create(

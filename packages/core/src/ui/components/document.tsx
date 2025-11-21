@@ -1,6 +1,6 @@
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
-import { href, urlBuilder, URLS } from "../../urls";
+import { urlBuilder } from "../../urls";
 import { SCRIPTS, SERVICE_NAME, STYLESHEETS } from "../../utils/constants";
 import { getStore } from "../../utils/store";
 import { urlJoin } from "../../utils/url-utils";
@@ -227,7 +227,7 @@ export function DocumentUserSection(): JSXElement {
     return (
       <div id="user" style={{ padding: "1rem" }}>
         {auth?.login ? (
-          <form action={href(URLS.ui.login)}>
+          <form action={urlBuilder.login()}>
             <button style={"padding:0"}>Login</button>
           </form>
         ) : (
@@ -240,7 +240,7 @@ export function DocumentUserSection(): JSXElement {
   return (
     <a
       id="user"
-      href={href(URLS.ui.account)}
+      href={urlBuilder.account()}
       style={{
         padding: 0,
         paddingLeft: user.imageUrl ? "0.5rem" : "1rem",

@@ -1,38 +1,10 @@
-import SuperHeaders from "@remix-run/headers";
-import z from "zod";
-import type { ZodOpenApiResponsesObject } from "zod-openapi";
+import { SuperHeaders } from "@remix-run/headers";
 import { renderErrorPage } from "../ui/root-pages";
 import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
 import { getStore } from "../utils/store";
 import { parseErrorMessage } from "./error";
 import { mimes } from "./mime-utils";
 import { toTitleCase } from "./text-utils";
-
-export const errorSchema = z
-  .object({ errorMessage: z.string() })
-  .meta({ id: "error" });
-export const errorContent = { "application/json": { schema: errorSchema } };
-
-export function commonErrorResponses(): ZodOpenApiResponsesObject {
-  return {
-    400: {
-      content: errorContent,
-      description: "Invalid request data",
-    },
-    401: {
-      content: errorContent,
-      description: "Unauthenticated access",
-    },
-    403: {
-      content: errorContent,
-      description: "Unauthorised access",
-    },
-    500: {
-      content: errorContent,
-      description: "An unexpected server-error occurred.",
-    },
-  };
-}
 
 export async function responseHTML(
   html: JSXElement,

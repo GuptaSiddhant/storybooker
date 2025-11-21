@@ -6,9 +6,9 @@ import { ProjectIdSchema } from "../models/projects-schema";
 import { TagsModel } from "../models/tags-model";
 import {
   TagCreateSchema,
+  TagIdSchema,
   TagsGetResultSchema,
   TagsListResultSchema,
-  TagSlugSchema,
   TagTypes,
   TagUpdateSchema,
 } from "../models/tags-schema";
@@ -34,7 +34,7 @@ const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
 const tagIdPathParams = z.object({
   projectId: ProjectIdSchema,
-  tagId: TagSlugSchema,
+  tagId: TagIdSchema,
 });
 
 export const tagsRouter = new OpenAPIHono()

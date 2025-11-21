@@ -1,5 +1,5 @@
 import path from "node:path";
-import SuperHeaders from "@remix-run/headers";
+import { SuperHeaders } from "@remix-run/headers";
 import { urlBuilder } from "../urls";
 import { generateStorageContainerId } from "../utils/adapter-utils";
 import { authenticateOrThrow } from "../utils/auth";

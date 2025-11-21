@@ -1,11 +1,11 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
-import SuperHeaders from "@remix-run/headers";
+import { SuperHeaders } from "@remix-run/headers";
 import z from "zod";
 import { BuildsModel } from "../models/builds-model";
 import {
   BuildCreateSchema,
+  BuildIdSchema,
   BuildsGetResultSchema,
-  BuildSHASchema,
   BuildsListResultSchema,
   BuildUploadFormBodySchema,
   BuildUploadQueryParamsSchema,
@@ -40,7 +40,7 @@ const buildTag = "Builds";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
 const buildIdPathParams = z.object({
   projectId: ProjectIdSchema,
-  buildId: BuildSHASchema,
+  buildId: BuildIdSchema,
 });
 
 export const buildsRouter = new OpenAPIHono()

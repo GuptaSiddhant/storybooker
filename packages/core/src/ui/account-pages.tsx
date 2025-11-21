@@ -1,5 +1,5 @@
 import type { StoryBookerUser } from "../types";
-import { href, URLS } from "../urls";
+import { urlBuilder } from "../urls";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "../utils/text-utils";
 import { DestructiveButton } from "./components/button";
@@ -14,7 +14,7 @@ import { IFrameContainer } from "./components/iframe";
 import { RawDataList } from "./components/raw-data";
 import { commonT } from "./translations/i18n";
 
-export function renderAccountPage({
+export function AccountPage({
   children,
 }: {
   children: string | undefined;
@@ -23,6 +23,7 @@ export function renderAccountPage({
   const pageTitle = toTitleCase(translation.dictionary.account);
   // oxlint-disable-next-line no-non-null-assertion
   const { displayName, id, imageUrl, title, ...rest } = user!;
+  const logoutUrl = urlBuilder.logout();
 
   return (
     <DocumentLayout title={pageTitle}>
@@ -55,8 +56,8 @@ export function renderAccountPage({
       {auth?.logout ? (
         <form
           id="user"
-          action={href(URLS.ui.logout)}
-          hx-get={href(URLS.ui.logout)}
+          action={logoutUrl}
+          hx-get={logoutUrl}
           hx-confirm={translation.confirmations.logout}
         >
           <DestructiveButton style={{ height: "100%" }}>

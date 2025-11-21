@@ -1,6 +1,6 @@
 // oxlint-disable sort-keys
 
-import SuperHeaders from "@remix-run/headers";
+import { SuperHeaders } from "@remix-run/headers";
 import type { DatabaseAdapter, StorageAdapter } from "@storybooker/adapter";
 import { vi } from "vitest";
 import { translations_enGB } from "../ui/translations";

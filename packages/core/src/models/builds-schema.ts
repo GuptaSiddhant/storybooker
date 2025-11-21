@@ -1,9 +1,9 @@
 // oxlint-disable sort-keys
 
 import z from "zod";
-import { BuildSHASchema, TagSlugSchema } from "./~shared-schema";
+import { BuildIdSchema, TagIdSchema } from "./~shared-schema";
 
-export { BuildSHASchema };
+export { BuildIdSchema };
 
 const buildContentAvailabilityOptions = [
   "none",
@@ -22,17 +22,17 @@ export const BuildSchema = z
       .meta({ description: "Email of the author" }),
     authorName: z.string(),
     createdAt: z.iso.datetime().default(new Date().toISOString()),
-    id: BuildSHASchema,
+    id: BuildIdSchema,
     tagSlugs: z.string(),
     message: z.optional(z.string()),
-    sha: BuildSHASchema,
+    sha: BuildIdSchema,
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
     coverage: z.enum(buildContentAvailabilityOptions),
     screenshots: z.enum(buildContentAvailabilityOptions),
     storybook: z.enum(buildContentAvailabilityOptions),
     testReport: z.enum(buildContentAvailabilityOptions),
   })
-  .meta({ id: "Build", description: "A StoryBooker Build" });
+  .meta({ id: "Build", title: "StoryBooker Build" });
 
 export type BuildCreateType = z.infer<typeof BuildCreateSchema>;
 /** @private */
@@ -46,7 +46,7 @@ export const BuildCreateSchema = BuildSchema.omit({
   tagSlugs: true,
   updatedAt: true,
 }).extend({
-  tags: z.union([TagSlugSchema.array(), TagSlugSchema]).meta({
+  tags: z.union([TagIdSchema.array(), TagIdSchema]).meta({
     description:
       "Tag slugs associated with the build. Should be created beforehand.",
   }),

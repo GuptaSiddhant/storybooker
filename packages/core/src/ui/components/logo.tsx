@@ -1,4 +1,6 @@
-export function SBRLogo(props: JSX.HtmlSvgTag): JSXElement {
+import type { JSX } from "hono/jsx";
+
+export function SBRLogo(props: { style: JSX.CSSProperties }): JSXElement {
   return (
     <svg
       width="465"

@@ -36,7 +36,6 @@ export const translations_enGB = {
     reset: "reset",
     actions: "actions",
     type: "type",
-    slug: "slug",
     upload: "upload",
     files: "files",
     variant: "variant",

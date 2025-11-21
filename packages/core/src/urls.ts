@@ -1,44 +1,7 @@
-// oxlint-disable sort-keys
-
 import path from "node:path";
-import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
 import type { BuildUploadVariant } from "./models/builds-schema";
 import type { TagVariant } from "./models/tags-schema";
-import { getStore } from "./utils/store";
 import { linkRoute, urlJoin } from "./utils/url-utils";
-
-export const URLS = {
-  ui: {
-    root: "",
-    openapi: "openapi",
-    health: "health",
-    account: "account",
-    login: "login",
-    logout: "logout",
-    catchAll: "*filepath",
-  },
-  tasks: {
-    purge: "tasks/purge",
-    processZip: "tasks/process-zip",
-  },
-  serve: {
-    all: "_/:projectId/:buildSHA/*filepath",
-    storybook: "_/:projectId/:buildSHA/storybook/*filepath",
-    coverage: "_/:projectId/:buildSHA/coverage/*filepath",
-    testReport: "_/:projectId/:buildSHA/testReport/*filepath",
-    screenshots: "_/:projectId/:buildSHA/screenshots/*filepath",
-  },
-} as const;
-
-const baseHref = createHrefBuilder();
-
-export const href: HrefBuilder = (...buildParams) => {
-  const { prefix, url: base } = getStore();
-  const [pattern, args, args2] = buildParams;
-  // @ts-expect-error args are complex
-  const value = baseHref(pattern, args, args2);
-  return new URL(urlJoin(prefix, value), base).toString();
-};
 
 /**
  * URL builder for the Storybooks router.
@@ -48,6 +11,9 @@ export const urlBuilder = {
   homepage(): string {
     return linkRoute((client) => client.index.$url());
   },
+  openapi(): string {
+    return linkRoute((client) => client.openapi.$url());
+  },
   staticFile(filepath: string): string {
     return linkRoute((client) =>
       client[":filepath{.+}"].$url({ param: { filepath } }),
@@ -55,8 +21,16 @@ export const urlBuilder = {
   },
 
   // accounts
-  login: (redirect: string): string => {
-    return href(URLS.ui.login, null, { redirect });
+  account: (): string => {
+    return linkRoute((client) => client.account.$url());
+  },
+  login: (redirect?: string): string => {
+    return linkRoute((client) =>
+      client.account.login.$url({ query: { redirect } }),
+    );
+  },
+  logout: (): string => {
+    return linkRoute((client) => client.account.logout.$url());
   },
 
   // projects
@@ -169,16 +143,21 @@ export const urlBuilder = {
   // },
 
   // tasks
+  taskPurge: (projectId?: string): string => {
+    return linkRoute((client) =>
+      client.tasks.purge.$url({ query: { projectId } }),
+    );
+  },
   taskProcessZip: (
     projectId: string,
     buildId: string,
     variant: BuildUploadVariant,
   ): string => {
-    return href(URLS.tasks.processZip, null, {
-      project: projectId,
-      sha: buildId,
-      variant,
-    });
+    return linkRoute((client) =>
+      client.tasks["process-zip"].$url({
+        query: { projectId, buildId, variant },
+      }),
+    );
   },
 
   // serve

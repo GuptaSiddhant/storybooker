@@ -1,4 +1,10 @@
-export function Card({ children, style, ...props }: JSX.HtmlTag): JSXElement {
+import type { JSX } from "hono/jsx";
+
+export function Card({
+  children,
+  style,
+  ...props
+}: JSX.IntrinsicElements["article"]): JSXElement {
   return (
     <article
       {...props}
@@ -29,7 +35,7 @@ export function CardGrid({
   children,
   style,
   ...props
-}: JSX.HtmlTag): JSXElement {
+}: JSX.IntrinsicElements["div"]): JSXElement {
   return (
     <div
       {...props}
@@ -56,7 +62,7 @@ export function CardRow({
   children,
   style,
   ...props
-}: JSX.HtmlTag): JSXElement {
+}: JSX.IntrinsicElements["div"]): JSXElement {
   return (
     <div
       {...props}

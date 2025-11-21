@@ -2,7 +2,7 @@ import type { BuildType } from "../models/builds-schema";
 import type { ProjectType } from "../models/projects-schema";
 import type { TagType } from "../models/tags-schema";
 import { TagsTable } from "../ui/tags-table";
-import { href, urlBuilder, URLS } from "../urls";
+import { urlBuilder } from "../urls";
 import { BuildsTable } from "./builds-table";
 import { DestructiveButton, LinkButton } from "./components/button";
 import {
@@ -23,6 +23,7 @@ export function ProjectsPage({
   projects: ProjectType[];
 }): JSXElement {
   const title = `${commonT.All()} ${commonT.Projects()}`;
+  const purgeUrl = urlBuilder.taskPurge();
 
   return (
     <DocumentLayout title={title}>
@@ -34,7 +35,9 @@ export function ProjectsPage({
               + {commonT.Create()}
             </LinkButton>
             <form
-              hx-post={href(URLS.tasks.purge)}
+              method="post"
+              action={purgeUrl}
+              hx-post={purgeUrl}
               hx-confirm={commonT.confirmPurge()}
             >
               <DestructiveButton>
@@ -69,6 +72,7 @@ export function ProjectDetailsPage({
   recentTags: TagType[];
 }): JSXElement {
   const deleteUrl = urlBuilder.projectDelete(project.id);
+  const purgeUrl = urlBuilder.taskPurge(project.id);
 
   return (
     <DocumentLayout title={project.name}>
@@ -85,7 +89,9 @@ export function ProjectDetailsPage({
               {commonT.Edit()}
             </LinkButton>
             <form
-              hx-post={href(URLS.tasks.purge, null, { project: project.id })}
+              method="post"
+              action={purgeUrl}
+              hx-post={purgeUrl}
               hx-confirm={commonT.confirmPurge()}
             >
               <DestructiveButton>{commonT.Purge()}</DestructiveButton>

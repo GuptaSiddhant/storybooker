@@ -1,8 +1,8 @@
 import type { ProjectType } from "../models/projects-schema";
+import { urlBuilder } from "../urls";
 import { SERVICE_NAME } from "../utils/constants";
 import { getStore } from "../utils/store";
 import { toTitleCase } from "../utils/text-utils";
-import { linkRoute } from "../utils/url-utils";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -32,10 +32,7 @@ export function RootPage({ projects }: RootPageProps): JSXElement {
             height: "100%",
           }}
         >
-          <a
-            href={linkRoute((client) => client.openapi.$url())}
-            target="_blank"
-          >
+          <a href={urlBuilder.openapi()} target="_blank">
             OpenAPI
           </a>
           <span
@@ -57,7 +54,7 @@ export function RootPage({ projects }: RootPageProps): JSXElement {
       <DocumentHeader
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <a href={linkRoute((client) => client.projects.$url())}>
+            <a href={urlBuilder.projectsList()}>
               {commonT.All()} {commonT.Projects()}
             </a>
           </div>

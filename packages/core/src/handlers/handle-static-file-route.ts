@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import SuperHeaders from "@remix-run/headers";
+import { SuperHeaders } from "@remix-run/headers";
 import { generateGlobalScript } from "../ui/scripts/global-script";
 import { generateGlobalStyleSheet } from "../ui/styles/global-style";
 import { authenticateOrThrow } from "../utils/auth";

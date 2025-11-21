@@ -13,6 +13,7 @@ export const ISO_DATE_REGEXP =
 export const QUERY_PARAMS = {
   tagId: "tagId",
   uploadVariant: "variant",
+  redirect: "redirect",
 } as const;
 
 export const PATTERNS = {
