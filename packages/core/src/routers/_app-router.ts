@@ -2,6 +2,7 @@ import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "hono/logger";
 import { SERVICE_NAME } from "..";
+import pkgJson from "../../package.json" with { type: "json" };
 import { handleStaticFileRoute } from "../handlers/handle-static-file-route";
 import { accountRouter } from "./account-router";
 import { buildsRouter } from "./builds-router";
@@ -13,7 +14,7 @@ import { tasksRouter } from "./tasks-router";
 export const appRouter = new OpenAPIHono({ strict: false })
   .doc31("/openapi.json", {
     openapi: "3.1.0",
-    info: { version: "1.0.0", title: SERVICE_NAME },
+    info: { version: pkgJson.version, title: SERVICE_NAME },
   })
   .use(logger())
   .get("/openapi", swaggerUI({ url: "/openapi.json" }))

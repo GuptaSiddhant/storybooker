@@ -7,6 +7,7 @@ import {
   BuildIdSchema,
   BuildsGetResultSchema,
   BuildsListResultSchema,
+  BuildUpdateSchema,
   BuildUploadFormBodySchema,
   BuildUploadQueryParamsSchema,
   type BuildUploadVariant,
@@ -31,7 +32,6 @@ import {
 } from "../utils/openapi-utils";
 import {
   checkIsHTMLRequest,
-  checkIsHXRequest,
   validateBuildUploadZipBody,
 } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
@@ -86,7 +86,7 @@ export const buildsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Create build UI",
+      summary: "Create build - UI",
       method: "get",
       path: "/projects/{projectId}/builds/create",
       tags: [buildTag],
@@ -118,7 +118,7 @@ export const buildsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Create build action",
+      summary: "Create build - action",
       method: "post",
       path: "/projects/{projectId}/builds/create",
       tags: [buildTag],
@@ -167,7 +167,7 @@ export const buildsRouter = new OpenAPIHono()
       const build = await new BuildsModel(projectId).create(data);
       const url = urlBuilder.buildDetails(projectId, build.id);
 
-      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      if (checkIsHTMLRequest(true)) {
         return responseRedirect(url, 303);
       }
 
@@ -235,7 +235,7 @@ export const buildsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Delete build action",
+      summary: "Delete build - action",
       method: "post",
       path: "/projects/{projectId}/builds/{buildId}/delete",
       tags: [buildTag],
@@ -261,7 +261,7 @@ export const buildsRouter = new OpenAPIHono()
       try {
         await new BuildsModel(projectId).delete(buildId, true);
 
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(urlBuilder.buildsList(projectId), 303);
         }
 
@@ -273,7 +273,65 @@ export const buildsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Upload build UI",
+      summary: "Update build - action",
+      method: "post",
+      path: "/projects/{projectId}/builds/{buildId}/update",
+      tags: [buildTag],
+      request: {
+        params: buildIdPathParams,
+        body: {
+          content: { [mimes.formEncoded]: { schema: BuildUpdateSchema } },
+          required: true,
+        },
+      },
+      responses: {
+        202: { description: "Build updated successfully" },
+        303: openapiResponseRedirect("Redirect to build."),
+        404: {
+          description: "Matching project or build not found.",
+          content: openapiErrorResponseContent,
+        },
+        415: {
+          content: openapiErrorResponseContent,
+          description: "Unsupported Media Type",
+        },
+        ...openapiCommonErrorResponses,
+      },
+    }),
+    async (context) => {
+      const { buildId, projectId } = context.req.param();
+
+      const buildsModel = new BuildsModel(projectId);
+
+      if (!(await buildsModel.has(buildId))) {
+        return await responseError(
+          `The build '${buildId}' does not exist in project '${projectId}'.`,
+          404,
+        );
+      }
+
+      await authenticateOrThrow({
+        action: "update",
+        projectId,
+        resource: "build",
+      });
+
+      const data = BuildUpdateSchema.parse(await context.req.parseBody());
+      await buildsModel.update(buildId, data);
+
+      if (checkIsHTMLRequest(true)) {
+        return responseRedirect(
+          urlBuilder.buildDetails(projectId, buildId),
+          303,
+        );
+      }
+
+      return new Response(null, { status: 202 });
+    },
+  )
+  .openapi(
+    createRoute({
+      summary: "Upload build - UI",
       method: "get",
       path: "/projects/{projectId}/builds/{buildId}/upload",
       tags: [buildTag],
@@ -317,7 +375,7 @@ export const buildsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Upload build action",
+      summary: "Upload build - action",
       method: "post",
       path: "/projects/{projectId}/builds/{buildId}/upload",
       tags: [buildTag],
@@ -384,7 +442,7 @@ export const buildsRouter = new OpenAPIHono()
 
         await buildsModel.upload(buildId, variant, file);
 
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(redirectUrl, 303);
         }
 
@@ -403,7 +461,7 @@ export const buildsRouter = new OpenAPIHono()
 
         await buildsModel.upload(buildId, variant);
 
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(redirectUrl, 303);
         }
 

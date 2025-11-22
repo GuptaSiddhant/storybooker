@@ -25,7 +25,7 @@ import {
   openapiResponseRedirect,
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
-import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
+import { checkIsHTMLRequest } from "../utils/request";
 import { responseRedirect } from "../utils/response";
 
 const projectTag = "Projects";
@@ -67,7 +67,7 @@ export const projectsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Create project UI",
+      summary: "Create project - UI",
       method: "get",
       path: "/projects/create",
       tags: [projectTag],
@@ -91,7 +91,7 @@ export const projectsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Create project action",
+      summary: "Create project - action",
       method: "post",
       path: "/projects/create",
       tags: [projectTag],
@@ -127,7 +127,7 @@ export const projectsRouter = new OpenAPIHono()
       const data = ProjectCreateSchema.parse(await context.req.parseBody());
       const project = await new ProjectsModel().create(data);
 
-      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      if (checkIsHTMLRequest(true)) {
         return responseRedirect(urlBuilder.projectDetails(project.id), 303);
       }
 
@@ -187,7 +187,7 @@ export const projectsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Delete project action",
+      summary: "Delete project - action",
       method: "post",
       path: "/projects/{projectId}/delete",
       tags: [projectTag],
@@ -213,7 +213,7 @@ export const projectsRouter = new OpenAPIHono()
       try {
         await new ProjectsModel().delete(projectId);
 
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(urlBuilder.projectsList(), 303);
         }
 
@@ -225,7 +225,7 @@ export const projectsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Update project UI",
+      summary: "Update project - UI",
       method: "get",
       path: "/projects/{projectId}/update",
       tags: [projectTag],
@@ -256,7 +256,7 @@ export const projectsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Update project action",
+      summary: "Update project - action",
       method: "post",
       path: "/projects/{projectId}/update",
       tags: [projectTag],
@@ -291,7 +291,7 @@ export const projectsRouter = new OpenAPIHono()
       const data = ProjectUpdateSchema.parse(await context.req.parseBody());
       await new ProjectsModel().update(projectId, data);
 
-      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      if (checkIsHTMLRequest(true)) {
         return responseRedirect(urlBuilder.projectDetails(projectId), 303);
       }
 

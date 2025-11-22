@@ -84,6 +84,13 @@ export const urlBuilder = {
       }),
     );
   },
+  buildUpdate: (projectId: string, buildId: string): string => {
+    return linkRoute((client) =>
+      client.projects[":projectId"].builds[":buildId"].update.$url({
+        param: { projectId, buildId },
+      }),
+    );
+  },
   buildUpload: (
     projectId: string,
     buildId: string,

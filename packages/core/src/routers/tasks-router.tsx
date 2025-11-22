@@ -4,7 +4,7 @@ import { handlePurge } from "../handlers/handle-purge";
 import { buildUploadVariants } from "../models/builds-schema";
 import { urlBuilder } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
-import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
+import { checkIsHTMLRequest } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
 
 const tasksTag = "Tasks";
@@ -65,7 +65,7 @@ export const tasksRouter = new OpenAPIHono()
       try {
         await handleProcessZip(projectId, buildId, variant);
 
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(
             urlBuilder.buildDetails(projectId, buildId),
             303,

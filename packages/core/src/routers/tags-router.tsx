@@ -27,7 +27,7 @@ import {
   openapiResponseRedirect,
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
-import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
+import { checkIsHTMLRequest } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
 
 const tagsTag = "Tags";
@@ -86,7 +86,7 @@ export const tagsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Create tag UI",
+      summary: "Create tag - UI",
       method: "get",
       path: "/projects/{projectId}/tags/create",
       tags: [tagsTag],
@@ -114,7 +114,7 @@ export const tagsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Create tag action",
+      summary: "Create tag - action",
       method: "post",
       path: "/projects/{projectId}/tags/create",
       tags: [tagsTag],
@@ -162,7 +162,7 @@ export const tagsRouter = new OpenAPIHono()
       const data = TagCreateSchema.parse(await context.req.parseBody());
       const tag = await new TagsModel(projectId).create(data);
 
-      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      if (checkIsHTMLRequest(true)) {
         return responseRedirect(urlBuilder.tagDetails(projectId, tag.id), 303);
       }
 
@@ -216,7 +216,7 @@ export const tagsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Delete tag action",
+      summary: "Delete tag - action",
       method: "post",
       path: "/projects/{projectId}/tags/{tagId}/delete",
       tags: [tagsTag],
@@ -242,13 +242,13 @@ export const tagsRouter = new OpenAPIHono()
       try {
         await new TagsModel(projectId).delete(tagId);
 
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(urlBuilder.tagsList(projectId), 303);
         }
 
         return new Response(null, { status: 204 });
       } catch {
-        if (checkIsHTMLRequest() || checkIsHXRequest()) {
+        if (checkIsHTMLRequest(true)) {
           return responseRedirect(urlBuilder.tagsList(projectId), 303);
         }
 
@@ -258,7 +258,7 @@ export const tagsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Update tag UI",
+      summary: "Update tag - UI",
       method: "get",
       path: "/projects/{projectId}/tags/{tagId}/update",
       tags: [tagsTag],
@@ -291,9 +291,9 @@ export const tagsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Update tag action",
+      summary: "Update tag - action",
       method: "post",
-      path: "/projects/{projectId}/tags/{tagId}/upload",
+      path: "/projects/{projectId}/tags/{tagId}/update",
       tags: [tagsTag],
       request: {
         params: tagIdPathParams,
@@ -303,10 +303,10 @@ export const tagsRouter = new OpenAPIHono()
         },
       },
       responses: {
-        202: { description: "Project updated successfully" },
-        303: openapiResponseRedirect("Redirect to project."),
+        202: { description: "Tag updated successfully" },
+        303: openapiResponseRedirect("Redirect to tag."),
         404: {
-          description: "Matching project not found.",
+          description: "Matching project or tag not found.",
           content: openapiErrorResponseContent,
         },
         415: {
@@ -337,7 +337,7 @@ export const tagsRouter = new OpenAPIHono()
       const data = TagUpdateSchema.parse(await context.req.parseBody());
       await tagsModel.update(tagId, data);
 
-      if (checkIsHTMLRequest() || checkIsHXRequest()) {
+      if (checkIsHTMLRequest(true)) {
         return responseRedirect(urlBuilder.tagDetails(projectId, tagId), 303);
       }
 
