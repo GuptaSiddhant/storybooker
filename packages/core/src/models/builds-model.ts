@@ -57,9 +57,9 @@ export class BuildsModel extends Model<BuildType> {
     this.log("Create build '%s'...", id);
 
     const tags = Array.isArray(parsedTags) ? parsedTags : parsedTags.split(",");
-    const tagSlugs = await Promise.all(
-      tags.filter(Boolean).map(async (tagSlug) => {
-        return await this.#updateOrCreateTag(tagSlug, id);
+    const tagIds = await Promise.all(
+      tags.filter(Boolean).map(async (tagId) => {
+        return await this.#updateOrCreateTag(tagId, id);
       }),
     );
 
@@ -74,7 +74,7 @@ export class BuildsModel extends Model<BuildType> {
       testReport: "none",
       id,
       message: rest.message || "",
-      tagSlugs: tagSlugs.filter(Boolean).join(","),
+      tagIds: tagIds.filter(Boolean).join(","),
       updatedAt: now,
     };
     await this.database.createDocument<BuildType>(
@@ -156,13 +156,13 @@ export class BuildsModel extends Model<BuildType> {
 
     if (updateTag) {
       this.debug("Update tags for build '%s'", buildId);
-      const tagSlugs = build.tagSlugs.split(",");
+      const tagIds = build.tagIds?.split(",") || [];
       const tagsModel = new TagsModel(this.projectId);
       await Promise.allSettled(
-        tagSlugs.map(async (tagSlug) => {
-          const tag = await tagsModel.get(tagSlug);
+        tagIds.map(async (tagId) => {
+          const tag = await tagsModel.get(tagId);
           if (tag.latestBuildId === buildId) {
-            await tagsModel.update(tagSlug, {
+            await tagsModel.update(tagId, {
               buildsCount: Math.max(tag.buildsCount - 1, 0),
               latestBuildId: "",
             });
@@ -311,29 +311,30 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   // helpers
-  async listByTag(tagSlug: string): Promise<BuildType[]> {
+  async listByTag(tagId: string): Promise<BuildType[]> {
     const builds = await this.list({
-      filter: (item) => item.tagSlugs.split(",").includes(tagSlug),
+      filter: (item) =>
+        item.tagIds ? item.tagIds.split(",").includes(tagId) : false,
     });
 
     return builds;
   }
 
-  async deleteByTag(tagSlug: string, force: boolean): Promise<void> {
-    const builds = await this.listByTag(tagSlug);
+  async deleteByTag(tagId: string, force: boolean): Promise<void> {
+    const builds = await this.listByTag(tagId);
     this.log(
       "Delete builds by tag: '%s' (%d, force: %s)...",
-      tagSlug,
+      tagId,
       builds.length,
       force.valueOf(),
     );
 
     await Promise.allSettled(
       builds.map(async (build): Promise<void> => {
-        const buildTagSlugs = build.tagSlugs.split(",");
-        if (!force && buildTagSlugs.length > 1) {
-          const newSlugs = buildTagSlugs.filter((slug) => slug !== tagSlug);
-          await this.update(build.id, { tagSlugs: newSlugs.join(",") });
+        const buildTagIds = build.tagIds?.split(",") || [];
+        if (!force && buildTagIds.length > 1) {
+          const newIds = buildTagIds.filter((id) => id !== tagId);
+          await this.update(build.id, { tagIds: newIds.join(",") });
         } else {
           await this.delete(build.id, false);
         }
@@ -341,24 +342,24 @@ export class BuildsModel extends Model<BuildType> {
     );
   }
 
-  async #updateOrCreateTag(tagSlug: string, buildId: string): Promise<string> {
+  async #updateOrCreateTag(tagId: string, buildId: string): Promise<string> {
     const tagsModel = new TagsModel(this.projectId);
     // Either "my-tag" or "my-tag;branch" or "my-tag;branch;My tag"
-    const [slug = tagSlug, tagType, tagValue] = tagSlug
+    const [id = tagId, tagType, tagValue] = tagId
       .split(";")
       .map((part) => part.trim());
 
     try {
-      const existingTag = await tagsModel.get(tagSlug);
-      await tagsModel.update(slug, {
+      const existingTag = await tagsModel.get(id);
+      await tagsModel.update(id, {
         buildsCount: existingTag.buildsCount + 1,
         latestBuildId: buildId,
       });
-      return slug;
+      return id;
     } catch {
       try {
-        const type = (tagType as TagVariant) || TagsModel.guessType(slug);
-        const value = tagValue || slug;
+        const type = (tagType as TagVariant) || TagsModel.guessType(id);
+        const value = tagValue || id;
         this.log("A new tag '%s' (%s) is being created.", value, type);
         const tag = await tagsModel.create(
           { latestBuildId: buildId, type, value },
@@ -367,8 +368,8 @@ export class BuildsModel extends Model<BuildType> {
 
         return tag.id;
       } catch (error) {
-        this.error("Error creating tag slug:", error);
-        return slug;
+        this.error("Error creating tag:", error);
+        return id;
       }
     }
   }

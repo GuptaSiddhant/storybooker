@@ -21,6 +21,7 @@ import {
   BuildUploadPage,
 } from "../ui/builds-pages";
 import { urlBuilder } from "../urls";
+import { urlSearchParamsToObject } from "../utils";
 import { authenticateOrThrow } from "../utils/auth";
 import { QUERY_PARAMS } from "../utils/constants";
 import { mimes } from "../utils/mime-utils";
@@ -163,7 +164,9 @@ export const buildsRouter = new OpenAPIHono()
         resource: "build",
       });
 
-      const data = BuildCreateSchema.parse(await context.req.parseBody());
+      const data = BuildCreateSchema.parse(
+        urlSearchParamsToObject(new URLSearchParams(await context.req.text())),
+      );
       const build = await new BuildsModel(projectId).create(data);
       const url = urlBuilder.buildDetails(projectId, build.id);
 
@@ -455,9 +458,9 @@ export const buildsRouter = new OpenAPIHono()
           return await responseError(bodyError.message, bodyError.status);
         }
 
-        const { variant } = BuildUploadQueryParamsSchema.parse(
-          context.req.queries(),
-        );
+        const { variant } = BuildUploadQueryParamsSchema.parse({
+          variant: context.req.query("variant"),
+        });
 
         await buildsModel.upload(buildId, variant);
 

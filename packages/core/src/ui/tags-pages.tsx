@@ -104,7 +104,7 @@ export function TagDetailsPage({
               method="post"
               action={deleteUrl}
               hx-post={deleteUrl}
-              hx-confirm={commonT.confirmDelete(commonT.Tag(), tag.slug)}
+              hx-confirm={commonT.confirmDelete(commonT.Tag(), tag.id)}
             >
               <DestructiveButton>{commonT.Delete()}</DestructiveButton>
             </form>

@@ -63,16 +63,16 @@ export function BuildsTable({
               cell: (item) => {
                 return (
                   <div>
-                    {item.tagSlugs.split(",").map((slug, index, arr) => {
-                      const tag = tags.find((tag) => tag.slug === slug);
+                    {item.tagIds?.split(",").map((id, index, arr) => {
+                      const tag = tags.find((tag) => tag.id === id);
                       return (
                         <>
                           <a
                             safe
-                            href={urlBuilder.tagDetails(project.id, slug)}
-                            title={slug}
+                            href={urlBuilder.tagDetails(project.id, id)}
+                            title={id}
                           >
-                            {tag ? `${tag.value} (${tag.type})` : slug}
+                            {tag ? `${tag.value} (${tag.type})` : id}
                           </a>
                           {index === arr.length - 1 ? null : <span>, </span>}
                         </>

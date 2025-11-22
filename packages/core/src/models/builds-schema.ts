@@ -23,7 +23,7 @@ export const BuildSchema = z
     authorName: z.string(),
     createdAt: z.iso.datetime().default(new Date().toISOString()),
     id: BuildIdSchema,
-    tagSlugs: z.string(),
+    tagIds: z.string().optional(),
     message: z.optional(z.string()),
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
     coverage: z.enum(buildContentAvailabilityOptions),
@@ -41,12 +41,12 @@ export const BuildCreateSchema = BuildSchema.omit({
   screenshots: true,
   storybook: true,
   testReport: true,
-  tagSlugs: true,
+  tagIds: true,
   updatedAt: true,
 }).extend({
   tags: z.union([TagIdSchema.array(), TagIdSchema]).meta({
     description:
-      "Tag slugs associated with the build. Should be created beforehand.",
+      "Tag IDs associated with the build. Should be created beforehand.",
   }),
 });
 

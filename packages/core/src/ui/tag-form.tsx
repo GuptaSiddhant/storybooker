@@ -24,7 +24,7 @@ export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
       <fieldset>
         <legend>{commonT.Details()}</legend>
 
-        {tag ? <input type="hidden" name="slug" value={tag.slug} /> : null}
+        {tag ? <input type="hidden" name="id" value={tag.id} /> : null}
 
         <div class="field">
           <label for="value">{commonT.Tag()}</label>
@@ -75,7 +75,7 @@ export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
         <LinkButton
           href={
             tag
-              ? urlBuilder.tagDetails(projectId, tag.slug)
+              ? urlBuilder.tagDetails(projectId, tag.id)
               : urlBuilder.tagsList(projectId)
           }
         >

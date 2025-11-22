@@ -58,9 +58,11 @@ export const tasksRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { buildId, projectId, variant } = processZipSearchParams.parse(
-        context.req.queries(),
-      );
+      const { buildId, projectId, variant } = processZipSearchParams.parse({
+        buildId: context.req.query("buildId"),
+        projectId: context.req.query("projectId"),
+        variant: context.req.query("variant"),
+      });
 
       try {
         await handleProcessZip(projectId, buildId, variant);

@@ -31,14 +31,13 @@ export class TagsModel extends Model<TagType> {
   async create(data: TagCreateType, withBuild = false): Promise<TagType> {
     this.log("Create tag '%s'...", data.value);
 
-    const slug = TagsModel.createSlug(data.value);
+    const id = TagsModel.createId(data.value);
     const now = new Date().toISOString();
     const tag: TagType = {
       ...data,
       buildsCount: withBuild ? 1 : 0,
       createdAt: now,
-      id: slug,
-      slug,
+      id: id,
       updatedAt: now,
     };
     await this.database.createDocument<TagType>(
@@ -84,23 +83,23 @@ export class TagsModel extends Model<TagType> {
     return;
   }
 
-  async delete(slug: string): Promise<void> {
-    this.log("Delete tag '%s'...", slug);
+  async delete(id: string): Promise<void> {
+    this.log("Delete tag '%s'...", id);
 
     const { gitHubDefaultBranch } = await new ProjectsModel().get(
       this.projectId,
     );
-    if (slug === TagsModel.createSlug(gitHubDefaultBranch)) {
+    if (id === TagsModel.createId(gitHubDefaultBranch)) {
       const message = `Cannot delete the tag associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
       this.error(message);
       throw new Error(message);
     }
 
-    await this.database.deleteDocument(this.collectionId, slug, this.dbOptions);
+    await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
 
     try {
-      this.debug("Delete builds associated with tag '%s'...", slug);
-      await new BuildsModel(this.projectId).deleteByTag(slug, false);
+      this.debug("Delete builds associated with tag '%s'...", id);
+      await new BuildsModel(this.projectId).deleteByTag(id, false);
     } catch (error) {
       this.error(error);
     }
@@ -132,15 +131,15 @@ export class TagsModel extends Model<TagType> {
     };
   };
 
-  static createSlug(value: string): string {
+  static createId(value: string): string {
     return value.trim().toLowerCase().replace(/\W+/, "-");
   }
 
-  static guessType(slug: string): TagType["type"] {
-    if (/^\d+$/.test(slug)) {
+  static guessType(id: string): TagType["type"] {
+    if (/^\d+$/.test(id)) {
       return "pr";
     }
-    if (/^\w+-\d+$/.test(slug)) {
+    if (/^\w+-\d+$/.test(id)) {
       return "jira";
     }
     return "branch";

@@ -13,7 +13,6 @@ export const TagSchema = z
     createdAt: z.iso.datetime().default(new Date().toISOString()),
     id: TagIdSchema,
     latestBuildId: z.union([BuildIdSchema.optional(), z.literal("")]),
-    slug: TagIdSchema,
     type: z.enum(TagTypes),
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
     value: z.string().meta({ description: "The value of the tag." }),
@@ -25,7 +24,7 @@ export const TagCreateSchema = TagSchema.omit({
   buildsCount: true,
   createdAt: true,
   id: true,
-  slug: true,
+
   updatedAt: true,
 });
 
@@ -33,7 +32,6 @@ export type TagUpdateType = z.infer<typeof TagUpdateSchema>;
 export const TagUpdateSchema = TagSchema.omit({
   createdAt: true,
   id: true,
-  slug: true,
   updatedAt: true,
 }).partial();
 
