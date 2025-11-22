@@ -174,10 +174,10 @@ export const urlBuilder = {
     storyId?: string,
   ): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: "storybook/index.html",
         },
         query: {
@@ -192,10 +192,10 @@ export const urlBuilder = {
     storyId: string,
   ): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: "storybook/iframe.html",
         },
         query: { id: storyId, viewMode: "story" },
@@ -204,10 +204,10 @@ export const urlBuilder = {
   },
   storybookDownload: (projectId: string, buildId: string): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: "storybook.zip",
         },
         query: {},
@@ -216,10 +216,10 @@ export const urlBuilder = {
   },
   storybookTestReport: (projectId: string, buildId: string): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: "testReport/index.html",
         },
         query: {},
@@ -228,10 +228,10 @@ export const urlBuilder = {
   },
   storybookCoverage: (projectId: string, buildId: string): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: "coverage/index.html",
         },
         query: {},
@@ -244,10 +244,10 @@ export const urlBuilder = {
     ...filename: string[]
   ): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: path.posix.join("screenshots", ...filename),
         },
         query: {},
@@ -259,10 +259,10 @@ export const urlBuilder = {
     buildId: string,
   ): string => {
     return linkRoute((client) =>
-      client._[":projectId"][":buildSHA"][":filepath"].$url({
+      client._[":projectId"][":buildId"][":filepath{.+}"].$url({
         param: {
           projectId,
-          buildSHA: buildId,
+          buildId,
           filepath: "screenshots.zip",
         },
         query: {},

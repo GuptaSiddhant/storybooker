@@ -74,7 +74,7 @@ export function BuildDetailsPage({
   const deleteUrl = urlBuilder.buildDelete(projectId, build.id);
 
   return (
-    <DocumentLayout title={build.sha.slice(0, 7)}>
+    <DocumentLayout title={build.id.slice(0, 7)}>
       <DocumentHeader
         breadcrumbs={[projectId, commonT.Builds()]}
         toolbar={
@@ -89,7 +89,7 @@ export function BuildDetailsPage({
                 method="post"
                 action={deleteUrl}
                 hx-post={deleteUrl}
-                hx-confirm={commonT.confirmDelete(commonT.Build(), build.sha)}
+                hx-confirm={commonT.confirmDelete(commonT.Build(), build.id)}
               >
                 <DestructiveButton>{commonT.Delete()}</DestructiveButton>
               </form>
@@ -98,8 +98,8 @@ export function BuildDetailsPage({
         }
       >
         {build.message
-          ? `[${build.sha.slice(0, 7)}] ${build.message}`
-          : build.sha.slice(0, 7)}
+          ? `[${build.id.slice(0, 7)}] ${build.message}`
+          : build.id.slice(0, 7)}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
         <BuildProcessStatus

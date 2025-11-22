@@ -46,12 +46,12 @@ export function BuildsTable({
           },
         },
         {
-          id: "sha",
-          header: "SHA",
+          id: "id",
+          header: "ID/SHA",
           cell: (item) => {
             return (
-              <a safe href={urlBuilder.buildDetails(project.id, item.sha)}>
-                {item.sha.slice(0, 7)}
+              <a safe href={urlBuilder.buildDetails(project.id, item.id)}>
+                {item.id.slice(0, 7)}
               </a>
             );
           },
@@ -94,15 +94,15 @@ export function BuildsTable({
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
                 <a
-                  href={urlBuilder.storybookIndexHtml(project.id, item.sha)}
+                  href={urlBuilder.storybookIndexHtml(project.id, item.id)}
                   target="_blank"
                 >
                   {commonT.View()}
                 </a>
                 <a
-                  href={urlBuilder.storybookDownload(project.id, item.sha)}
+                  href={urlBuilder.storybookDownload(project.id, item.id)}
                   target="_blank"
-                  download={`storybook-${project.id}-${item.sha}.zip`}
+                  download={`storybook-${project.id}-${item.id}.zip`}
                 >
                   {commonT.Download()}
                 </a>
@@ -125,13 +125,13 @@ export function BuildsTable({
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
                 <a
-                  href={urlBuilder.storybookTestReport(project.id, item.sha)}
+                  href={urlBuilder.storybookTestReport(project.id, item.id)}
                   target="_blank"
                 >
                   Test Report
                 </a>
                 <a
-                  href={urlBuilder.storybookCoverage(project.id, item.sha)}
+                  href={urlBuilder.storybookCoverage(project.id, item.id)}
                   target="_blank"
                 >
                   Coverage
@@ -150,7 +150,7 @@ export function BuildsTable({
                   href={urlBuilder.gitHub(
                     project.gitHubRepository,
                     "commit",
-                    item.sha,
+                    item.id,
                   )}
                   target="_blank"
                 >

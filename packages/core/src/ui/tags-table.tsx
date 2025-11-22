@@ -108,7 +108,7 @@ export function TagsTable({
           id: "build",
           header: `${commonT.Latest()} ${commonT.Build()}`,
           cell: (item) => (
-            <LatestBuild projectId={project.id} sha={item.latestBuildSHA} />
+            <LatestBuild projectId={project.id} buildId={item.latestBuildId} />
           ),
         },
         {

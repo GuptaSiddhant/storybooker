@@ -2,15 +2,15 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import { SuperHeaders } from "@remix-run/headers";
+import { generateGlobalSprite } from "../ui/icons/global-sprite";
 import { generateGlobalScript } from "../ui/scripts/global-script";
 import { generateGlobalStyleSheet } from "../ui/styles/global-style";
 import { authenticateOrThrow } from "../utils/auth";
 import {
+  ASSETS,
   CACHE_CONTROL_PUBLIC_WEEK,
   DEFAULT_STATIC_DIRS,
-  SCRIPTS,
   SERVICE_NAME,
-  STYLESHEETS,
 } from "../utils/constants";
 import { getMimeType, mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
@@ -29,7 +29,7 @@ export async function handleStaticFileRoute(
     resource: "ui",
   });
 
-  if (filepath.startsWith(`/${STYLESHEETS.globalStyles}`)) {
+  if (filepath.startsWith(`/${ASSETS.globalStyles}`)) {
     const { darkTheme, lightTheme } = ui || {};
     const stylesheet = generateGlobalStyleSheet({ darkTheme, lightTheme });
 
@@ -42,13 +42,25 @@ export async function handleStaticFileRoute(
     });
   }
 
-  if (filepath.startsWith(`/${SCRIPTS.globalScript}`)) {
+  if (filepath.startsWith(`/${ASSETS.globalScript}`)) {
     const script = generateGlobalScript();
 
     return new Response(script, {
       headers: new SuperHeaders({
         cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
         contentType: mimes.js,
+      }),
+      status: 200,
+    });
+  }
+
+  if (filepath.startsWith(`/${ASSETS.globalSprite}`)) {
+    const sprite = generateGlobalSprite();
+
+    return new Response(sprite, {
+      headers: new SuperHeaders({
+        cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
+        contentType: mimes.svg,
       }),
       status: 200,
     });

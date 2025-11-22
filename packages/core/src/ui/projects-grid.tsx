@@ -27,9 +27,9 @@ function ProjectCard({ project }: { project: ProjectType }): JSXElement {
       >
         {project.name}
       </a>
-      {project.latestBuildSHA ? (
+      {project.latestBuildId ? (
         <div>
-          <LatestBuild projectId={project.id} sha={project.latestBuildSHA} />
+          <LatestBuild projectId={project.id} buildId={project.latestBuildId} />
           <Time datetime={project.updatedAt} />
         </div>
       ) : null}

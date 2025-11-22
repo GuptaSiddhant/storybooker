@@ -49,7 +49,7 @@ export function ProjectsTable({
           id: "build",
           header: `${commonT.Latest()} ${getT("dictionary", "build")}`,
           cell: (item) => (
-            <LatestBuild projectId={item.id} sha={item.latestBuildSHA} />
+            <LatestBuild projectId={item.id} buildId={item.latestBuildId} />
           ),
         },
         {

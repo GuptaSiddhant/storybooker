@@ -25,7 +25,6 @@ export const BuildSchema = z
     id: BuildIdSchema,
     tagSlugs: z.string(),
     message: z.optional(z.string()),
-    sha: BuildIdSchema,
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
     coverage: z.enum(buildContentAvailabilityOptions),
     screenshots: z.enum(buildContentAvailabilityOptions),
@@ -42,7 +41,6 @@ export const BuildCreateSchema = BuildSchema.omit({
   screenshots: true,
   storybook: true,
   testReport: true,
-  id: true,
   tagSlugs: true,
   updatedAt: true,
 }).extend({
@@ -56,7 +54,6 @@ export type BuildUpdateType = z.infer<typeof BuildUpdateSchema>;
 export const BuildUpdateSchema = BuildSchema.omit({
   createdAt: true,
   id: true,
-  sha: true,
   updatedAt: true,
 }).partial();
 

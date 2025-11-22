@@ -70,7 +70,7 @@ export function BuildStories({
                       {list.map((story) => (
                         <StoryCard
                           projectId={projectId}
-                          sha={build.sha}
+                          buildId={build.id}
                           story={story}
                           hasScreenshots={build.screenshots === "ready"}
                         />
@@ -89,25 +89,29 @@ export function BuildStories({
 
 function StoryCard({
   projectId,
-  sha,
+  buildId,
   story,
   hasScreenshots,
 }: {
   projectId: string;
-  sha: string;
+  buildId: string;
   story: BuildStoryType;
   hasScreenshots: boolean;
 }): JSXElement {
-  const storybookHref = urlBuilder.storybookIndexHtml(projectId, sha, story.id);
+  const storybookHref = urlBuilder.storybookIndexHtml(
+    projectId,
+    buildId,
+    story.id,
+  );
   const storybookIframeHref = urlBuilder.storybookIFrameHtml(
     projectId,
-    sha,
+    buildId,
     story.id,
   );
 
   const screenshotSrc = urlBuilder.storybookScreenshot(
     projectId,
-    sha,
+    buildId,
     story.importPath,
     `${story.name}.png`,
   );
@@ -134,7 +138,7 @@ function StoryCard({
             paddingLeft: "0.5rem",
           }}
         >
-          {"&#x2192;"}
+          →
         </a>
       </header>
 

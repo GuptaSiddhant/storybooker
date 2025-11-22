@@ -53,13 +53,13 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   async create(data: BuildCreateType): Promise<BuildType> {
-    const { tags: parsedTags, sha, ...rest } = data;
-    this.log("Create build '%s'...", sha);
+    const { tags: parsedTags, id, ...rest } = data;
+    this.log("Create build '%s'...", id);
 
     const tags = Array.isArray(parsedTags) ? parsedTags : parsedTags.split(",");
     const tagSlugs = await Promise.all(
       tags.filter(Boolean).map(async (tagSlug) => {
-        return await this.#updateOrCreateTag(tagSlug, sha);
+        return await this.#updateOrCreateTag(tagSlug, id);
       }),
     );
 
@@ -72,9 +72,8 @@ export class BuildsModel extends Model<BuildType> {
       screenshots: "none",
       storybook: "none",
       testReport: "none",
-      id: sha,
+      id,
       message: rest.message || "",
-      sha,
       tagSlugs: tagSlugs.filter(Boolean).join(","),
       updatedAt: now,
     };
@@ -88,7 +87,7 @@ export class BuildsModel extends Model<BuildType> {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
       if (tags.includes(project.gitHubDefaultBranch)) {
-        await projectsModel.update(this.projectId, { latestBuildSHA: sha });
+        await projectsModel.update(this.projectId, { latestBuildId: id });
       }
     } catch (error) {
       this.error(error);
@@ -162,10 +161,10 @@ export class BuildsModel extends Model<BuildType> {
       await Promise.allSettled(
         tagSlugs.map(async (tagSlug) => {
           const tag = await tagsModel.get(tagSlug);
-          if (tag.latestBuildSHA === buildId) {
+          if (tag.latestBuildId === buildId) {
             await tagsModel.update(tagSlug, {
               buildsCount: Math.max(tag.buildsCount - 1, 0),
-              latestBuildSHA: "",
+              latestBuildId: "",
             });
           }
         }),
@@ -175,24 +174,24 @@ export class BuildsModel extends Model<BuildType> {
     try {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
-      if (project.latestBuildSHA === buildId) {
+      if (project.latestBuildId === buildId) {
         this.debug("Update project for build '%s'", buildId);
         await projectsModel.update(this.projectId, {
-          latestBuildSHA: "",
+          latestBuildId: "",
         });
       }
     } catch (error) {
-      this.error("Cannot unset build SHA from project:", error);
+      this.error("Cannot unset build ID from project:", error);
     }
   }
 
   async upload(
-    buildSHA: string,
+    buildId: string,
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<void> {
     const { config, request } = getStore();
-    this.log("Upload build '%s' (%s)...", buildSHA, variant);
+    this.log("Upload build '%s' (%s)...", buildId, variant);
     const variantCopy = variant; // for switch fallthrough/default
 
     switch (variant) {
@@ -200,8 +199,8 @@ export class BuildsModel extends Model<BuildType> {
       case "testReport":
       case "screenshots":
       case "storybook": {
-        const size = await this.#uploadZipFile(buildSHA, variant, zipFile);
-        await this.update(buildSHA, { [variant]: "uploaded" });
+        const size = await this.#uploadZipFile(buildId, variant, zipFile);
+        await this.update(buildId, { [variant]: "uploaded" });
 
         const {
           maxInlineUploadProcessingSizeInBytes = 5 * 1024 * 1024,
@@ -213,7 +212,7 @@ export class BuildsModel extends Model<BuildType> {
           size !== undefined &&
           size <= maxInlineUploadProcessingSizeInBytes
         ) {
-          await handleProcessZip(this.projectId, buildSHA, variant).catch(
+          await handleProcessZip(this.projectId, buildId, variant).catch(
             (error: unknown) => {
               this.error(error);
             },
@@ -223,14 +222,10 @@ export class BuildsModel extends Model<BuildType> {
 
         // Otherwise queue processing task if enabled
         if (queueLargeZipFileProcessing) {
-          this.log(
-            "Queue processing for build '%s' (%s)...",
-            buildSHA,
-            variant,
-          );
+          this.log("Queue processing for build '%s' (%s)...", buildId, variant);
           const url = urlBuilder.taskProcessZip(
             this.projectId,
-            buildSHA,
+            buildId,
             variant,
           );
           // Do not await fetch to avoid blocking
@@ -274,10 +269,10 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   async getStories(
-    shaOrBuild: string | BuildType,
+    idOrBuild: string | BuildType,
   ): Promise<BuildStoryType[] | null> {
-    const { storybook, sha } =
-      typeof shaOrBuild === "string" ? await this.get(shaOrBuild) : shaOrBuild;
+    const { storybook, id } =
+      typeof idOrBuild === "string" ? await this.get(idOrBuild) : idOrBuild;
 
     if (storybook !== "ready") {
       return null;
@@ -286,9 +281,9 @@ export class BuildsModel extends Model<BuildType> {
     const { logger } = getStore();
 
     try {
-      this.log("List stories '%s'...", sha);
+      this.log("List stories '%s'...", id);
 
-      const buildIndexJsonPath = `${sha}/storybook/index.json`;
+      const buildIndexJsonPath = `${id}/storybook/index.json`;
       const { content } = await this.storage.downloadFile(
         generateStorageContainerId(this.projectId),
         buildIndexJsonPath,
@@ -346,7 +341,7 @@ export class BuildsModel extends Model<BuildType> {
     );
   }
 
-  async #updateOrCreateTag(tagSlug: string, buildSHA: string): Promise<string> {
+  async #updateOrCreateTag(tagSlug: string, buildId: string): Promise<string> {
     const tagsModel = new TagsModel(this.projectId);
     // Either "my-tag" or "my-tag;branch" or "my-tag;branch;My tag"
     const [slug = tagSlug, tagType, tagValue] = tagSlug
@@ -357,7 +352,7 @@ export class BuildsModel extends Model<BuildType> {
       const existingTag = await tagsModel.get(tagSlug);
       await tagsModel.update(slug, {
         buildsCount: existingTag.buildsCount + 1,
-        latestBuildSHA: buildSHA,
+        latestBuildId: buildId,
       });
       return slug;
     } catch {
@@ -366,7 +361,7 @@ export class BuildsModel extends Model<BuildType> {
         const value = tagValue || slug;
         this.log("A new tag '%s' (%s) is being created.", value, type);
         const tag = await tagsModel.create(
-          { latestBuildSHA: buildSHA, type, value },
+          { latestBuildId: buildId, type, value },
           true,
         );
 
@@ -379,12 +374,12 @@ export class BuildsModel extends Model<BuildType> {
   }
 
   async #uploadZipFile(
-    buildSHA: string,
+    buildId: string,
     variant: BuildUploadVariant,
     zipFile?: File,
   ): Promise<number | undefined> {
     const { request } = getStore();
-    this.debug("(%s-%s) Uploading zip file", buildSHA, variant);
+    this.debug("(%s-%s) Uploading zip file", buildId, variant);
 
     const content: string | Blob | ReadableStream | null = zipFile
       ? zipFile.stream()
@@ -400,7 +395,7 @@ export class BuildsModel extends Model<BuildType> {
         {
           content,
           mimeType: mimes.zip,
-          path: `${buildSHA}/${variant}.zip`,
+          path: `${buildId}/${variant}.zip`,
         },
       ],
       this.storageOptions,

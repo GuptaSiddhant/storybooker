@@ -215,7 +215,7 @@ export const buildsRouter = new OpenAPIHono()
           model.checkAuth("update"),
         ]);
         const canDeleteBuild =
-          hasDeletePermission && project.latestBuildSHA !== build.sha;
+          hasDeletePermission && project.latestBuildId !== build.id;
 
         const stories = await model.getStories(build);
 

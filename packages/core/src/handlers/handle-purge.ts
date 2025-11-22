@@ -28,7 +28,7 @@ async function purgeProject(project: ProjectType): Promise<void> {
   const {
     id: projectId,
     gitHubDefaultBranch,
-    latestBuildSHA,
+    latestBuildId,
     purgeBuildsAfterDays = DEFAULT_PURGE_AFTER_DAYS,
   } = project;
   const expiryTime = new Date(
@@ -43,7 +43,7 @@ async function purgeProject(project: ProjectType): Promise<void> {
   const buildsModel = new BuildsModel(projectId);
   const expiredBuilds = await buildsModel.list({
     filter: (item) =>
-      item.id !== latestBuildSHA && new Date(item.updatedAt) < expiryTime,
+      item.id !== latestBuildId && new Date(item.updatedAt) < expiryTime,
   });
   for (const build of expiredBuilds) {
     // oxlint-disable-next-line no-await-in-loop

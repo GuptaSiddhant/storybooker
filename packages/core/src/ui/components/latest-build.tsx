@@ -3,12 +3,12 @@ import { commonT, getT } from "../translations/i18n";
 
 export function LatestBuild({
   projectId,
-  sha,
+  buildId,
 }: {
   projectId: string;
-  sha: string | undefined;
+  buildId: string | undefined;
 }): JSXElement {
-  if (!sha) {
+  if (!buildId) {
     return (
       <span class="description">{getT("messages", "no_builds_available")}</span>
     );
@@ -17,14 +17,14 @@ export function LatestBuild({
   return (
     <div>
       <div safe style={{ fontFamily: "monospace" }}>
-        {sha.slice(0, 7)}
+        {buildId.slice(0, 7)}
       </div>
       <div>
-        <a href={urlBuilder.buildDetails(projectId, sha)}>
+        <a href={urlBuilder.buildDetails(projectId, buildId)}>
           {commonT.Details()}
         </a>
         {" / "}
-        <a href={urlBuilder.storybookIndexHtml(projectId, sha)}>
+        <a href={urlBuilder.storybookIndexHtml(projectId, buildId)}>
           {commonT.StoryBook()}
         </a>
       </div>

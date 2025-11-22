@@ -1,14 +1,12 @@
 import type { JSX } from "hono/jsx";
 
-export function SBRLogo(props: { style: JSX.CSSProperties }): JSXElement {
+export function SBRLogoIcon(props: {
+  style?: JSX.CSSProperties;
+  width?: string;
+  height?: string;
+}): JSXElement {
   return (
-    <svg
-      width="465"
-      height="232"
-      viewBox="0 0 465 232"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
+    <svg viewBox="0 0 465 232" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
         d="M401.93 119.28V77.7836L364.802 2.01562H392.858L405.29 29.2316L414.362 52.2476H415.706L424.778 29.2316L437.21 2.01562H464.258L427.13 77.7836V119.28H401.93Z"
         fill="currentcolor"

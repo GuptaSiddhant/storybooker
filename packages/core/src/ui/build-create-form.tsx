@@ -29,8 +29,8 @@ export function BuildCreateForm({
         <legend>{commonT.Details()}</legend>
 
         <div class="field">
-          <label for="sha">SHA</label>
-          <input id="sha" name="sha" required />
+          <label for="id">ID / SHA</label>
+          <input id="id" name="id" required />
         </div>
 
         <div class="field">

@@ -33,7 +33,7 @@ export const ProjectSchema = z
 
     jiraDomain: z.union([z.url().optional(), z.literal("")]),
 
-    latestBuildSHA: z.union([BuildIdSchema.optional(), z.literal("")]),
+    latestBuildId: z.union([BuildIdSchema.optional(), z.literal("")]),
 
     name: z.string().meta({ description: "Name of the project." }),
 
@@ -53,7 +53,7 @@ export const ProjectSchema = z
 export type ProjectCreateType = z.infer<typeof ProjectCreateSchema>;
 export const ProjectCreateSchema = ProjectSchema.omit({
   createdAt: true,
-  latestBuildSHA: true,
+  latestBuildId: true,
   updatedAt: true,
 });
 

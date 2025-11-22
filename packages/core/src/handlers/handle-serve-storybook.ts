@@ -9,16 +9,16 @@ import { responseError } from "../utils/response";
 import { getStore } from "../utils/store";
 
 export async function handleServeStoryBook({
-  buildSHA,
+  buildId,
   filepath,
   projectId,
 }: {
-  buildSHA: string;
+  buildId: string;
   projectId: string;
   filepath: string;
 }): Promise<Response> {
   const { abortSignal, logger, storage, ui } = getStore();
-  const storageFilepath = path.posix.join(buildSHA, filepath);
+  const storageFilepath = path.posix.join(buildId, filepath);
   await authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
   try {

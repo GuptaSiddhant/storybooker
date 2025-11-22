@@ -55,13 +55,13 @@ export const rootRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Serve StoryBook",
+      summary: "Serve build files",
       method: "get",
-      path: "_/{projectId}/{buildSHA}/{filepath}",
+      path: "_/{projectId}/{buildId}/{filepath{.+}}",
       request: {
         params: z.object({
           projectId: z.string(),
-          buildSHA: z.string(),
+          buildId: z.string(),
           filepath: z.string(),
         }),
         query: z
@@ -80,7 +80,7 @@ export const rootRouter = new OpenAPIHono()
       },
     }),
     (context) => {
-      const { buildSHA, filepath, projectId } = context.req.param();
-      return handleServeStoryBook({ buildSHA, filepath, projectId });
+      const { buildId, filepath, projectId } = context.req.param();
+      return handleServeStoryBook({ buildId, filepath, projectId });
     },
   );

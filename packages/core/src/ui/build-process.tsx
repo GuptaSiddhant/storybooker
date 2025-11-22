@@ -57,7 +57,7 @@ function BuildVariantStatus({
     return null;
   }
 
-  const url = urlBuilder.taskProcessZip(projectId, build.sha, variant);
+  const url = urlBuilder.taskProcessZip(projectId, build.id, variant);
   const isProcessing = build[variant] === "processing";
 
   return (

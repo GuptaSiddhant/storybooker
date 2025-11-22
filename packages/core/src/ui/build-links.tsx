@@ -23,14 +23,14 @@ export function BuildLinksFooter({
     >
       {build.storybook === "ready" ? (
         <a
-          href={urlBuilder.storybookIndexHtml(projectId, build.sha)}
+          href={urlBuilder.storybookIndexHtml(projectId, build.id)}
           target="_blank"
         >
           {commonT.View()} {commonT.StoryBook()}
         </a>
       ) : hasUpdatePermission && build.storybook === "none" ? (
         <a
-          href={urlBuilder.buildUpload(projectId, build.sha, "storybook")}
+          href={urlBuilder.buildUpload(projectId, build.id, "storybook")}
           class="description"
         >
           {commonT.Upload()} {commonT.StoryBook()}
@@ -39,14 +39,14 @@ export function BuildLinksFooter({
 
       {build.testReport === "ready" ? (
         <a
-          href={urlBuilder.storybookTestReport(projectId, build.sha)}
+          href={urlBuilder.storybookTestReport(projectId, build.id)}
           target="_blank"
         >
           {commonT.View()} Test Report
         </a>
       ) : hasUpdatePermission && build.testReport === "none" ? (
         <a
-          href={urlBuilder.buildUpload(projectId, build.sha, "testReport")}
+          href={urlBuilder.buildUpload(projectId, build.id, "testReport")}
           class="description"
         >
           {commonT.Upload()} Test report
@@ -55,14 +55,14 @@ export function BuildLinksFooter({
 
       {build.coverage === "ready" ? (
         <a
-          href={urlBuilder.storybookCoverage(projectId, build.sha)}
+          href={urlBuilder.storybookCoverage(projectId, build.id)}
           target="_blank"
         >
           {commonT.View()} Coverage report
         </a>
       ) : hasUpdatePermission && build.coverage === "none" ? (
         <a
-          href={urlBuilder.buildUpload(projectId, build.sha, "coverage")}
+          href={urlBuilder.buildUpload(projectId, build.id, "coverage")}
           class="description"
         >
           {commonT.Upload()} Coverage report
@@ -71,14 +71,14 @@ export function BuildLinksFooter({
 
       {build.screenshots === "ready" ? (
         <a
-          href={urlBuilder.storybookScreenshotsDownload(projectId, build.sha)}
+          href={urlBuilder.storybookScreenshotsDownload(projectId, build.id)}
           target="_blank"
         >
           {commonT.Download()} screenshots
         </a>
       ) : hasUpdatePermission && build.screenshots === "none" ? (
         <a
-          href={urlBuilder.buildUpload(projectId, build.sha, "screenshots")}
+          href={urlBuilder.buildUpload(projectId, build.id, "screenshots")}
           class="description"
         >
           {commonT.Upload()} Screenshots
@@ -87,8 +87,8 @@ export function BuildLinksFooter({
 
       {build.storybook === "none" ? null : (
         <a
-          href={urlBuilder.storybookDownload(projectId, build.sha)}
-          download={`storybook-${projectId}-${build.sha}.zip`}
+          href={urlBuilder.storybookDownload(projectId, build.id)}
+          download={`storybook-${projectId}-${build.id}.zip`}
           target="_blank"
         >
           {commonT.Download()} {commonT.StoryBook()}

@@ -12,7 +12,7 @@ export const TagSchema = z
     buildsCount: z.number().default(0),
     createdAt: z.iso.datetime().default(new Date().toISOString()),
     id: TagIdSchema,
-    latestBuildSHA: z.union([BuildIdSchema.optional(), z.literal("")]),
+    latestBuildId: z.union([BuildIdSchema.optional(), z.literal("")]),
     slug: TagIdSchema,
     type: z.enum(TagTypes),
     updatedAt: z.iso.datetime().default(new Date().toISOString()),

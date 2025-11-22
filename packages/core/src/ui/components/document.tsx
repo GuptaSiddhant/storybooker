@@ -1,10 +1,10 @@
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
 import { urlBuilder } from "../../urls";
-import { SCRIPTS, SERVICE_NAME, STYLESHEETS } from "../../utils/constants";
+import { ASSETS, SERVICE_NAME } from "../../utils/constants";
 import { getStore } from "../../utils/store";
 import { urlJoin } from "../../utils/url-utils";
-import { SBRLogo } from "./logo";
+import { Icon } from "./icon";
 
 export function DocumentLayout({
   title,
@@ -32,7 +32,7 @@ export function DocumentLayout({
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
-            href={urlBuilder.staticFile(STYLESHEETS.globalStyles)}
+            href={urlBuilder.staticFile(ASSETS.globalStyles)}
             rel="stylesheet"
           />
           <script
@@ -44,7 +44,7 @@ export function DocumentLayout({
             crossorigin="anonymous"
           ></script>
           <script
-            src={urlBuilder.staticFile(SCRIPTS.globalScript)}
+            src={urlBuilder.staticFile(ASSETS.globalScript)}
             defer
             async
           />
@@ -113,7 +113,8 @@ function Logo(): JSXElement {
         textDecoration: "none",
       }}
     >
-      <SBRLogo
+      <Icon
+        name="logo"
         style={{
           color: "var(--color-text-primary)",
           height: "32px",
@@ -293,7 +294,7 @@ export function DocumentUserSection(): JSXElement {
         ) : null}
       </div>
 
-      <span style={{ opacity: 0.5 }}>{"&rarr;"}</span>
+      <span style={{ opacity: 0.5 }}>→</span>
     </a>
   );
 }

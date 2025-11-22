@@ -30,5 +30,8 @@ export const PATTERNS = {
   }
 >;
 
-export const STYLESHEETS = { globalStyles: "sbr-style.css" };
-export const SCRIPTS = { globalScript: "sbr-script.js" };
+export const ASSETS = {
+  globalStyles: "sbr-style.css",
+  globalScript: "sbr-script.js",
+  globalSprite: "sbr-sprite.svg",
+};
