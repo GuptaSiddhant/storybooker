@@ -9,7 +9,7 @@ export function generateGlobalSprite(): string {
   const content = Object.entries(icons)
     .map(([name, icon]) => {
       return String(icon)
-        .replace("<svg", `<symbol id="${name}"`)
+        .replace("<svg", `<symbol id="${name}" fill="currentcolor"`)
         .replace("</svg>", "</symbol>");
     })
     .join("\n");
