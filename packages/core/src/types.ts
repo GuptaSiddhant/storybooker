@@ -4,11 +4,15 @@ import type {
   LoggerAdapter,
   StorageAdapter,
   StoryBookerUser,
-} from "@storybooker/adapter";
+} from "./adapters";
 import type { Translation } from "./ui/translations";
 
-export type { StoryBookerUser } from "@storybooker/adapter/auth";
+export type { StoryBookerUser } from "./adapters/auth";
 export type { Translation };
+
+export type * from "./models/builds-schema";
+export type * from "./models/projects-schema";
+export type * from "./models/tags-schema";
 
 /**
  * Options for creating a request handler.

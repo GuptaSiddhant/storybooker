@@ -66,8 +66,7 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
-    "@storybooker/adapter": "workspace:^",
-    "@storybooker/core": "workspace:^"
+    "@storybooker/core": "workspace:"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.895.0",

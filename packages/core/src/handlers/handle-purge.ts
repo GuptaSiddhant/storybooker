@@ -1,4 +1,4 @@
-import type { LoggerAdapter } from "@storybooker/adapter/logger";
+import type { LoggerAdapter } from "../adapters/logger";
 import { BuildsModel } from "../models/builds-model";
 import { ProjectsModel } from "../models/projects-model";
 import type { ProjectType } from "../models/projects-schema";

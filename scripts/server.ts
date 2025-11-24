@@ -7,11 +7,11 @@ import type {
   AuthAdapterAuthorise,
   AuthAdapterOptions,
   StoryBookerUser,
-} from "../packages/adapter/dist/index.d.ts";
+} from "../packages/core/dist/adapter.d.ts";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "../packages/adapter/dist/index.js";
+} from "../packages/core/dist/adapter.js";
 import { createRequestHandler } from "../packages/core/dist/index.js";
 
 class LocalAuthAdapter implements AuthAdapter {

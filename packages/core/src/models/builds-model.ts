@@ -1,6 +1,6 @@
 // oxlint-disable switch-case-braces
 
-import type { StoryBookerPermissionAction } from "@storybooker/adapter/auth";
+import type { StoryBookerPermissionAction } from "../adapters/auth";
 import { handleProcessZip } from "../handlers/handle-process-zip";
 import { urlBuilder } from "../urls";
 import {

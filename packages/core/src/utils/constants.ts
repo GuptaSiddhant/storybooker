@@ -35,3 +35,5 @@ export const ASSETS = {
   globalScript: "sbr-script.js",
   globalSprite: "sbr-sprite.svg",
 };
+
+export const TagTypes = ["branch", "pr", "jira"] as const;

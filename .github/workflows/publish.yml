@@ -25,12 +25,12 @@ jobs:
 
       - name: Setup Turbo
         run: |
-          npx -y turbo prune \
-            @storybooker/adapter \
+          npx -y turbo prune \            
             @storybooker/core \
             @storybooker/aws \
             @storybooker/azure \
             @storybooker/gcp \
+            @storybooker/ui \
             storybooker
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
@@ -45,11 +45,6 @@ jobs:
       - name: Verify
         working-directory: ./out
         run: npx turbo verify
-
-      - name: Publish on JSR - Adapter
-        working-directory: ./out/packages/adapter
-        continue-on-error: true
-        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }}
 
       - name: Publish on JSR - Core
         working-directory: ./out/packages/core

@@ -1,9 +1,9 @@
 import z from "zod";
+import { TagTypes } from "../utils/constants";
 import { BuildIdSchema, TagIdSchema } from "./~shared-schema";
 
-export { TagIdSchema };
+export { TagIdSchema, TagTypes };
 
-export const TagTypes = ["branch", "pr", "jira"] as const;
 export type TagVariant = (typeof TagTypes)[number];
 
 export type TagType = z.infer<typeof TagSchema>;

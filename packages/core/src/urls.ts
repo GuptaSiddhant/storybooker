@@ -3,6 +3,8 @@ import type { BuildUploadVariant } from "./models/builds-schema";
 import type { TagVariant } from "./models/tags-schema";
 import { linkRoute, urlJoin } from "./utils/url-utils";
 
+export { urlJoin };
+
 /**
  * URL builder for the Storybooks router.
  * @private

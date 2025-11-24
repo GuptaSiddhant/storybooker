@@ -1,7 +1,7 @@
 import type {
   StoryBookerPermission,
   StoryBookerPermissionKey,
-} from "@storybooker/adapter/auth";
+} from "../adapters/auth";
 import { getStore } from "../utils/store";
 import { responseError } from "./response";
 

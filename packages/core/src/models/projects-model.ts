@@ -1,4 +1,4 @@
-import type { StoryBookerPermissionAction } from "@storybooker/adapter/auth";
+import type { StoryBookerPermissionAction } from "../adapters/auth";
 import {
   generateDatabaseCollectionId,
   generateStorageContainerId,

@@ -34,7 +34,6 @@
     "@hono/swagger-ui": "^0.5.2",
     "@hono/zod-openapi": "^1.1.5",
     "@remix-run/headers": "^0.16.0",
-    "@storybooker/adapter": "workspace:^",
     "decompress": "^4.0.0",
     "hono": "^4.10.6",
     "zod": "^4.0.0"
@@ -59,25 +58,29 @@
       "source": "./src/index.ts",
       "default": "./dist/index.js"
     },
-    "./mimetype": {
-      "source": "./src/utils/mime-utils.ts",
-      "default": "./dist/mimetype.js"
+    "./adapter": {
+      "source": "./src/adapters/index.ts",
+      "default": "./dist/adapter.js"
+    },
+    "./constants": {
+      "source": "./src/utils/constants.ts",
+      "default": "./dist/constants.js"
     },
     "./router": {
       "source": "./src/routers/_app-router.ts",
       "default": "./dist/router.js"
     },
-    "./translations": {
-      "source": "./src/ui/translations/index.ts",
-      "default": "./dist/translations.js"
-    },
-    "./translations/en-gb": {
-      "source": "./src/ui/translations/en-gb.ts",
-      "default": "./dist/translations/en-gb.js"
+    "./store": {
+      "source": "./src/utils/store.ts",
+      "default": "./dist/store.js"
     },
     "./types": {
       "source": "./src/types.ts",
       "default": "./dist/types.js"
+    },
+    "./url": {
+      "source": "./src/urls.ts",
+      "default": "./dist/url.js"
     },
     "./utils": {
       "source": "./src/utils/index.ts",
@@ -89,11 +92,12 @@
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
-      "./mimetype": "./dist/mimetype.js",
+      "./adapter": "./dist/adapter.js",
+      "./constants": "./dist/constants.js",
       "./router": "./dist/router.js",
-      "./translations": "./dist/translations.js",
-      "./translations/en-gb": "./dist/translations/en-gb.js",
+      "./store": "./dist/store.js",
       "./types": "./dist/types.js",
+      "./url": "./dist/url.js",
       "./utils": "./dist/utils.js",
       "./package.json": "./package.json"
     }

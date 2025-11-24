@@ -8,7 +8,7 @@ import type {
   DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/adapter/database";
+} from "@storybooker/core/adapter";
 
 export type TableClientGenerator = (tableName: string) => TableClient;
 

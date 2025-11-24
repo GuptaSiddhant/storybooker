@@ -76,8 +76,7 @@
     "start": "func start"
   },
   "dependencies": {
-    "@storybooker/adapter": "workspace:^",
-    "@storybooker/core": "workspace:^"
+    "@storybooker/core": "workspace:"
   },
   "devDependencies": {
     "@azure/cosmos": "^4.5.1",

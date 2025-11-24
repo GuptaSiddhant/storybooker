@@ -1,3 +1,7 @@
+// oxlint-disable no-await-in-loop
+// oxlint-disable max-params
+// oxlint-disable require-await
+
 import type { Buffer } from "node:buffer";
 import * as fs from "node:fs";
 import * as fsp from "node:fs/promises";

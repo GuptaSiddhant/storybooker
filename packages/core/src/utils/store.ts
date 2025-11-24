@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { SuperHeaders } from "@remix-run/headers";
-import type { LoggerAdapter } from "@storybooker/adapter/logger";
+import type { LoggerAdapter } from "../adapters/logger";
 import type { RequestHandlerOptions, StoryBookerUser } from "../types";
 import type { Translation } from "../ui/translations";
 

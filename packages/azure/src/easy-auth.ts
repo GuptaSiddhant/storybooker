@@ -7,9 +7,9 @@ import type {
   AuthAdapterAuthorise,
   AuthAdapterOptions,
   StoryBookerUser,
-} from "@storybooker/adapter/auth";
+} from "@storybooker/core/adapter";
 
-export type { AuthAdapterAuthorise } from "@storybooker/adapter/auth";
+export type { AuthAdapterAuthorise } from "@storybooker/core/adapter";
 
 export interface AzureEasyAuthClientPrincipal {
   claims: { typ: string; val: string }[];

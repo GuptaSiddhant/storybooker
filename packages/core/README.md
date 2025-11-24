@@ -10,8 +10,8 @@ Core Docs: https://storybooker.js.org/docs/core
 ```js
 import { createServer } from "node:http";
 import { createRequestListener } from "@remix-run/node-fetch-server";
-import { LocalFileDatabase, LocalFileStorage } from "@storybooker/adapter";
 import { createRequestHandler } from "@storybooker/core";
+import { LocalFileDatabase, LocalFileStorage } from "@storybooker/core/adapter";
 
 const handler = createRequestHandler({
   database: new LocalFileDatabase(),

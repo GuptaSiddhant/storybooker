@@ -1,5 +1,5 @@
 import { SuperHeaders } from "@remix-run/headers";
-import type { AuthAdapter, StoryBookerUser } from "@storybooker/adapter/auth";
+import type { AuthAdapter, StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { appRouter } from "./routers/_app-router";
 import type {

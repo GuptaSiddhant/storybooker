@@ -1,4 +1,4 @@
-import type { StoryBookerPermissionAction } from "@storybooker/adapter/auth";
+import type { StoryBookerPermissionAction } from "../adapters/auth";
 import { generateDatabaseCollectionId } from "../utils/adapter-utils";
 import { checkAuthorisation } from "../utils/auth";
 import { Model, type BaseModel, type ListOptions } from "./~model";

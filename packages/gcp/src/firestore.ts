@@ -4,7 +4,7 @@ import type {
   DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/adapter/database";
+} from "@storybooker/core/adapter";
 
 export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
   #instance: Firestore;

@@ -1,0 +1,18 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "env": {
+    "builtin": true,
+    "node": true
+  },
+  "rules": {
+    "promise-function-async": "allow",
+    "typescript/no-base-to-string": "allow",
+    "max-lines": "allow",
+    "max-lines-per-function": "allow",
+    "max-lines-per-file": "allow",
+    "sort-keys": "allow",
+    "no-nested-ternary": "allow",
+    "unicorn/no-nested-ternary": "allow"
+  }
+}

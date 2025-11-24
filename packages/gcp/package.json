@@ -69,7 +69,7 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
-    "@storybooker/adapter": "workspace:^"
+    "@storybooker/core": "workspace:"
   },
   "devDependencies": {
     "@google-cloud/bigtable": "^6.4.1",
