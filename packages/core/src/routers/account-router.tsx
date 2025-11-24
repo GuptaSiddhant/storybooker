@@ -1,5 +1,4 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { AccountPage } from "../ui/account-pages";
 import { urlBuilder } from "../urls";
 import { QUERY_PARAMS } from "../utils/constants";
 import {
@@ -28,14 +27,10 @@ export const accountRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { abortSignal, auth, logger, request, user, translation, url } =
-        getStore();
+      const { abortSignal, auth, logger, request, user, ui, url } = getStore();
 
-      if (!auth) {
-        return await responseError(
-          translation.errorMessages.auth_setup_missing,
-          404,
-        );
+      if (!auth || !ui) {
+        return await responseError("Auth is not setup", 500);
       }
 
       if (!user) {
@@ -45,7 +40,7 @@ export const accountRouter = new OpenAPIHono()
           return responseRedirect(urlBuilder.login(urlBuilder.account()), 302);
         }
 
-        return responseRedirect(serviceUrl, 404);
+        return responseRedirect(serviceUrl, 401);
       }
 
       const children = await auth.renderAccountDetails?.(user, {
@@ -54,7 +49,7 @@ export const accountRouter = new OpenAPIHono()
         request,
       });
 
-      return context.html(<AccountPage>{children}</AccountPage>);
+      return context.html(ui.renderAccountsPage({ children }));
     },
   )
   .openapi(
@@ -75,14 +70,10 @@ export const accountRouter = new OpenAPIHono()
       },
     }),
     async () => {
-      const { abortSignal, auth, logger, request, translation, url } =
-        getStore();
+      const { abortSignal, auth, logger, request, url } = getStore();
 
       if (!auth?.login) {
-        return await responseError(
-          translation.errorMessages.auth_setup_missing,
-          404,
-        );
+        return await responseError("Auth is not setup", 500);
       }
 
       const response = await auth.login({ abortSignal, logger, request });
@@ -112,13 +103,9 @@ export const accountRouter = new OpenAPIHono()
       },
     }),
     async () => {
-      const { abortSignal, auth, logger, request, translation, url, user } =
-        getStore();
+      const { abortSignal, auth, logger, request, url, user } = getStore();
       if (!auth?.logout || !user) {
-        return await responseError(
-          translation.errorMessages.auth_setup_missing,
-          404,
-        );
+        return await responseError("Auth is not setup", 500);
       }
 
       const response = await auth.logout(user, {

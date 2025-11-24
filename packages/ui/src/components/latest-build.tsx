@@ -1,5 +1,4 @@
 import { urlBuilder } from "@storybooker/core/url";
-import { commonT, getT } from "../translations/i18n";
 
 export function LatestBuild({
   projectId,
@@ -9,9 +8,7 @@ export function LatestBuild({
   buildId: string | undefined;
 }): JSXElement {
   if (!buildId) {
-    return (
-      <span class="description">{getT("messages", "no_builds_available")}</span>
-    );
+    return <span class="description">No builds are available.</span>;
   }
 
   return (
@@ -20,12 +17,10 @@ export function LatestBuild({
         {buildId.slice(0, 7)}
       </div>
       <div>
-        <a href={urlBuilder.buildDetails(projectId, buildId)}>
-          {commonT.Details()}
-        </a>
+        <a href={urlBuilder.buildDetails(projectId, buildId)}>Details</a>
         {" / "}
         <a href={urlBuilder.storybookIndexHtml(projectId, buildId)}>
-          {commonT.StoryBook()}
+          StoryBook
         </a>
       </div>
     </div>

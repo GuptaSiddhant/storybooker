@@ -3,7 +3,7 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { logger } from "hono/logger";
 import { SERVICE_NAME } from "..";
 import pkgJson from "../../package.json" with { type: "json" };
-import { handleStaticFileRoute } from "../handlers/handle-static-file-route";
+import { getStore } from "../utils/store";
 import { accountRouter } from "./account-router";
 import { buildsRouter } from "./builds-router";
 import { projectsRouter } from "./projects-router";
@@ -24,6 +24,14 @@ export const appRouter = new OpenAPIHono({ strict: false })
   .route("/", tagsRouter)
   .route("/tasks", tasksRouter)
   .route("/account", accountRouter)
-  .get("/:filepath{.+}", () => handleStaticFileRoute());
+  .get("/:filepath{.+}", (context) => {
+    const { ui } = getStore();
+    if (ui?.handleUnhandledRoute) {
+      const filepath = context.req.param("filepath");
+      return ui.handleUnhandledRoute(filepath);
+    }
+
+    return context.notFound();
+  });
 
 export type AppRouter = typeof appRouter;

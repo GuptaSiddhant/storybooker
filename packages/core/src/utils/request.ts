@@ -37,14 +37,14 @@ export function validateIsFormEncodedRequest(
 
   if (!contentType) {
     return {
-      message: store.translation.errorMessages.header_content_length_required,
+      message: "Content-Length header is required",
       status: 400,
     };
   }
 
   if (!contentType.mediaType?.includes(mimes.formEncoded)) {
     return {
-      message: `${store.translation.errorMessages.header_content_type_invalid}, ${store.translation.dictionary.expected} ${mimes.formEncoded}`,
+      message: `Content-Type header is invalid, Expected: ${mimes.formEncoded}`,
       status: 415,
     };
   }
@@ -55,12 +55,12 @@ export function validateIsFormEncodedRequest(
 export function validateBuildUploadZipBody(
   request: Request,
 ): ErrorObject | undefined {
-  const { translation, headers: storeHeaders } = getStore();
+  const { headers: storeHeaders } = getStore();
   const { body } = request;
 
   if (!body) {
     return {
-      message: translation.errorMessages.request_body_required,
+      message: "Request body is required",
       status: 400,
     };
   }
@@ -71,13 +71,13 @@ export function validateBuildUploadZipBody(
 
   if (contentLength === null) {
     return {
-      message: translation.errorMessages.header_content_length_required,
+      message: "Content-Length header is required",
       status: 411,
     };
   }
   if (contentLength === 0) {
     return {
-      message: translation.errorMessages.header_content_length_non_zero,
+      message: "Content-Length should be greater than 0",
       status: 400,
     };
   }

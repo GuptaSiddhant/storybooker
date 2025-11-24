@@ -4,7 +4,7 @@ import { defineConfig } from "tsdown";
 export default defineConfig({
   clean: !argv.includes("-w"),
   dts: { tsgo: true },
-  entry: "src/*.tsx",
+  entry: "src/index.tsx",
   exports: { devExports: "source" },
   format: ["esm"],
   platform: "node",

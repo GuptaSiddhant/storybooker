@@ -47,91 +47,11 @@
       "source": "./src/index.tsx",
       "default": "./dist/index.js"
     },
-    "./account-pages": {
-      "source": "./src/account-pages.tsx",
-      "default": "./dist/account-pages.js"
-    },
-    "./build-create-form": {
-      "source": "./src/build-create-form.tsx",
-      "default": "./dist/build-create-form.js"
-    },
-    "./build-links": {
-      "source": "./src/build-links.tsx",
-      "default": "./dist/build-links.js"
-    },
-    "./build-process": {
-      "source": "./src/build-process.tsx",
-      "default": "./dist/build-process.js"
-    },
-    "./build-stories": {
-      "source": "./src/build-stories.tsx",
-      "default": "./dist/build-stories.js"
-    },
-    "./build-upload-form": {
-      "source": "./src/build-upload-form.tsx",
-      "default": "./dist/build-upload-form.js"
-    },
-    "./builds-pages": {
-      "source": "./src/builds-pages.tsx",
-      "default": "./dist/builds-pages.js"
-    },
-    "./builds-table": {
-      "source": "./src/builds-table.tsx",
-      "default": "./dist/builds-table.js"
-    },
-    "./project-form": {
-      "source": "./src/project-form.tsx",
-      "default": "./dist/project-form.js"
-    },
-    "./projects-grid": {
-      "source": "./src/projects-grid.tsx",
-      "default": "./dist/projects-grid.js"
-    },
-    "./projects-pages": {
-      "source": "./src/projects-pages.tsx",
-      "default": "./dist/projects-pages.js"
-    },
-    "./projects-table": {
-      "source": "./src/projects-table.tsx",
-      "default": "./dist/projects-table.js"
-    },
-    "./root-pages": {
-      "source": "./src/root-pages.tsx",
-      "default": "./dist/root-pages.js"
-    },
-    "./tag-form": {
-      "source": "./src/tag-form.tsx",
-      "default": "./dist/tag-form.js"
-    },
-    "./tags-pages": {
-      "source": "./src/tags-pages.tsx",
-      "default": "./dist/tags-pages.js"
-    },
-    "./tags-table": {
-      "source": "./src/tags-table.tsx",
-      "default": "./dist/tags-table.js"
-    },
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
-      "./account-pages": "./dist/account-pages.js",
-      "./build-create-form": "./dist/build-create-form.js",
-      "./build-links": "./dist/build-links.js",
-      "./build-process": "./dist/build-process.js",
-      "./build-stories": "./dist/build-stories.js",
-      "./build-upload-form": "./dist/build-upload-form.js",
-      "./builds-pages": "./dist/builds-pages.js",
-      "./builds-table": "./dist/builds-table.js",
-      "./project-form": "./dist/project-form.js",
-      "./projects-grid": "./dist/projects-grid.js",
-      "./projects-pages": "./dist/projects-pages.js",
-      "./projects-table": "./dist/projects-table.js",
-      "./root-pages": "./dist/root-pages.js",
-      "./tag-form": "./dist/tag-form.js",
-      "./tags-pages": "./dist/tags-pages.js",
-      "./tags-table": "./dist/tags-table.js",
       "./package.json": "./package.json"
     }
   }

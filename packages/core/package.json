@@ -66,6 +66,10 @@
       "source": "./src/utils/constants.ts",
       "default": "./dist/constants.js"
     },
+    "./mimes": {
+      "source": "./src/utils/mime-utils.ts",
+      "default": "./dist/mimes.js"
+    },
     "./router": {
       "source": "./src/routers/_app-router.ts",
       "default": "./dist/router.js"
@@ -94,6 +98,7 @@
       ".": "./dist/index.js",
       "./adapter": "./dist/adapter.js",
       "./constants": "./dist/constants.js",
+      "./mimes": "./dist/mimes.js",
       "./router": "./dist/router.js",
       "./store": "./dist/store.js",
       "./types": "./dist/types.js",

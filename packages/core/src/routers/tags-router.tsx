@@ -12,12 +12,6 @@ import {
   TagTypes,
   TagUpdateSchema,
 } from "../models/tags-schema";
-import {
-  TagCreatePage,
-  TagDetailsPage,
-  TagsListPage,
-  TagUpdatePage,
-} from "../ui/tags-pages";
 import { urlBuilder } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
@@ -29,6 +23,7 @@ import {
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
+import { getStore } from "../utils/store";
 
 const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -62,7 +57,9 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
       const { projectId } = context.req.param();
+
       await authenticateOrThrow({
         action: "read",
         projectId,
@@ -74,10 +71,10 @@ export const tagsRouter = new OpenAPIHono()
         filter: type ? (item): boolean => item.type === type : undefined,
       });
 
-      if (checkIsHTMLRequest()) {
+      if (ui && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
         return context.html(
-          <TagsListPage tags={tags} project={project} defaultType={type} />,
+          ui.renderTagsListPage({ project, tags, defaultType: type }),
         );
       }
 
@@ -100,7 +97,13 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
+      if (!ui) {
+        return context.notFound();
+      }
+
       const { projectId } = context.req.param();
+
       await authenticateOrThrow({
         action: "create",
         projectId,
@@ -109,7 +112,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(<TagCreatePage project={project} />);
+      return context.html(ui.renderTagCreatePage({ project }));
     },
   )
   .openapi(
@@ -192,6 +195,7 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
       const { projectId, tagId } = context.req.param();
 
       await authenticateOrThrow({
@@ -202,13 +206,11 @@ export const tagsRouter = new OpenAPIHono()
 
       const tag = await new TagsModel(projectId).get(tagId);
 
-      if (checkIsHTMLRequest()) {
+      if (ui && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
         const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
-        return context.html(
-          <TagDetailsPage builds={builds} project={project} tag={tag} />,
-        );
+        return context.html(ui.renderTagDetailsPage({ builds, project, tag }));
       }
 
       return context.json({ tag });
@@ -276,6 +278,11 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
+      if (!ui) {
+        return context.notFound();
+      }
+
       const { tagId, projectId } = context.req.param();
 
       await authenticateOrThrow({
@@ -285,8 +292,9 @@ export const tagsRouter = new OpenAPIHono()
       });
 
       const tag = await new TagsModel(projectId).get(tagId);
+      const project = await new ProjectsModel().get(projectId);
 
-      return context.html(<TagUpdatePage tag={tag} projectId={projectId} />);
+      return context.html(ui.renderTagUpdatePage({ project, tag }));
     },
   )
   .openapi(

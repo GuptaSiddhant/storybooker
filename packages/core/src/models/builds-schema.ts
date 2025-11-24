@@ -1,9 +1,10 @@
 // oxlint-disable sort-keys
 
 import z from "zod";
+import { buildUploadVariants } from "../utils/constants";
 import { BuildIdSchema, TagIdSchema } from "./~shared-schema";
 
-export { BuildIdSchema };
+export { BuildIdSchema, buildUploadVariants };
 
 const buildContentAvailabilityOptions = [
   "none",
@@ -57,12 +58,6 @@ export const BuildUpdateSchema = BuildSchema.omit({
   updatedAt: true,
 }).partial();
 
-export const buildUploadVariants = [
-  "storybook",
-  "testReport",
-  "coverage",
-  "screenshots",
-] as const;
 export type BuildUploadVariant = (typeof buildUploadVariants)[number];
 export const BuildUploadQueryParamsSchema = z.object({
   variant: z.enum(buildUploadVariants).default("storybook"),

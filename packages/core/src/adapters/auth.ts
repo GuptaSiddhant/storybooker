@@ -100,12 +100,7 @@ export type StoryBookerPermissionWithKey = StoryBookerPermission & {
 export type StoryBookerPermissionKey =
   `${StoryBookerPermissionResource}:${StoryBookerPermissionAction}:${string}`;
 /** Type of possible resources to check permissions for */
-export type StoryBookerPermissionResource =
-  | "project"
-  | "build"
-  | "tag"
-  | "openapi"
-  | "ui";
+export type StoryBookerPermissionResource = "project" | "build" | "tag";
 /** Type of possible actions to check permissions for */
 export type StoryBookerPermissionAction =
   | "create"

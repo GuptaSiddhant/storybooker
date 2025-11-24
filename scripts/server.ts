@@ -13,6 +13,7 @@ import {
   LocalFileStorage,
 } from "../packages/core/dist/adapter.js";
 import { createRequestHandler } from "../packages/core/dist/index.js";
+import { createBasicUIAdapter } from "../packages/ui/dist/index.js";
 
 class LocalAuthAdapter implements AuthAdapter {
   #auth = true;
@@ -64,8 +65,8 @@ const requestHandler = createRequestHandler({
   auth: new LocalAuthAdapter(),
   config: { queueLargeZipFileProcessing: true },
   database: new LocalFileDatabase(".server/db.json"),
-  staticDirs: [".server"],
   storage: new LocalFileStorage(".server"),
+  ui: createBasicUIAdapter({ staticDirs: [".server"] }),
 });
 
 export default { fetch: requestHandler };

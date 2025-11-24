@@ -1,10 +1,8 @@
 import { SuperHeaders } from "@remix-run/headers";
-import { renderErrorPage } from "../ui/root-pages";
 import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
 import { getStore } from "../utils/store";
 import { parseErrorMessage } from "./error";
 import { mimes } from "./mime-utils";
-import { toTitleCase } from "./text-utils";
 
 export async function responseHTML(
   html: JSXElement,
@@ -105,13 +103,17 @@ async function handleErrorResponseForHTMLRequest(
   headers: Headers,
   status: number,
 ): Promise<Response> {
-  const { translation } = getStore();
+  const { ui } = getStore();
+  if (!ui) {
+    return new Response(errorMessage, { headers, status });
+  }
 
   return await responseHTML(
-    renderErrorPage({
+    ui.renderErrorPage({
       message: errorMessage,
-      title: `${toTitleCase(translation.dictionary.error)} ${status}`,
-    }),
+      title: `Error ${status}`,
+      status,
+    }) as JSXElement,
     { headers, status },
   );
 }

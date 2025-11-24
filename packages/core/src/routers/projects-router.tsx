@@ -10,12 +10,6 @@ import {
   ProjectUpdateSchema,
 } from "../models/projects-schema";
 import { TagsModel } from "../models/tags-model";
-import {
-  ProjectCreatePage,
-  ProjectDetailsPage,
-  ProjectsPage,
-  ProjectUpdatePage,
-} from "../ui/projects-pages";
 import { urlBuilder } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
@@ -27,6 +21,7 @@ import {
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
 import { responseRedirect } from "../utils/response";
+import { getStore } from "../utils/store";
 
 const projectTag = "Projects";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -50,6 +45,8 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
+
       await authenticateOrThrow({
         action: "read",
         projectId: undefined,
@@ -58,8 +55,8 @@ export const projectsRouter = new OpenAPIHono()
 
       const projects = await new ProjectsModel().list();
 
-      if (checkIsHTMLRequest()) {
-        return context.html(<ProjectsPage projects={projects} />);
+      if (ui && checkIsHTMLRequest()) {
+        return context.html(ui.renderProjectsListPage({ projects }));
       }
 
       return context.json({ projects });
@@ -80,13 +77,18 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
+      if (!ui) {
+        return context.notFound();
+      }
+
       await authenticateOrThrow({
         action: "create",
         projectId: undefined,
         resource: "project",
       });
 
-      return context.html(<ProjectCreatePage />);
+      return context.html(ui.renderProjectCreatePage());
     },
   )
   .openapi(
@@ -157,6 +159,7 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
       const { projectId } = context.req.param();
 
       await authenticateOrThrow({
@@ -167,18 +170,14 @@ export const projectsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      if (checkIsHTMLRequest()) {
+      if (ui && checkIsHTMLRequest()) {
+        const recentTags = await new TagsModel(projectId).list({ limit: 10 });
         const recentBuilds = await new BuildsModel(projectId).list({
           limit: 10,
         });
-        const recentTags = await new TagsModel(projectId).list({ limit: 10 });
 
         return context.html(
-          <ProjectDetailsPage
-            project={project}
-            recentBuilds={recentBuilds}
-            recentTags={recentTags}
-          />,
+          ui.renderProjectDetailsPage({ project, recentBuilds, recentTags }),
         );
       }
 
@@ -243,15 +242,21 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
+      if (!ui) {
+        return context.notFound();
+      }
+
       const { projectId } = context.req.param();
       await authenticateOrThrow({
         action: "update",
         projectId,
         resource: "project",
       });
+
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(<ProjectUpdatePage project={project} />);
+      return context.html(ui.renderProjectUpdatePage({ project }));
     },
   )
   .openapi(
@@ -283,11 +288,13 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { projectId } = context.req.param();
+
       await authenticateOrThrow({
         action: "update",
         projectId: undefined,
         resource: "project",
       });
+
       const data = ProjectUpdateSchema.parse(await context.req.parseBody());
       await new ProjectsModel().update(projectId, data);
 

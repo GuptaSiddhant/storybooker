@@ -7,7 +7,6 @@ import type {
   RequestHandler,
   RequestHandlerOptions,
 } from "./types";
-import { translations_enGB } from "./ui/translations/en-gb";
 import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { createMiddlewaresPipelineRequestHandler } from "./utils/middleware-utils";
@@ -57,7 +56,6 @@ export function createRequestHandler<User extends StoryBookerUser>(
         logger: overrideOptions?.logger ?? logger,
         prefix: options.prefix || "",
         request,
-        translation: options.ui?.translation ?? translations_enGB,
         url: request.url,
         user,
       });
@@ -114,7 +112,6 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
         prefix: "/",
         request: new Request(""),
         storage: options.storage,
-        translation: translations_enGB,
         url: "/",
         user: null,
       });

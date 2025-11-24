@@ -8,6 +8,7 @@ export default defineConfig({
     adapter: "./src/adapters/index.ts",
     index: "./src/index.ts",
     constants: "./src/utils/constants.ts",
+    mimes: "./src/utils/mime-utils.ts",
     router: "./src/routers/_app-router.ts",
     store: "./src/utils/store.ts",
     types: "./src/types.ts",

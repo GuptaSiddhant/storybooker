@@ -2,11 +2,10 @@ import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import z from "zod";
 import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
 import { ProjectsModel } from "../models/projects-model";
-import { RootPage } from "../ui/root-pages";
-import { authenticateOrThrow } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
 import { openapiResponsesHtml } from "../utils/openapi-utils";
 import { checkIsJSONRequest } from "../utils/request";
+import { getStore } from "../utils/store";
 
 export const rootRouter = new OpenAPIHono()
   .openapi(
@@ -25,19 +24,19 @@ export const rootRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
+      const { ui } = getStore();
+
       if (checkIsJSONRequest()) {
         return context.json({});
       }
 
-      await authenticateOrThrow({
-        action: "read",
-        projectId: undefined,
-        resource: "ui",
-      });
+      if (!ui) {
+        return context.notFound();
+      }
 
       const projects = await new ProjectsModel().list({ limit: 5 });
 
-      return context.html(<RootPage projects={projects} />);
+      return context.html(ui.renderHomePage({ projects }));
     },
   )
   .openapi(

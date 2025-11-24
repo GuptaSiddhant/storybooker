@@ -17,7 +17,7 @@ export async function handleServeStoryBook({
   projectId: string;
   filepath: string;
 }): Promise<Response> {
-  const { abortSignal, logger, storage, ui } = getStore();
+  const { abortSignal, logger, storage } = getStore();
   const storageFilepath = path.posix.join(buildId, filepath);
   await authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
@@ -73,7 +73,7 @@ ${relativeHrefScripts}
       return new Response(bodyWithBackButton, { headers, status: 200 });
     }
 
-    if (ui?.streaming === false && content instanceof ReadableStream) {
+    if (content instanceof ReadableStream) {
       const body = await new Response(content).arrayBuffer();
       return new Response(body, { headers, status: 200 });
     }

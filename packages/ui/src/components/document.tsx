@@ -35,6 +35,10 @@ export function DocumentLayout({
             href={urlBuilder.staticFile(ASSETS.globalStyles)}
             rel="stylesheet"
           />
+          <link
+            rel="preload"
+            href={urlBuilder.staticFile(ASSETS.globalSprite)}
+          />
           <script
             src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js"
             crossorigin="anonymous"
@@ -87,8 +91,8 @@ export function DocumentLayout({
 }
 
 function Logo(): JSXElement {
-  const { ui } = getStore();
-  const { logo } = ui || {};
+  // const { ui } = getStore();
+  const logo: string | undefined = "";
 
   const logoElement = logo ? (
     logo.includes("<") && logo.includes(">") ? (

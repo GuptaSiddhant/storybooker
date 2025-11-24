@@ -80,8 +80,6 @@ async function dirpathToFiles(
   dirpath: string,
   prefix: string,
 ): Promise<StoryBookerFile[]> {
-  const { ui } = getStore();
-
   const allEntriesInDir = await fsp.readdir(dirpath, {
     encoding: "utf8",
     recursive: true,
@@ -93,10 +91,7 @@ async function dirpathToFiles(
 
   return allFilesInDir.map((filepath): StoryBookerFile => {
     const relativePath = filepath.replace(`${dirpath}/`, "");
-    const content =
-      ui?.streaming === false
-        ? new Blob([Buffer.from(fs.readFileSync(filepath))])
-        : createWebReadableStream(filepath);
+    const content = createWebReadableStream(filepath);
 
     return {
       content,

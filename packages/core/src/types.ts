@@ -4,11 +4,10 @@ import type {
   LoggerAdapter,
   StorageAdapter,
   StoryBookerUser,
+  UIAdapter,
 } from "./adapters";
-import type { Translation } from "./ui/translations";
 
 export type { StoryBookerUser } from "./adapters/auth";
-export type { Translation };
 
 export type * from "./models/builds-schema";
 export type * from "./models/projects-schema";
@@ -51,15 +50,10 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   openAPI?: OpenAPIOptions;
   /** Convey URL prefix to the service if the router is not hosted on the root. */
   prefix?: string;
-  /**
-   * List of path of directories relative to root where static media is kept.
-   * @default ["./public"]
-   */
-  staticDirs?: readonly string[];
   /** Adapter for Storage service. Provides access to storing files to the service. */
   storage: StorageAdapter;
   /** Options to customise StoryBooker UI. */
-  ui?: UIOptions;
+  ui?: UIAdapter;
 }
 
 export interface PurgeHandlerOptions {
@@ -126,37 +120,4 @@ export interface OpenAPIOptions {
       { enum?: [string, ...string[]]; default: string; description?: string }
     >;
   }[];
-}
-
-export interface UIOptions {
-  /** Valid HTML string to place a logo/text in Header. */
-  logo?: string;
-  /** Dark mode theme */
-  darkTheme?: BrandTheme;
-  /** Light mode theme */
-  lightTheme?: BrandTheme;
-  /** Enable or disable response streaming. @default true */
-  streaming?: boolean;
-  /** Provide custom translations for the UI. Default to English-GB. */
-  translation?: Translation;
-}
-
-/** Brand colors used for theming. */
-export interface BrandTheme {
-  backgroundColor: {
-    base: string;
-    card: string;
-    invert: string;
-    destructive: string;
-  };
-  textColor: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    invert: string;
-    destructive: string;
-  };
-  borderColor: {
-    default: string;
-  };
 }
