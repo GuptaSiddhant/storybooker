@@ -22,6 +22,7 @@ import {
 import { checkIsHTMLRequest } from "../utils/request";
 import { responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const projectTag = "Projects";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -56,7 +57,9 @@ export const projectsRouter = new OpenAPIHono()
       const projects = await new ProjectsModel().list();
 
       if (ui && checkIsHTMLRequest()) {
-        return context.html(ui.renderProjectsListPage({ projects }));
+        return context.html(
+          ui.renderProjectsListPage({ projects }, createUIAdapterOptions()),
+        );
       }
 
       return context.json({ projects });
@@ -88,7 +91,9 @@ export const projectsRouter = new OpenAPIHono()
         resource: "project",
       });
 
-      return context.html(ui.renderProjectCreatePage());
+      return context.html(
+        ui.renderProjectCreatePage({}, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(
@@ -177,7 +182,10 @@ export const projectsRouter = new OpenAPIHono()
         });
 
         return context.html(
-          ui.renderProjectDetailsPage({ project, recentBuilds, recentTags }),
+          ui.renderProjectDetailsPage(
+            { project, recentBuilds, recentTags },
+            createUIAdapterOptions(),
+          ),
         );
       }
 
@@ -256,7 +264,9 @@ export const projectsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderProjectUpdatePage({ project }));
+      return context.html(
+        ui.renderProjectUpdatePage({ project }, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(

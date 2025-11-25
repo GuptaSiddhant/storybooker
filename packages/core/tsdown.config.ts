@@ -10,7 +10,6 @@ export default defineConfig({
     constants: "./src/utils/constants.ts",
     mimes: "./src/utils/mime-utils.ts",
     router: "./src/routers/_app-router.ts",
-    store: "./src/utils/store.ts",
     types: "./src/types.ts",
     url: "./src/urls.ts",
     utils: "./src/utils/index.ts",

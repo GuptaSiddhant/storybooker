@@ -6,6 +6,7 @@ import { mimes } from "../utils/mime-utils";
 import { openapiResponsesHtml } from "../utils/openapi-utils";
 import { checkIsJSONRequest } from "../utils/request";
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 
 export const rootRouter = new OpenAPIHono()
   .openapi(
@@ -36,7 +37,9 @@ export const rootRouter = new OpenAPIHono()
 
       const projects = await new ProjectsModel().list({ limit: 5 });
 
-      return context.html(ui.renderHomePage({ projects }));
+      return context.html(
+        ui.renderHomePage({ projects }, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(

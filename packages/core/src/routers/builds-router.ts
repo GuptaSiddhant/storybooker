@@ -31,6 +31,7 @@ import {
 } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const buildTag = "Builds";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -75,7 +76,12 @@ export const buildsRouter = new OpenAPIHono()
       if (ui && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return context.html(ui.renderBuildsListPage({ builds, project }));
+        return context.html(
+          ui.renderBuildsListPage(
+            { builds, project },
+            createUIAdapterOptions(),
+          ),
+        );
       }
 
       return context.json({ builds });
@@ -116,7 +122,9 @@ export const buildsRouter = new OpenAPIHono()
       const project = await new ProjectsModel().get(projectId);
       const tagId = context.req.query(QUERY_PARAMS.tagId);
 
-      return context.html(ui.renderBuildCreatePage({ project, tagId }));
+      return context.html(
+        ui.renderBuildCreatePage({ project, tagId }, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(
@@ -226,11 +234,14 @@ export const buildsRouter = new OpenAPIHono()
         const stories = await model.getStories(build);
 
         return context.html(
-          ui.renderBuildDetailsPage({
-            build,
-            stories,
-            project,
-          }),
+          ui.renderBuildDetailsPage(
+            {
+              build,
+              stories,
+              project,
+            },
+            createUIAdapterOptions(),
+          ),
         );
       }
 
@@ -376,7 +387,10 @@ export const buildsRouter = new OpenAPIHono()
         | undefined;
 
       return context.html(
-        ui.renderBuildUploadPage({ build, uploadVariant, project }),
+        ui.renderBuildUploadPage(
+          { build, uploadVariant, project },
+          createUIAdapterOptions(),
+        ),
       );
     },
   )

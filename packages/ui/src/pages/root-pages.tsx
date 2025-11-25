@@ -1,3 +1,5 @@
+// import type { UIAdapterOptions } from "@storybooker/core/adapter";
+
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
 import { urlBuilder } from "@storybooker/core/url";
@@ -14,6 +16,7 @@ import { ProjectsGrid } from "./projects-grid";
 export interface RootPageProps {
   projects: ProjectType[];
 }
+
 export function RootPage({ projects }: RootPageProps): JSXElement {
   const pageTitle = "Home";
 

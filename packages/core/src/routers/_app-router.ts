@@ -4,6 +4,7 @@ import { logger } from "hono/logger";
 import { SERVICE_NAME } from "..";
 import pkgJson from "../../package.json" with { type: "json" };
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 import { accountRouter } from "./account-router";
 import { buildsRouter } from "./builds-router";
 import { projectsRouter } from "./projects-router";
@@ -24,11 +25,12 @@ export const appRouter = new OpenAPIHono({ strict: false })
   .route("/", tagsRouter)
   .route("/tasks", tasksRouter)
   .route("/account", accountRouter)
-  .get("/:filepath{.+}", (context) => {
+  .get("/:filepath{.+}", async (context) => {
     const { ui } = getStore();
     if (ui?.handleUnhandledRoute) {
       const filepath = context.req.param("filepath");
-      return ui.handleUnhandledRoute(filepath);
+
+      return await ui.handleUnhandledRoute(filepath, createUIAdapterOptions());
     }
 
     return context.notFound();

@@ -47,20 +47,21 @@ export function createRequestHandler<User extends StoryBookerUser>(
         request: request.clone(),
       });
 
-      localStore.enterWith({
-        ...options,
-        abortSignal: overrideOptions?.abortSignal ?? request.signal,
-        auth: options.auth as AuthAdapter | undefined,
-        headers,
-        locale,
-        logger: overrideOptions?.logger ?? logger,
-        prefix: options.prefix || "",
-        request,
-        url: request.url,
-        user,
-      });
-
-      return await appRouter.fetch(request, process.env);
+      return await localStore.run(
+        {
+          ...options,
+          abortSignal: overrideOptions?.abortSignal ?? request.signal,
+          auth: options.auth as AuthAdapter | undefined,
+          headers,
+          locale,
+          logger: overrideOptions?.logger ?? logger,
+          prefix: options.prefix || "",
+          request,
+          url: request.url,
+          user,
+        },
+        async () => await appRouter.fetch(request, process.env),
+      );
     } catch (error) {
       if (error instanceof Response) {
         return error;
@@ -102,21 +103,22 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
     await initPromises;
 
     try {
-      localStore.enterWith({
-        abortSignal: params[1].abortSignal,
-        database: options.database,
-        errorParser: options.errorParser,
-        headers: new SuperHeaders(),
-        locale: DEFAULT_LOCALE,
-        logger: params[1]?.logger ?? logger,
-        prefix: "/",
-        request: new Request(""),
-        storage: options.storage,
-        url: "/",
-        user: null,
-      });
-
-      await handlePurge(...params);
+      return await localStore.run(
+        {
+          abortSignal: params[1].abortSignal,
+          database: options.database,
+          errorParser: options.errorParser,
+          headers: new SuperHeaders(),
+          locale: DEFAULT_LOCALE,
+          logger: params[1]?.logger ?? logger,
+          prefix: "/",
+          request: new Request(""),
+          storage: options.storage,
+          url: "/",
+          user: null,
+        },
+        () => handlePurge(...params),
+      );
     } catch (error) {
       logger.error(parseErrorMessage(error, options.errorParser).errorMessage);
     }

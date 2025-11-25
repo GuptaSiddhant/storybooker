@@ -50,10 +50,17 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
 
   const adapter: UIAdapter = {
     handleUnhandledRoute: (filepath) =>
-      handleStaticFileRoute(filepath, { darkTheme, lightTheme }, staticDirs),
+      handleStaticFileRoute(
+        filepath,
+        { darkTheme, lightTheme },
+        staticDirs,
+        // logger,
+      ),
 
     renderErrorPage: (props) => <ErrorPage {...props} />,
-    renderHomePage: (props) => <RootPage {...props} />,
+    renderHomePage: (props) => {
+      return <RootPage {...props} />;
+    },
     renderAccountsPage: (props) => <AccountPage {...props} />,
 
     renderBuildCreatePage: (props) => <BuildCreatePage {...props} />,

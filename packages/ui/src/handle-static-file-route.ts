@@ -6,12 +6,13 @@ import path from "node:path";
 import { SuperHeaders } from "@remix-run/headers";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import { getMimeType, mimes } from "@storybooker/core/mimes";
+// import type { LoggerAdapter } from "@storybooker/core/adapter";
 import { getStore } from "@storybooker/core/store";
 import { generateGlobalSprite } from "./icons/global-sprite";
 import { generateGlobalScript } from "./scripts/global-script";
 import { generateGlobalStyleSheet } from "./styles/global-style";
+import type { BrandTheme } from "./styles/theme";
 import { ASSETS, CACHE_CONTROL_PUBLIC_WEEK } from "./utils/constants";
-import type { BrandTheme } from "./utils/types";
 
 export async function handleStaticFileRoute(
   filepath: string,

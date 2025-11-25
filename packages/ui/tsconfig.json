@@ -8,7 +8,6 @@
     "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
-    "noEmit": true,
-    "types": ["node", "@kitajs/html/htmx.d.ts"]
+    "noEmit": true
   }
 }

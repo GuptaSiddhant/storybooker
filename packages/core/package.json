@@ -74,10 +74,6 @@
       "source": "./src/routers/_app-router.ts",
       "default": "./dist/router.js"
     },
-    "./store": {
-      "source": "./src/utils/store.ts",
-      "default": "./dist/store.js"
-    },
     "./types": {
       "source": "./src/types.ts",
       "default": "./dist/types.js"
@@ -100,7 +96,6 @@
       "./constants": "./dist/constants.js",
       "./mimes": "./dist/mimes.js",
       "./router": "./dist/router.js",
-      "./store": "./dist/store.js",
       "./types": "./dist/types.js",
       "./url": "./dist/url.js",
       "./utils": "./dist/utils.js",

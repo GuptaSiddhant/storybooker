@@ -24,6 +24,7 @@ import {
 import { checkIsHTMLRequest } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -74,7 +75,10 @@ export const tagsRouter = new OpenAPIHono()
       if (ui && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
         return context.html(
-          ui.renderTagsListPage({ project, tags, defaultType: type }),
+          ui.renderTagsListPage(
+            { project, tags, defaultType: type },
+            createUIAdapterOptions(),
+          ),
         );
       }
 
@@ -112,7 +116,9 @@ export const tagsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderTagCreatePage({ project }));
+      return context.html(
+        ui.renderTagCreatePage({ project }, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(
@@ -210,7 +216,12 @@ export const tagsRouter = new OpenAPIHono()
         const project = await new ProjectsModel().get(projectId);
         const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
-        return context.html(ui.renderTagDetailsPage({ builds, project, tag }));
+        return context.html(
+          ui.renderTagDetailsPage(
+            { builds, project, tag },
+            createUIAdapterOptions(),
+          ),
+        );
       }
 
       return context.json({ tag });
@@ -294,7 +305,9 @@ export const tagsRouter = new OpenAPIHono()
       const tag = await new TagsModel(projectId).get(tagId);
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderTagUpdatePage({ project, tag }));
+      return context.html(
+        ui.renderTagUpdatePage({ project, tag }, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(
