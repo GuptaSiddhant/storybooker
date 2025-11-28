@@ -101,27 +101,27 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
-  return async (...params: Parameters<HandlePurge>) => {
+  return async (...params: Parameters<HandlePurge>): Promise<void> => {
     // Make sure initialisations are complete before first request is handled.
     await initPromises;
 
+    localStore.enterWith({
+      abortSignal: params[1].abortSignal,
+      database: options.database,
+      errorParser: options.errorParser,
+      headers: new SuperHeaders(),
+      locale: DEFAULT_LOCALE,
+      logger: params[1]?.logger ?? logger,
+      prefix: "/",
+      request: new Request(""),
+      storage: options.storage,
+      url: "/",
+      user: null,
+    });
+
     try {
-      return await localStore.run(
-        {
-          abortSignal: params[1].abortSignal,
-          database: options.database,
-          errorParser: options.errorParser,
-          headers: new SuperHeaders(),
-          locale: DEFAULT_LOCALE,
-          logger: params[1]?.logger ?? logger,
-          prefix: "/",
-          request: new Request(""),
-          storage: options.storage,
-          url: "/",
-          user: null,
-        },
-        () => handlePurge(...params),
-      );
+      await handlePurge(...params);
+      return;
     } catch (error) {
       logger.error(parseErrorMessage(error, options.errorParser).errorMessage);
     }

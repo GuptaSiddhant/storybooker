@@ -33,7 +33,10 @@ export function createStoryBookerRouterHandler<User extends StoryBookerUser>(
 
   const requestHandler = createRequestHandler({
     ...options,
-    prefix: generatePrefixFromBaseRoute(route) || "/",
+    config: {
+      ...options.config,
+      prefix: generatePrefixFromBaseRoute(route) || "/",
+    },
   });
 
   // Return a Lambda handler function

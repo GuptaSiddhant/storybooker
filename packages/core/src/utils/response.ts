@@ -3,26 +3,7 @@ import { checkIsHTMLRequest, checkIsHXRequest } from "../utils/request";
 import { getStore } from "../utils/store";
 import { parseErrorMessage } from "./error";
 import { mimes } from "./mime-utils";
-
-export async function responseHTML(
-  html: JSXElement,
-  init?: ResponseInit,
-): Promise<Response> {
-  const headers = new SuperHeaders(init?.headers);
-  headers.contentType = mimes.html;
-
-  const responseInit: ResponseInit = {
-    ...init,
-    headers,
-    status: init?.status || 200,
-  };
-
-  if (html instanceof Promise) {
-    return new Response(await html, responseInit);
-  }
-
-  return new Response(html, responseInit);
-}
+import { createUIAdapterOptions } from "./ui-utils";
 
 export function responseRedirect(
   location: string,
@@ -109,11 +90,34 @@ async function handleErrorResponseForHTMLRequest(
   }
 
   return await responseHTML(
-    ui.renderErrorPage({
-      message: errorMessage,
-      title: `Error ${status}`,
-      status,
-    }) as JSXElement,
+    ui.renderErrorPage(
+      {
+        message: errorMessage,
+        title: `Error ${status}`,
+        status,
+      },
+      createUIAdapterOptions(),
+    ),
     { headers, status },
   );
+}
+
+async function responseHTML(
+  html: string | Promise<string>,
+  init?: ResponseInit,
+): Promise<Response> {
+  const headers = new SuperHeaders(init?.headers);
+  headers.contentType = mimes.html;
+
+  const responseInit: ResponseInit = {
+    ...init,
+    headers,
+    status: init?.status || 200,
+  };
+
+  if (html instanceof Promise) {
+    return new Response(await html, responseInit);
+  }
+
+  return new Response(html, responseInit);
 }

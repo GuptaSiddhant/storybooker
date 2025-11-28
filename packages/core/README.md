@@ -17,7 +17,7 @@ import { createBasicUIAdapter } from "@storybooker/ui";
 const handler = createRequestHandler({
   database: new LocalFileDatabase(),
   storage: new LocalFileStorage(),
-  ui: createBasicUIAdapter(), // remove for headless API
+  ui: createBasicUIAdapter(), // remove to create headless service
 });
 
 const server = createServer(createRequestListener(handler));

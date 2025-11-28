@@ -84,12 +84,17 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
 ): void {
   app.setup({ enableHttpStream: true });
 
-  if (!options.errorParser) {
-    options.errorParser = parseAzureRestError;
+  options.config ??= {};
+  if (!options.config.errorParser) {
+    options.config.errorParser = parseAzureRestError;
   }
+
   const requestHandlerOptions: RequestHandlerOptions<User> = options;
+  requestHandlerOptions.config ??= {};
   if (options.route) {
-    requestHandlerOptions.prefix = generatePrefixFromBaseRoute(options.route);
+    requestHandlerOptions.config.prefix = generatePrefixFromBaseRoute(
+      options.route,
+    );
   }
 
   const route = options.route || "";

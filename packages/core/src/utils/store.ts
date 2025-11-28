@@ -7,8 +7,7 @@ import type {
   StoryBookerUser,
 } from "../types";
 
-export interface Store
-  extends Omit<RequestHandlerOptions<StoryBookerUser>, "config"> {
+export interface Store extends RequestHandlerOptions<StoryBookerUser> {
   abortSignal: AbortSignal | undefined;
   errorParser?: ErrorParser;
   headers: SuperHeaders;
