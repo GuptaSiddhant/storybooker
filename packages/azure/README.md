@@ -25,6 +25,7 @@ import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
 import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
 import { AzureEasyAuthService } from "@storybooker/azure/easy-auth";
 import { registerStoryBookerRouter } from "@storybooker/azure/functions";
+import { createBasicUIAdapter } from "@storybooker/ui";
 
 const storageConnectionString = process.env["AzureWebJobsStorage"];
 if (!storageConnectionString) {
@@ -43,6 +44,7 @@ registerStoryBookerRouter(app, {
   storage: new AzureBlobStorageService(
     BlobServiceClient.fromConnectionString(storageConnectionString),
   ),
+  ui: createBasicUIAdapter(), // remove to create headless service
 });
 ```
 
@@ -57,7 +59,8 @@ registerStoryBookerRouter(app, {
     "@azure/functions": "^4.0.0",
     "@azure/data-tables": "^13.0.0",
     "@azure/storage-blob": "^12.0.0",
-    "@storybooker/azure": "latest"
+    "@storybooker/azure": "latest",
+    "@storybooker/ui": "latest"
   }
 }
 ```

@@ -23,10 +23,12 @@ import { S3Client } from "@aws-sdk/client-s3";
 import { AwsDynamoDatabaseService } from "@storybooker/aws/dynamo-db";
 import { createStoryBookerRouterHandler } from "@storybooker/aws/lambda";
 import { AwsS3StorageService } from "@storybooker/aws/s3";
+import { createBasicUIAdapter } from "@storybooker/ui";
 
 export const handler = createStoryBookerRouterHandler({
   database: new AwsDynamoDatabaseService(new DynamoDBClient({})),
   storage: new AwsS3StorageService(new S3Client({})),
+  ui: createBasicUIAdapter(), // remove to create headless service
 });
 ```
 
@@ -40,7 +42,8 @@ export const handler = createStoryBookerRouterHandler({
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
     "@aws-sdk/client-s3": "^3.0.0",
-    "@storybooker/aws": "latest"
+    "@storybooker/aws": "latest",
+    "@storybooker/ui": "latest"
   }
 }
 ```

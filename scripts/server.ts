@@ -2,17 +2,19 @@
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
+import { poweredBy } from "hono/powered-by";
 import type {
   AuthAdapter,
   AuthAdapterAuthorise,
   AuthAdapterOptions,
   StoryBookerUser,
-} from "../packages/adapter/dist/index.d.ts";
+} from "../packages/core/dist/adapter.d.ts";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "../packages/adapter/dist/index.js";
+} from "../packages/core/dist/adapter.js";
 import { createRequestHandler } from "../packages/core/dist/index.js";
+import { createBasicUIAdapter } from "../packages/ui/dist/index.js";
 
 class LocalAuthAdapter implements AuthAdapter {
   #auth = true;
@@ -62,10 +64,16 @@ class LocalAuthAdapter implements AuthAdapter {
 
 const requestHandler = createRequestHandler({
   auth: new LocalAuthAdapter(),
-  config: { queueLargeZipFileProcessing: true },
+  config: {
+    middlewares: [poweredBy({ serverName: "SBR" })],
+    queueLargeZipFileProcessing: true,
+  },
   database: new LocalFileDatabase(".server/db.json"),
-  staticDirs: [".server"],
   storage: new LocalFileStorage(".server"),
+  ui: createBasicUIAdapter({
+    logo: "/SBR_white_128.jpg",
+    staticDirs: [".server"],
+  }),
 });
 
 export default { fetch: requestHandler };

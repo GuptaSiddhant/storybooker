@@ -1,0 +1,58 @@
+{
+  "name": "@storybooker/ui",
+  "version": "0.16.0",
+  "type": "module",
+  "description": "Basic UI for Storybooker app",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "homepage": "https://storybooker.js.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guptasiddhant/storybooker",
+    "directory": "packages/ui"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "license": "MIT",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "check": "tsgo --noEmit",
+    "dev": "tsdown -w ./src",
+    "fmt": "prettier src --write --config ../../.prettierrc",
+    "lint": "oxlint --type-aware ./src",
+    "lint:fix": "yarn lint --fix"
+  },
+  "dependencies": {
+    "@storybooker/core": "workspace:",
+    "hono": "^4.10.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript/native-preview": "^7.0.0-dev.20251024.1",
+    "oxlint": "^1.24.0",
+    "oxlint-tsgolint": "^0.3.0",
+    "prettier": "^3.6.2",
+    "tsdown": "^0.15.9"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.tsx",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.js",
+      "./package.json": "./package.json"
+    }
+  }
+}

@@ -1,9 +1,10 @@
 // oxlint-disable sort-keys
 
 import z from "zod";
-import { BuildSHASchema, TagSlugSchema } from "./~shared-schema";
+import { buildUploadVariants } from "../utils/constants";
+import { BuildIdSchema, TagIdSchema } from "./~shared-schema";
 
-export { BuildSHASchema };
+export { BuildIdSchema, buildUploadVariants };
 
 const buildContentAvailabilityOptions = [
   "none",
@@ -22,17 +23,16 @@ export const BuildSchema = z
       .meta({ description: "Email of the author" }),
     authorName: z.string(),
     createdAt: z.iso.datetime().default(new Date().toISOString()),
-    id: BuildSHASchema,
-    tagSlugs: z.string(),
+    id: BuildIdSchema,
+    tagIds: z.string().optional(),
     message: z.optional(z.string()),
-    sha: BuildSHASchema,
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
     coverage: z.enum(buildContentAvailabilityOptions),
     screenshots: z.enum(buildContentAvailabilityOptions),
     storybook: z.enum(buildContentAvailabilityOptions),
     testReport: z.enum(buildContentAvailabilityOptions),
   })
-  .meta({ id: "build", title: "StoryBooker Build" });
+  .meta({ id: "Build", title: "StoryBooker Build" });
 
 export type BuildCreateType = z.infer<typeof BuildCreateSchema>;
 /** @private */
@@ -42,13 +42,12 @@ export const BuildCreateSchema = BuildSchema.omit({
   screenshots: true,
   storybook: true,
   testReport: true,
-  id: true,
-  tagSlugs: true,
+  tagIds: true,
   updatedAt: true,
 }).extend({
-  tags: z.union([TagSlugSchema.array(), TagSlugSchema]).meta({
+  tags: z.union([TagIdSchema.array(), TagIdSchema]).meta({
     description:
-      "Tag slugs associated with the build. Should be created beforehand.",
+      "Tag IDs associated with the build. Should be created beforehand.",
   }),
 });
 
@@ -56,22 +55,15 @@ export type BuildUpdateType = z.infer<typeof BuildUpdateSchema>;
 export const BuildUpdateSchema = BuildSchema.omit({
   createdAt: true,
   id: true,
-  sha: true,
   updatedAt: true,
 }).partial();
 
-export const buildUploadVariants = [
-  "storybook",
-  "testReport",
-  "coverage",
-  "screenshots",
-] as const;
 export type BuildUploadVariant = (typeof buildUploadVariants)[number];
 export const BuildUploadQueryParamsSchema = z.object({
   variant: z.enum(buildUploadVariants).default("storybook"),
 });
 export const BuildUploadFormBodySchema = z.object({
-  file: z.file(),
+  file: z.file().openapi({ type: "object" }),
   variant: z.enum(buildUploadVariants).default("storybook"),
 });
 

@@ -4,8 +4,6 @@
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
-    "jsx": "react-jsx",
-    "jsxImportSource": "@kitajs/html"
+    "rootDir": "src"
   }
 }

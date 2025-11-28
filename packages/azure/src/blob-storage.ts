@@ -5,7 +5,7 @@ import type {
   BlobServiceClient,
   BlockBlobClient,
 } from "@azure/storage-blob";
-import type { StorageAdapter } from "@storybooker/adapter/storage";
+import type { StorageAdapter } from "@storybooker/core/adapter";
 
 export class AzureBlobStorageService implements StorageAdapter {
   #client: BlobServiceClient;

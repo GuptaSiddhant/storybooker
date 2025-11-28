@@ -6,7 +6,7 @@ import type {
   DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/adapter/database";
+} from "@storybooker/core/adapter";
 
 export class AwsDynamoDatabaseService implements DatabaseAdapter {
   #client: Dynamo.DynamoDBClient;

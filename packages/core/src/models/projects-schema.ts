@@ -3,7 +3,7 @@ import {
   DEFAULT_GITHUB_BRANCH,
   DEFAULT_PURGE_AFTER_DAYS,
 } from "../utils/constants";
-import { BuildSHASchema, ProjectIdSchema } from "./~shared-schema";
+import { BuildIdSchema, ProjectIdSchema } from "./~shared-schema";
 
 export { ProjectIdSchema };
 
@@ -33,7 +33,7 @@ export const ProjectSchema = z
 
     jiraDomain: z.union([z.url().optional(), z.literal("")]),
 
-    latestBuildSHA: z.union([BuildSHASchema.optional(), z.literal("")]),
+    latestBuildId: z.union([BuildIdSchema.optional(), z.literal("")]),
 
     name: z.string().meta({ description: "Name of the project." }),
 
@@ -48,12 +48,12 @@ export const ProjectSchema = z
 
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
   })
-  .meta({ id: "project", title: "StoryBooker Project" });
+  .meta({ id: "Project", title: "StoryBooker project" });
 
 export type ProjectCreateType = z.infer<typeof ProjectCreateSchema>;
 export const ProjectCreateSchema = ProjectSchema.omit({
   createdAt: true,
-  latestBuildSHA: true,
+  latestBuildId: true,
   updatedAt: true,
 });
 

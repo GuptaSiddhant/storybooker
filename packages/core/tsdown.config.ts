@@ -1,35 +1,25 @@
 import { argv } from "node:process";
-import { defineConfig, type ResolvedOptions } from "tsdown";
+import { defineConfig } from "tsdown";
+import { postBuildSuccess } from "./scripts/post-build.ts";
 
 export default defineConfig({
   clean: !argv.includes("-w"),
   dts: { tsgo: true },
   entry: {
+    adapter: "./src/adapters/index.ts",
     index: "./src/index.ts",
-    mimetype: "./src/utils/mime-utils.ts",
-    translations: "./src/ui/translations/index.ts",
-    "translations/en-gb": "./src/ui/translations/en-gb.ts",
+    constants: "./src/utils/constants.ts",
+    mimes: "./src/utils/mime-utils.ts",
+    router: "./src/routers/_app-router.ts",
     types: "./src/types.ts",
+    url: "./src/urls.ts",
     utils: "./src/utils/index.ts",
   },
   exports: { devExports: "source" },
   format: ["esm"],
-  onSuccess,
+  onSuccess: postBuildSuccess,
   platform: "node",
   sourcemap: true,
   treeshake: true,
   unbundle: false,
 });
-
-async function onSuccess(config: ResolvedOptions): Promise<void> {
-  const { generateOpenApiSpec } = await import(
-    "../../scripts/gen-openapi-json.ts"
-  );
-  const { router, SERVICE_NAME } = await import("./dist/index.js");
-  await generateOpenApiSpec(config, router.paths, SERVICE_NAME);
-
-  const { updateDenoJsonToMatchPkgJson } = await import(
-    "../../scripts/jsr-utils.ts"
-  );
-  await updateDenoJsonToMatchPkgJson(config);
-}

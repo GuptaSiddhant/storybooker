@@ -3,8 +3,8 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { StoryBookerFile } from "@storybooker/adapter/storage";
 import decompress from "decompress";
+import type { StoryBookerFile } from "../adapters/storage";
 import { BuildsModel } from "../models/builds-model";
 import type { BuildUploadVariant } from "../models/builds-schema";
 import { generateStorageContainerId } from "../utils/adapter-utils";
@@ -14,31 +14,31 @@ import { getStore } from "../utils/store";
 
 export async function handleProcessZip(
   projectId: string,
-  buildSHA: string,
+  buildId: string,
   variant: BuildUploadVariant,
 ): Promise<void> {
   const { abortSignal, logger, storage } = getStore();
   const debugLog = (...args: unknown[]): void => {
-    logger.log(`(${projectId}-${buildSHA}-${variant})`, ...args);
+    logger.log(`(${projectId}-${buildId}-${variant})`, ...args);
   };
 
   debugLog("Creating temp dir");
   const localDirpath = fs.mkdtempSync(
-    path.join(os.tmpdir(), `storybooker-${projectId}-${buildSHA}-`),
+    path.join(os.tmpdir(), `storybooker-${projectId}-${buildId}-`),
   );
   const localZipFilePath = path.join(localDirpath, `${variant}.zip`);
   const outputDirpath = path.join(localDirpath, variant);
 
   const containerId = generateStorageContainerId(projectId);
-  const buildSHAModel = new BuildsModel(projectId).id(buildSHA);
+  const buildIdModel = new BuildsModel(projectId).id(buildId);
 
   try {
-    await buildSHAModel.update({ [variant]: "processing" });
+    await buildIdModel.update({ [variant]: "processing" });
 
     debugLog("Downloading zip file");
     const file = await storage.downloadFile(
       containerId,
-      `${buildSHA}/${variant}.zip`,
+      `${buildId}/${variant}.zip`,
       { abortSignal, logger },
     );
 
@@ -61,11 +61,11 @@ export async function handleProcessZip(
     debugLog("Upload uncompressed dir");
     await storage.uploadFiles(
       containerId,
-      await dirpathToFiles(outputDirpath, `${buildSHA}/${variant}`),
+      await dirpathToFiles(outputDirpath, `${buildId}/${variant}`),
       { abortSignal, logger },
     );
 
-    await buildSHAModel.update({ [variant]: "ready" });
+    await buildIdModel.update({ [variant]: "ready" });
   } finally {
     debugLog("Cleaning up temp dir");
     await fsp
@@ -80,8 +80,6 @@ async function dirpathToFiles(
   dirpath: string,
   prefix: string,
 ): Promise<StoryBookerFile[]> {
-  const { ui } = getStore();
-
   const allEntriesInDir = await fsp.readdir(dirpath, {
     encoding: "utf8",
     recursive: true,
@@ -93,10 +91,7 @@ async function dirpathToFiles(
 
   return allFilesInDir.map((filepath): StoryBookerFile => {
     const relativePath = filepath.replace(`${dirpath}/`, "");
-    const content =
-      ui?.streaming === false
-        ? new Blob([Buffer.from(fs.readFileSync(filepath))])
-        : createWebReadableStream(filepath);
+    const content = createWebReadableStream(filepath);
 
     return {
       content,

@@ -4,7 +4,7 @@ import type {
   DatabaseAdapterOptions,
   DatabaseDocumentListOptions,
   StoryBookerDatabaseDocument,
-} from "@storybooker/adapter/database";
+} from "@storybooker/core/adapter";
 
 type ColumnFamily = "cf1";
 const COLUMN_FAMILY: ColumnFamily = "cf1";

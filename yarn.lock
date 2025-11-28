@@ -267,6 +267,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@asteasolutions/zod-to-openapi@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@asteasolutions/zod-to-openapi@npm:8.1.0"
+  dependencies:
+    openapi3-ts: "npm:^4.1.2"
+  peerDependencies:
+    zod: ^4.0.0
+  checksum: 10c0/974a8b06bc3048406bc13f2cf2c00ce8bc2256af6d1e24b39f3b8b1c6fa6047d64b8a017da5b45e6b3f28ca89b159383f01dabc00a904a705a54ea87712dfda3
+  languageName: node
+  linkType: hard
+
 "@aws-crypto/crc32@npm:5.2.0":
   version: 5.2.0
   resolution: "@aws-crypto/crc32@npm:5.2.0"
@@ -4742,6 +4753,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/swagger-ui@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@hono/swagger-ui@npm:0.5.2"
+  peerDependencies:
+    hono: "*"
+  checksum: 10c0/f2b3b495e0d323c02f79b718ed26cfa48c1e47ac26f6dcc4fcc7c8e4106f73e68542e87e7d0c351ece7435040c689c482f19dab88be1a97b21bb3871a2cc63a8
+  languageName: node
+  linkType: hard
+
+"@hono/zod-openapi@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@hono/zod-openapi@npm:1.1.5"
+  dependencies:
+    "@asteasolutions/zod-to-openapi": "npm:^8.1.0"
+    "@hono/zod-validator": "npm:^0.7.4"
+    openapi3-ts: "npm:^4.5.0"
+  peerDependencies:
+    hono: ">=4.3.6"
+    zod: ^4.0.0
+  checksum: 10c0/3993197f6a75c568ec8d0f18013f2ee1da9c541e8a9a5716885da8388406e2771d1857bab93fa28e81b49c13776432801319214403b8efbb5ded148660dbf8e4
+  languageName: node
+  linkType: hard
+
+"@hono/zod-validator@npm:^0.7.4":
+  version: 0.7.5
+  resolution: "@hono/zod-validator@npm:0.7.5"
+  peerDependencies:
+    hono: ">=3.9.0"
+    zod: ^3.25.0 || ^4.0.0
+  checksum: 10c0/41849b70fd1ef5bf55b2c895486db7d9b9770711e886a2415d0c176d788858abbd5e0c874180fcc8fd4f9554bfa2788f462410f1eba0883eeb843e7d9dab0c1b
+  languageName: node
+  linkType: hard
+
 "@ianvs/prettier-plugin-sort-imports@npm:^4.4.1":
   version: 4.7.0
   resolution: "@ianvs/prettier-plugin-sort-imports@npm:4.7.0"
@@ -4976,15 +5020,6 @@ __metadata:
   peerDependencies:
     tslib: 2
   checksum: 10c0/a720a6accaae71fa9e7fa06e93e382702aa5760ef2bdc3bc45c19dc2228a01cc735d36cb970c654bc5e88f1328d55d1f0d5eceef0b76bcc327a2ce863e7b0021
-  languageName: node
-  linkType: hard
-
-"@kitajs/html@npm:^4.0.0":
-  version: 4.2.9
-  resolution: "@kitajs/html@npm:4.2.9"
-  dependencies:
-    csstype: "npm:^3.1.3"
-  checksum: 10c0/24f261ac27f0ef4bc3f09f520b0f446cb7843557133113bfe508d08849bdf58665dc36924ae2ae9c63dbaf3943800c951031e3f2bf772307aa028c0ac8f501cd
   languageName: node
   linkType: hard
 
@@ -5652,13 +5687,6 @@ __metadata:
   version: 0.16.0
   resolution: "@remix-run/headers@npm:0.16.0"
   checksum: 10c0/0fb4b353d12f7e7052d8ead2f6c6cd34f7659e012ae05e12b4d50e153dd935b62f5aaad698bd532b72557cf4853296c72bb08606ebf7ccd584bd1dce86307d7f
-  languageName: node
-  linkType: hard
-
-"@remix-run/route-pattern@npm:^0.10.0":
-  version: 0.10.0
-  resolution: "@remix-run/route-pattern@npm:0.10.0"
-  checksum: 10c0/1e9521e62a862902987e9982508787b2e82f2bded5daa21170450dbba79c88f0d9d6543b2057db22e344b9fe02ebad7e8f3671720fd1865653e56525a08144a3
   languageName: node
   linkType: hard
 
@@ -6953,27 +6981,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybooker/adapter@workspace:^, @storybooker/adapter@workspace:packages/adapter":
-  version: 0.0.0-use.local
-  resolution: "@storybooker/adapter@workspace:packages/adapter"
-  dependencies:
-    "@types/node": "npm:^22.0.0"
-    "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
-    oxlint: "npm:^1.24.0"
-    oxlint-tsgolint: "npm:^0.3.0"
-    prettier: "npm:^3.6.2"
-    tsdown: "npm:^0.15.9"
-  languageName: unknown
-  linkType: soft
-
 "@storybooker/aws@workspace:*, @storybooker/aws@workspace:packages/aws":
   version: 0.0.0-use.local
   resolution: "@storybooker/aws@workspace:packages/aws"
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:^3.895.0"
     "@aws-sdk/client-s3": "npm:^3.895.0"
-    "@storybooker/adapter": "workspace:^"
-    "@storybooker/core": "workspace:^"
+    "@storybooker/core": "workspace:"
     "@types/aws-lambda": "npm:^8.10.152"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
@@ -7000,8 +7014,7 @@ __metadata:
     "@azure/data-tables": "npm:^13.0.0"
     "@azure/functions": "npm:^4.0.0"
     "@azure/storage-blob": "npm:^12.0.0"
-    "@storybooker/adapter": "workspace:^"
-    "@storybooker/core": "workspace:^"
+    "@storybooker/core": "workspace:"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
     oxlint: "npm:^1.24.0"
@@ -7025,27 +7038,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/core@workspace:^, @storybooker/core@workspace:packages/core":
+"@storybooker/core@workspace:, @storybooker/core@workspace:^, @storybooker/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@storybooker/core@workspace:packages/core"
   dependencies:
-    "@kitajs/html": "npm:^4.0.0"
+    "@hono/swagger-ui": "npm:^0.5.2"
+    "@hono/zod-openapi": "npm:^1.1.5"
     "@remix-run/headers": "npm:^0.16.0"
-    "@remix-run/route-pattern": "npm:^0.10.0"
-    "@storybooker/adapter": "workspace:^"
     "@types/decompress": "npm:^4.0.0"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
     "@vitest/coverage-v8": "npm:^3.2.4"
     decompress: "npm:^4.0.0"
     glob: "npm:^10.0.0"
+    hono: "npm:^4.10.6"
+    js-yaml: "npm:^4.1.1"
     oxlint: "npm:^1.24.0"
     oxlint-tsgolint: "npm:^0.3.0"
     prettier: "npm:^3.6.2"
     tsdown: "npm:^0.15.9"
     vitest: "npm:^3.2.4"
     zod: "npm:^4.0.0"
-    zod-openapi: "npm:^5.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7056,7 +7069,7 @@ __metadata:
     "@google-cloud/bigtable": "npm:^6.4.1"
     "@google-cloud/firestore": "npm:^7.11.5"
     "@google-cloud/storage": "npm:^7.17.1"
-    "@storybooker/adapter": "workspace:^"
+    "@storybooker/core": "workspace:"
     "@types/node": "npm:^22.0.0"
     "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
     oxlint: "npm:^1.24.0"
@@ -7074,6 +7087,21 @@ __metadata:
       optional: true
     "@google-cloud/storage":
       optional: true
+  languageName: unknown
+  linkType: soft
+
+"@storybooker/ui@workspace:packages/ui":
+  version: 0.0.0-use.local
+  resolution: "@storybooker/ui@workspace:packages/ui"
+  dependencies:
+    "@storybooker/core": "workspace:"
+    "@types/node": "npm:^22.0.0"
+    "@typescript/native-preview": "npm:^7.0.0-dev.20251024.1"
+    hono: "npm:^4.10.6"
+    oxlint: "npm:^1.24.0"
+    oxlint-tsgolint: "npm:^0.3.0"
+    prettier: "npm:^3.6.2"
+    tsdown: "npm:^0.15.9"
   languageName: unknown
   linkType: soft
 
@@ -10405,7 +10433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"csstype@npm:^3.0.2, csstype@npm:^3.1.3":
+"csstype@npm:^3.0.2":
   version: 3.1.3
   resolution: "csstype@npm:3.1.3"
   checksum: 10c0/80c089d6f7e0c5b2bd83cf0539ab41474198579584fa10d86d0cafe0642202343cbc119e076a0b1aece191989477081415d66c9fefbf3c957fc2fc4b7009f248
@@ -12637,6 +12665,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hono@npm:^4.10.6":
+  version: 4.10.6
+  resolution: "hono@npm:4.10.6"
+  checksum: 10c0/a4df5a44378df640464a468cfa6364cc90fbf0a0d89c1bc8fa704c8450855b17baf7a5837655b1c00d6cf8dcecffc2ee702bf3f2c66dda243fe845b75b4b7f4b
+  languageName: node
+  linkType: hard
+
 "hookable@npm:^5.5.3":
   version: 5.5.3
   resolution: "hookable@npm:5.5.3"
@@ -13576,6 +13611,17 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 10c0/184a24b4eaacfce40ad9074c64fd42ac83cf74d8c8cd137718d456ced75051229e5061b8633c3366b8aada17945a7a356b337828c19da92b51ae62126575018f
+  languageName: node
+  linkType: hard
+
+"js-yaml@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "js-yaml@npm:4.1.1"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.js
+  checksum: 10c0/561c7d7088c40a9bb53cc75becbfb1df6ae49b34b5e6e5a81744b14ae8667ec564ad2527709d1a6e7d5e5fa6d483aa0f373a50ad98d42fde368ec4a190d4fae7
   languageName: node
   linkType: hard
 
@@ -15595,6 +15641,15 @@ __metadata:
   bin:
     openapi-typescript: bin/cli.js
   checksum: 10c0/52db65d211f872e0a34018cca409f388d70d55fa7cd6e07eacbb8ffc873ed78ffa29f95758766e2bd51ef87145aea8b66350638355cac5887f407aba9080d408
+  languageName: node
+  linkType: hard
+
+"openapi3-ts@npm:^4.1.2, openapi3-ts@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "openapi3-ts@npm:4.5.0"
+  dependencies:
+    yaml: "npm:^2.8.0"
+  checksum: 10c0/97de2d24e9ceffb89e1388e137e4a6e17ee57a02dce0c938a5e98b1338ac72b31e8b2ce8dd28945ad43fae8bee2a145892cb548ba5ae60b0930f1b6b79b0747d
   languageName: node
   linkType: hard
 
@@ -20584,6 +20639,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yaml@npm:^2.8.0":
+  version: 2.8.1
+  resolution: "yaml@npm:2.8.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 10c0/7c587be00d9303d2ae1566e03bc5bc7fe978ba0d9bf39cc418c3139d37929dfcb93a230d9749f2cb578b6aa5d9ebebc322415e4b653cb83acd8bc0bc321707f3
+  languageName: node
+  linkType: hard
+
 "yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
@@ -20648,15 +20712,6 @@ __metadata:
   version: 1.2.1
   resolution: "yocto-queue@npm:1.2.1"
   checksum: 10c0/5762caa3d0b421f4bdb7a1926b2ae2189fc6e4a14469258f183600028eb16db3e9e0306f46e8ebf5a52ff4b81a881f22637afefbef5399d6ad440824e9b27f9f
-  languageName: node
-  linkType: hard
-
-"zod-openapi@npm:^5.0.0":
-  version: 5.4.1
-  resolution: "zod-openapi@npm:5.4.1"
-  peerDependencies:
-    zod: ^3.25.74 || ^4.0.0
-  checksum: 10c0/e202c7d78314ba8596cce455d8fc9c1322b2569d49a6e287f1649baf159e6b1ecc1e8cd3fb2c2ec71a43f95b2bb0205d5534ac48f6b4960b5244a897239ccbf1
   languageName: node
   linkType: hard
 

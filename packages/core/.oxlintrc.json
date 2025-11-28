@@ -10,7 +10,8 @@
     "typescript/no-base-to-string": "allow",
     "max-lines": "allow",
     "max-lines-per-function": "allow",
-    "max-lines-per-file": "allow"
+    "max-lines-per-file": "allow",
+    "sort-keys": "allow"
   },
   "overrides": [
     {

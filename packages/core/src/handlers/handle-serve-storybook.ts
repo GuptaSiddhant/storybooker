@@ -1,5 +1,5 @@
 import path from "node:path";
-import SuperHeaders from "@remix-run/headers";
+import { SuperHeaders } from "@remix-run/headers";
 import { urlBuilder } from "../urls";
 import { generateStorageContainerId } from "../utils/adapter-utils";
 import { authenticateOrThrow } from "../utils/auth";
@@ -9,16 +9,16 @@ import { responseError } from "../utils/response";
 import { getStore } from "../utils/store";
 
 export async function handleServeStoryBook({
-  buildSHA,
+  buildId,
   filepath,
   projectId,
 }: {
-  buildSHA: string;
+  buildId: string;
   projectId: string;
   filepath: string;
 }): Promise<Response> {
-  const { abortSignal, logger, storage, ui } = getStore();
-  const storageFilepath = path.posix.join(buildSHA, filepath);
+  const { abortSignal, logger, storage } = getStore();
+  const storageFilepath = path.posix.join(buildId, filepath);
   await authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
   try {
@@ -45,7 +45,7 @@ export async function handleServeStoryBook({
       const bodyWithBackButton = data.replace(
         `</body>`,
         `
-  <div><a id="view-all" href="${urlBuilder.allBuilds(projectId)}"
+  <div><a id="view-all" href="${urlBuilder.buildsList(projectId)}"
   style="position: fixed; bottom: 0.5rem; left: 0.5rem; z-index: 9999; padding: 0.25rem 0.5rem; background-color: black; color: white; border-radius: 0.25rem; text-decoration: none; font-size: 1rem; font-face: sans-serif; font-weight: 400;">
   ← ${SERVICE_NAME}
   </a></div>
@@ -73,7 +73,7 @@ ${relativeHrefScripts}
       return new Response(bodyWithBackButton, { headers, status: 200 });
     }
 
-    if (ui?.streaming === false && content instanceof ReadableStream) {
+    if (content instanceof ReadableStream) {
       const body = await new Response(content).arrayBuffer();
       return new Response(body, { headers, status: 200 });
     }

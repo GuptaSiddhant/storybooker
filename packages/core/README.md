@@ -10,12 +10,14 @@ Core Docs: https://storybooker.js.org/docs/core
 ```js
 import { createServer } from "node:http";
 import { createRequestListener } from "@remix-run/node-fetch-server";
-import { LocalFileDatabase, LocalFileStorage } from "@storybooker/adapter";
 import { createRequestHandler } from "@storybooker/core";
+import { LocalFileDatabase, LocalFileStorage } from "@storybooker/core/adapter";
+import { createBasicUIAdapter } from "@storybooker/ui";
 
 const handler = createRequestHandler({
   database: new LocalFileDatabase(),
   storage: new LocalFileStorage(),
+  ui: createBasicUIAdapter(), // remove to create headless service
 });
 
 const server = createServer(createRequestListener(handler));

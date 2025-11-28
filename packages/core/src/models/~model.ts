@@ -5,7 +5,7 @@ import type {
   StorageAdapter,
   StorageAdapterOptions,
   StoryBookerPermissionAction,
-} from "@storybooker/adapter";
+} from "../adapters";
 import { parseErrorMessage } from "../utils/error";
 import { getStore } from "../utils/store";
 

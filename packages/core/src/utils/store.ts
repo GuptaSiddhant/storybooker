@@ -1,18 +1,20 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { SuperHeaders } from "@remix-run/headers";
-import type { LoggerAdapter } from "@storybooker/adapter/logger";
-import type { RequestHandlerOptions, StoryBookerUser } from "../types";
-import type { Translation } from "../ui/translations";
+import type { LoggerAdapter } from "../adapters/logger";
+import type {
+  ErrorParser,
+  RequestHandlerOptions,
+  StoryBookerUser,
+} from "../types";
 
-export interface Store
-  extends Omit<RequestHandlerOptions<StoryBookerUser>, "staticDirs"> {
+export interface Store extends RequestHandlerOptions<StoryBookerUser> {
   abortSignal: AbortSignal | undefined;
+  errorParser?: ErrorParser;
   headers: SuperHeaders;
   locale: string;
   logger: LoggerAdapter;
   prefix: string;
   request: Request;
-  translation: Translation;
   url: string;
   user: StoryBookerUser | null | undefined;
 }

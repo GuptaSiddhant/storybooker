@@ -1,215 +1,357 @@
-// oxlint-disable sort-keys
-
 import path from "node:path";
-import { createHrefBuilder, type HrefBuilder } from "@remix-run/route-pattern";
 import type { BuildUploadVariant } from "./models/builds-schema";
-import { QUERY_PARAMS } from "./utils/constants";
+import type { TagVariant } from "./models/tags-schema";
 import { getStore } from "./utils/store";
-import { urlJoin } from "./utils/url";
+import { linkRoute, urlJoin } from "./utils/url-utils";
 
-export const URLS = {
-  ui: {
-    root: "",
-    openapi: "openapi",
-    health: "health",
-    account: "account",
-    login: "login",
-    logout: "logout",
-    catchAll: "*filepath",
-  },
-  tasks: {
-    purge: "tasks/purge",
-    processZip: "tasks/process-zip",
-  },
-  projects: {
-    all: "projects",
-    create: "projects/create",
-    id: "projects/:projectId",
-    update: "projects/:projectId/update",
-  },
-  builds: {
-    all: "projects/:projectId/builds",
-    create: "projects/:projectId/builds/create",
-    id: "projects/:projectId/builds/:buildSHA",
-    upload: "projects/:projectId/builds/:buildSHA/upload",
-  },
-  tags: {
-    all: "projects/:projectId/tags",
-    create: "projects/:projectId/tags/create",
-    id: "projects/:projectId/tags/:tagSlug",
-    update: "projects/:projectId/tags/:tagSlug/update",
-    latest: "projects/:projectId/tags/:tagSlug/latest",
-  },
-  serve: {
-    all: "_/:projectId/:buildSHA/*filepath",
-    storybook: "_/:projectId/:buildSHA/storybook/*filepath",
-    coverage: "_/:projectId/:buildSHA/coverage/*filepath",
-    testReport: "_/:projectId/:buildSHA/testReport/*filepath",
-    screenshots: "_/:projectId/:buildSHA/screenshots/*filepath",
-  },
-} as const;
-
-const baseHref = createHrefBuilder();
-
-export const href: HrefBuilder = (...buildParams) => {
-  const { prefix, url: base } = getStore();
-  const [pattern, args, args2] = buildParams;
-  // @ts-expect-error args are complex
-  const value = baseHref(pattern, args, args2);
-  return new URL(urlJoin(prefix, value), base).toString();
-};
+export { urlJoin };
 
 /**
  * URL builder for the Storybooks router.
- * @private
  */
-export const urlBuilder = {
-  root: (): string => {
-    return href(URLS.ui.root);
-  },
-  login: (redirect: string): string => {
-    return href(URLS.ui.login, null, { redirect });
-  },
-  staticFile: (filepath: string): string => {
-    return href(URLS.ui.catchAll, { filepath });
-  },
-  allProjects: (): string => {
-    return href(URLS.projects.all);
-  },
-  projectCreate: (): string => {
-    return href(URLS.projects.create);
-  },
-  projectId: (projectId: string): string => {
-    return href(URLS.projects.id, { projectId });
-  },
-  projectIdUpdate: (projectId: string): string => {
-    return href(URLS.projects.update, { projectId });
-  },
-  allBuilds: (projectId: string): string => {
-    return href(URLS.builds.all, { projectId });
-  },
-  buildSHA: (projectId: string, sha: string): string => {
-    return href(URLS.builds.id, { buildSHA: sha, projectId });
-  },
-  buildCreate: (projectId: string, tagSlug?: string): string => {
-    const searchParams: Record<string, string> = {};
-    if (tagSlug) {
-      searchParams[QUERY_PARAMS.tagSlug] = tagSlug;
-    }
-    return href(URLS.builds.create, { projectId }, searchParams);
-  },
-  buildUpload: (
-    projectId: string,
-    sha: string,
-    variant?: BuildUploadVariant,
-  ): string => {
-    const searchParams: Record<string, string> = {};
-    if (variant) {
-      searchParams[QUERY_PARAMS.uploadVariant] = variant;
-    }
-    return href(URLS.builds.upload, { buildSHA: sha, projectId }, searchParams);
-  },
-  allTags: (projectId: string): string => {
-    return href(URLS.tags.all, { projectId });
-  },
-  tagCreate: (projectId: string): string => {
-    return href(URLS.tags.create, { projectId });
-  },
-  tagSlug: (projectId: string, tagSlug: string): string => {
-    return href(URLS.tags.id, { projectId, tagSlug });
-  },
-  tagSlugUpdate: (projectId: string, tagSlug: string): string => {
-    return href(URLS.tags.update, { projectId, tagSlug });
-  },
-  tagSlugLatest: (projectId: string, tagSlug: string): string => {
-    return href(URLS.tags.latest, { projectId, tagSlug });
-  },
-  storybookIndexHtml: (
-    projectId: string,
-    sha: string,
-    storyId?: string,
-  ): string => {
-    const searchParams: Record<string, string> = {};
-    if (storyId) {
-      searchParams["path"] = `/story/${storyId}`;
-    }
-    return href(
-      URLS.serve.storybook,
-      { projectId, buildSHA: sha, filepath: "index.html" },
-      searchParams,
-    );
-  },
-  storybookIFrameHtml: (
-    projectId: string,
-    sha: string,
-    storyId: string,
-  ): string => {
-    const searchParams: Record<string, string> = {};
-    searchParams["viewMode"] = "story";
-    searchParams["id"] = storyId;
+export class UrlBuilder {
+  url: string | undefined;
 
-    return href(
-      URLS.serve.storybook,
-      { projectId, buildSHA: sha, filepath: "iframe.html" },
-      searchParams,
+  constructor(url?: string) {
+    if (url) {
+      this.url = url;
+    }
+  }
+
+  get #baseUrl(): string {
+    // oxlint-disable-next-line no-accessor-recursion
+    const url = this.url || getStore().url;
+    return new URL(url).origin;
+  }
+
+  homepage(): string {
+    return linkRoute((client) => client.index.$url(), {
+      baseUrl: this.#baseUrl,
+    });
+  }
+  openapi(): string {
+    return linkRoute((client) => client.openapi.$url(), {
+      baseUrl: this.#baseUrl,
+    });
+  }
+  staticFile(filepath: string): string {
+    return linkRoute(
+      (client) => client[":filepath{.+}"].$url({ param: { filepath } }),
+      { baseUrl: this.#baseUrl },
     );
-  },
-  storybookDownload: (projectId: string, sha: string): string => {
-    return href(URLS.serve.all, {
-      projectId,
-      buildSHA: sha,
-      filepath: "storybook.zip",
+  }
+
+  // accounts
+  account(): string {
+    return linkRoute((client) => client.account.$url(), {
+      baseUrl: this.#baseUrl,
     });
-  },
-  storybookTestReport: (projectId: string, sha: string): string => {
-    return href(URLS.serve.testReport, {
-      projectId,
-      buildSHA: sha,
-      filepath: "index.html",
+  }
+
+  login(redirect?: string): string {
+    return linkRoute(
+      (client) => client.account.login.$url({ query: { redirect } }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  logout(): string {
+    return linkRoute((client) => client.account.logout.$url(), {
+      baseUrl: this.#baseUrl,
     });
-  },
-  storybookCoverage: (projectId: string, sha: string): string => {
-    return href(URLS.serve.coverage, {
-      projectId,
-      buildSHA: sha,
-      filepath: "index.html",
+  }
+
+  // projects
+  projectsList(): string {
+    return linkRoute((client) => client.projects.$url(), {
+      baseUrl: this.#baseUrl,
     });
-  },
-  storybookScreenshot: (
+  }
+  projectCreate(): string {
+    return linkRoute((client) => client.projects.create.$url(), {
+      baseUrl: this.#baseUrl,
+    });
+  }
+  projectDetails(projectId: string): string {
+    return linkRoute(
+      (client) => client.projects[":projectId"].$url({ param: { projectId } }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  projectUpdate(projectId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].update.$url({ param: { projectId } }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  projectDelete(projectId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].delete.$url({ param: { projectId } }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+
+  // builds
+  buildsList(projectId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].builds.$url({ param: { projectId } }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  buildDetails(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].builds[":buildId"].$url({
+          param: { buildId, projectId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  buildCreate(projectId: string, tagId?: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].builds.create.$url({
+          param: { projectId },
+          query: { tagId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  buildDelete(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].builds[":buildId"].delete.$url({
+          param: { projectId, buildId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  buildUpdate(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].builds[":buildId"].update.$url({
+          param: { projectId, buildId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  buildUpload(
     projectId: string,
-    sha: string,
+    buildId: string,
+    variant?: BuildUploadVariant,
+  ): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].builds[":buildId"].upload.$url({
+          param: { buildId, projectId },
+          query: { variant },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+
+  // tags
+  tagsList(projectId: string, type?: TagVariant): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].tags.$url({
+          param: { projectId },
+          query: { type },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  tagCreate(projectId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].tags.create.$url({
+          param: { projectId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  tagDetails(projectId: string, tagId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].tags[":tagId"].$url({
+          param: { projectId, tagId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  tagDelete(projectId: string, tagId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].tags[":tagId"].delete.$url({
+          param: { projectId, tagId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  tagUpdate(projectId: string, tagId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].tags[":tagId"].update.$url({
+          param: { projectId, tagId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  // tagLatest: (projectId: string, tagId: string): string => {
+  //   return linkRoute((client) =>
+  //     client.projects[":projectId"].tags[":tagId"].latest.$url({
+  //       param: { projectId, tagId },
+  //     }),
+  //   );
+  // },
+
+  // tasks
+  taskPurge(projectId?: string): string {
+    return linkRoute(
+      (client) => client.tasks.purge.$url({ query: { projectId } }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  taskProcessZip(
+    projectId: string,
+    buildId: string,
+    variant: BuildUploadVariant,
+  ): string {
+    return linkRoute(
+      (client) =>
+        client.tasks["process-zip"].$url({
+          query: { projectId, buildId, variant },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+
+  // serve
+  storybookIndexHtml(
+    projectId: string,
+    buildId: string,
+    storyId?: string,
+  ): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: "storybook/index.html",
+          },
+          query: {
+            path: storyId ? `/story/${storyId}` : undefined,
+          },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  storybookIFrameHtml(
+    projectId: string,
+    buildId: string,
+    storyId: string,
+  ): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: "storybook/iframe.html",
+          },
+          query: { id: storyId, viewMode: "story" },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  storybookDownload(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: "storybook.zip",
+          },
+          query: {},
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  storybookTestReport(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: "testReport/index.html",
+          },
+          query: {},
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  storybookCoverage(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: "coverage/index.html",
+          },
+          query: {},
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  storybookScreenshot(
+    projectId: string,
+    buildId: string,
     ...filename: string[]
-  ): string => {
-    return href(URLS.serve.screenshots, {
-      projectId,
-      buildSHA: sha,
-      filepath: path.posix.join(...filename),
-    });
-  },
-  storybookScreenshotsDownload: (projectId: string, sha: string): string => {
-    return href(URLS.serve.all, {
-      projectId,
-      buildSHA: sha,
-      filepath: "screenshots.zip",
-    });
-  },
-  gitHub: (gitHubRepo: string, ...pathnames: string[]): string => {
+  ): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: path.posix.join("screenshots", ...filename),
+          },
+          query: {},
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  storybookScreenshotsDownload(projectId: string, buildId: string): string {
+    return linkRoute(
+      (client) =>
+        client._[":projectId"][":buildId"][":filepath{.+}"].$url({
+          param: {
+            projectId,
+            buildId,
+            filepath: "screenshots.zip",
+          },
+          query: {},
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+
+  // external
+  // oxlint-disable-next-line class-methods-use-this
+  gitHub(gitHubRepo: string, ...pathnames: string[]): string {
     const url = new URL(
       urlJoin(gitHubRepo, ...pathnames),
       "https://github.com",
     );
     return url.toString();
-  },
-  taskProcessZip: (
-    projectId: string,
-    buildSHA: string,
-    variant: BuildUploadVariant,
-  ): string => {
-    return href(URLS.tasks.processZip, null, {
-      project: projectId,
-      sha: buildSHA,
-      variant,
-    });
-  },
-  // oxlint-disable-next-line no-explicit-any
-} satisfies Record<string, (...args: any[]) => string>;
+  }
+}
+
+/** @private */
+export const urlBuilder = new UrlBuilder();

@@ -31,13 +31,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@kitajs/html": "^4.0.0",
+    "@hono/swagger-ui": "^0.5.2",
+    "@hono/zod-openapi": "^1.1.5",
     "@remix-run/headers": "^0.16.0",
-    "@remix-run/route-pattern": "^0.10.0",
-    "@storybooker/adapter": "workspace:^",
     "decompress": "^4.0.0",
-    "zod": "^4.0.0",
-    "zod-openapi": "^5.0.0"
+    "hono": "^4.10.6",
+    "zod": "^4.0.0"
   },
   "devDependencies": {
     "@types/decompress": "^4.0.0",
@@ -45,6 +44,7 @@
     "@typescript/native-preview": "^7.0.0-dev.20251024.1",
     "@vitest/coverage-v8": "^3.2.4",
     "glob": "^10.0.0",
+    "js-yaml": "^4.1.1",
     "oxlint": "^1.24.0",
     "oxlint-tsgolint": "^0.3.0",
     "prettier": "^3.6.2",
@@ -59,36 +59,47 @@
       "source": "./src/index.ts",
       "default": "./dist/index.js"
     },
-    "./mimetype": {
+    "./adapter": {
+      "source": "./src/adapters/index.ts",
+      "default": "./dist/adapter.js"
+    },
+    "./constants": {
+      "source": "./src/utils/constants.ts",
+      "default": "./dist/constants.js"
+    },
+    "./mimes": {
       "source": "./src/utils/mime-utils.ts",
-      "default": "./dist/mimetype.js"
+      "default": "./dist/mimes.js"
     },
-    "./translations": {
-      "source": "./src/ui/translations/index.ts",
-      "default": "./dist/translations.js"
-    },
-    "./translations/en-gb": {
-      "source": "./src/ui/translations/en-gb.ts",
-      "default": "./dist/translations/en-gb.js"
+    "./router": {
+      "source": "./src/routers/_app-router.ts",
+      "default": "./dist/router.js"
     },
     "./types": {
       "source": "./src/types.ts",
       "default": "./dist/types.js"
+    },
+    "./url": {
+      "source": "./src/urls.ts",
+      "default": "./dist/url.js"
     },
     "./utils": {
       "source": "./src/utils/index.ts",
       "default": "./dist/utils.js"
     },
     "./package.json": "./package.json",
-    "./openapi.json": "./dist/openapi.json"
+    "./openapi.json": "./dist/openapi.json",
+    "./openapi.yaml": "./dist/openapi.yaml"
   },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
-      "./mimetype": "./dist/mimetype.js",
-      "./translations": "./dist/translations.js",
-      "./translations/en-gb": "./dist/translations/en-gb.js",
+      "./adapter": "./dist/adapter.js",
+      "./constants": "./dist/constants.js",
+      "./mimes": "./dist/mimes.js",
+      "./router": "./dist/router.js",
       "./types": "./dist/types.js",
+      "./url": "./dist/url.js",
       "./utils": "./dist/utils.js",
       "./package.json": "./package.json"
     }

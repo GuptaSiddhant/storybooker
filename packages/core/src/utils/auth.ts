@@ -1,24 +1,21 @@
 import type {
   StoryBookerPermission,
   StoryBookerPermissionKey,
-} from "@storybooker/adapter/auth";
+} from "../adapters/auth";
 import { getStore } from "../utils/store";
 import { responseError } from "./response";
 
 export async function authenticateOrThrow(
   permission: StoryBookerPermission,
 ): Promise<void> {
-  const { abortSignal, auth, logger, request, translation, user } = getStore();
+  const { abortSignal, auth, logger, request, user } = getStore();
   if (!auth) {
     // No authentication service configured, allow all actions
     return;
   }
 
   if (!user) {
-    throw await responseError(
-      translation.errorMessages.unauthenticated_access,
-      401,
-    );
+    throw await responseError("Unauthenticated access", 401);
   }
 
   const key: StoryBookerPermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
@@ -36,10 +33,7 @@ export async function authenticateOrThrow(
     }
 
     if (response === false) {
-      throw await responseError(
-        `${translation.errorMessages.permission_denied} [${key}]`,
-        403,
-      );
+      throw await responseError(`Permission denied [${key}]`, 403);
     }
 
     throw response;

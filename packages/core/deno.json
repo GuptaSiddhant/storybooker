@@ -16,11 +16,14 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./mimetype": "./src/utils/mime-utils.ts",
-    "./translations": "./src/ui/translations/index.ts",
-    "./translations/en-gb": "./src/ui/translations/en-gb.ts",
+    "./adapter": "./src/adapters/index.ts",
+    "./constants": "./src/utils/constants.ts",
+    "./mimes": "./src/utils/mime-utils.ts",
+    "./router": "./src/routers/_app-router.ts",
     "./types": "./src/types.ts",
+    "./url": "./src/urls.ts",
     "./utils": "./src/utils/index.ts",
-    "./openapi.json": "./dist/openapi.json"
+    "./openapi.json": "./dist/openapi.json",
+    "./openapi.yaml": "./dist/openapi.yaml"
   }
 }

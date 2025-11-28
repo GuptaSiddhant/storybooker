@@ -6,9 +6,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "allowImportingTsExtensions": true,
-    "jsx": "react-jsx",
-    "jsxImportSource": "@kitajs/html",
-    "noEmit": true,
-    "types": ["node", "@kitajs/html/htmx.d.ts"]
+    "noEmit": true
   }
 }
