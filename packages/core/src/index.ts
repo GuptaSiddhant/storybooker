@@ -1,7 +1,7 @@
 import { SuperHeaders } from "@remix-run/headers";
 import type { AuthAdapter, StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
-import { appRouter } from "./routers/_app-router";
+import { generateAppRouter } from "./routers/_app-router";
 import type {
   PurgeHandlerOptions,
   RequestHandler,
@@ -9,7 +9,6 @@ import type {
 } from "./types";
 import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
-import { createMiddlewaresPipelineRequestHandler } from "./utils/middleware-utils";
 import { localStore } from "./utils/store";
 
 export { SERVICE_NAME } from "./utils/constants";
@@ -33,6 +32,9 @@ export function createRequestHandler<User extends StoryBookerUser>(
     options.database.init?.({ logger }).catch(logger.error),
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
+  const appRouter = generateAppRouter({
+    middlewares: options.config?.middlewares,
+  });
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {
     // Make sure initialisations are complete before first request is handled.
@@ -55,7 +57,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
           headers,
           locale,
           logger: overrideOptions?.logger ?? logger,
-          prefix: options.prefix || "",
+          prefix: options.config?.prefix || "",
           request,
           url: request.url,
           user,
@@ -69,18 +71,11 @@ export function createRequestHandler<User extends StoryBookerUser>(
 
       const { errorMessage, errorStatus = 500 } = parseErrorMessage(
         error,
-        options.errorParser,
+        options.config?.errorParser,
       );
       return new Response(errorMessage, { status: errorStatus });
     }
   };
-
-  if (options.middlewares && options.middlewares.length > 0) {
-    return createMiddlewaresPipelineRequestHandler(
-      options.middlewares,
-      requestHandler,
-    );
-  }
 
   return requestHandler;
 }

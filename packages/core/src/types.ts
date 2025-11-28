@@ -1,3 +1,4 @@
+import type { MiddlewareHandler } from "hono";
 import type {
   AuthAdapter,
   DatabaseAdapter,
@@ -8,7 +9,6 @@ import type {
 } from "./adapters";
 
 export type { StoryBookerUser } from "./adapters/auth";
-
 export type * from "./models/builds-schema";
 export type * from "./models/projects-schema";
 export type * from "./models/tags-schema";
@@ -21,41 +21,19 @@ export interface RequestHandlerOptions<User extends StoryBookerUser> {
   auth?: AuthAdapter<User>;
   /** Adapter for Database service. Provides access to storing data to the service. */
   database: DatabaseAdapter;
-  /**
-   * A function for parsing custom errors.
-   * Return `undefined` from parser if the service should handle the error.
-   */
-  errorParser?: ErrorParser;
-  /** Additional configs */
-  config?: {
-    /**
-     * Enable queueing of zip file processing for files larger than the maximum inline upload processing size.
-     * Requires QueueAdapter and other setup.
-     * @default false
-     */
-    queueLargeZipFileProcessing?: boolean;
-    /** Maximum upload size in bytes for processing zip files while uploading.
-     * @default "5 * 1024 * 1024" (5MB)
-     */
-    maxInlineUploadProcessingSizeInBytes?: number;
-  };
+  /** Additional options to configure the router. */
+  config?: RequestHandlerConfigOptions;
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
   logger?: LoggerAdapter;
-  /**
-   * List of middlewares that run before a request is handled.
-   * Run middleware to modify incoming Request or outgoing Response.
-   */
-  middlewares?: Middleware[];
-  /** Options to update OpenAPI spec of the service */
-  openAPI?: OpenAPIOptions;
-  /** Convey URL prefix to the service if the router is not hosted on the root. */
-  prefix?: string;
   /** Adapter for Storage service. Provides access to storing files to the service. */
   storage: StorageAdapter;
   /** Options to customise StoryBooker UI. */
   ui?: UIAdapter;
 }
 
+/**
+ * Options for creating a purge handler.
+ */
 export interface PurgeHandlerOptions {
   /** Adapter for Database service. Provides access to storing data to the service. */
   database: DatabaseAdapter;
@@ -70,29 +48,47 @@ export interface PurgeHandlerOptions {
   storage: StorageAdapter;
 }
 
+/** Additional options to configure the router. */
+export interface RequestHandlerConfigOptions {
+  /**
+   * A function for parsing custom errors.
+   * Return `undefined` from parser if the service should handle the error.
+   */
+  errorParser?: ErrorParser;
+  /**
+   * Maximum upload size in bytes for processing zip files while uploading.
+   * @default "5 * 1024 * 1024" (5MB)
+   */
+  maxInlineUploadProcessingSizeInBytes?: number;
+  /**
+   * Enable queueing of zip file processing for files larger than the maximum inline upload processing size.
+   * Requires QueueAdapter and other setup.
+   * @default false
+   */
+  queueLargeZipFileProcessing?: boolean;
+  /**
+   * Convey URL prefix to the service if the router is not hosted on the root.
+   */
+  prefix?: string;
+  /**
+   * Add Hono middlewares to the router before any endpoint is registered/invoked.
+   */
+  middlewares?: MiddlewareHandler[];
+}
+
+/** Function generated to handle the incoming requests. */
 export type RequestHandler = (
   request: Request,
   overrideOptions?: RequestHandlerOverrideOptions,
 ) => Promise<Response>;
 
+/** Options to override properties of the request handler. */
 export interface RequestHandlerOverrideOptions {
   /** A abort signal that can be used to cancel the request handling. */
   abortSignal?: AbortSignal;
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
   logger?: LoggerAdapter;
 }
-
-/**
- * Run middleware to modify incoming Request or outgoing Response.
- * You can only call next(request) once per middleware. Calling it multiple times will throw an error.
- */
-export type Middleware = (
-  request: Request,
-  next: (
-    request: Request,
-    overrideOptions?: RequestHandlerOverrideOptions,
-  ) => Promise<Response>,
-) => Promise<Response>;
 
 /**
  * A function type for parsing custom errors.
@@ -103,21 +99,4 @@ export interface ParsedError {
   errorMessage: string;
   errorStatus?: number;
   errorType: string;
-}
-
-/**
- * OpenAPI options
- */
-export interface OpenAPIOptions {
-  /**
-   * Servers to be included in the OpenAPI schema.
-   */
-  servers?: {
-    url: string;
-    description?: string;
-    variables?: Record<
-      string,
-      { enum?: [string, ...string[]]; default: string; description?: string }
-    >;
-  }[];
 }

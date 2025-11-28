@@ -1,5 +1,9 @@
+// oxlint-disable explicit-function-return-type
+// oxlint-disable explicit-module-boundary-types
+
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
+import type { MiddlewareHandler } from "hono";
 import { logger } from "hono/logger";
 import { SERVICE_NAME } from "..";
 import pkgJson from "../../package.json" with { type: "json" };
@@ -12,28 +16,36 @@ import { rootRouter } from "./root-router";
 import { tagsRouter } from "./tags-router";
 import { tasksRouter } from "./tasks-router";
 
-export const appRouter = new OpenAPIHono({ strict: false })
-  .doc31("/openapi.json", {
-    openapi: "3.1.0",
-    info: { version: pkgJson.version, title: SERVICE_NAME },
-  })
-  .use(logger())
-  .get("/openapi", swaggerUI({ url: "/openapi.json" }))
-  .route("/", rootRouter)
-  .route("/", projectsRouter)
-  .route("/", buildsRouter)
-  .route("/", tagsRouter)
-  .route("/tasks", tasksRouter)
-  .route("/account", accountRouter)
-  .get("/:filepath{.+}", async (context) => {
-    const { ui } = getStore();
-    if (ui?.handleUnhandledRoute) {
-      const filepath = context.req.param("filepath");
+export type AppRouter = ReturnType<typeof generateAppRouter>;
 
-      return await ui.handleUnhandledRoute(filepath, createUIAdapterOptions());
-    }
+export function generateAppRouter(
+  options: { middlewares?: MiddlewareHandler[] } = {},
+) {
+  const { middlewares = [] } = options;
 
-    return context.notFound();
-  });
+  return new OpenAPIHono({ strict: false })
+    .doc31("/openapi.json", {
+      openapi: "3.1.0",
+      info: { version: pkgJson.version, title: SERVICE_NAME },
+    })
+    .use(logger())
+    .use(...middlewares)
+    .get("/openapi", swaggerUI({ url: "/openapi.json" }))
+    .route("/", rootRouter)
+    .route("/", projectsRouter)
+    .route("/", buildsRouter)
+    .route("/", tagsRouter)
+    .route("/tasks", tasksRouter)
+    .route("/account", accountRouter)
+    .get("/:filepath{.+}", async (context) => {
+      const { ui } = getStore();
+      if (!ui?.handleUnhandledRoute) {
+        return context.notFound();
+      }
 
-export type AppRouter = typeof appRouter;
+      return await ui.handleUnhandledRoute(
+        context.req.param("filepath"),
+        createUIAdapterOptions(),
+      );
+    });
+}
