@@ -1,13 +1,16 @@
+import { OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
+import { logger as loggerMiddleware } from "hono/logger";
+import pkgJson from "../package.json" with { type: "json" };
 import type { AuthAdapter, StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
-import { generateAppRouter } from "./routers/_app-router";
+import { appRouter } from "./routers/_app-router";
 import type {
   PurgeHandlerOptions,
   RequestHandler,
   RequestHandlerOptions,
 } from "./types";
-import { DEFAULT_LOCALE } from "./utils/constants";
+import { DEFAULT_LOCALE, SERVICE_NAME } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { localStore } from "./utils/store";
 
@@ -32,9 +35,14 @@ export function createRequestHandler<User extends StoryBookerUser>(
     options.database.init?.({ logger }).catch(logger.error),
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
-  const appRouter = generateAppRouter({
-    middlewares: options.config?.middlewares,
-  });
+
+  const router = new OpenAPIHono({ strict: false })
+    .doc31("/openapi.json", {
+      openapi: "3.1.0",
+      info: { version: pkgJson.version, title: SERVICE_NAME },
+    })
+    .use(loggerMiddleware(), ...(options.config?.middlewares || []))
+    .route("/", appRouter);
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {
     // Make sure initialisations are complete before first request is handled.
@@ -62,7 +70,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
           url: request.url,
           user,
         },
-        async () => await appRouter.fetch(request, process.env),
+        async () => await router.fetch(request, process.env),
       );
     } catch (error) {
       if (error instanceof Response) {

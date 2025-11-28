@@ -1,5 +1,6 @@
 import { argv } from "node:process";
-import { defineConfig, type ResolvedOptions } from "tsdown";
+import { defineConfig } from "tsdown";
+import { postBuildSuccess } from "./scripts/post-build.ts";
 
 export default defineConfig({
   clean: !argv.includes("-w"),
@@ -16,30 +17,9 @@ export default defineConfig({
   },
   exports: { devExports: "source" },
   format: ["esm"],
-  onSuccess,
+  onSuccess: postBuildSuccess,
   platform: "node",
   sourcemap: true,
   treeshake: true,
   unbundle: false,
 });
-
-async function onSuccess(config: ResolvedOptions): Promise<void> {
-  const { generateOpenApiSpec } = await import(
-    "../../scripts/gen-openapi-json.ts"
-  );
-  const { appRouter } = await import("./dist/router.js");
-  const { SERVICE_NAME } = await import("./dist/index.js");
-  const pkgJson = await import("./package.json", {
-    with: { type: "json" },
-  });
-
-  await generateOpenApiSpec(config, appRouter, {
-    title: SERVICE_NAME,
-    version: pkgJson.default.version,
-  });
-
-  const { updateDenoJsonToMatchPkgJson } = await import(
-    "../../scripts/jsr-utils.ts"
-  );
-  await updateDenoJsonToMatchPkgJson(config);
-}

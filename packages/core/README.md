@@ -12,10 +12,12 @@ import { createServer } from "node:http";
 import { createRequestListener } from "@remix-run/node-fetch-server";
 import { createRequestHandler } from "@storybooker/core";
 import { LocalFileDatabase, LocalFileStorage } from "@storybooker/core/adapter";
+import { createBasicUIAdapter } from "@storybooker/ui";
 
 const handler = createRequestHandler({
   database: new LocalFileDatabase(),
   storage: new LocalFileStorage(),
+  ui: createBasicUIAdapter(), // remove for headless API
 });
 
 const server = createServer(createRequestListener(handler));
