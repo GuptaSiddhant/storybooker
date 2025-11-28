@@ -1,8 +1,8 @@
-import { urlBuilder } from "@storybooker/core/url";
 import type { JSX } from "hono/jsx";
 import type { IconName } from "../icons/global-sprite";
 import { ASSETS } from "../utils/constants";
 import { toTitleCase } from "../utils/text-utils";
+import { getUIStore } from "../utils/ui-store";
 
 export type { IconName };
 
@@ -12,6 +12,8 @@ export interface IconProps extends JSX.HTMLAttributes {
 }
 
 export function Icon({ name, label, style, ...props }: IconProps): JSXElement {
+  const { urlBuilder } = getUIStore();
+
   const href = `${urlBuilder.staticFile(ASSETS.globalSprite)}#${name}`;
   const styleObj = typeof style === "object" ? style : {};
 

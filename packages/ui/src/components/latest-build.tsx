@@ -1,4 +1,4 @@
-import { urlBuilder } from "@storybooker/core/url";
+import { getUIStore } from "../utils/ui-store";
 
 export function LatestBuild({
   projectId,
@@ -10,6 +10,8 @@ export function LatestBuild({
   if (!buildId) {
     return <span class="description">No builds are available.</span>;
   }
+
+  const { urlBuilder } = getUIStore();
 
   return (
     <div>

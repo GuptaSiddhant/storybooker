@@ -1,7 +1,6 @@
-import { getStore } from "@storybooker/core/store";
-import { urlBuilder } from "@storybooker/core/url";
 import { LinkButton } from "../components/button";
 import { ErrorMessage } from "../components/error-message";
+import { getUIStore } from "../utils/ui-store";
 
 export interface BuildFormProps {
   projectId: string;
@@ -12,7 +11,7 @@ export function BuildCreateForm({
   projectId,
   tagId,
 }: BuildFormProps): JSXElement {
-  const { url } = getStore();
+  const { url, urlBuilder } = getUIStore();
 
   return (
     <form

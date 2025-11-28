@@ -3,55 +3,57 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { SuperHeaders } from "@remix-run/headers";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import { getMimeType, mimes } from "@storybooker/core/mimes";
-// import type { LoggerAdapter } from "@storybooker/core/adapter";
-import { getStore } from "@storybooker/core/store";
 import { generateGlobalSprite } from "./icons/global-sprite";
 import { generateGlobalScript } from "./scripts/global-script";
 import { generateGlobalStyleSheet } from "./styles/global-style";
 import type { BrandTheme } from "./styles/theme";
 import { ASSETS, CACHE_CONTROL_PUBLIC_WEEK } from "./utils/constants";
+import { getUIStore } from "./utils/ui-store";
 
 export async function handleStaticFileRoute(
   filepath: string,
-  theme: { darkTheme: BrandTheme; lightTheme: BrandTheme },
-  staticDirs: readonly string[],
+  options: {
+    darkTheme: BrandTheme;
+    lightTheme: BrandTheme;
+    staticDirs: readonly string[];
+  },
 ): Promise<Response> {
-  const { logger } = getStore();
+  const { darkTheme, lightTheme, staticDirs } = options;
+  const { logger } = getUIStore();
 
-  if (filepath.startsWith(`/${ASSETS.globalStyles}`)) {
-    const stylesheet = generateGlobalStyleSheet(theme);
+  if (filepath.startsWith(ASSETS.globalStyles)) {
+    const stylesheet = generateGlobalStyleSheet({ darkTheme, lightTheme });
 
     return new Response(stylesheet, {
-      headers: new SuperHeaders({
-        cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
-        contentType: mimes.css,
+      headers: new Headers({
+        "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
+        "content-type": mimes.css,
       }),
       status: 200,
     });
   }
 
-  if (filepath.startsWith(`/${ASSETS.globalScript}`)) {
+  if (filepath.startsWith(ASSETS.globalScript)) {
     const script = generateGlobalScript();
 
     return new Response(script, {
-      headers: new SuperHeaders({
-        cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
-        contentType: mimes.js,
+      headers: new Headers({
+        "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
+        "content-type": mimes.js,
       }),
       status: 200,
     });
   }
 
-  if (filepath.startsWith(`/${ASSETS.globalSprite}`)) {
+  if (filepath.startsWith(ASSETS.globalSprite)) {
     const sprite = generateGlobalSprite();
 
     return new Response(sprite, {
-      headers: new SuperHeaders({
-        cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
-        contentType: mimes.svg,
+      headers: new Headers({
+        "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
+        "content-type": mimes.svg,
       }),
       status: 200,
     });
@@ -82,9 +84,9 @@ export async function handleStaticFileRoute(
   const content = await fsp.readFile(staticFilepath);
 
   return new Response(new Uint8Array(content), {
-    headers: new SuperHeaders({
-      cacheControl: CACHE_CONTROL_PUBLIC_WEEK,
-      contentType,
+    headers: new Headers({
+      "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
+      "content-type": contentType,
     }),
     status: 200,
   });

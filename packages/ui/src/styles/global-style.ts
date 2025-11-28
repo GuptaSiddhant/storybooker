@@ -1,5 +1,8 @@
-import type { BrandTheme } from "../utils/types";
-import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME } from "./theme";
+import {
+  DEFAULT_DARK_THEME,
+  DEFAULT_LIGHT_THEME,
+  type BrandTheme,
+} from "./theme";
 
 // oxlint-disable no-useless-escape
 export function generateGlobalStyleSheet(theme: {

@@ -1,8 +1,8 @@
-import { getStore } from "@storybooker/core/store";
 import type { ProjectType, TagType } from "@storybooker/core/types";
-import { urlBuilder, urlJoin } from "@storybooker/core/url";
+import { urlJoin } from "@storybooker/core/url";
 import { LatestBuild } from "../components/latest-build";
 import { Table } from "../components/table";
+import { getUIStore } from "../utils/ui-store";
 
 export interface TagsTableProps {
   caption?: JSXChildren;
@@ -17,7 +17,7 @@ export function TagsTable({
   toolbar,
   caption,
 }: TagsTableProps): JSXElement {
-  const { locale } = getStore();
+  const { locale, urlBuilder } = getUIStore();
 
   return (
     <Table

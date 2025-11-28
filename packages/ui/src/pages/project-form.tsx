@@ -3,18 +3,18 @@ import {
   DEFAULT_PURGE_AFTER_DAYS,
   PATTERNS,
 } from "@storybooker/core/constants";
-import { getStore } from "@storybooker/core/store";
 import type { ProjectType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { LinkButton } from "../components/button";
 import { ErrorMessage } from "../components/error-message";
+import { getUIStore } from "../utils/ui-store";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;
 }
 
 export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
-  const { url } = getStore();
+  const { url, urlBuilder } = getUIStore();
+
   return (
     <form
       method="post"

@@ -1,6 +1,5 @@
 import { TagTypes } from "@storybooker/core/constants";
 import type { BuildType, ProjectType, TagType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { DestructiveButton, LinkButton } from "../components/button";
 import {
   DocumentHeader,
@@ -11,6 +10,7 @@ import {
 } from "../components/document";
 import { RawDataList } from "../components/raw-data";
 import { confirmDelete } from "../utils/text-utils";
+import { getUIStore } from "../utils/ui-store";
 import { BuildsTable } from "./builds-table";
 import { TagForm } from "./tag-form";
 import { TagsTable } from "./tags-table";
@@ -25,6 +25,7 @@ export function TagsListPage({
   defaultType: string | null | undefined;
 }): JSXElement {
   const title = `All Tags ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>
@@ -81,6 +82,7 @@ export function TagDetailsPage({
   project: ProjectType;
   builds: BuildType[];
 }): JSXElement {
+  const { urlBuilder } = getUIStore();
   const deleteUrl = urlBuilder.tagDelete(project.id, tag.id);
 
   return (
@@ -128,6 +130,7 @@ export function TagCreatePage({
   project: ProjectType;
 }): JSXElement {
   const title = "Create Tag";
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>
@@ -156,6 +159,7 @@ export function TagUpdatePage({
   project: ProjectType;
 }): JSXElement {
   const title = "Update Tag";
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>

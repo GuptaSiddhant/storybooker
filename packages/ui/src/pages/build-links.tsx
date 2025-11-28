@@ -1,5 +1,5 @@
 import type { BuildType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
+import { getUIStore } from "../utils/ui-store";
 
 export function BuildLinksFooter({
   build,
@@ -10,6 +10,8 @@ export function BuildLinksFooter({
   projectId: string;
   hasUpdatePermission: boolean;
 }): JSXElement {
+  const { urlBuilder } = getUIStore();
+
   return (
     <div
       style={{

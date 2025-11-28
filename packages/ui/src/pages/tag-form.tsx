@@ -1,9 +1,8 @@
 import { TagTypes } from "@storybooker/core/constants";
-import { getStore } from "@storybooker/core/store";
 import type { TagType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { LinkButton } from "../components/button";
 import { ErrorMessage } from "../components/error-message";
+import { getUIStore } from "../utils/ui-store";
 
 export interface TagFormProps {
   tag: TagType | undefined;
@@ -11,7 +10,7 @@ export interface TagFormProps {
 }
 
 export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
-  const { url } = getStore();
+  const { url, urlBuilder } = getUIStore();
 
   return (
     <form

@@ -26,6 +26,7 @@ import {
   type BrandTheme,
 } from "./styles/theme";
 import { DEFAULT_STATIC_DIRS } from "./utils/constants";
+import { createUIStore, uiStore } from "./utils/ui-store";
 
 export interface BasicUIOptions {
   /** Valid HTML string to place a logo/text in Header. */
@@ -49,42 +50,84 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
   } = options;
 
   const adapter: UIAdapter = {
-    handleUnhandledRoute: (filepath) =>
-      handleStaticFileRoute(
-        filepath,
-        { darkTheme, lightTheme },
+    handleUnhandledRoute: (filepath, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return handleStaticFileRoute(filepath, {
+        darkTheme,
+        lightTheme,
         staticDirs,
-        // logger,
-      ),
+      });
+    },
 
-    renderErrorPage: (props) => <ErrorPage {...props} />,
-    renderHomePage: (props) => {
+    renderErrorPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <ErrorPage {...props} />;
+    },
+    renderHomePage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
       return <RootPage {...props} />;
     },
-    renderAccountsPage: (props) => <AccountPage {...props} />,
+    renderAccountsPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <AccountPage {...props} />;
+    },
 
-    renderBuildCreatePage: (props) => <BuildCreatePage {...props} />,
-    renderBuildDetailsPage: (props) => (
-      <BuildDetailsPage
-        {...props}
-        hasDeletePermission={false}
-        hasUpdatePermission={false}
-      />
-    ),
-    renderBuildUploadPage: (props) => <BuildUploadPage {...props} />,
-    renderBuildsListPage: (props) => <BuildsListPage {...props} />,
+    renderBuildCreatePage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <BuildCreatePage {...props} />;
+    },
+    renderBuildDetailsPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return (
+        <BuildDetailsPage
+          {...props}
+          hasDeletePermission={false}
+          hasUpdatePermission={false}
+        />
+      );
+    },
+    renderBuildUploadPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <BuildUploadPage {...props} />;
+    },
+    renderBuildsListPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <BuildsListPage {...props} />;
+    },
 
-    renderProjectCreatePage: () => <ProjectCreatePage />,
-    renderProjectDetailsPage: (props) => <ProjectDetailsPage {...props} />,
-    renderProjectUpdatePage: (props) => <ProjectUpdatePage {...props} />,
-    renderProjectsListPage: (props) => <ProjectsPage {...props} />,
+    renderProjectCreatePage: (_props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <ProjectCreatePage />;
+    },
+    renderProjectDetailsPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <ProjectDetailsPage {...props} />;
+    },
+    renderProjectUpdatePage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <ProjectUpdatePage {...props} />;
+    },
+    renderProjectsListPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <ProjectsPage {...props} />;
+    },
 
-    renderTagCreatePage: (props) => <TagCreatePage {...props} />,
-    renderTagDetailsPage: (props) => <TagDetailsPage {...props} />,
-    renderTagUpdatePage: (props) => <TagUpdatePage {...props} />,
-    renderTagsListPage: (props) => (
-      <TagsListPage {...props} defaultType={props.defaultType || ""} />
-    ),
+    renderTagCreatePage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <TagCreatePage {...props} />;
+    },
+    renderTagDetailsPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <TagDetailsPage {...props} />;
+    },
+    renderTagUpdatePage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <TagUpdatePage {...props} />;
+    },
+    renderTagsListPage: (props, adapterOptions) => {
+      uiStore.enterWith(createUIStore(adapterOptions, options));
+      return <TagsListPage {...props} defaultType={props.defaultType || ""} />;
+    },
   };
 
   return adapter;

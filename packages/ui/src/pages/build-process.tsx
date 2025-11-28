@@ -1,7 +1,7 @@
 import type { BuildType, BuildUploadVariant } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { Card, CardGrid } from "../components/card";
 import { toTitleCase } from "../utils/text-utils";
+import { getUIStore } from "../utils/ui-store";
 
 export function BuildProcessStatus({
   build,
@@ -56,6 +56,8 @@ function BuildVariantStatus({
   if (build[variant] === "ready" || build[variant] === "none") {
     return null;
   }
+
+  const { urlBuilder } = getUIStore();
 
   const url = urlBuilder.taskProcessZip(projectId, build.id, variant);
   const isProcessing = build[variant] === "processing";

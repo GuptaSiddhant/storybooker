@@ -1,7 +1,6 @@
-import { getStore } from "@storybooker/core/store";
 import type { BuildType, ProjectType, TagType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { Table } from "../components/table";
+import { getUIStore } from "../utils/ui-store";
 
 export interface BuildsTableProps {
   caption?: JSXChildren;
@@ -18,7 +17,7 @@ export function BuildsTable({
   project,
   tags,
 }: BuildsTableProps): JSXElement {
-  const { locale } = getStore();
+  const { locale, urlBuilder } = getUIStore();
 
   return (
     <Table

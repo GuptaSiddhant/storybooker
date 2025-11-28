@@ -1,8 +1,8 @@
 import type { ProjectType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { Card, CardGrid } from "../components/card";
 import { LatestBuild } from "../components/latest-build";
 import { Time } from "../components/time";
+import { getUIStore } from "../utils/ui-store";
 
 export function ProjectsGrid({
   projects,
@@ -19,6 +19,8 @@ export function ProjectsGrid({
 }
 
 function ProjectCard({ project }: { project: ProjectType }): JSXElement {
+  const { urlBuilder } = getUIStore();
+
   return (
     <Card>
       <a

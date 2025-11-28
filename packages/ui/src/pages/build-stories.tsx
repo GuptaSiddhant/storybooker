@@ -1,8 +1,8 @@
 import type { BuildStoryType, BuildType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { Card, CardRow } from "../components/card";
 import { ErrorMessage } from "../components/error-message";
 import { groupStoriesByTitle } from "../utils/story-utils";
+import { getUIStore } from "../utils/ui-store";
 
 export function BuildStories({
   build,
@@ -98,6 +98,8 @@ function StoryCard({
   story: BuildStoryType;
   hasScreenshots: boolean;
 }): JSXElement {
+  const { urlBuilder } = getUIStore();
+
   const storybookHref = urlBuilder.storybookIndexHtml(
     projectId,
     buildId,

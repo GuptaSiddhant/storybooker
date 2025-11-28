@@ -1,9 +1,9 @@
 import { SERVICE_NAME } from "@storybooker/core/constants";
-import { getStore } from "@storybooker/core/store";
-import { urlBuilder, urlJoin } from "@storybooker/core/url";
+import { urlJoin } from "@storybooker/core/url";
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
 import { ASSETS } from "../utils/constants";
+import { getUIStore } from "../utils/ui-store";
 import { Icon } from "./icon";
 
 export function DocumentLayout({
@@ -17,6 +17,8 @@ export function DocumentLayout({
   footer?: JSXChildren;
   account?: JSXChildren;
 }): JSXElement {
+  const { urlBuilder } = getUIStore();
+
   return (
     <>
       {html`<!DOCTYPE html>`}
@@ -56,7 +58,7 @@ export function DocumentLayout({
         <body>
           <div id="app">
             <div id="logo">
-              <Logo />
+              <Logo href={urlBuilder.homepage()} />
             </div>
 
             {children}
@@ -90,7 +92,7 @@ export function DocumentLayout({
   );
 }
 
-function Logo(): JSXElement {
+function Logo({ href }: { href: string }): JSXElement {
   // const { ui } = getStore();
   const logo: string | undefined = "";
 
@@ -107,7 +109,7 @@ function Logo(): JSXElement {
 
   return (
     <a
-      href={urlBuilder.homepage()}
+      href={href}
       title="Home"
       style={{
         display: "flex",
@@ -162,7 +164,7 @@ export function DocumentHeader({
   children: JSXChildren;
   toolbar?: JSXElement | null;
 }): JSXElement {
-  const store = getStore();
+  const store = getUIStore();
 
   return (
     <header>
@@ -226,12 +228,12 @@ export function DocumentSidebar({
 }
 
 export function DocumentUserSection(): JSXElement {
-  const { auth, user } = getStore();
+  const { isAuthEnabled, user, urlBuilder } = getUIStore();
 
   if (!user) {
     return (
       <div id="user" style={{ padding: "1rem" }}>
-        {auth?.login ? (
+        {isAuthEnabled ? (
           <form action={urlBuilder.login()}>
             <button style={"padding:0"}>Login</button>
           </form>
@@ -249,7 +251,7 @@ export function DocumentUserSection(): JSXElement {
       style={{
         padding: 0,
         paddingLeft: user.imageUrl ? "0.5rem" : "1rem",
-        paddingRight: auth?.logout ? "0.5rem" : "1rem",
+        paddingRight: isAuthEnabled ? "0.5rem" : "1rem",
         display: "flex",
         alignItems: "center",
         gap: "0.5rem",

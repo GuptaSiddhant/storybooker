@@ -1,5 +1,4 @@
 import type { BuildType, ProjectType, TagType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { DestructiveButton, LinkButton } from "../components/button";
 import {
   DocumentHeader,
@@ -10,6 +9,7 @@ import {
 } from "../components/document";
 import { RawDataList } from "../components/raw-data";
 import { confirmDelete } from "../utils/text-utils";
+import { getUIStore } from "../utils/ui-store";
 import { BuildsTable } from "./builds-table";
 import { ProjectForm } from "./project-form";
 import { ProjectsTable } from "./projects-table";
@@ -21,6 +21,8 @@ export function ProjectsPage({
   projects: ProjectType[];
 }): JSXElement {
   const title = `All Projects`;
+
+  const { urlBuilder } = getUIStore();
   const purgeUrl = urlBuilder.taskPurge();
 
   return (
@@ -63,6 +65,7 @@ export function ProjectDetailsPage({
   recentBuilds: BuildType[];
   recentTags: TagType[];
 }): JSXElement {
+  const { urlBuilder } = getUIStore();
   const deleteUrl = urlBuilder.projectDelete(project.id);
   const purgeUrl = urlBuilder.taskPurge(project.id);
 
@@ -124,6 +127,7 @@ export function ProjectDetailsPage({
 
 export function ProjectCreatePage(): JSXElement {
   const title = `Create Project`;
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>
@@ -150,6 +154,7 @@ export function ProjectUpdatePage({
   project: ProjectType;
 }): JSXElement {
   const title = `Update Project`;
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>

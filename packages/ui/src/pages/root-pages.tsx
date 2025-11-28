@@ -2,7 +2,6 @@
 
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -11,6 +10,7 @@ import {
   DocumentUserSection,
 } from "../components/document";
 import { ErrorMessage } from "../components/error-message";
+import { getUIStore } from "../utils/ui-store";
 import { ProjectsGrid } from "./projects-grid";
 
 export interface RootPageProps {
@@ -19,6 +19,7 @@ export interface RootPageProps {
 
 export function RootPage({ projects }: RootPageProps): JSXElement {
   const pageTitle = "Home";
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout

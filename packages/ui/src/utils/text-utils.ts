@@ -1,5 +1,5 @@
-import { getStore } from "@storybooker/core/store";
 import { TEXTS } from "./constants";
+import { getUIStore } from "./ui-store";
 
 export function toTitleCase(text: string): string {
   return `${text.slice(0, 1).toUpperCase()}${text.slice(1)}`;
@@ -16,7 +16,7 @@ export function toLocalTime(
   value: string | Date | number,
   options?: Intl.DateTimeFormatOptions,
 ): string {
-  const { locale } = getStore();
+  const { locale } = getUIStore();
 
   return new Date(value).toLocaleString(locale, options);
 }

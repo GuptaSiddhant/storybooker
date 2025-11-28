@@ -1,6 +1,6 @@
-import { getStore } from "@storybooker/core/store";
 import { ISO_DATE_REGEXP } from "../utils/constants";
 import { camelCaseToSentenceCase } from "../utils/text-utils";
+import { getUIStore } from "../utils/ui-store";
 
 export function RawDataPreview({
   data,
@@ -38,7 +38,7 @@ export function RawDataList({
   open?: boolean;
   summary?: JSXElement;
 }): JSXElement {
-  const { locale } = getStore();
+  const { locale } = getUIStore();
 
   const content = (
     <dl style={{ margin: 0 }}>

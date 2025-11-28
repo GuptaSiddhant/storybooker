@@ -4,7 +4,6 @@ import type {
   BuildUploadVariant,
   ProjectType,
 } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { DestructiveButton, LinkButton } from "../components/button";
 import {
   DocumentHeader,
@@ -15,6 +14,7 @@ import {
 } from "../components/document";
 import { RawDataList } from "../components/raw-data";
 import { confirmDelete } from "../utils/text-utils";
+import { getUIStore } from "../utils/ui-store";
 import { BuildCreateForm } from "./build-create-form";
 import { BuildLinksFooter } from "./build-links";
 import { BuildProcessStatus } from "./build-process";
@@ -30,6 +30,8 @@ export function BuildsListPage({
   project: ProjectType;
 }): JSXElement {
   const title = `All Builds`;
+  const { urlBuilder } = getUIStore();
+
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
@@ -64,6 +66,7 @@ export function BuildDetailsPage({
   hasUpdatePermission: boolean;
   stories: BuildStoryType[] | null;
 }): JSXElement {
+  const { urlBuilder } = getUIStore();
   const shouldShowUploadButton =
     hasUpdatePermission &&
     (build.coverage === "none" ||
@@ -131,7 +134,8 @@ export function BuildCreatePage({
   project: ProjectType;
   tagId?: string;
 }): JSXElement {
-  const title = `$Create $Build`;
+  const title = `Create Build`;
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>
@@ -162,6 +166,7 @@ export function BuildUploadPage({
   uploadVariant?: BuildUploadVariant;
 }): JSXElement {
   const title = `Upload Build files`;
+  const { urlBuilder } = getUIStore();
 
   return (
     <DocumentLayout title={title}>

@@ -1,9 +1,8 @@
 import { DEFAULT_GITHUB_BRANCH } from "@storybooker/core/constants";
-import { getStore } from "@storybooker/core/store";
 import type { ProjectType } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { LatestBuild } from "../components/latest-build";
 import { Table } from "../components/table";
+import { getUIStore } from "../utils/ui-store";
 
 export interface ProjectsTableProps {
   caption?: JSXChildren;
@@ -16,7 +15,7 @@ export function ProjectsTable({
   toolbar,
   projects,
 }: ProjectsTableProps): JSXElement {
-  const { locale } = getStore();
+  const { locale, urlBuilder } = getUIStore();
 
   return (
     <Table

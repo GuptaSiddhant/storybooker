@@ -1,9 +1,8 @@
 import { buildUploadVariants } from "@storybooker/core/constants";
-import { getStore } from "@storybooker/core/store";
 import type { BuildType, BuildUploadVariant } from "@storybooker/core/types";
-import { urlBuilder } from "@storybooker/core/url";
 import { LinkButton } from "../components/button";
 import { ErrorMessage } from "../components/error-message";
+import { getUIStore } from "../utils/ui-store";
 
 export interface BuildUploadFormProps {
   build: BuildType;
@@ -16,7 +15,7 @@ export function BuildUploadForm({
   projectId,
   uploadVariant,
 }: BuildUploadFormProps): JSXElement {
-  const { url } = getStore();
+  const { url, urlBuilder } = getUIStore();
 
   return (
     <form

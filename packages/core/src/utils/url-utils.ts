@@ -1,12 +1,11 @@
 import { hc } from "hono/client";
 import type { AppRouter } from "../routers/_app-router";
-import { getStore } from "./store";
 
 type HonoClient = ReturnType<typeof hc<AppRouter>>;
 
 export function linkRoute(
   link: ((client: HonoClient) => URL) | URL | string,
-  options: { baseUrl?: string; searchParams?: URLSearchParams } = {},
+  options: { baseUrl: string; searchParams?: URLSearchParams },
 ): string {
   const { baseUrl, searchParams } = options;
 
@@ -24,9 +23,7 @@ export function linkRoute(
     return appendSearchParamsToURL(link, searchParams).toString();
   }
 
-  const client = hc<AppRouter>(
-    baseUrl ?? new URL(getStore().request.url).origin,
-  );
+  const client = hc<AppRouter>(baseUrl);
 
   return appendSearchParamsToURL(link(client), searchParams).toString();
 }

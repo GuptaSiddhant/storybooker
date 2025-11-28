@@ -1,6 +1,4 @@
 import type { StoryBookerUser } from "@storybooker/core";
-import { getStore } from "@storybooker/core/store";
-import { urlBuilder } from "@storybooker/core/url";
 import { DestructiveButton } from "../components/button";
 import {
   DocumentHeader,
@@ -11,13 +9,14 @@ import {
 } from "../components/document";
 import { IFrameContainer } from "../components/iframe";
 import { RawDataList } from "../components/raw-data";
+import { getUIStore } from "../utils/ui-store";
 
 export function AccountPage({
   children,
 }: {
   children: string | undefined;
 }): JSXElement {
-  const { auth, user } = getStore();
+  const { isAuthEnabled, user, urlBuilder } = getUIStore();
 
   const pageTitle = "Account";
   // oxlint-disable-next-line no-non-null-assertion
@@ -46,7 +45,7 @@ export function AccountPage({
         {Object.keys(rest).length > 0 ? <RawDataList data={rest} /> : null}
       </DocumentSidebar>
 
-      {auth?.logout ? (
+      {isAuthEnabled ? (
         <form
           id="user"
           action={logoutUrl}
