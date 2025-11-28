@@ -93,8 +93,7 @@ export function DocumentLayout({
 }
 
 function Logo({ href }: { href: string }): JSXElement {
-  // const { ui } = getStore();
-  const logo: string | undefined = "";
+  const { logo } = getUIStore();
 
   const logoElement = logo ? (
     logo.includes("<") && logo.includes(">") ? (

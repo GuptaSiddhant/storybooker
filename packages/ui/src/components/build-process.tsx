@@ -1,7 +1,7 @@
 import type { BuildType, BuildUploadVariant } from "@storybooker/core/types";
-import { Card, CardGrid } from "../components/card";
 import { toTitleCase } from "../utils/text-utils";
 import { getUIStore } from "../utils/ui-store";
+import { Card, CardGrid } from "./card";
 
 export function BuildProcessStatus({
   build,

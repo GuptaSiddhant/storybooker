@@ -5,12 +5,12 @@ import fsp from "node:fs/promises";
 import path from "node:path";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import { getMimeType, mimes } from "@storybooker/core/mimes";
-import { generateGlobalSprite } from "./icons/global-sprite";
-import { generateGlobalScript } from "./scripts/global-script";
-import { generateGlobalStyleSheet } from "./styles/global-style";
-import type { BrandTheme } from "./styles/theme";
-import { ASSETS, CACHE_CONTROL_PUBLIC_WEEK } from "./utils/constants";
-import { getUIStore } from "./utils/ui-store";
+import { generateGlobalSprite } from "../icons/global-sprite";
+import { generateGlobalScript } from "../scripts/global-script";
+import { generateGlobalStyleSheet } from "../styles/global-style";
+import type { BrandTheme } from "../styles/theme";
+import { ASSETS, CACHE_CONTROL_PUBLIC_WEEK } from "../utils/constants";
+import { getUIStore } from "../utils/ui-store";
 
 export async function handleStaticFileRoute(
   filepath: string,

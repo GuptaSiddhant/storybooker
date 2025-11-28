@@ -1,0 +1,32 @@
+import {
+  DocumentHeader,
+  DocumentLayout,
+  DocumentMain,
+  DocumentSidebar,
+  DocumentUserSection,
+} from "../components/document";
+import { ProjectForm } from "../components/project-form";
+import { getUIStore } from "../utils/ui-store";
+
+export function ProjectCreatePage(): JSXElement {
+  const title = `Create Project`;
+  const { urlBuilder } = getUIStore();
+
+  return (
+    <DocumentLayout title={title}>
+      <DocumentHeader
+        breadcrumbs={[{ href: urlBuilder.projectsList(), label: "Projects" }]}
+      >
+        {title}
+      </DocumentHeader>
+      <DocumentMain style={{ padding: "1rem" }}>
+        <ProjectForm project={undefined} />
+      </DocumentMain>
+      <DocumentSidebar style={{ fontSize: "0.9em", padding: "1rem" }}>
+        A project is a collection of StoryBook builds and tags. One project
+        corresponds to one StoryBook instance/project.
+      </DocumentSidebar>
+      <DocumentUserSection />
+    </DocumentLayout>
+  );
+}

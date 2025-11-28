@@ -2,7 +2,7 @@
   "name": "@storybooker/ui",
   "version": "0.16.0",
   "type": "module",
-  "description": "UI for Storybooker app.",
+  "description": "Basic UI for Storybooker app",
   "author": {
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"

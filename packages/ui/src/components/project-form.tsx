@@ -4,9 +4,9 @@ import {
   PATTERNS,
 } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
-import { LinkButton } from "../components/button";
-import { ErrorMessage } from "../components/error-message";
 import { getUIStore } from "../utils/ui-store";
+import { LinkButton } from "./button";
+import { ErrorMessage } from "./error-message";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;

@@ -66,7 +66,10 @@ const requestHandler = createRequestHandler({
   config: { queueLargeZipFileProcessing: true },
   database: new LocalFileDatabase(".server/db.json"),
   storage: new LocalFileStorage(".server"),
-  ui: createBasicUIAdapter({ staticDirs: [".server"] }),
+  ui: createBasicUIAdapter({
+    logo: "/SBR_white_128.jpg",
+    staticDirs: [".server"],
+  }),
 });
 
 export default { fetch: requestHandler };

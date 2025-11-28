@@ -1,25 +1,20 @@
 import type { UIAdapter } from "@storybooker/core/adapter";
-import { handleStaticFileRoute } from "./handle-static-file-route";
-import { AccountPage } from "./pages/account-pages";
-import {
-  BuildCreatePage,
-  BuildDetailsPage,
-  BuildsListPage,
-  BuildUploadPage,
-} from "./pages/builds-pages";
-import {
-  ProjectCreatePage,
-  ProjectDetailsPage,
-  ProjectsPage,
-  ProjectUpdatePage,
-} from "./pages/projects-pages";
-import { ErrorPage, RootPage } from "./pages/root-pages";
-import {
-  TagCreatePage,
-  TagDetailsPage,
-  TagsListPage,
-  TagUpdatePage,
-} from "./pages/tags-pages";
+import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
+import { AccountPage } from "./pages/account-page";
+import { BuildCreatePage } from "./pages/build-create-page";
+import { BuildDetailsPage } from "./pages/build-details-page";
+import { BuildUploadPage } from "./pages/build-upload-page";
+import { BuildsListPage } from "./pages/builds-list-page";
+import { ErrorPage } from "./pages/error-page";
+import { ProjectCreatePage } from "./pages/project-create-page";
+import { ProjectDetailsPage } from "./pages/project-details-page";
+import { ProjectUpdatePage } from "./pages/project-update-page";
+import { ProjectsListPage } from "./pages/projects-list-page";
+import { RootPage } from "./pages/root-page";
+import { TagCreatePage } from "./pages/tag-create-page";
+import { TagDetailsPage } from "./pages/tag-details-page";
+import { TagUpdatePage } from "./pages/tag-update-page";
+import { TagsListPage } from "./pages/tags-list-pages";
 import {
   DEFAULT_DARK_THEME,
   DEFAULT_LIGHT_THEME,
@@ -109,7 +104,7 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
     },
     renderProjectsListPage: (props, adapterOptions) => {
       uiStore.enterWith(createUIStore(adapterOptions, options));
-      return <ProjectsPage {...props} />;
+      return <ProjectsListPage {...props} />;
     },
 
     renderTagCreatePage: (props, adapterOptions) => {

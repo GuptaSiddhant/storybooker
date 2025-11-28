@@ -1,8 +1,8 @@
 import { buildUploadVariants } from "@storybooker/core/constants";
 import type { BuildType, BuildUploadVariant } from "@storybooker/core/types";
-import { LinkButton } from "../components/button";
-import { ErrorMessage } from "../components/error-message";
 import { getUIStore } from "../utils/ui-store";
+import { LinkButton } from "./button";
+import { ErrorMessage } from "./error-message";
 
 export interface BuildUploadFormProps {
   build: BuildType;

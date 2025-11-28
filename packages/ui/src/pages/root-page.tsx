@@ -1,5 +1,3 @@
-// import type { UIAdapterOptions } from "@storybooker/core/adapter";
-
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
 import {
@@ -9,9 +7,8 @@ import {
   DocumentSidebar,
   DocumentUserSection,
 } from "../components/document";
-import { ErrorMessage } from "../components/error-message";
+import { ProjectsGrid } from "../components/projects-grid";
 import { getUIStore } from "../utils/ui-store";
-import { ProjectsGrid } from "./projects-grid";
 
 export interface RootPageProps {
   projects: ProjectType[];
@@ -66,34 +63,6 @@ export function RootPage({ projects }: RootPageProps): JSXElement {
       </DocumentMain>
       <DocumentSidebar />
 
-      <DocumentUserSection />
-    </DocumentLayout>
-  );
-}
-
-export function ErrorPage({
-  title,
-  message,
-}: {
-  title: string;
-  message: string;
-}): JSXElement {
-  return (
-    <DocumentLayout title={title}>
-      <DocumentHeader
-        breadcrumbs={[
-          {
-            href: "javascript:history.back()",
-            label: `< Back`,
-          },
-        ]}
-      >
-        {title}
-      </DocumentHeader>
-      <DocumentMain style={{ padding: 0 }}>
-        <ErrorMessage>{message}</ErrorMessage>
-      </DocumentMain>
-      <DocumentSidebar />
       <DocumentUserSection />
     </DocumentLayout>
   );

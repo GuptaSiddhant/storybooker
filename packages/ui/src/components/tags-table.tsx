@@ -1,8 +1,8 @@
 import type { ProjectType, TagType } from "@storybooker/core/types";
 import { urlJoin } from "@storybooker/core/url";
-import { LatestBuild } from "../components/latest-build";
-import { Table } from "../components/table";
 import { getUIStore } from "../utils/ui-store";
+import { LatestBuild } from "./latest-build";
+import { Table } from "./table";
 
 export interface TagsTableProps {
   caption?: JSXChildren;
