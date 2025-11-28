@@ -25,7 +25,7 @@ jobs:
 
       - name: Setup Turbo
         run: |
-          npx -y turbo prune \            
+          npx -y turbo prune \
             @storybooker/core \
             @storybooker/aws \
             @storybooker/azure \
