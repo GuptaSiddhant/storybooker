@@ -13,11 +13,12 @@ Run following with `bun server.ts`
 import {
   createRequestHandler,
   type RequestHandlerOptions,
-} from "npm:@storybooker/core";
+} from "@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "npm:@storybooker/core/adapters";
+} from "@storybooker/core/adapters";
+import { createBasicUIAdapter } from "@storybooker/ui";
 
 // Create StoryBooker router handler
 const handler = createRequestHandler({
@@ -25,6 +26,8 @@ const handler = createRequestHandler({
   database: new LocalFileDatabase(),
   // provide a supported storage service adapter
   storage: new LocalFileStorage(),
+  // provide a supported UI adapter
+  ui: createBasicUIAdapter(),
 });
 
 Bun.serve({ fetch: handler });

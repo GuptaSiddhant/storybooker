@@ -20,6 +20,7 @@ import {
   LocalFileDatabase,
   LocalFileStorage,
 } from "npm:@storybooker/core/adapters";
+import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker router handler
 const handler = createRequestHandler({
@@ -27,6 +28,8 @@ const handler = createRequestHandler({
   database: new LocalFileDatabase(),
   // provide a supported storage service adapter
   storage: new LocalFileStorage(),
+  // provide a supported UI adapter
+  ui: createBasicUIAdapter(),
 });
 
 export default { fetch: handler };

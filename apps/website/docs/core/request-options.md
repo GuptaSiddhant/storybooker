@@ -14,30 +14,19 @@ When creating a request handler using `createRequestHandler` (or a wrapper like 
   auth?: AuthService<User>;
   /** Adapter for Database service. Provides access to storing data to the service. */
   database: DatabaseService;
-  /**
-   * A function for parsing custom errors.
-   * Return `undefined` from parser if the service should handle the error.
-   */
-  errorParser?: ErrorParser;
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
   logger?: LoggerService;
-  /**
-   * List of middlewares that run before a request is handled.
-   * Run middleware to modify incoming Request or outgoing Response.
-   */
-  middlewares?: Middleware[];
-  /** Options to update OpenAPI spec of the service */
-  openAPI?: OpenAPIOptions;
-  /** Convey URL prefix to the service if the router is not hosted on the root. */
-  prefix?: string;
-  /**
-   * List of path of directories relative to root where static media is kept.
-   * @default ["./public"]
-   */
-  staticDirs?: readonly string[];
   /** Adapter for Storage service. Provides access to storing files to the service. */
   storage: StorageService;
-  /** Options to customise StoryBooker UI. */
-  ui?: UIOptions;
+  /** Adapter for StoryBooker UI. Without this, StoryBooker will act as a headless service without a UI. */
+  ui?: UIAdapter;
+  /**
+   * Additional custom options to be passed to the request handler.
+   * - middlewares (hono compatible)
+   * - file processing options
+   * - error parser
+   * - etc.
+   */
+  config?: RequestHandlerConfigOptions;
 }
 ```
