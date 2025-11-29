@@ -31,6 +31,7 @@ jobs:
             @storybooker/azure \
             @storybooker/gcp \
             @storybooker/ui \
+            @storybooker/redis \
             storybooker
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json

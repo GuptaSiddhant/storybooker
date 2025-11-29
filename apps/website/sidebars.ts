@@ -43,6 +43,11 @@ const sidebars: SidebarsConfig = {
           label: "Auth",
           type: "link",
         },
+        {
+          href: "/docs/tags/ui",
+          label: "UI",
+          type: "link",
+        },
       ],
     },
   ],
