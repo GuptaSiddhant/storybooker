@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/aws",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with AWS services.",
   "author": {

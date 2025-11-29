@@ -1,13 +1,14 @@
 {
   "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
   "name": "@storybooker/core",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "license": "MIT",
   "publish": {
     "include": [
       "src",
       "README.md",
-      "dist/openapi.json"
+      "package.json",
+      "openapi.json"
     ]
   },
   "compilerOptions": {
@@ -23,6 +24,6 @@
     "./types": "./src/types.ts",
     "./url": "./src/urls.ts",
     "./utils": "./src/utils/index.ts",
-    "./openapi.json": "./dist/openapi.json"
+    "./openapi.json": "./openapi.json"
   }
 }

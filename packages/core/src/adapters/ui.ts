@@ -5,7 +5,7 @@ import type {
   ProjectType,
   StoryBookerUser,
   TagType,
-} from "..";
+} from "../types";
 import type { LoggerAdapter } from "./logger";
 
 type RenderedContent = string | Promise<string>;

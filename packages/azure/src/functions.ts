@@ -6,17 +6,17 @@ import type {
   SetupOptions,
   TimerFunctionOptions,
 } from "@azure/functions";
-import {
-  createPurgeHandler,
-  createRequestHandler,
-  SERVICE_NAME,
-} from "@storybooker/core";
+import { createPurgeHandler, createRequestHandler } from "@storybooker/core";
 import type {
   ErrorParser,
   RequestHandlerOptions,
   StoryBookerUser,
 } from "@storybooker/core/types";
-import { generatePrefixFromBaseRoute, urlJoin } from "@storybooker/core/utils";
+import {
+  generatePrefixFromBaseRoute,
+  SERVICE_NAME,
+  urlJoin,
+} from "@storybooker/core/utils";
 import type { BodyInit } from "undici";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";

@@ -1,6 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono, type OpenAPIObjectConfigure } from "@hono/zod-openapi";
-import type { Env } from "hono";
+import type { Context, Env } from "hono";
 import pkgJson from "../../package.json" with { type: "json" };
 import { SERVICE_NAME } from "../utils/constants";
 import { getStore } from "../utils/store";
@@ -12,10 +12,14 @@ import { rootRouter } from "./root-router";
 import { tagsRouter } from "./tags-router";
 import { tasksRouter } from "./tasks-router";
 
+type OpenAPIObjectConfig<Configure extends OpenAPIObjectConfigure<Env, "">> =
+  Configure extends (context: Context) => infer Config ? Config : Configure;
 /**
  * @private
  */
-export const openapiConfig: OpenAPIObjectConfigure<Env, ""> = {
+export const openapiConfig: OpenAPIObjectConfig<
+  OpenAPIObjectConfigure<Env, "">
+> = {
   openapi: "3.1.0",
   info: { version: pkgJson.version, title: SERVICE_NAME },
 };

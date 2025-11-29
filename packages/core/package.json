@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/core",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "type": "module",
   "description": "Storybooker platform agnostic router core.",
   "author": {
@@ -15,7 +15,8 @@
   },
   "files": [
     "src",
-    "dist"
+    "dist",
+    "openapi.json"
   ],
   "license": "MIT",
   "sideEffects": false,
@@ -89,7 +90,7 @@
       "default": "./dist/utils.js"
     },
     "./package.json": "./package.json",
-    "./openapi.json": "./dist/openapi.json"
+    "./openapi.json": "./openapi.json"
   },
   "publishConfig": {
     "exports": {

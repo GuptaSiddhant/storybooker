@@ -1,4 +1,4 @@
-import type { StoryBookerUser } from "@storybooker/core";
+import type { StoryBookerUser } from "@storybooker/core/types";
 import { DestructiveButton } from "../components/button";
 import {
   DocumentHeader,

@@ -8,7 +8,7 @@ export async function generateOpenApiSpecFiles(
   const logger = config?.logger;
   const { readFile, writeFile } = await import("node:fs/promises");
 
-  const outputJSONFilepath = "./dist/openapi.json";
+  const outputJSONFilepath = "./openapi.json";
   const specJSONContent = JSON.stringify(spec, null, 2);
   await writeFile(outputJSONFilepath, specJSONContent, { encoding: "utf8" });
   logger?.success(`Generated OpenAPI spec files (${outputJSONFilepath})`);

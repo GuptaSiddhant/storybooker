@@ -13,9 +13,6 @@ import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { localStore } from "./utils/store";
 
-export { SERVICE_NAME } from "./utils/constants";
-export type * from "./types";
-
 if ("setEncoding" in process.stdout) {
   process.stdout.setEncoding("utf8");
 }
