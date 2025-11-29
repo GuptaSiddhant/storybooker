@@ -1,8 +1,8 @@
 {
-  "name": "@storybooker/redis",
+  "name": "@storybooker/sql",
   "version": "0.17.1",
   "type": "module",
-  "description": "StoryBooker Adapter for interacting with Redis services.",
+  "description": "StoryBooker Adapter for interacting with SQL services.",
   "author": {
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/guptasiddhant/storybooker",
-    "directory": "packages/redis"
+    "directory": "packages/sql"
   },
   "license": "MIT",
   "bugs": {
@@ -39,14 +39,20 @@
     "builds",
     "labels",
     "projects",
-    "redis",
-    "valkey",
+    "sql",
+    "mysql",
+    "sqlite",
+    "postgres",
     "database"
   ],
   "exports": {
     ".": {
       "source": "./src/index.ts",
       "default": "./dist/index.js"
+    },
+    "./mysql": {
+      "source": "./src/mysql.ts",
+      "default": "./dist/mysql.js"
     },
     "./package.json": "./package.json"
   },
@@ -67,16 +73,7 @@
     "oxlint": "^1.24.0",
     "oxlint-tsgolint": "^0.3.0",
     "prettier": "^3.6.2",
-    "redis": "^5.10.0",
     "tsdown": "^0.15.9"
-  },
-  "peerDependencies": {
-    "redis": "^5.10.0"
-  },
-  "peerDependenciesMeta": {
-    "redis": {
-      "optional": true
-    }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -84,6 +81,7 @@
   "publishConfig": {
     "exports": {
       ".": "./dist/index.js",
+      "./mysql": "./dist/mysql.js",
       "./package.json": "./package.json"
     }
   }
