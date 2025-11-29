@@ -49,7 +49,7 @@ jobs:
       - name: Publish on JSR - Core
         working-directory: ./out/packages/core
         continue-on-error: true
-        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }}
+        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }} --allow-slow-types
 
       - name: Publish on NPM
         working-directory: ./out

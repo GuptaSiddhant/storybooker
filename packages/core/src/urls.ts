@@ -354,4 +354,4 @@ export class UrlBuilder {
 }
 
 /** @private */
-export const urlBuilder = new UrlBuilder();
+export const urlBuilder: UrlBuilder = new UrlBuilder();

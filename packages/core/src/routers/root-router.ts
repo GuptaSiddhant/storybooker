@@ -8,6 +8,9 @@ import { checkIsJSONRequest } from "../utils/request";
 import { getStore } from "../utils/store";
 import { createUIAdapterOptions } from "../utils/ui-utils";
 
+/**
+ * @private
+ */
 export const rootRouter = new OpenAPIHono()
   .openapi(
     createRoute({

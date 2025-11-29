@@ -40,6 +40,9 @@ const buildIdPathParams = z.object({
   buildId: BuildIdSchema,
 });
 
+/**
+ * @private
+ */
 export const buildsRouter = new OpenAPIHono()
   .openapi(
     createRoute({

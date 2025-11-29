@@ -27,6 +27,9 @@ import { createUIAdapterOptions } from "../utils/ui-utils";
 const projectTag = "Projects";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
 
+/**
+ * @private
+ */
 export const projectsRouter = new OpenAPIHono()
   .openapi(
     createRoute({

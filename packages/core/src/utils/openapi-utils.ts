@@ -5,7 +5,7 @@ import type {
 import { z } from "@hono/zod-openapi";
 import { mimes } from "./mime-utils";
 
-export const openapiResponsesHtml = {
+export const openapiResponsesHtml: ZodContentObject = {
   [mimes.html]: { schema: z.string().openapi({ example: "<!DOCTYPE html>" }) },
 } as const;
 

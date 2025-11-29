@@ -1,5 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
-import { OpenAPIHono } from "@hono/zod-openapi";
+import { OpenAPIHono, type OpenAPIObjectConfigure } from "@hono/zod-openapi";
+import type { Env } from "hono";
 import pkgJson from "../../package.json" with { type: "json" };
 import { SERVICE_NAME } from "../utils/constants";
 import { getStore } from "../utils/store";
@@ -11,12 +12,22 @@ import { rootRouter } from "./root-router";
 import { tagsRouter } from "./tags-router";
 import { tasksRouter } from "./tasks-router";
 
-export const openapiConfig = {
+/**
+ * @private
+ */
+export const openapiConfig: OpenAPIObjectConfigure<Env, ""> = {
   openapi: "3.1.0",
   info: { version: pkgJson.version, title: SERVICE_NAME },
 };
 
+/**
+ * @private
+ */
 export type AppRouter = typeof appRouter;
+
+/**
+ * @private
+ */
 export const appRouter = new OpenAPIHono({ strict: false })
   .doc31("/openapi.json", openapiConfig)
   .get("/openapi.yaml", async (ctx) => {

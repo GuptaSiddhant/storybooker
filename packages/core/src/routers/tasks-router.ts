@@ -17,6 +17,9 @@ const processZipSearchParams = z
   })
   .loose();
 
+/**
+ * @private
+ */
 export const tasksRouter = new OpenAPIHono()
   .openapi(
     createRoute({

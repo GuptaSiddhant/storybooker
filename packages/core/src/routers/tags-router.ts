@@ -33,6 +33,9 @@ const tagIdPathParams = z.object({
   tagId: TagIdSchema,
 });
 
+/**
+ * @private
+ */
 export const tagsRouter = new OpenAPIHono()
   .openapi(
     createRoute({

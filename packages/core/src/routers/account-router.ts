@@ -12,6 +12,9 @@ import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const accountTag = "Account";
 
+/**
+ * @private
+ */
 export const accountRouter = new OpenAPIHono()
   .openapi(
     createRoute({
