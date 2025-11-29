@@ -29,6 +29,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
   options: RequestHandlerOptions<User>,
 ): RequestHandler {
   const logger = options.logger || console;
+  const middlewares = options.config?.middlewares || [loggerMiddleware()];
   const initPromises = Promise.allSettled([
     options.auth?.init?.({ logger }).catch(logger.error),
     options.database.init?.({ logger }).catch(logger.error),
@@ -36,7 +37,7 @@ export function createRequestHandler<User extends StoryBookerUser>(
   ]);
 
   const router = new OpenAPIHono({ strict: false })
-    .use(loggerMiddleware(), ...(options.config?.middlewares || []))
+    .use(...middlewares)
     .route("/", appRouter);
 
   const requestHandler: RequestHandler = async (request, overrideOptions) => {

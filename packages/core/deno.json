@@ -23,7 +23,6 @@
     "./types": "./src/types.ts",
     "./url": "./src/urls.ts",
     "./utils": "./src/utils/index.ts",
-    "./openapi.json": "./dist/openapi.json",
-    "./openapi.yaml": "./dist/openapi.yaml"
+    "./openapi.json": "./dist/openapi.json"
   }
 }

@@ -1,6 +1,5 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono } from "@hono/zod-openapi";
-import YAML from "js-yaml";
 import pkgJson from "../../package.json" with { type: "json" };
 import { SERVICE_NAME } from "../utils/constants";
 import { getStore } from "../utils/store";
@@ -20,9 +19,10 @@ export const openapiConfig = {
 export type AppRouter = typeof appRouter;
 export const appRouter = new OpenAPIHono({ strict: false })
   .doc31("/openapi.json", openapiConfig)
-  .get("/openapi.yaml", (ctx) => {
+  .get("/openapi.yaml", async (ctx) => {
     const spec = (appRouter as OpenAPIHono).getOpenAPI31Document(openapiConfig);
-    const content: string = YAML.dump(spec, { forceQuotes: true });
+    const dumpYaml = await import("js-yaml").then((mod) => mod.dump);
+    const content: string = dumpYaml(spec, { forceQuotes: true });
     return ctx.body(content, 200, { "Content-Type": "application/yaml" });
   })
   .get("/openapi", swaggerUI({ url: "/openapi.json" }))

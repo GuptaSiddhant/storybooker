@@ -89,8 +89,7 @@
       "default": "./dist/utils.js"
     },
     "./package.json": "./package.json",
-    "./openapi.json": "./dist/openapi.json",
-    "./openapi.yaml": "./dist/openapi.yaml"
+    "./openapi.json": "./dist/openapi.json"
   },
   "publishConfig": {
     "exports": {

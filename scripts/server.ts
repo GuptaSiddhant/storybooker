@@ -2,6 +2,7 @@
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
+import { logger } from "hono/logger";
 import { poweredBy } from "hono/powered-by";
 import type {
   AuthAdapter,
@@ -65,7 +66,7 @@ class LocalAuthAdapter implements AuthAdapter {
 const requestHandler = createRequestHandler({
   auth: new LocalAuthAdapter(),
   config: {
-    middlewares: [poweredBy({ serverName: "SBR" })],
+    middlewares: [logger(), poweredBy({ serverName: "SBR" })],
     queueLargeZipFileProcessing: true,
   },
   database: new LocalFileDatabase(".server/db.json"),
