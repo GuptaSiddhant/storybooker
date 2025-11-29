@@ -42,7 +42,7 @@ jobs:
           yarn build
 
           echo "Copying OpenAPI spec to website build directory"
-          cp ./packages/core/dist/openapi.json ./apps/website/build/openapi.json
+          cp ./packages/core/openapi.json ./apps/website/build/openapi.json
 
       - name: Upload static files as artifact
         id: deployment
