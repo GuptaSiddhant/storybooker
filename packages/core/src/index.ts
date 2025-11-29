@@ -1,7 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
 import { logger as loggerMiddleware } from "hono/logger";
-import pkgJson from "../package.json" with { type: "json" };
 import type { AuthAdapter, StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { appRouter } from "./routers/_app-router";
@@ -10,7 +9,7 @@ import type {
   RequestHandler,
   RequestHandlerOptions,
 } from "./types";
-import { DEFAULT_LOCALE, SERVICE_NAME } from "./utils/constants";
+import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { localStore } from "./utils/store";
 
@@ -37,10 +36,6 @@ export function createRequestHandler<User extends StoryBookerUser>(
   ]);
 
   const router = new OpenAPIHono({ strict: false })
-    .doc31("/openapi.json", {
-      openapi: "3.1.0",
-      info: { version: pkgJson.version, title: SERVICE_NAME },
-    })
     .use(loggerMiddleware(), ...(options.config?.middlewares || []))
     .route("/", appRouter);
 

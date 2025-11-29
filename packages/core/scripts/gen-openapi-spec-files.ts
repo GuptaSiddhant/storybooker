@@ -12,7 +12,7 @@ export async function generateOpenApiSpecFiles(
   const outputYAMLFilepath = "./dist/openapi.yaml";
 
   const specJSONContent = JSON.stringify(spec, null, 2);
-  const specYAMLContent = YAML.dump(spec);
+  const specYAMLContent = YAML.dump(spec, { forceQuotes: true });
 
   await Promise.allSettled([
     writeFile(outputJSONFilepath, specJSONContent, { encoding: "utf8" }),
