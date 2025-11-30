@@ -6,6 +6,7 @@ import { BlobServiceClient } from "@azure/storage-blob";
 import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
 import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
 import { registerStoryBookerRouter } from "@storybooker/azure/functions";
+import { createBasicUIAdapter } from "@storybooker/ui";
 
 const storageConnectionString = process.env["AzureWebJobsStorage"];
 if (!storageConnectionString) {
@@ -23,5 +24,5 @@ registerStoryBookerRouter(app, {
   storage: new AzureBlobStorageService(
     BlobServiceClient.fromConnectionString(storageConnectionString),
   ),
-  ui: { logo: "/SBR_white_128.jpg" },
+  ui: createBasicUIAdapter({ logo: "/SBR_white_128.jpg" }),
 });
