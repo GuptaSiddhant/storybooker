@@ -5,23 +5,22 @@ tags:
 
 # Bun
 
-Run following with `bun server.ts`
+Run following with `bun run --hot server.ts`
+
+> Refer Hono docs: https://hono.dev/docs/getting-started/bun
 
 ```ts
 // server.ts
 
-import {
-  createRequestHandler,
-  type RequestHandlerOptions,
-} from "@storybooker/core";
+import { createHonoRouter } from "@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
 } from "@storybooker/core/adapters";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
-// Create StoryBooker router handler
-const handler = createRequestHandler({
+// Create StoryBooker router
+const router = createHonoRouter({
   // provide a supported database service adapter
   database: new LocalFileDatabase(),
   // provide a supported storage service adapter
@@ -30,5 +29,8 @@ const handler = createRequestHandler({
   ui: createBasicUIAdapter(),
 });
 
-Bun.serve({ fetch: handler });
+export default {
+  fetch: router.fetch,
+  port: 8000,
+};
 ```

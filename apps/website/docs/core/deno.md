@@ -9,21 +9,20 @@ Run following with `deno serve -REW server.ts`
 
 > Note: You can change permissions based on your adapter choice.
 
+> Refer Hono docs: https://hono.dev/docs/getting-started/deno
+
 ```ts
 // server.ts
 
-import {
-  createRequestHandler,
-  type RequestHandlerOptions,
-} from "npm:@storybooker/core";
+import { createHonoRouter } from "jsr:@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "npm:@storybooker/core/adapters";
+} from "jsr:@storybooker/core/adapters";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
-// Create StoryBooker router handler
-const handler = createRequestHandler({
+// Create StoryBooker router
+const router = createHonoRouter({
   // provide a supported database service adapter
   database: new LocalFileDatabase(),
   // provide a supported storage service adapter
@@ -32,5 +31,5 @@ const handler = createRequestHandler({
   ui: createBasicUIAdapter(),
 });
 
-export default { fetch: handler };
+export default router;
 ```

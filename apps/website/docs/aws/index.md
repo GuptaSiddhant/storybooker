@@ -12,7 +12,9 @@ npm i @storybooker/aws
 
 ### Hosting
 
-- [AWS Lambda + API Gateway](lambda)
+Refer Hono docs for deployment instructions: https://hono.dev/docs/getting-started/aws-lambda
+
+The hono app-router should be created using the `createHonoRouter` function from the [`@storybooker/core`](../core) package.
 
 ### Database
 

@@ -12,9 +12,9 @@ npm i @storybooker/gcp
 
 ### Hosting
 
-Currently no hosting adapter available for GCP. Though you can use GCP's App Engine or Cloud Run to host your StoryBooker application.
+Refer Hono docs for deployment instructions: https://hono.dev/docs/getting-started/google-cloud-run
 
-To convert Express app request and response to StoryBooker compatible request and response, you can use the [`@remix-run/node-fetch-server`](https://npm.im/@remix-run/node-fetch-server) package with [`@storybooker/core`](../core).
+The hono app-router should be created using the `createHonoRouter` function from the [`@storybooker/core`](../core) package.
 
 ### Database
 

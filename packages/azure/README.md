@@ -56,11 +56,10 @@ registerStoryBookerRouter(app, {
   "type": "module",
   "main": "index.js",
   "dependencies": {
-    "@azure/functions": "^4.0.0",
     "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
-    "@storybooker/azure": "latest",
-    "@storybooker/ui": "latest"
+    "@storybooker/azure": "latest"
   }
 }
 ```

@@ -16,7 +16,7 @@ export type * from "./models/tags-schema";
 /**
  * Options for creating a request handler.
  */
-export interface RequestHandlerOptions<User extends StoryBookerUser> {
+export interface RouterOptions<User extends StoryBookerUser> {
   /** Adapter for Auth service. Provides authentication to the service. */
   auth?: AuthAdapter<User>;
   /** Adapter for Database service. Provides access to storing data to the service. */

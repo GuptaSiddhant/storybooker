@@ -14,7 +14,7 @@ StoryBooker is composed of 3 main parts:
 
 The router is the core of StoryBooker. It is responsible for routing requests to the page/api and using the appropriate adapter to render the response.
 
-The entire router is maintained in the [`@storybooker/core`](./core) package. The package is used to create a router-handler that takes a WebRequest and returns a WebResponse. The router is framework agnostic and can be used in any server environment that supports NodeJS api (NodeJS, Deno, Bun, etc.).
+The entire router is maintained in the [`@storybooker/core`](./core) package. The package is used to create a Hono app-router. The router is framework agnostic and can be used in any server environment that supports NodeJS api (NodeJS, Deno, Bun, etc.).
 
 ## Adapters
 
@@ -24,10 +24,11 @@ The adapters are maintained in their respective packages and can be mixed and ma
 
 The Adapters implement following services:
 
-- Hosting: Responsible for serving the StoryBooker application. Examples: Azure Functions, AWS Lambda, etc.
 - Storage: Responsible for storing StoryBooker assets. Examples: Azure Blob Storage, AWS S3, etc.
 - Database: Responsible for managing StoryBooker data. Examples: Azure CosmosDB, AWS DynamoDB, etc.
 - Auth: Responsible for authenticating users. Examples: Azure EasyAuth, etc.
+- Logger: Responsible for logging events and errors. Examples: Azure Application Insights, AWS CloudWatch, etc.
+- UI: Responsible for providing HTML UI for GET routes. Without it, the service is headless only.
 
 ## CLI
 

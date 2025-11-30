@@ -6,23 +6,24 @@ tags:
 
 # NodeJS
 
+> Refer Hono docs: https://hono.dev/docs/getting-started/nodejs
+
 Run following with `node server.mjs`
 
 ```js
 // @ts-check
 // server.mjs
 
-import { createServer } from "node:http";
-import { createRequestListener } from "@remix-run/node-fetch-server";
-import { createRequestHandler } from "@storybooker/core";
+import { serve } from "@hono/node-server";
+import { createHonoRouter } from "@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
 } from "@storybooker/core/adapters";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
-// Create StoryBooker router handler
-const handler = createRequestHandler({
+// Create StoryBooker Hono router
+const router = createHonoRouter({
   // provide a supported database service adapter
   database: new LocalFileDatabase(),
   // provide a supported storage service adapter
@@ -31,10 +32,6 @@ const handler = createRequestHandler({
   ui: createBasicUIAdapter(),
 });
 
-// Create a standard Node.js server
-const server = createServer(createRequestListener(handler));
-
-server.listen(8000, () => {
-  console.log("Server running at http://localhost:8000");
-});
+// Create a  Node.js server
+serve(router);
 ```

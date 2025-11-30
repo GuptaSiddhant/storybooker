@@ -14,7 +14,7 @@ import {
   LocalFileDatabase,
   LocalFileStorage,
 } from "../packages/core/dist/adapter.js";
-import { createRequestHandler } from "../packages/core/dist/index.js";
+import { createHonoRouter } from "../packages/core/dist/index.js";
 import { createBasicUIAdapter } from "../packages/ui/dist/index.js";
 
 class LocalAuthAdapter implements AuthAdapter {
@@ -63,7 +63,7 @@ class LocalAuthAdapter implements AuthAdapter {
   };
 }
 
-const requestHandler = createRequestHandler({
+const app = createHonoRouter({
   auth: new LocalAuthAdapter(),
   config: {
     middlewares: [logger(), poweredBy({ serverName: "SBR" })],
@@ -77,4 +77,4 @@ const requestHandler = createRequestHandler({
   }),
 });
 
-export default { fetch: requestHandler };
+export default app;

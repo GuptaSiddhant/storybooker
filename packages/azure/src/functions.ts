@@ -1,15 +1,19 @@
+// oxlint-disable max-lines-per-function
+
 import type { RestError } from "@azure/core-rest-pipeline";
 import type {
+  Cookie,
   HttpFunctionOptions,
   HttpRequest,
   HttpResponseInit,
+  HttpTriggerOptions,
   SetupOptions,
   TimerFunctionOptions,
 } from "@azure/functions";
-import { createPurgeHandler, createRequestHandler } from "@storybooker/core";
+import { createHonoRouter, createPurgeHandler } from "@storybooker/core";
 import type {
   ErrorParser,
-  RequestHandlerOptions,
+  RouterOptions,
   StoryBookerUser,
 } from "@storybooker/core/types";
 import {
@@ -17,7 +21,6 @@ import {
   SERVICE_NAME,
   urlJoin,
 } from "@storybooker/core/utils";
-import type { BodyInit } from "undici";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
@@ -29,15 +32,15 @@ export type * from "@storybooker/core/types";
  */
 interface FunctionsApp {
   http(name: string, options: HttpFunctionOptions): void;
-  setup(options: SetupOptions): void;
-  timer(name: string, options: TimerFunctionOptions): void;
+  setup?(options: SetupOptions): void;
+  timer?(name: string, options: TimerFunctionOptions): void;
 }
 
 /**
  * Options to register the storybooker router
  */
 export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
-  extends Omit<RequestHandlerOptions<User>, "abortSignal" | "prefix"> {
+  extends RouterOptions<User> {
   /**
    * Set the Azure Functions authentication level for all routes.
    *
@@ -47,7 +50,7 @@ export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
    *
    * This setting does not affect health-check route.
    */
-  authLevel?: "admin" | "function" | "anonymous";
+  authLevel?: HttpTriggerOptions["authLevel"];
 
   /**
    * Define the route on which all router is placed.
@@ -82,43 +85,45 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
   app: FunctionsApp,
   options: RegisterStorybookerRouterOptions<User>,
 ): void {
-  app.setup({ enableHttpStream: true });
+  app.setup?.({ enableHttpStream: true });
+  const { authLevel, purgeScheduleCron, route, ...routerOptions } = options;
 
-  options.config ??= {};
-  if (!options.config.errorParser) {
-    options.config.errorParser = parseAzureRestError;
+  routerOptions.config ??= {};
+  if (!routerOptions.config.errorParser) {
+    routerOptions.config.errorParser = parseAzureRestError;
+  }
+  if (route) {
+    routerOptions.config.prefix = generatePrefixFromBaseRoute(route);
   }
 
-  const requestHandlerOptions: RequestHandlerOptions<User> = options;
-  requestHandlerOptions.config ??= {};
-  if (options.route) {
-    requestHandlerOptions.config.prefix = generatePrefixFromBaseRoute(
-      options.route,
-    );
-  }
-
-  const route = options.route || "";
-
-  const requestHandler = createRequestHandler(requestHandlerOptions);
+  const router = createHonoRouter(routerOptions);
 
   app.http(SERVICE_NAME, {
-    authLevel: options.authLevel,
-    handler: async (httpRequest, context) => {
-      const request = transformHttpRequestToWebRequest(httpRequest);
-      const response = await requestHandler(request, {
-        logger: options.logger ?? context,
-      });
-      return transformWebResponseToHttpResponse(response);
+    authLevel,
+    handler: async (httpRequest) => {
+      const request = newRequestFromAzureFunctions(httpRequest);
+      const response = await router.fetch(request);
+      return newAzureFunctionsResponse(response);
     },
-    methods: ["DELETE", "GET", "PATCH", "POST", "PUT"],
-    route: urlJoin(route, "{**path}"),
+    methods: [
+      "GET",
+      "POST",
+      "DELETE",
+      "HEAD",
+      "PATCH",
+      "PUT",
+      "OPTIONS",
+      "TRACE",
+      "CONNECT",
+    ],
+    route: urlJoin(route || "", "{**path}"),
   });
 
-  if (options.purgeScheduleCron !== null) {
-    const schedule = options.purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON;
+  if (purgeScheduleCron !== null && app.timer) {
+    const schedule = purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON;
     const purgeHandler = createPurgeHandler({
-      database: options.database,
-      storage: options.storage,
+      database: routerOptions.database,
+      storage: routerOptions.storage,
     });
 
     app.timer(`${SERVICE_NAME}-timer_purge`, {
@@ -148,30 +153,94 @@ const parseAzureRestError: ErrorParser = (error) => {
   return;
 };
 
-function transformHttpRequestToWebRequest(httpRequest: HttpRequest): Request {
-  return new Request(httpRequest.url, {
-    // oxlint-disable-next-line no-invalid-fetch-options
-    body: (httpRequest.body as ReadableStream | null) ?? undefined,
-    // @ts-expect-error - Duplex is required for streaming but not supported in TS
-    duplex: "half",
-    headers: new Headers(httpRequest.headers as Headers),
-    method: httpRequest.method,
+/**
+ * Utils (@refer https://github.com/Marplex/hono-azurefunc-adapter/)
+ */
+
+/** */
+function newRequestFromAzureFunctions(request: HttpRequest): Request {
+  const hasBody = !["GET", "HEAD"].includes(request.method);
+
+  return new Request(request.url, {
+    headers: headersToObject(request.headers),
+    method: request.method,
+    ...(hasBody
+      ? { body: request.body as ReadableStream, duplex: "half" }
+      : {}),
   });
 }
 
-async function transformWebResponseToHttpResponse(
-  response: Response,
-): Promise<HttpResponseInit> {
-  let body: BodyInit | null = null;
-  if (response.body) {
-    body = response.body as unknown as BodyInit;
-  } else {
-    body = await response.text();
-  }
+function newAzureFunctionsResponse(response: Response): HttpResponseInit {
+  let headers = headersToObject(response.headers);
+  let cookies = cookiesFromHeaders(response.headers);
 
   return {
-    body,
-    headers: response.headers,
+    body: streamToAsyncIterator(response.body),
+    cookies,
+    headers,
     status: response.status,
   };
+}
+
+function headersToObject(
+  input: HttpRequest["headers"],
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  // oxlint-disable-next-line no-array-for-each
+  input.forEach((value, key) => (headers[key] = value));
+  return headers;
+}
+
+function cookiesFromHeaders(headers: Headers): Cookie[] | undefined {
+  const cookies = headers.getSetCookie();
+  if (cookies.length === 0) {
+    return undefined;
+  }
+
+  return cookies.map((cookie) => parseCookieString(cookie));
+}
+
+function parseCookieString(cookieString: string): Cookie {
+  const [first, ...attributesArray] = cookieString
+    .split(";")
+    .map((item) => item.split("="))
+    .map(([key, value]) => [key?.trim().toLowerCase(), value ?? "true"]);
+
+  const [name, encodedValue] = first || [];
+  const attrs: Record<string, string> = Object.fromEntries(attributesArray);
+
+  return {
+    domain: attrs["domain"],
+    expires: attrs["expires"] ? new Date(attrs["expires"]) : undefined,
+    httpOnly: attrs["httponly"] === "true",
+    maxAge: attrs["max-age"]
+      ? Number.parseInt(attrs["max-age"], 10)
+      : undefined,
+    name: name || "",
+    path: attrs["path"],
+    sameSite: attrs["samesite"] as "Strict" | "Lax" | "None" | undefined,
+    secure: attrs["secure"] === "true",
+    value: encodedValue ? decodeURIComponent(encodedValue) : "",
+  };
+}
+
+function streamToAsyncIterator(
+  readable: Response["body"],
+): AsyncIterableIterator<Uint8Array> | null {
+  if (readable === null || !readable) {
+    return null;
+  }
+
+  const reader = readable.getReader();
+  return {
+    async next() {
+      return await reader.read();
+    },
+    return() {
+      reader.releaseLock();
+    },
+    [Symbol.asyncIterator]() {
+      return this;
+    },
+  } as AsyncIterableIterator<Uint8Array>;
 }

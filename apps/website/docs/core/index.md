@@ -17,15 +17,15 @@ npm i @storybooker/core
 
 ## API
 
-### `createRequestHandler`
+### `createHonoRouter`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/~/createRequestHandler)
+> [API Docs](https://jsr.io/@storybooker/core/doc/~/createHonoRouter)
 
-Callback to create a request-handler based on provided options.
+Callback to create a Hono router that can be used as a request handler.
 
-The request handler takes Standard Request and returns a Response asynchronously.
+The Hono router can be deployed to any platform that supports Hono framework.
 
-[Read more about options](./request-options)
+[Read more about options](./router-options)
 
 ### `createPurgeHandler`
 
@@ -56,3 +56,4 @@ A simple storage adapter that uses local folder to store files. Defaults to curr
 - [NodeJS](node)
 - [Deno](deno)
 - [Bun](bun)
+- Others: Refer [Hono docs](https://hono.dev/docs/getting-started/basic)

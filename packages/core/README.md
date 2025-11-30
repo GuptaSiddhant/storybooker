@@ -1,28 +1,25 @@
 # StoryBooker Core
 
 The core contains the routing logic and UI for StoryBooker.
-The core can be extended to be used with any platform that supports standard fetch (Request+Response).
+The core can be extended to be used with any platform that supports standard fetch (Request+Response) or Hono server.
 
 Core Docs: https://storybooker.js.org/docs/core
 
 ### Running on basic Node server
 
+> Refer Hono docs: https://hono.dev/docs/getting-started/nodejs
+
 ```js
-import { createServer } from "node:http";
-import { createRequestListener } from "@remix-run/node-fetch-server";
-import { createRequestHandler } from "@storybooker/core";
+import { serve } from "@hono/node-server";
+import { createHonoRouter } from "@storybooker/core";
 import { LocalFileDatabase, LocalFileStorage } from "@storybooker/core/adapter";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
-const handler = createRequestHandler({
+const app = createHonoRouter({
   database: new LocalFileDatabase(),
   storage: new LocalFileStorage(),
   ui: createBasicUIAdapter(), // remove to create headless service
 });
 
-const server = createServer(createRequestListener(handler));
-
-server.listen(8000, () => {
-  console.log("Server running at http://localhost:8000");
-});
+serve(app);
 ```

@@ -1,14 +1,11 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
+import type { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
 import type { AuthAdapter, StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { appRouter } from "./routers/_app-router";
-import type {
-  PurgeHandlerOptions,
-  RequestHandler,
-  RequestHandlerOptions,
-} from "./types";
+import type { PurgeHandlerOptions, RouterOptions } from "./types";
 import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
 import { localStore } from "./utils/store";
@@ -18,13 +15,13 @@ if ("setEncoding" in process.stdout) {
 }
 
 /**
- * Callback to create a request-handler based on provided options.
+ * Callback to create a Hono App based on provided options.
  * @param options Options for creating a request handler.
- * @returns The request-handler which accepts Web-standard Request and return a standard Response.
+ * @returns The Hono App which can be used wherever Hono is supported.
  */
-export function createRequestHandler<User extends StoryBookerUser>(
-  options: RequestHandlerOptions<User>,
-): RequestHandler {
+export function createHonoRouter<User extends StoryBookerUser>(
+  options: RouterOptions<User>,
+): Hono {
   const logger = options.logger || console;
   const middlewares = options.config?.middlewares || [loggerMiddleware()];
   const initPromises = Promise.allSettled([
@@ -33,52 +30,39 @@ export function createRequestHandler<User extends StoryBookerUser>(
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
-  const router = new OpenAPIHono({ strict: false })
+  return new OpenAPIHono({ strict: false })
     .use(...middlewares)
-    .route("/", appRouter);
-
-  const requestHandler: RequestHandler = async (request, overrideOptions) => {
-    // Make sure initialisations are complete before first request is handled.
-    await initPromises;
-
-    try {
+    .use(async (ctx, next) => {
+      await initPromises;
+      const request = ctx.req.raw;
       const headers = new SuperHeaders(request.headers);
       const locale = headers.acceptLanguage.languages[0] || DEFAULT_LOCALE;
       const user = await options.auth?.getUserDetails({
-        abortSignal: overrideOptions?.abortSignal,
-        logger: overrideOptions?.logger ?? logger,
+        logger,
         request: request.clone(),
       });
-
-      return await localStore.run(
-        {
-          ...options,
-          abortSignal: overrideOptions?.abortSignal ?? request.signal,
-          auth: options.auth as AuthAdapter | undefined,
-          headers,
-          locale,
-          logger: overrideOptions?.logger ?? logger,
-          prefix: options.config?.prefix || "",
-          request,
-          url: request.url,
-          user,
-        },
-        async () => await router.fetch(request, process.env),
-      );
-    } catch (error) {
-      if (error instanceof Response) {
-        return error;
+      localStore.enterWith({
+        ...options,
+        abortSignal: request.signal,
+        auth: options.auth as AuthAdapter | undefined,
+        headers,
+        locale,
+        logger,
+        prefix: options.config?.prefix || "",
+        request,
+        url: request.url,
+        user,
+      });
+      await next();
+    })
+    .route("/", appRouter)
+    .onError((err) => {
+      if ("getResponse" in err) {
+        return err.getResponse();
       }
 
-      const { errorMessage, errorStatus = 500 } = parseErrorMessage(
-        error,
-        options.config?.errorParser,
-      );
-      return new Response(errorMessage, { status: errorStatus });
-    }
-  };
-
-  return requestHandler;
+      return new Response(err.message, { status: 500 });
+    });
 }
 
 /**
@@ -89,15 +73,8 @@ export function createRequestHandler<User extends StoryBookerUser>(
  */
 export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
   const logger = options.logger || console;
-  const initPromises = Promise.allSettled([
-    options.database.init?.({ logger }).catch(logger.error),
-    options.storage.init?.({ logger }).catch(logger.error),
-  ]);
 
   return async (...params: Parameters<HandlePurge>): Promise<void> => {
-    // Make sure initialisations are complete before first request is handled.
-    await initPromises;
-
     localStore.enterWith({
       abortSignal: params[1].abortSignal,
       database: options.database,
@@ -108,7 +85,7 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
       prefix: "/",
       request: new Request(""),
       storage: options.storage,
-      url: "/",
+      url: "http://0.0.0.0/",
       user: null,
     });
 
