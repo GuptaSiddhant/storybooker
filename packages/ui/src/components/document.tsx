@@ -39,6 +39,8 @@ export function DocumentLayout({
           />
           <link
             rel="preload"
+            as="image"
+            type="image/svg+xml"
             href={urlBuilder.staticFile(ASSETS.globalSprite)}
           />
           <script

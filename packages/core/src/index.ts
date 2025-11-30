@@ -2,13 +2,14 @@ import { OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
 import type { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
-import type { AuthAdapter, StoryBookerUser } from "./adapters";
+import { timing, type TimingVariables } from "hono/timing";
+import type { StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { appRouter } from "./routers/_app-router";
 import type { PurgeHandlerOptions, RouterOptions } from "./types";
 import { DEFAULT_LOCALE } from "./utils/constants";
 import { parseErrorMessage } from "./utils/error";
-import { localStore } from "./utils/store";
+import { localStore, setupStore } from "./utils/store";
 
 if ("setEncoding" in process.stdout) {
   process.stdout.setEncoding("utf8");
@@ -21,7 +22,7 @@ if ("setEncoding" in process.stdout) {
  */
 export function createHonoRouter<User extends StoryBookerUser>(
   options: RouterOptions<User>,
-): Hono {
+): Hono<{ Variables: TimingVariables }> {
   const logger = options.logger || console;
   const middlewares = options.config?.middlewares || [loggerMiddleware()];
   const initPromises = Promise.allSettled([
@@ -30,31 +31,10 @@ export function createHonoRouter<User extends StoryBookerUser>(
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
-  return new OpenAPIHono({ strict: false })
+  return new OpenAPIHono<{ Variables: TimingVariables }>({ strict: false })
+    .use(timing())
     .use(...middlewares)
-    .use(async (ctx, next) => {
-      await initPromises;
-      const request = ctx.req.raw;
-      const headers = new SuperHeaders(request.headers);
-      const locale = headers.acceptLanguage.languages[0] || DEFAULT_LOCALE;
-      const user = await options.auth?.getUserDetails({
-        logger,
-        request: request.clone(),
-      });
-      localStore.enterWith({
-        ...options,
-        abortSignal: request.signal,
-        auth: options.auth as AuthAdapter | undefined,
-        headers,
-        locale,
-        logger,
-        prefix: options.config?.prefix || "",
-        request,
-        url: request.url,
-        user,
-      });
-      await next();
-    })
+    .use(setupStore(options, initPromises))
     .route("/", appRouter)
     .onError((err) => {
       if ("getResponse" in err) {

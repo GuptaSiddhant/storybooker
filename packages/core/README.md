@@ -5,7 +5,7 @@ The core can be extended to be used with any platform that supports standard fet
 
 Core Docs: https://storybooker.js.org/docs/core
 
-### Running on basic Node server
+## Running on basic Node server
 
 > Refer Hono docs: https://hono.dev/docs/getting-started/nodejs
 
@@ -22,4 +22,25 @@ const app = createHonoRouter({
 });
 
 serve(app);
+```
+
+## Running on basic Deno server
+
+> Refer Hono docs: https://hono.dev/docs/getting-started/deno
+
+```js
+import { createHonoRouter } from "jsr:@storybooker/core";
+import {
+  LocalFileDatabase,
+  LocalFileStorage,
+} from "jsr:@storybooker/core/adapter";
+import { createBasicUIAdapter } from "npm:@storybooker/ui";
+
+const app = createHonoRouter({
+  database: new LocalFileDatabase(),
+  storage: new LocalFileStorage(),
+  ui: createBasicUIAdapter(), // remove to create headless service
+});
+
+export default router;
 ```
