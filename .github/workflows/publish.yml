@@ -45,8 +45,7 @@ jobs:
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
 
-          GIT_TAG_MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")
-          echo "GIT_TAG_MESSAGE=$GIT_TAG_MESSAGE" >> $GITHUB_OUTPUT
+          echo "GIT_TAG_MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")" >> $GITHUB_OUTPUT
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
 
