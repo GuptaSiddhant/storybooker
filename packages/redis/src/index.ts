@@ -1,11 +1,12 @@
 // oxlint-disable no-explicit-any
 // oxlint-disable no-unsafe-member-access
 
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 import type { RedisClientType } from "redis";
 
@@ -30,7 +31,11 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
   init: DatabaseAdapter["init"] = async (_options) => {
     // Ensure Redis connection is ready
     if (!this.#client.isReady) {
-      await this.#client.connect();
+      try {
+        await this.#client.connect();
+      } catch (error) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError(error);
+      }
     }
   };
 
@@ -58,8 +63,15 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     collectionId,
     _options,
   ) => {
-    // Add collection to the set of collections
-    await this.#client.sAdd(this.#getCollectionsSetKey(), collectionId);
+    try {
+      // Add collection to the set of collections
+      await this.#client.sAdd(this.#getCollectionsSetKey(), collectionId);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   hasCollection: DatabaseAdapter["hasCollection"] = async (
@@ -77,17 +89,24 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     collectionId,
     _options,
   ) => {
-    // Get all document keys for this collection
-    const pattern = this.#getDocumentKey(collectionId, "*");
-    const keys = await this.#client.keys(pattern);
+    try {
+      // Get all document keys for this collection
+      const pattern = this.#getDocumentKey(collectionId, "*");
+      const keys = await this.#client.keys(pattern);
 
-    // Delete all documents in the collection
-    if (keys.length > 0) {
-      await this.#client.del(keys);
+      // Delete all documents in the collection
+      if (keys.length > 0) {
+        await this.#client.del(keys);
+      }
+
+      // Remove collection from the set
+      await this.#client.sRem(this.#getCollectionsSetKey(), collectionId);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
     }
-
-    // Remove collection from the set
-    await this.#client.sRem(this.#getCollectionsSetKey(), collectionId);
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -168,8 +187,9 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     const value = await this.#client.get(key);
 
     if (!value) {
-      throw new Error(
-        `Document not found: ${documentId} in collection ${collectionId}`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
 
@@ -193,11 +213,26 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     _options,
   ) => {
     // Ensure collection exists
-    await this.#client.sAdd(this.#getCollectionsSetKey(), collectionId);
+    try {
+      await this.#client.sAdd(this.#getCollectionsSetKey(), collectionId);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
 
-    const key = this.#getDocumentKey(collectionId, documentData.id);
-    const value = JSON.stringify(documentData);
-    await this.#client.set(key, value);
+    try {
+      const key = this.#getDocumentKey(collectionId, documentData.id);
+      const value = JSON.stringify(documentData);
+      await this.#client.set(key, value);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   updateDocument: DatabaseAdapter["updateDocument"] = async (
@@ -210,8 +245,9 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     // Get existing document
     const existingValue = await this.#client.get(key);
     if (!existingValue) {
-      throw new Error(
-        `Document not found: ${documentId} in collection ${collectionId}`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
 
@@ -231,8 +267,9 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     const deleted = await this.#client.del(key);
 
     if (deleted === 0) {
-      throw new Error(
-        `Document not found: ${documentId} in collection ${collectionId}`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
   };

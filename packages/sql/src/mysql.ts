@@ -1,11 +1,12 @@
 // oxlint-disable max-lines-per-function
 // oxlint-disable no-unsafe-member-access
 
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 
 // Define a generic SQL connection interface that works with multiple MySQL libraries
@@ -38,14 +39,18 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
 
   init: DatabaseAdapter["init"] = async (_options) => {
     // Create collections metadata table
-    const collectionsTable = `${this.#tablePrefix}_collections`;
-    await this.#connection.connect?.();
-    await this.#connection.execute(`
-      CREATE TABLE IF NOT EXISTS \`${collectionsTable}\` (
-        id VARCHAR(255) PRIMARY KEY,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    `);
+    try {
+      const collectionsTable = `${this.#tablePrefix}_collections`;
+      await this.#connection.connect?.();
+      await this.#connection.execute(`
+        CREATE TABLE IF NOT EXISTS \`${collectionsTable}\` (
+          id VARCHAR(255) PRIMARY KEY,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+          `);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError(error);
+    }
   };
 
   // Helper methods
@@ -79,11 +84,12 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     collectionId,
     _options,
   ) => {
-    const tableName = this.#getTableName(collectionId);
-    const collectionsTable = this.#getCollectionsTableName();
+    try {
+      const tableName = this.#getTableName(collectionId);
+      const collectionsTable = this.#getCollectionsTableName();
 
-    // Create the collection table
-    await this.#connection.execute(`
+      // Create the collection table
+      await this.#connection.execute(`
       CREATE TABLE IF NOT EXISTS \`${tableName}\` (
         id VARCHAR(255) PRIMARY KEY,
         data JSON NOT NULL,
@@ -93,11 +99,17 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `);
 
-    // Register collection
-    await this.#connection.execute(
-      `INSERT IGNORE INTO \`${collectionsTable}\` (id) VALUES (?)`,
-      [collectionId],
-    );
+      // Register collection
+      await this.#connection.execute(
+        `INSERT IGNORE INTO \`${collectionsTable}\` (id) VALUES (?)`,
+        [collectionId],
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   hasCollection: DatabaseAdapter["hasCollection"] = async (
@@ -120,14 +132,21 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     const tableName = this.#getTableName(collectionId);
     const collectionsTable = this.#getCollectionsTableName();
 
-    // Drop the table
-    await this.#connection.execute(`DROP TABLE IF EXISTS \`${tableName}\``);
+    try {
+      // Drop the table
+      await this.#connection.execute(`DROP TABLE IF EXISTS \`${tableName}\``);
 
-    // Remove from collections registry
-    await this.#connection.execute(
-      `DELETE FROM \`${collectionsTable}\` WHERE id = ?`,
-      [collectionId],
-    );
+      // Remove from collections registry
+      await this.#connection.execute(
+        `DELETE FROM \`${collectionsTable}\` WHERE id = ?`,
+        [collectionId],
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -213,8 +232,9 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
 
     const [row] = rows;
     if (!row) {
-      throw new Error(
-        `Document not found: ${documentId} in collection ${collectionId}`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
 
@@ -241,11 +261,18 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
   ) => {
     const tableName = this.#getTableName(collectionId);
     const { id, ...data } = documentData;
-
-    await this.#connection.execute(
-      `INSERT INTO \`${tableName}\` (id, data) VALUES (?, ?)`,
-      [id, JSON.stringify(data)],
-    );
+    try {
+      await this.#connection.execute(
+        `INSERT INTO \`${tableName}\` (id, data) VALUES (?, ?)`,
+        [id, JSON.stringify(data)],
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   updateDocument: DatabaseAdapter["updateDocument"] = async (
@@ -262,8 +289,9 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
 
     const [row] = rows;
     if (!row) {
-      throw new Error(
-        `Document not found: ${documentId} in collection ${collectionId}`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
 
@@ -291,8 +319,9 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     );
 
     if (result.affectedRows === 0) {
-      throw new Error(
-        `Document not found: ${documentId} in collection ${collectionId}`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
   };

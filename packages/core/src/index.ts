@@ -8,7 +8,11 @@ import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { appRouter } from "./routers/_app-router";
 import type { PurgeHandlerOptions, RouterOptions } from "./types";
 import { DEFAULT_LOCALE } from "./utils/constants";
-import { parseErrorMessage } from "./utils/error";
+import {
+  onUnhandledErrorHandler,
+  parseErrorMessage,
+  prettifyZodValidationErrorMiddleware,
+} from "./utils/error";
 import { localStore, setupStore } from "./utils/store";
 
 if ("setEncoding" in process.stdout) {
@@ -32,17 +36,14 @@ export function createHonoRouter<User extends StoryBookerUser>(
   ]);
 
   return new OpenAPIHono<{ Variables: TimingVariables }>({ strict: false })
-    .use(timing())
-    .use(...middlewares)
-    .use(setupStore(options, initPromises))
+    .use(
+      prettifyZodValidationErrorMiddleware,
+      timing(),
+      setupStore<User>(options, initPromises),
+      ...middlewares,
+    )
     .route("/", appRouter)
-    .onError((err) => {
-      if ("getResponse" in err) {
-        return err.getResponse();
-      }
-
-      return new Response(err.message, { status: 500 });
-    });
+    .onError(onUnhandledErrorHandler(logger));
 }
 
 /**

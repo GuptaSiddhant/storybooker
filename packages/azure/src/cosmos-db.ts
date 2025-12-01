@@ -1,9 +1,10 @@
 import type { CosmosClient, Database } from "@azure/cosmos";
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 
 export class AzureCosmosDatabaseService implements DatabaseAdapter {
@@ -21,25 +22,36 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
   };
 
   listCollections: DatabaseAdapter["listCollections"] = async (options) => {
-    const response = await this.#db.containers
-      .readAll({ abortSignal: options.abortSignal })
-      .fetchAll();
-    const collections: string[] = response.resources.map(
-      (resource) => resource.id,
-    );
+    try {
+      const response = await this.#db.containers
+        .readAll({ abortSignal: options.abortSignal })
+        .fetchAll();
+      const collections: string[] = response.resources.map(
+        (resource) => resource.id,
+      );
 
-    return collections;
+      return collections;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError(error);
+    }
   };
 
   createCollection: DatabaseAdapter["createCollection"] = async (
     collectionId,
     options,
   ) => {
-    await this.#db.containers.create(
-      { id: collectionId },
-      { abortSignal: options.abortSignal },
-    );
-    return;
+    try {
+      await this.#db.containers.create(
+        { id: collectionId },
+        { abortSignal: options.abortSignal },
+      );
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   hasCollection: DatabaseAdapter["hasCollection"] = async (
@@ -60,10 +72,17 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     collectionId,
     options,
   ) => {
-    await this.#db
-      .container(collectionId)
-      .delete({ abortSignal: options.abortSignal });
-    return;
+    try {
+      await this.#db
+        .container(collectionId)
+        .delete({ abortSignal: options.abortSignal });
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -87,11 +106,19 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     documentId: string,
     options: DatabaseAdapterOptions,
   ) => {
-    const item = this.#db.container(collectionId).item(documentId);
-    const response = await item.read({ abortSignal: options.abortSignal });
-    const document: Document = response.resource;
-    document.id = documentId;
-    return document;
+    try {
+      const item = this.#db.container(collectionId).item(documentId);
+      const response = await item.read({ abortSignal: options.abortSignal });
+      const document: Document = response.resource;
+      document.id = documentId;
+      return document;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 
   createDocument: DatabaseAdapter["createDocument"] = async (
@@ -99,10 +126,18 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     documentData,
     options,
   ) => {
-    await this.#db
-      .container(collectionId)
-      .items.create(documentData, { abortSignal: options.abortSignal });
-    return;
+    try {
+      await this.#db
+        .container(collectionId)
+        .items.create(documentData, { abortSignal: options.abortSignal });
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   hasDocument: DatabaseAdapter["hasDocument"] = async (
@@ -120,11 +155,19 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     documentId,
     options,
   ) => {
-    await this.#db
-      .container(collectionId)
-      .item(documentId)
-      .delete({ abortSignal: options.abortSignal });
-    return;
+    try {
+      await this.#db
+        .container(collectionId)
+        .item(documentId)
+        .delete({ abortSignal: options.abortSignal });
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 
   // oxlint-disable-next-line max-params
@@ -134,20 +177,28 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     documentData,
     options,
   ) => {
-    await this.#db
-      .container(collectionId)
-      .item(documentId)
-      .patch<Document>(
-        {
-          operations: Object.entries(documentData).map(([key, value]) => ({
-            op: "replace",
-            path: `/${key}`,
-            value,
-          })),
-        },
-        { abortSignal: options.abortSignal },
-      );
+    try {
+      await this.#db
+        .container(collectionId)
+        .item(documentId)
+        .patch<Document>(
+          {
+            operations: Object.entries(documentData).map(([key, value]) => ({
+              op: "replace",
+              path: `/${key}`,
+              value,
+            })),
+          },
+          { abortSignal: options.abortSignal },
+        );
 
-    return;
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 }

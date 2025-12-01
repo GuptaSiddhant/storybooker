@@ -5,7 +5,10 @@ import type {
   BlobServiceClient,
   BlockBlobClient,
 } from "@azure/storage-blob";
-import type { StorageAdapter } from "@storybooker/core/adapter";
+import {
+  StorageAdapterErrors,
+  type StorageAdapter,
+} from "@storybooker/core/adapter";
 
 export class AzureBlobStorageService implements StorageAdapter {
   #client: BlobServiceClient;
@@ -18,20 +21,34 @@ export class AzureBlobStorageService implements StorageAdapter {
     containerId,
     options,
   ) => {
-    const containerName = genContainerNameFromContainerId(containerId);
-    await this.#client.createContainer(containerName, {
-      abortSignal: options.abortSignal,
-    });
+    try {
+      const containerName = genContainerNameFromContainerId(containerId);
+      await this.#client.createContainer(containerName, {
+        abortSignal: options.abortSignal,
+      });
+    } catch (error) {
+      throw new StorageAdapterErrors.ContainerAlreadyExistsError(
+        containerId,
+        error,
+      );
+    }
   };
 
   deleteContainer: StorageAdapter["deleteContainer"] = async (
     containerId,
     options,
   ) => {
-    const containerName = genContainerNameFromContainerId(containerId);
-    await this.#client.getContainerClient(containerName).deleteIfExists({
-      abortSignal: options.abortSignal,
-    });
+    try {
+      const containerName = genContainerNameFromContainerId(containerId);
+      await this.#client.getContainerClient(containerName).deleteIfExists({
+        abortSignal: options.abortSignal,
+      });
+    } catch (error) {
+      throw new StorageAdapterErrors.ContainerDoesNotExistError(
+        containerId,
+        error,
+      );
+    }
   };
 
   hasContainer: StorageAdapter["hasContainer"] = async (
@@ -88,7 +105,10 @@ export class AzureBlobStorageService implements StorageAdapter {
       });
 
     if (response.errorCode) {
-      throw new Error(`Failed to delete blobs: ${response.errorCode}`);
+      throw new StorageAdapterErrors.CustomError(
+        undefined,
+        `Failed to delete ${response.subResponsesFailedCount} blobs in container ${containerId}: ${response.errorCode}`,
+      );
     }
     return;
   };
@@ -142,8 +162,9 @@ export class AzureBlobStorageService implements StorageAdapter {
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
 
     if (!(await blockBlobClient.exists())) {
-      throw new Error(
-        `File '${filepath}' not found in container '${containerId}'.`,
+      throw new StorageAdapterErrors.FileDoesNotExistError(
+        containerId,
+        filepath,
       );
     }
 
@@ -152,8 +173,10 @@ export class AzureBlobStorageService implements StorageAdapter {
     });
 
     if (!downloadResponse.readableStreamBody) {
-      throw new Error(
-        `File '${filepath}' in container '${containerId}' is not downloadable.`,
+      throw new StorageAdapterErrors.FileMalformedError(
+        containerId,
+        filepath,
+        "No readable stream body found.",
       );
     }
 

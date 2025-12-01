@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/auth";
 import { generateDatabaseCollectionId } from "../utils/adapter-utils";
 import { checkAuthorisation } from "../utils/auth";
@@ -30,23 +31,36 @@ export class TagsModel extends Model<TagType> {
 
   async create(data: TagCreateType, withBuild = false): Promise<TagType> {
     this.log("Create tag '%s'...", data.value);
-
     const id = TagsModel.createId(data.value);
-    const now = new Date().toISOString();
-    const tag: TagType = {
-      ...data,
-      buildsCount: withBuild ? 1 : 0,
-      createdAt: now,
-      id: id,
-      updatedAt: now,
-    };
-    await this.database.createDocument<TagType>(
-      this.collectionId,
-      tag,
-      this.dbOptions,
-    );
 
-    return tag;
+    try {
+      if (await this.has(id)) {
+        throw new HTTPException(409, {
+          message: `Tag '${id}' already exists.`,
+        });
+      }
+
+      const now = new Date().toISOString();
+      const tag: TagType = {
+        ...data,
+        buildsCount: withBuild ? 1 : 0,
+        createdAt: now,
+        id: id,
+        updatedAt: now,
+      };
+      await this.database.createDocument<TagType>(
+        this.collectionId,
+        tag,
+        this.dbOptions,
+      );
+
+      return tag;
+    } catch (error) {
+      throw new HTTPException(500, {
+        cause: error,
+        message: `Failed to create tag '${id}'.`,
+      });
+    }
   }
 
   async get(id: string): Promise<TagType> {
@@ -63,11 +77,15 @@ export class TagsModel extends Model<TagType> {
 
   async has(id: string): Promise<boolean> {
     this.log("Check tag '%s'...", id);
-    return await this.database.hasDocument(
-      this.collectionId,
-      id,
-      this.dbOptions,
-    );
+    try {
+      return await this.database.hasDocument(
+        this.collectionId,
+        id,
+        this.dbOptions,
+      );
+    } catch {
+      return false;
+    }
   }
 
   async update(id: string, data: TagUpdateType): Promise<void> {

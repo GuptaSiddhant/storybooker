@@ -1,3 +1,4 @@
+// oxlint-disable max-classes-per-file
 // oxlint-disable max-params
 // oxlint-disable require-await
 // oxlint-disable no-unsafe-assignment
@@ -5,6 +6,8 @@
 import * as fs from "node:fs";
 import * as fsp from "node:fs/promises";
 import * as path from "node:path";
+import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -17,6 +20,12 @@ import type { LoggerAdapter } from "./logger";
  * - `collection`: A collection/container/table to hold items.
  * - `document`: A single entry in collection which contains key-value pairs (no nested data).
  *    Each document has a key 'id` which is unique in the collection.
+ *
+ * @throws {DatabaseNotInitializedError} if the DB service is not connected.
+ * @throws {CollectionAlreadyExistsError} if the collection already exists.
+ * @throws {CollectionDoesNotExistError} if the collection does not exist.
+ * @throws {DocumentAlreadyExistsError} if the document already exists in the collection.
+ * @throws {DocumentDoesNotExistError} if the document does not exist in the collection.
  */
 export interface DatabaseAdapter {
   /**
@@ -33,7 +42,7 @@ export interface DatabaseAdapter {
    * List all collections available in the DB.
    * @param options Common options like abortSignal.
    * @returns A list of names/IDs of the collections.
-   * @throws If the DB service is not connected.
+   * @throws {DatabaseNotInitializedError} if the DB service is not connected.
    */
   listCollections: (options: DatabaseAdapterOptions) => Promise<string[]>;
 
@@ -41,7 +50,8 @@ export interface DatabaseAdapter {
    * Create a collection used for different projects.
    * @param collectionId ID of the collection
    * @param options Common options like abortSignal.
-   * @throws if collection with ID already exists.
+   * @throws {DatabaseNotInitializedError} if the DB service is not connected.
+   * @throws {CollectionAlreadyExistsError} if collection with ID already exists.
    */
   createCollection: (
     collectionId: string,
@@ -52,7 +62,8 @@ export interface DatabaseAdapter {
    * Delete an existing collection.
    * @param collectionId ID of the collection
    * @param options Common options like abortSignal.
-   * @throws if collection with ID does not exist.
+   * @throws {DatabaseNotInitializedError} if the DB service is not connected.
+   * @throws {CollectionDoesNotExistError} if collection with ID does not exist.
    */
   deleteCollection: (
     collectionId: string,
@@ -181,6 +192,58 @@ export interface DatabaseDocumentListOptions<Item extends { id: string }> {
 }
 
 /**
+ * Pre-defined Database adapter errors
+ * that can be used across different adapters.
+ *
+ * Throws {HTTPException} with relevant status codes.
+ */
+export const DatabaseAdapterErrors = {
+  DatabaseNotInitializedError: class extends HTTPException {
+    constructor(cause?: unknown) {
+      super(500, { cause, message: "Database adapter is not initialized." });
+    }
+  },
+  CollectionAlreadyExistsError: class extends HTTPException {
+    constructor(collectionId: string, cause?: unknown) {
+      super(409, {
+        cause,
+        message: `Database collection '${collectionId}' already exists.`,
+      });
+    }
+  },
+  CollectionDoesNotExistError: class extends HTTPException {
+    constructor(collectionId: string, cause?: unknown) {
+      super(404, {
+        cause,
+        message: `Database collection '${collectionId}' does not exist.`,
+      });
+    }
+  },
+  DocumentAlreadyExistsError: class extends HTTPException {
+    constructor(collectionId: string, documentId: string, cause?: unknown) {
+      super(409, {
+        cause,
+        message: `Database document '${documentId}' already exists in collection '${collectionId}'.`,
+      });
+    }
+  },
+  DocumentDoesNotExistError: class extends HTTPException {
+    constructor(collectionId: string, documentId: string, cause?: unknown) {
+      super(404, {
+        cause,
+        message: `Database document '${documentId}' does not exist in collection '${collectionId}'.`,
+      });
+    }
+  },
+  CustomError: class extends HTTPException {
+    constructor(status: number | undefined, message: string, cause?: unknown) {
+      super(status as ContentfulStatusCode, { cause, message });
+    }
+  },
+  // oxlint-disable-next-line no-explicit-any
+} satisfies Record<string, new (...args: any[]) => HTTPException>;
+
+/**
  * Database adapter for StoryBooker while uses a file (json) in
  * the local filesystem to read from and write entries to.
  * It uses NodeJS FS API to read/write to filesystem.
@@ -195,7 +258,7 @@ export interface DatabaseDocumentListOptions<Item extends { id: string }> {
  */
 export class LocalFileDatabase implements DatabaseAdapter {
   #filename: string;
-  #db: Record<string, Record<string, StoryBookerDatabaseDocument>> = {};
+  #db: Record<string, Record<string, StoryBookerDatabaseDocument>> | undefined;
 
   constructor(filename = "db.json") {
     this.#filename = filename;
@@ -215,6 +278,10 @@ export class LocalFileDatabase implements DatabaseAdapter {
   };
 
   listCollections: DatabaseAdapter["listCollections"] = async () => {
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+    }
+
     return Object.keys(this.#db);
   };
 
@@ -222,6 +289,16 @@ export class LocalFileDatabase implements DatabaseAdapter {
     collectionId,
     options,
   ): Promise<void> => {
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+    }
+
+    if (Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+      );
+    }
+
     if (!this.#db[collectionId]) {
       this.#db[collectionId] = {};
     }
@@ -232,6 +309,14 @@ export class LocalFileDatabase implements DatabaseAdapter {
     collectionId,
     options,
   ): Promise<void> => {
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+    }
+
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+    }
+
     // oxlint-disable-next-line no-dynamic-delete
     delete this.#db[collectionId];
     await this.#saveToFile(options);
@@ -241,6 +326,10 @@ export class LocalFileDatabase implements DatabaseAdapter {
     collectionId,
     _options,
   ) => {
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+    }
+
     return Object.hasOwn(this.#db, collectionId);
   };
 
@@ -251,9 +340,14 @@ export class LocalFileDatabase implements DatabaseAdapter {
     listOptions: DatabaseDocumentListOptions<Document>,
     _options: DatabaseAdapterOptions,
   ): Promise<Document[]> => {
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new Error(`No collection - ${collectionId}`);
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
+
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+    }
+
     const {
       limit = Number.POSITIVE_INFINITY,
       sort,
@@ -280,15 +374,22 @@ export class LocalFileDatabase implements DatabaseAdapter {
     documentId: string,
     _options: DatabaseAdapterOptions,
   ): Promise<Document> => {
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new Error(`No collection - ${collectionId}`);
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
+
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+    }
+
     const item = this.#db[collectionId]?.[documentId];
     if (!item) {
-      throw new Error(
-        `Item '${documentId}' not found in collection '${collectionId}'`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
+
     return item as Document;
   };
 
@@ -297,9 +398,6 @@ export class LocalFileDatabase implements DatabaseAdapter {
     documentId,
     options,
   ) => {
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new Error(`No collection - ${collectionId}`);
-    }
     return !!(await this.getDocument(collectionId, documentId, options));
   };
 
@@ -308,16 +406,23 @@ export class LocalFileDatabase implements DatabaseAdapter {
     documentData,
     options,
   ): Promise<void> => {
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new Error(`No collection - ${collectionId}`);
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
+
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+    }
+
     // oxlint-disable-next-line no-non-null-assertion
     const collection = this.#db[collectionId]!;
     if (collection[documentData.id]) {
-      throw new Error(
-        `Item '${documentData.id}' already exists in collection '${collectionId}'`,
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
       );
     }
+
     collection[documentData.id] = documentData;
     await this.#saveToFile(options);
   };
@@ -327,14 +432,21 @@ export class LocalFileDatabase implements DatabaseAdapter {
     documentId,
     options,
   ): Promise<void> => {
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new Error(`No collection - ${collectionId}`);
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
+
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+    }
+
     if (!(await this.hasDocument(collectionId, documentId, options))) {
-      throw new Error(
-        `Item '${documentId}' not found in collection '${collectionId}'`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
+
     // oxlint-disable-next-line no-non-null-assertion
     const collection = this.#db[collectionId]!;
     // oxlint-disable-next-line no-dynamic-delete
@@ -348,15 +460,22 @@ export class LocalFileDatabase implements DatabaseAdapter {
     documentData,
     options,
   ): Promise<void> => {
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new Error(`No collection - ${collectionId}`);
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
+
+    if (!Object.hasOwn(this.#db, collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+    }
+
     const prevItem = await this.getDocument(collectionId, documentId, options);
     if (!prevItem) {
-      throw new Error(
-        `Item '${documentId}' not found in collection '${collectionId}'`,
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
       );
     }
+
     // oxlint-disable-next-line no-non-null-assertion
     const collection = this.#db[collectionId]!;
     collection[documentId] = { ...prevItem, ...documentData, id: documentId };
@@ -375,6 +494,10 @@ export class LocalFileDatabase implements DatabaseAdapter {
     }
   }
   async #saveToFile(options: { abortSignal?: AbortSignal }): Promise<void> {
+    if (!this.#db) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+    }
+
     await fsp.writeFile(this.#filename, JSON.stringify(this.#db, null, 2), {
       encoding: "utf8",
       signal: options.abortSignal,

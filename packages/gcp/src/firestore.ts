@@ -1,9 +1,10 @@
 import type { Firestore } from "@google-cloud/firestore";
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 
 export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
@@ -14,8 +15,12 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
   }
 
   listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
-    const collections = await this.#instance.listCollections();
-    return collections.map((col) => col.id);
+    try {
+      const collections = await this.#instance.listCollections();
+      return collections.map((col) => col.id);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError(error);
+    }
   };
 
   // oxlint-disable-next-line class-methods-use-this --- NOOP
@@ -41,16 +46,23 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
   ) => {
     // Firestore doesn't have a direct way to delete a collection
     // We need to delete all documents in the collection
-    const col = this.#instance.collection(collectionId);
-    const snapshot = await col.get();
-    if (snapshot.empty) {
-      return;
+    try {
+      const col = this.#instance.collection(collectionId);
+      const snapshot = await col.get();
+      if (snapshot.empty) {
+        return;
+      }
+      const batch = this.#instance.batch();
+      for (const doc of snapshot.docs) {
+        batch.delete(doc.ref);
+      }
+      await batch.commit();
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
     }
-    const batch = this.#instance.batch();
-    for (const doc of snapshot.docs) {
-      batch.delete(doc.ref);
-    }
-    await batch.commit();
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -60,15 +72,22 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     _listOptions: DatabaseDocumentListOptions<Document>,
     _options: DatabaseAdapterOptions,
   ) => {
-    const col = this.#instance.collection(collectionId);
-    const snapshot = await col.get();
-    const list: Document[] = [];
-    for (const doc of snapshot.docs) {
-      const data = doc.data() as Document;
-      list.push({ ...data, id: doc.id });
-    }
+    try {
+      const col = this.#instance.collection(collectionId);
+      const snapshot = await col.get();
+      const list: Document[] = [];
+      for (const doc of snapshot.docs) {
+        const data = doc.data() as Document;
+        list.push({ ...data, id: doc.id });
+      }
 
-    return list;
+      return list;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   getDocument: DatabaseAdapter["getDocument"] = async <
@@ -81,7 +100,10 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     const docRef = this.#instance.collection(collectionId).doc(documentId);
     const doc = await docRef.get();
     if (!doc.exists) {
-      throw new Error(`Document '${documentId}' not found.`);
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+      );
     }
     return { ...doc.data(), id: doc.id } as Document;
   };
@@ -91,8 +113,18 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     documentData,
     _options,
   ) => {
-    const docRef = this.#instance.collection(collectionId).doc(documentData.id);
-    await docRef.create(documentData);
+    try {
+      const docRef = this.#instance
+        .collection(collectionId)
+        .doc(documentData.id);
+      await docRef.create(documentData);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   hasDocument: DatabaseAdapter["hasDocument"] = async (
@@ -110,8 +142,16 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     documentId,
     _options,
   ) => {
-    const docRef = this.#instance.collection(collectionId).doc(documentId);
-    await docRef.delete();
+    try {
+      const docRef = this.#instance.collection(collectionId).doc(documentId);
+      await docRef.delete();
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 
   updateDocument: DatabaseAdapter["updateDocument"] = async (
@@ -119,10 +159,18 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     documentId,
     documentData,
   ) => {
-    const docRef = this.#instance.collection(collectionId).doc(documentId);
-    await docRef.set(documentData, {
-      merge: true,
-      mergeFields: Object.keys(documentData),
-    });
+    try {
+      const docRef = this.#instance.collection(collectionId).doc(documentId);
+      await docRef.set(documentData, {
+        merge: true,
+        mergeFields: Object.keys(documentData),
+      });
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 }

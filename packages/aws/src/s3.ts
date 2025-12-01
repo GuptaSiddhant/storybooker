@@ -1,6 +1,9 @@
 import { Buffer } from "node:buffer";
 import * as S3 from "@aws-sdk/client-s3";
-import type { StorageAdapter } from "@storybooker/core/adapter";
+import {
+  StorageAdapterErrors,
+  type StorageAdapter,
+} from "@storybooker/core/adapter";
 
 export class AwsS3StorageService implements StorageAdapter {
   #client: S3.S3Client;
@@ -13,24 +16,38 @@ export class AwsS3StorageService implements StorageAdapter {
     containerId,
     options,
   ) => {
-    await this.#client.send(
-      new S3.CreateBucketCommand({
-        Bucket: genBucketNameFromContainerId(containerId),
-      }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new S3.CreateBucketCommand({
+          Bucket: genBucketNameFromContainerId(containerId),
+        }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new StorageAdapterErrors.ContainerAlreadyExistsError(
+        containerId,
+        error,
+      );
+    }
   };
 
   deleteContainer: StorageAdapter["deleteContainer"] = async (
     containerId,
     options,
   ) => {
-    await this.#client.send(
-      new S3.DeleteBucketCommand({
-        Bucket: genBucketNameFromContainerId(containerId),
-      }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new S3.DeleteBucketCommand({
+          Bucket: genBucketNameFromContainerId(containerId),
+        }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new StorageAdapterErrors.ContainerDoesNotExistError(
+        containerId,
+        error,
+      );
+    }
   };
 
   hasContainer: StorageAdapter["hasContainer"] = async (
@@ -58,32 +75,40 @@ export class AwsS3StorageService implements StorageAdapter {
     filePathsOrPrefix,
     options,
   ) => {
-    const bucket = genBucketNameFromContainerId(containerId);
-    let objects: { Key: string }[] = [];
-    if (typeof filePathsOrPrefix === "string") {
-      const resp = await this.#client.send(
-        new S3.ListObjectsV2Command({
+    try {
+      const bucket = genBucketNameFromContainerId(containerId);
+      let objects: { Key: string }[] = [];
+      if (typeof filePathsOrPrefix === "string") {
+        const resp = await this.#client.send(
+          new S3.ListObjectsV2Command({
+            Bucket: bucket,
+            Prefix: filePathsOrPrefix,
+          }),
+          { abortSignal: options.abortSignal },
+        );
+        // oxlint-disable-next-line no-non-null-assertion
+        objects = (resp.Contents ?? []).map((obj) => ({ Key: obj.Key! }));
+      } else {
+        objects = filePathsOrPrefix.map((path) => ({ Key: path }));
+      }
+      if (objects.length === 0) {
+        return;
+      }
+
+      await this.#client.send(
+        new S3.DeleteObjectsCommand({
           Bucket: bucket,
-          Prefix: filePathsOrPrefix,
+          Delete: { Objects: objects },
         }),
         { abortSignal: options.abortSignal },
       );
-      // oxlint-disable-next-line no-non-null-assertion
-      objects = (resp.Contents ?? []).map((obj) => ({ Key: obj.Key! }));
-    } else {
-      objects = filePathsOrPrefix.map((path) => ({ Key: path }));
+    } catch (error) {
+      throw new StorageAdapterErrors.CustomError(
+        undefined,
+        `Failed to delete files in container ${containerId}.`,
+        error,
+      );
     }
-    if (objects.length === 0) {
-      return;
-    }
-
-    await this.#client.send(
-      new S3.DeleteObjectsCommand({
-        Bucket: bucket,
-        Delete: { Objects: objects },
-      }),
-      { abortSignal: options.abortSignal },
-    );
   };
 
   uploadFiles: StorageAdapter["uploadFiles"] = async (
@@ -93,9 +118,9 @@ export class AwsS3StorageService implements StorageAdapter {
   ) => {
     const bucket = genBucketNameFromContainerId(containerId);
 
-    const promises = files.map(
-      async ({ content, path, mimeType }) =>
-        await this.#client.send(
+    const promises = files.map(async ({ content, path, mimeType }) => {
+      await this.#client
+        .send(
           new S3.PutObjectCommand({
             Body: typeof content === "string" ? Buffer.from(content) : content,
             Bucket: bucket,
@@ -103,8 +128,14 @@ export class AwsS3StorageService implements StorageAdapter {
             Key: path,
           }),
           { abortSignal: options.abortSignal },
-        ),
-    );
+        )
+        .then((error: unknown) => {
+          options.logger.error(
+            `Failed to upload file ${path} to bucket ${bucket}:`,
+            error,
+          );
+        });
+    });
 
     await Promise.allSettled(promises);
   };
@@ -138,9 +169,14 @@ export class AwsS3StorageService implements StorageAdapter {
       new S3.GetObjectCommand({ Bucket: bucket, Key: filepath }),
       { abortSignal: options.abortSignal },
     );
+
     if (!resp.Body) {
-      throw new Error(`File '${filepath}' not found.`);
+      throw new StorageAdapterErrors.FileDoesNotExistError(
+        containerId,
+        filepath,
+      );
     }
+
     return {
       content: resp.Body as ReadableStream,
       mimeType: resp.ContentType,

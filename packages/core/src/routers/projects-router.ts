@@ -134,7 +134,7 @@ export const projectsRouter = new OpenAPIHono()
         projectId: undefined,
         resource: "project",
       });
-      const data = ProjectCreateSchema.parse(await context.req.parseBody());
+      const data = context.req.valid("form");
       const project = await new ProjectsModel().create(data);
 
       if (checkIsHTMLRequest(true)) {
@@ -168,7 +168,7 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "read",
@@ -213,24 +213,20 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
       await authenticateOrThrow({
         action: "delete",
         projectId,
         resource: "project",
       });
 
-      try {
-        await new ProjectsModel().delete(projectId);
+      await new ProjectsModel().delete(projectId);
 
-        if (checkIsHTMLRequest(true)) {
-          return responseRedirect(urlBuilder.projectsList(), 303);
-        }
-
-        return new Response(null, { status: 204 });
-      } catch {
-        return context.notFound();
+      if (checkIsHTMLRequest(true)) {
+        return responseRedirect(urlBuilder.projectsList(), 303);
       }
+
+      return new Response(null, { status: 204 });
     },
   )
   .openapi(
@@ -258,7 +254,7 @@ export const projectsRouter = new OpenAPIHono()
         return context.notFound();
       }
 
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
       await authenticateOrThrow({
         action: "update",
         projectId,
@@ -300,7 +296,7 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "update",
@@ -308,7 +304,7 @@ export const projectsRouter = new OpenAPIHono()
         resource: "project",
       });
 
-      const data = ProjectUpdateSchema.parse(await context.req.parseBody());
+      const data = context.req.valid("form");
       await new ProjectsModel().update(projectId, data);
 
       if (checkIsHTMLRequest(true)) {

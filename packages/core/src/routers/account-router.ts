@@ -31,20 +31,19 @@ export const accountRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { abortSignal, auth, logger, request, user, ui, url } = getStore();
+      const { abortSignal, auth, logger, request, user, ui } = getStore();
 
       if (!auth || !ui) {
         return await responseError("Auth is not setup", 500);
       }
 
       if (!user) {
-        const serviceUrl = url.replace(urlBuilder.account(), "");
-
         if (auth.login) {
-          return responseRedirect(urlBuilder.login(urlBuilder.account()), 302);
+          const { pathname } = new URL(urlBuilder.account());
+          return responseRedirect(urlBuilder.login(pathname), 302);
         }
 
-        return responseRedirect(serviceUrl, 401);
+        return responseRedirect(urlBuilder.homepage(), 401);
       }
 
       const children = await auth.renderAccountDetails?.(user, {
@@ -75,8 +74,8 @@ export const accountRouter = new OpenAPIHono()
         ...openapiCommonErrorResponses,
       },
     }),
-    async () => {
-      const { abortSignal, auth, logger, request, url } = getStore();
+    async (context) => {
+      const { abortSignal, auth, logger, request } = getStore();
 
       if (!auth?.login) {
         return await responseError("Auth is not setup", 500);
@@ -88,10 +87,10 @@ export const accountRouter = new OpenAPIHono()
         return response;
       }
 
-      const redirectTo =
-        new URL(url).searchParams.get(QUERY_PARAMS.redirect) || "";
+      const { redirect = "" } = context.req.valid("query");
+      const location = new URL(redirect, urlBuilder.homepage());
 
-      return responseRedirect(url.replace(urlBuilder.login(), redirectTo), {
+      return responseRedirect(location.toString(), {
         headers: response.headers,
         status: 302,
       });
@@ -109,7 +108,7 @@ export const accountRouter = new OpenAPIHono()
       },
     }),
     async () => {
-      const { abortSignal, auth, logger, request, url, user } = getStore();
+      const { abortSignal, auth, logger, request, user } = getStore();
       if (!auth?.logout || !user) {
         return await responseError("Auth is not setup", 500);
       }
@@ -123,8 +122,7 @@ export const accountRouter = new OpenAPIHono()
         return response;
       }
 
-      const serviceUrl = url.replace(urlBuilder.logout(), "");
-      return responseRedirect(serviceUrl, {
+      return responseRedirect(urlBuilder.homepage(), {
         headers: response.headers,
         status: 302,
       });

@@ -3,11 +3,12 @@ import type {
   TableEntityResult,
   TableServiceClient,
 } from "@azure/data-tables";
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 
 export type TableClientGenerator = (tableName: string) => TableClient;
@@ -15,6 +16,7 @@ export type TableClientGenerator = (tableName: string) => TableClient;
 export class AzureDataTablesDatabaseService implements DatabaseAdapter {
   #serviceClient: TableServiceClient;
   #tableClientGenerator: TableClientGenerator;
+
   constructor(
     serviceClient: TableServiceClient,
     tableClientGenerator: TableClientGenerator,
@@ -40,11 +42,18 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     collectionId,
     options,
   ) => {
-    const tableName = genTableNameFromCollectionId(collectionId);
-    await this.#serviceClient.createTable(tableName, {
-      abortSignal: options.abortSignal,
-    });
-    return;
+    try {
+      const tableName = genTableNameFromCollectionId(collectionId);
+      await this.#serviceClient.createTable(tableName, {
+        abortSignal: options.abortSignal,
+      });
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   hasCollection: DatabaseAdapter["hasCollection"] = async (
@@ -73,11 +82,18 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     collectionId,
     options,
   ) => {
-    const tableName = genTableNameFromCollectionId(collectionId);
-    await this.#serviceClient.deleteTable(tableName, {
-      abortSignal: options.abortSignal,
-    });
-    return;
+    try {
+      const tableName = genTableNameFromCollectionId(collectionId);
+      await this.#serviceClient.deleteTable(tableName, {
+        abortSignal: options.abortSignal,
+      });
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -91,6 +107,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
 
     const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = this.#tableClientGenerator(tableName);
+
     const pageIterator = tableClient
       .listEntities({
         abortSignal: options.abortSignal,
@@ -131,13 +148,21 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     documentId: string,
     options: DatabaseAdapterOptions,
   ): Promise<Document> => {
-    const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = this.#tableClientGenerator(tableName);
-    const entity = await tableClient.getEntity(collectionId, documentId, {
-      abortSignal: options.abortSignal,
-    });
+    try {
+      const tableName = genTableNameFromCollectionId(collectionId);
+      const tableClient = this.#tableClientGenerator(tableName);
+      const entity = await tableClient.getEntity(collectionId, documentId, {
+        abortSignal: options.abortSignal,
+      });
 
-    return entityToItem<Document>(entity);
+      return entityToItem<Document>(entity);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 
   hasDocument: DatabaseAdapter["hasDocument"] = async (
@@ -157,18 +182,26 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     documentData,
     options,
   ) => {
-    const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = this.#tableClientGenerator(tableName);
-    await tableClient.createEntity(
-      {
-        ...documentData,
-        partitionKey: collectionId,
-        rowKey: documentData.id,
-      },
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      const tableName = genTableNameFromCollectionId(collectionId);
+      const tableClient = this.#tableClientGenerator(tableName);
+      await tableClient.createEntity(
+        {
+          ...documentData,
+          partitionKey: collectionId,
+          rowKey: documentData.id,
+        },
+        { abortSignal: options.abortSignal },
+      );
 
-    return;
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   deleteDocument: DatabaseAdapter["deleteDocument"] = async (
@@ -176,11 +209,19 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     documentId,
     options,
   ) => {
-    const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = this.#tableClientGenerator(tableName);
-    await tableClient.deleteEntity(collectionId, documentId, {
-      abortSignal: options.abortSignal,
-    });
+    try {
+      const tableName = genTableNameFromCollectionId(collectionId);
+      const tableClient = this.#tableClientGenerator(tableName);
+      await tableClient.deleteEntity(collectionId, documentId, {
+        abortSignal: options.abortSignal,
+      });
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
 
     return;
   };
@@ -192,15 +233,23 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     documentData,
     options,
   ) => {
-    const tableName = genTableNameFromCollectionId(collectionId);
-    const tableClient = this.#tableClientGenerator(tableName);
-    await tableClient.updateEntity(
-      { ...documentData, partitionKey: collectionId, rowKey: documentId },
-      "Merge",
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      const tableName = genTableNameFromCollectionId(collectionId);
+      const tableClient = this.#tableClientGenerator(tableName);
+      await tableClient.updateEntity(
+        { ...documentData, partitionKey: collectionId, rowKey: documentId },
+        "Merge",
+        { abortSignal: options.abortSignal },
+      );
 
-    return;
+      return;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 }
 

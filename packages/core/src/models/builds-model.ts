@@ -1,5 +1,6 @@
 // oxlint-disable switch-case-braces
 
+import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/auth";
 import { handleProcessZip } from "../handlers/handle-process-zip";
 import { urlBuilder } from "../urls";
@@ -56,44 +57,59 @@ export class BuildsModel extends Model<BuildType> {
     const { tags: parsedTags, id, ...rest } = data;
     this.log("Create build '%s'...", id);
 
-    const tags = Array.isArray(parsedTags) ? parsedTags : parsedTags.split(",");
-    const tagIds = await Promise.all(
-      tags.filter(Boolean).map(async (tagId) => {
-        return await this.#updateOrCreateTag(tagId, id);
-      }),
-    );
-
-    const now = new Date().toISOString();
-    // oxlint-disable-next-line sort-keys
-    const build: BuildType = {
-      ...rest,
-      createdAt: now,
-      coverage: "none",
-      screenshots: "none",
-      storybook: "none",
-      testReport: "none",
-      id,
-      message: rest.message || "",
-      tagIds: tagIds.filter(Boolean).join(","),
-      updatedAt: now,
-    };
-    await this.database.createDocument<BuildType>(
-      this.collectionId,
-      build,
-      this.dbOptions,
-    );
-
     try {
-      const projectsModel = new ProjectsModel();
-      const project = await projectsModel.get(this.projectId);
-      if (tags.includes(project.gitHubDefaultBranch)) {
-        await projectsModel.update(this.projectId, { latestBuildId: id });
+      if (await this.has(id)) {
+        throw new HTTPException(409, {
+          message: `Build '${id}' already exists.`,
+        });
       }
-    } catch (error) {
-      this.error(error);
-    }
 
-    return build;
+      const tags = Array.isArray(parsedTags)
+        ? parsedTags
+        : parsedTags.split(",");
+      const tagIds = await Promise.all(
+        tags.filter(Boolean).map(async (tagId) => {
+          return await this.#updateOrCreateTag(tagId, id);
+        }),
+      );
+
+      const now = new Date().toISOString();
+      // oxlint-disable-next-line sort-keys
+      const build: BuildType = {
+        ...rest,
+        createdAt: now,
+        coverage: "none",
+        screenshots: "none",
+        storybook: "none",
+        testReport: "none",
+        id,
+        message: rest.message || "",
+        tagIds: tagIds.filter(Boolean).join(","),
+        updatedAt: now,
+      };
+      await this.database.createDocument<BuildType>(
+        this.collectionId,
+        build,
+        this.dbOptions,
+      );
+
+      try {
+        const projectsModel = new ProjectsModel();
+        const project = await projectsModel.get(this.projectId);
+        if (tags.includes(project.gitHubDefaultBranch)) {
+          await projectsModel.update(this.projectId, { latestBuildId: id });
+        }
+      } catch (error) {
+        this.error(error);
+      }
+
+      return build;
+    } catch (error) {
+      throw new HTTPException(500, {
+        cause: error,
+        message: `Failed to create build '${id}'.`,
+      });
+    }
   }
 
   async get(id: string): Promise<BuildType> {
@@ -111,11 +127,15 @@ export class BuildsModel extends Model<BuildType> {
   async has(id: string): Promise<boolean> {
     this.log("Check build '%s'...", id);
 
-    return await this.database.hasDocument(
-      this.collectionId,
-      id,
-      this.dbOptions,
-    );
+    try {
+      return await this.database.hasDocument(
+        this.collectionId,
+        id,
+        this.dbOptions,
+      );
+    } catch {
+      return false;
+    }
   }
 
   async update(id: string, data: BuildUpdateType): Promise<void> {

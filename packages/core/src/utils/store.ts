@@ -38,9 +38,9 @@ export function getStoreOrNull(): Store | null {
   return value;
 }
 
-export function setupStore(
-  options: RouterOptions<StoryBookerUser>,
-  initPromises: Promise<void>,
+export function setupStore<User extends StoryBookerUser>(
+  options: RouterOptions<User>,
+  initPromises: Promise<unknown>,
 ): MiddlewareHandler {
   return async (ctx, next) => {
     const logger = options.logger || console;

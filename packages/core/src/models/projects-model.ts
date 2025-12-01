@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/auth";
 import {
   generateDatabaseCollectionId,
@@ -6,9 +7,7 @@ import {
 import { checkAuthorisation } from "../utils/auth";
 import { Model, type BaseModel, type ListOptions } from "./~model";
 import {
-  ProjectCreateSchema,
   ProjectSchema,
-  ProjectUpdateSchema,
   type ProjectCreateType,
   type ProjectType,
   type ProjectUpdateType,
@@ -38,54 +37,71 @@ export class ProjectsModel extends Model<ProjectType> {
   }
 
   async create(data: ProjectCreateType): Promise<ProjectType> {
-    this.log("Create project...");
+    this.log("Creating project...");
 
-    const projectData = ProjectCreateSchema.parse(data);
-    const projectId = projectData.id;
+    const projectId = data.id;
 
-    this.debug("Create project container");
-    await this.storage.createContainer(
-      generateStorageContainerId(projectId),
-      this.storageOptions,
-    );
+    try {
+      if (await this.has(projectId)) {
+        throw new HTTPException(409, {
+          message: `Project '${projectId}' already exists.`,
+        });
+      }
 
-    this.debug("Create project collection");
-    await this.database.createCollection(this.collectionId, this.dbOptions);
+      await this.storage.createContainer(
+        generateStorageContainerId(projectId),
+        this.storageOptions,
+      );
 
-    this.debug("Create project-builds collection");
-    await this.database.createCollection(
-      generateDatabaseCollectionId(projectId, "Builds"),
-      this.dbOptions,
-    );
+      this.debug("Creating project collection");
+      await this.database
+        .createCollection(this.collectionId, this.dbOptions)
+        .catch((error: unknown) => {
+          // ignore error if collection already exists since there can only be one projects collection
+          this.error(error);
+        });
 
-    this.debug("Create project-tags collection");
-    await this.database.createCollection(
-      generateDatabaseCollectionId(projectId, "Tags"),
-      this.dbOptions,
-    );
-    this.debug(
-      "Create default branch (%s) tag",
-      projectData.gitHubDefaultBranch,
-    );
-    await new TagsModel(projectId).create({
-      type: "branch",
-      value: projectData.gitHubDefaultBranch,
-    });
+      await this.database.createCollection(
+        generateDatabaseCollectionId(projectId, "Builds"),
+        this.dbOptions,
+      );
 
-    this.debug("Create project entry '%s' in collection", projectData.id);
-    const now = new Date().toISOString();
-    const project: ProjectType = {
-      ...projectData,
-      createdAt: now,
-      updatedAt: now,
-    };
-    await this.database.createDocument<ProjectType>(
-      this.collectionId,
-      project,
-      this.dbOptions,
-    );
+      await this.database.createCollection(
+        generateDatabaseCollectionId(projectId, "Tags"),
+        this.dbOptions,
+      );
 
-    return project;
+      this.debug("Creating default branch (%s) tag", data.gitHubDefaultBranch);
+      await new TagsModel(projectId)
+        .create({
+          type: "branch",
+          value: data.gitHubDefaultBranch,
+        })
+        .catch((error: unknown) => {
+          // log error but continue since project creation should not fail because of tag creation
+          this.error(error);
+        });
+
+      this.debug("Creating project entry '%s' in collection", projectId);
+      const now = new Date().toISOString();
+      const project: ProjectType = {
+        ...data,
+        createdAt: now,
+        updatedAt: now,
+      };
+      await this.database.createDocument<ProjectType>(
+        this.collectionId,
+        project,
+        this.dbOptions,
+      );
+
+      return project;
+    } catch (error) {
+      throw new HTTPException(500, {
+        cause: error,
+        message: `Failed to create project '${projectId}'.`,
+      });
+    }
   }
 
   async get(id: string): Promise<ProjectType> {
@@ -103,33 +119,36 @@ export class ProjectsModel extends Model<ProjectType> {
   async has(id: string): Promise<boolean> {
     this.log("Check project '%s'...", id);
 
-    return await this.database.hasDocument(
-      this.collectionId,
-      id,
-      this.dbOptions,
-    );
+    try {
+      return await this.database.hasDocument(
+        this.collectionId,
+        id,
+        this.dbOptions,
+      );
+    } catch {
+      return false;
+    }
   }
 
   async update(id: string, data: ProjectUpdateType): Promise<void> {
     this.log("Update project '%s'...", id);
 
-    const project = ProjectUpdateSchema.parse(data);
     await this.database.updateDocument(
       this.collectionId,
       id,
-      { ...project, updatedAt: new Date().toISOString() },
+      { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
 
-    if (project.gitHubDefaultBranch) {
+    if (data.gitHubDefaultBranch) {
       try {
         this.debug(
           "Create default-branch tag '%s'...",
-          project.gitHubDefaultBranch,
+          data.gitHubDefaultBranch,
         );
         await new TagsModel(id).create({
           type: "branch",
-          value: project.gitHubDefaultBranch,
+          value: data.gitHubDefaultBranch,
         });
       } catch (error) {
         this.error(error);

@@ -62,7 +62,7 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "read",
@@ -70,7 +70,7 @@ export const tagsRouter = new OpenAPIHono()
         resource: "tag",
       });
 
-      const type = context.req.query("type");
+      const { type } = context.req.valid("query");
       const tags = await new TagsModel(projectId).list({
         filter: type ? (item): boolean => item.type === type : undefined,
       });
@@ -109,7 +109,7 @@ export const tagsRouter = new OpenAPIHono()
         return context.notFound();
       }
 
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "create",
@@ -155,7 +155,7 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
@@ -171,7 +171,7 @@ export const tagsRouter = new OpenAPIHono()
         resource: "tag",
       });
 
-      const data = TagCreateSchema.parse(await context.req.parseBody());
+      const data = context.req.valid("form");
       const tag = await new TagsModel(projectId).create(data);
 
       if (checkIsHTMLRequest(true)) {
@@ -205,7 +205,7 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      const { projectId, tagId } = context.req.param();
+      const { projectId, tagId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "read",
@@ -248,28 +248,20 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId, tagId } = context.req.param();
+      const { projectId, tagId } = context.req.valid("param");
       await authenticateOrThrow({
         action: "delete",
         projectId,
         resource: "tag",
       });
 
-      try {
-        await new TagsModel(projectId).delete(tagId);
+      await new TagsModel(projectId).delete(tagId);
 
-        if (checkIsHTMLRequest(true)) {
-          return responseRedirect(urlBuilder.tagsList(projectId), 303);
-        }
-
-        return new Response(null, { status: 204 });
-      } catch {
-        if (checkIsHTMLRequest(true)) {
-          return responseRedirect(urlBuilder.tagsList(projectId), 303);
-        }
-
-        return context.notFound();
+      if (checkIsHTMLRequest(true)) {
+        return responseRedirect(urlBuilder.tagsList(projectId), 303);
       }
+
+      return new Response(null, { status: 204 });
     },
   )
   .openapi(
@@ -297,7 +289,7 @@ export const tagsRouter = new OpenAPIHono()
         return context.notFound();
       }
 
-      const { tagId, projectId } = context.req.param();
+      const { tagId, projectId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "update",
@@ -341,24 +333,16 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { tagId, projectId } = context.req.param();
+      const { tagId, projectId } = context.req.valid("param");
 
       const tagsModel = new TagsModel(projectId);
-
-      if (!(await tagsModel.has(tagId))) {
-        return await responseError(
-          `The tag '${tagId}' does not exist in project '${projectId}'.`,
-          404,
-        );
-      }
-
       await authenticateOrThrow({
         action: "update",
         projectId,
         resource: "tag",
       });
 
-      const data = TagUpdateSchema.parse(await context.req.parseBody());
+      const data = context.req.valid("form");
       await tagsModel.update(tagId, data);
 
       if (checkIsHTMLRequest(true)) {

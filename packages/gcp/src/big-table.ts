@@ -1,9 +1,10 @@
 import type { Bigtable, Instance } from "@google-cloud/bigtable";
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 
 type ColumnFamily = "cf1";
@@ -21,7 +22,7 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     // Optionally, check if instance exists
     const [exists] = await this.#instance.exists();
     if (!exists) {
-      throw new Error(
+      throw new DatabaseAdapterErrors.DatabaseNotInitializedError(
         `Bigtable instance '${this.#instance.id}' does not exist.`,
       );
     }
@@ -36,9 +37,16 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     collectionId,
     _options,
   ) => {
-    await this.#instance.createTable(collectionId, {
-      families: [COLUMN_FAMILY],
-    });
+    try {
+      await this.#instance.createTable(collectionId, {
+        families: [COLUMN_FAMILY],
+      });
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   hasCollection: DatabaseAdapter["hasCollection"] = async (
@@ -54,8 +62,15 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     collectionId,
     _options,
   ) => {
-    const table = this.#instance.table(collectionId);
-    await table.delete();
+    try {
+      const table = this.#instance.table(collectionId);
+      await table.delete();
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -65,16 +80,25 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     _listOptions: DatabaseDocumentListOptions<Document>,
     _options: DatabaseAdapterOptions,
   ) => {
-    const table = this.#instance.table(collectionId);
-    const [rows] = await table.getRows();
-    const list: Document[] = [];
-    for (const row of rows) {
-      const data = (row.data as Record<ColumnFamily, Document>)[COLUMN_FAMILY];
-      const document: Document = { ...data, id: row.id };
-      list.push(document);
-    }
+    try {
+      const table = this.#instance.table(collectionId);
+      const [rows] = await table.getRows();
+      const list: Document[] = [];
+      for (const row of rows) {
+        const data = (row.data as Record<ColumnFamily, Document>)[
+          COLUMN_FAMILY
+        ];
+        const document: Document = { ...data, id: row.id };
+        list.push(document);
+      }
 
-    return list;
+      return list;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   getDocument: DatabaseAdapter["getDocument"] = async <
@@ -88,7 +112,10 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     const row = table.row(documentId);
     const [exists] = await row.exists();
     if (!exists) {
-      throw new Error(`Document '${documentId}' not found.`);
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+      );
     }
 
     const [rowData] = await row.get<Document>([COLUMN_FAMILY]);
@@ -101,9 +128,17 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     documentData,
     _options,
   ) => {
-    const table = this.#instance.table(collectionId);
-    const row = table.row(documentData.id);
-    await row.create({ entry: { [COLUMN_FAMILY]: documentData } });
+    try {
+      const table = this.#instance.table(collectionId);
+      const row = table.row(documentData.id);
+      await row.create({ entry: { [COLUMN_FAMILY]: documentData } });
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   hasDocument: DatabaseAdapter["hasDocument"] = async (
@@ -122,9 +157,17 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     documentId,
     _options,
   ) => {
-    const table = this.#instance.table(collectionId);
-    const row = table.row(documentId);
-    await row.delete();
+    try {
+      const table = this.#instance.table(collectionId);
+      const row = table.row(documentId);
+      await row.delete();
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 
   updateDocument: DatabaseAdapter["updateDocument"] = async (
@@ -132,8 +175,16 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     documentId,
     documentData,
   ) => {
-    const table = this.#instance.table(collectionId);
-    const row = table.row(documentId);
-    await row.save({ [COLUMN_FAMILY]: documentData });
+    try {
+      const table = this.#instance.table(collectionId);
+      const row = table.row(documentId);
+      await row.save({ [COLUMN_FAMILY]: documentData });
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 }

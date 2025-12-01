@@ -2,7 +2,10 @@ import { Buffer } from "node:buffer";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import type { File, Storage } from "@google-cloud/storage";
-import type { StorageAdapter } from "@storybooker/core/adapter";
+import {
+  StorageAdapterErrors,
+  type StorageAdapter,
+} from "@storybooker/core/adapter";
 
 export class GcpGcsStorageService implements StorageAdapter {
   #client: Storage;
@@ -15,16 +18,30 @@ export class GcpGcsStorageService implements StorageAdapter {
     containerId,
     _options,
   ) => {
-    const bucketName = genBucketNameFromContainerId(containerId);
-    await this.#client.createBucket(bucketName, {});
+    try {
+      const bucketName = genBucketNameFromContainerId(containerId);
+      await this.#client.createBucket(bucketName, {});
+    } catch (error) {
+      throw new StorageAdapterErrors.ContainerAlreadyExistsError(
+        containerId,
+        error,
+      );
+    }
   };
 
   deleteContainer: StorageAdapter["deleteContainer"] = async (
     containerId,
     _options,
   ) => {
-    const bucketName = genBucketNameFromContainerId(containerId);
-    await this.#client.bucket(bucketName).delete();
+    try {
+      const bucketName = genBucketNameFromContainerId(containerId);
+      await this.#client.bucket(bucketName).delete();
+    } catch (error) {
+      throw new StorageAdapterErrors.ContainerDoesNotExistError(
+        containerId,
+        error,
+      );
+    }
   };
 
   hasContainer: StorageAdapter["hasContainer"] = async (
@@ -99,8 +116,9 @@ export class GcpGcsStorageService implements StorageAdapter {
 
     const [exists] = await file.exists();
     if (!exists) {
-      throw new Error(
-        `File '${filepath}' not found in bucket '${containerId}'.`,
+      throw new StorageAdapterErrors.FileDoesNotExistError(
+        containerId,
+        filepath,
       );
     }
 

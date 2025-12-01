@@ -1,11 +1,12 @@
 // oxlint-disable id-length
 
 import * as Dynamo from "@aws-sdk/client-dynamodb";
-import type {
-  DatabaseAdapter,
-  DatabaseAdapterOptions,
-  DatabaseDocumentListOptions,
-  StoryBookerDatabaseDocument,
+import {
+  DatabaseAdapterErrors,
+  type DatabaseAdapter,
+  type DatabaseAdapterOptions,
+  type DatabaseDocumentListOptions,
+  type StoryBookerDatabaseDocument,
 } from "@storybooker/core/adapter";
 
 export class AwsDynamoDatabaseService implements DatabaseAdapter {
@@ -26,15 +27,22 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     collectionId,
     options,
   ) => {
-    await this.#client.send(
-      new Dynamo.CreateTableCommand({
-        AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
-        BillingMode: "PAY_PER_REQUEST",
-        KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
-        TableName: collectionId,
-      }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new Dynamo.CreateTableCommand({
+          AttributeDefinitions: [{ AttributeName: "id", AttributeType: "S" }],
+          BillingMode: "PAY_PER_REQUEST",
+          KeySchema: [{ AttributeName: "id", KeyType: "HASH" }],
+          TableName: collectionId,
+        }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   hasCollection: DatabaseAdapter["hasCollection"] = async (
@@ -56,10 +64,17 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     collectionId,
     options,
   ) => {
-    await this.#client.send(
-      new Dynamo.DeleteTableCommand({ TableName: collectionId }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new Dynamo.DeleteTableCommand({ TableName: collectionId }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+        collectionId,
+        error,
+      );
+    }
   };
 
   listDocuments: DatabaseAdapter["listDocuments"] = async <
@@ -90,30 +105,36 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     documentId: string,
     options: DatabaseAdapterOptions,
   ): Promise<Document> => {
-    const response = await this.#client.send(
-      new Dynamo.GetItemCommand({
-        Key: { id: { S: documentId } },
-        TableName: collectionId,
-      }),
-      { abortSignal: options.abortSignal },
-    );
-    const document = response.Item
-      ? (Object.fromEntries(
-          Object.entries(response.Item).map(([key, value]) => [
-            key,
-            value.S ?? value.N ?? value.BOOL ?? value.NULL ?? value,
-          ]),
-        ) as Record<string, unknown>)
-      : undefined;
+    try {
+      const response = await this.#client.send(
+        new Dynamo.GetItemCommand({
+          Key: { id: { S: documentId } },
+          TableName: collectionId,
+        }),
+        { abortSignal: options.abortSignal },
+      );
+      const document = response.Item
+        ? (Object.fromEntries(
+            Object.entries(response.Item).map(([key, value]) => [
+              key,
+              value.S ?? value.N ?? value.BOOL ?? value.NULL ?? value,
+            ]),
+          ) as Record<string, unknown>)
+        : undefined;
 
-    if (document) {
+      if (!document) {
+        throw new Error("Document not found");
+      }
+
       document["id"] = documentId;
       return document as Document;
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
     }
-
-    throw new Error(
-      `Document with id ${documentId} not found in collection ${collectionId}`,
-    );
   };
 
   createDocument: DatabaseAdapter["createDocument"] = async (
@@ -121,18 +142,26 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     documentData,
     options,
   ) => {
-    await this.#client.send(
-      new Dynamo.PutItemCommand({
-        Item: Object.fromEntries(
-          Object.entries(documentData).map(([key, value]) => [
-            key,
-            { S: String(value) },
-          ]),
-        ),
-        TableName: collectionId,
-      }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new Dynamo.PutItemCommand({
+          Item: Object.fromEntries(
+            Object.entries(documentData).map(([key, value]) => [
+              key,
+              { S: String(value) },
+            ]),
+          ),
+          TableName: collectionId,
+        }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
+        collectionId,
+        documentData.id,
+        error,
+      );
+    }
   };
 
   hasDocument: DatabaseAdapter["hasDocument"] = async (
@@ -155,13 +184,21 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     documentId,
     options,
   ) => {
-    await this.#client.send(
-      new Dynamo.DeleteItemCommand({
-        Key: { id: { S: documentId } },
-        TableName: collectionId,
-      }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new Dynamo.DeleteItemCommand({
+          Key: { id: { S: documentId } },
+          TableName: collectionId,
+        }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 
   // oxlint-disable-next-line max-params
@@ -178,17 +215,25 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
       exprAttrValues[`:${key}`] = { S: String(value) };
     }
 
-    await this.#client.send(
-      new Dynamo.UpdateItemCommand({
-        ExpressionAttributeNames: Object.fromEntries(
-          Object.keys(documentData).map((k) => [`#${k}`, k]),
-        ),
-        ExpressionAttributeValues: exprAttrValues,
-        Key: { id: { S: documentId } },
-        TableName: collectionId,
-        UpdateExpression: `SET ${updateExpr.join(", ")}`,
-      }),
-      { abortSignal: options.abortSignal },
-    );
+    try {
+      await this.#client.send(
+        new Dynamo.UpdateItemCommand({
+          ExpressionAttributeNames: Object.fromEntries(
+            Object.keys(documentData).map((k) => [`#${k}`, k]),
+          ),
+          ExpressionAttributeValues: exprAttrValues,
+          Key: { id: { S: documentId } },
+          TableName: collectionId,
+          UpdateExpression: `SET ${updateExpr.join(", ")}`,
+        }),
+        { abortSignal: options.abortSignal },
+      );
+    } catch (error) {
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
+        collectionId,
+        documentId,
+        error,
+      );
+    }
   };
 }

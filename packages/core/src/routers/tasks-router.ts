@@ -31,7 +31,7 @@ export const tasksRouter = new OpenAPIHono()
       responses: { 204: { description: "Purge complete" } },
     }),
     async (context) => {
-      const projectId = context.req.query("projectId");
+      const { projectId } = context.req.valid("query");
 
       await Promise.all([
         authenticateOrThrow({
@@ -61,11 +61,7 @@ export const tasksRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { buildId, projectId, variant } = processZipSearchParams.parse({
-        buildId: context.req.query("buildId"),
-        projectId: context.req.query("projectId"),
-        variant: context.req.query("variant"),
-      });
+      const { buildId, projectId, variant } = context.req.valid("query");
 
       try {
         await handleProcessZip(projectId, buildId, variant);

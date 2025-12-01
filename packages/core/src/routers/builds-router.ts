@@ -10,12 +10,10 @@ import {
   BuildUpdateSchema,
   BuildUploadFormBodySchema,
   BuildUploadQueryParamsSchema,
-  type BuildUploadVariant,
 } from "../models/builds-schema";
 import { ProjectsModel } from "../models/projects-model";
 import { ProjectIdSchema } from "../models/projects-schema";
 import { urlBuilder } from "../urls";
-import { urlSearchParamsToObject } from "../utils";
 import { authenticateOrThrow } from "../utils/auth";
 import { QUERY_PARAMS } from "../utils/constants";
 import { mimes } from "../utils/mime-utils";
@@ -65,7 +63,7 @@ export const buildsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
       const { ui } = getStore();
 
       await authenticateOrThrow({
@@ -114,7 +112,8 @@ export const buildsRouter = new OpenAPIHono()
         return context.notFound();
       }
 
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
+      const { tagId } = context.req.valid("query");
 
       await authenticateOrThrow({
         action: "create",
@@ -123,7 +122,6 @@ export const buildsRouter = new OpenAPIHono()
       });
 
       const project = await new ProjectsModel().get(projectId);
-      const tagId = context.req.query(QUERY_PARAMS.tagId);
 
       return context.html(
         ui.renderBuildCreatePage({ project, tagId }, createUIAdapterOptions()),
@@ -161,7 +159,7 @@ export const buildsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId } = context.req.param();
+      const { projectId } = context.req.valid("param");
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
@@ -177,9 +175,7 @@ export const buildsRouter = new OpenAPIHono()
         resource: "build",
       });
 
-      const data = BuildCreateSchema.parse(
-        urlSearchParamsToObject(new URLSearchParams(await context.req.text())),
-      );
+      const data = context.req.valid("form");
       const build = await new BuildsModel(projectId).create(data);
       const url = urlBuilder.buildDetails(projectId, build.id);
 
@@ -213,7 +209,7 @@ export const buildsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId, buildId } = context.req.param();
+      const { projectId, buildId } = context.req.valid("param");
       const { ui } = getStore();
 
       await authenticateOrThrow({
@@ -269,24 +265,20 @@ export const buildsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { projectId, buildId } = context.req.param();
+      const { projectId, buildId } = context.req.valid("param");
       await authenticateOrThrow({
         action: "delete",
         projectId,
         resource: "build",
       });
 
-      try {
-        await new BuildsModel(projectId).delete(buildId, true);
+      await new BuildsModel(projectId).delete(buildId, true);
 
-        if (checkIsHTMLRequest(true)) {
-          return responseRedirect(urlBuilder.buildsList(projectId), 303);
-        }
-
-        return new Response(null, { status: 204 });
-      } catch {
-        return context.notFound();
+      if (checkIsHTMLRequest(true)) {
+        return responseRedirect(urlBuilder.buildsList(projectId), 303);
       }
+
+      return new Response(null, { status: 204 });
     },
   )
   .openapi(
@@ -317,7 +309,7 @@ export const buildsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { buildId, projectId } = context.req.param();
+      const { buildId, projectId } = context.req.valid("param");
 
       const buildsModel = new BuildsModel(projectId);
 
@@ -334,7 +326,7 @@ export const buildsRouter = new OpenAPIHono()
         resource: "build",
       });
 
-      const data = BuildUpdateSchema.parse(await context.req.parseBody());
+      const data = context.req.valid("form");
       await buildsModel.update(buildId, data);
 
       if (checkIsHTMLRequest(true)) {
@@ -375,7 +367,7 @@ export const buildsRouter = new OpenAPIHono()
         return context.notFound();
       }
 
-      const { buildId, projectId } = context.req.param();
+      const { buildId, projectId } = context.req.valid("param");
 
       await authenticateOrThrow({
         action: "update",
@@ -385,9 +377,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const build = await new BuildsModel(projectId).get(buildId);
       const project = await new ProjectsModel().get(projectId);
-      const uploadVariant = context.req.query(QUERY_PARAMS.uploadVariant) as
-        | BuildUploadVariant
-        | undefined;
+      const { variant: uploadVariant } = context.req.valid("query");
 
       return context.html(
         ui.renderBuildUploadPage(
@@ -433,7 +423,7 @@ export const buildsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { buildId, projectId } = context.req.param();
+      const { buildId, projectId } = context.req.valid("param");
 
       const buildsModel = new BuildsModel(projectId);
 
@@ -479,9 +469,7 @@ export const buildsRouter = new OpenAPIHono()
           return await responseError(bodyError.message, bodyError.status);
         }
 
-        const { variant } = BuildUploadQueryParamsSchema.parse({
-          variant: context.req.query("variant"),
-        });
+        const { variant } = context.req.valid("query");
 
         await buildsModel.upload(buildId, variant);
 
