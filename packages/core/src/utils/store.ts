@@ -3,7 +3,8 @@ import { SuperHeaders } from "@remix-run/headers";
 import type { MiddlewareHandler } from "hono";
 import { endTime, startTime } from "hono/timing";
 import type { AuthAdapter, LoggerAdapter } from "../adapters";
-import type { ErrorParser, RouterOptions, StoryBookerUser } from "../types";
+import type { RouterOptions, StoryBookerUser } from "../types";
+import type { ErrorParser } from "../utils/error";
 import { DEFAULT_LOCALE } from "./constants";
 
 export interface Store extends RouterOptions<StoryBookerUser> {

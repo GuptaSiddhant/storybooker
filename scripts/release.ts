@@ -90,9 +90,12 @@ if (values.tag) {
     encoding: "utf8",
   });
   console.log("Tagging version...");
-  cp.execSync(`git tag "v${version}" -am "Version ${version}"`, {
-    encoding: "utf8",
-  });
+  cp.execSync(
+    `git tag "v${version}" -am "${values.message || `Version ${version}`}"`,
+    {
+      encoding: "utf8",
+    },
+  );
   console.log("Pushing to origin...");
   cp.execSync(`git push --follow-tags`, { encoding: "utf8" });
   console.groupEnd();

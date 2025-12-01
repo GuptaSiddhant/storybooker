@@ -6,6 +6,9 @@ on:
     tags:
       - "*"
 
+permissions:
+  contents: write
+
 jobs:
   publish-all:
     name: Publish all packages
@@ -24,18 +27,28 @@ jobs:
           cache: "yarn"
 
       - name: Setup Turbo
+        id: setup
         run: |
-          npx -y turbo prune \
-            @storybooker/core \
-            @storybooker/aws \
-            @storybooker/azure \
-            @storybooker/gcp \
-            @storybooker/ui \
-            @storybooker/redis \
-            storybooker
+          pkgNames=()
+          pkgDirs=($(ls -d ./packages/*/))
+          for i in "${pkgDirs[@]}"; do
+            dirname=$(basename "$i")
+            if [ "$dirname" == "cli" ]; then
+              continue
+            else 
+              pkgNames+=("@storybooker/$dirname")
+            fi  
+          done
+
+          npx -y turbo prune storybooker ${pkgNames[@]}           
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
+
+          GIT_TAG_MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")
+          echo "GIT_TAG_MESSAGE=$GIT_TAG_MESSAGE" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
 
       - name: Install dependencies
         working-directory: ./out
@@ -57,3 +70,11 @@ jobs:
         run: yarn publish:npm
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Create GitHub Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ steps.setup.outputs.GIT_TAG_MESSAGE }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -7,14 +7,16 @@ import type {
   StoryBookerUser,
   UIAdapter,
 } from "./adapters";
+import type { ErrorParser } from "./utils/error";
 
 export type { StoryBookerUser } from "./adapters/auth";
 export type * from "./models/builds-schema";
 export type * from "./models/projects-schema";
 export type * from "./models/tags-schema";
+export type { ErrorParser, ParsedError } from "./utils/error";
 
 /**
- * Options for creating a request handler.
+ * Options for creating a router.
  */
 export interface RouterOptions<User extends StoryBookerUser> {
   /** Adapter for Auth service. Provides authentication to the service. */
@@ -22,7 +24,7 @@ export interface RouterOptions<User extends StoryBookerUser> {
   /** Adapter for Database service. Provides access to storing data to the service. */
   database: DatabaseAdapter;
   /** Additional options to configure the router. */
-  config?: RequestHandlerConfigOptions;
+  config?: RouterConfig;
   /** Adapter for Logging service. Provides option to direct the logging of the service. */
   logger?: LoggerAdapter;
   /** Adapter for Storage service. Provides access to storing files to the service. */
@@ -49,7 +51,7 @@ export interface PurgeHandlerOptions {
 }
 
 /** Additional options to configure the router. */
-export interface RequestHandlerConfigOptions {
+export interface RouterConfig {
   /**
    * A function for parsing custom errors.
    * Return `undefined` from parser if the service should handle the error.
@@ -74,29 +76,4 @@ export interface RequestHandlerConfigOptions {
    * Add Hono middlewares to the router before any endpoint is registered/invoked.
    */
   middlewares?: MiddlewareHandler[];
-}
-
-/** Function generated to handle the incoming requests. */
-export type RequestHandler = (
-  request: Request,
-  overrideOptions?: RequestHandlerOverrideOptions,
-) => Promise<Response>;
-
-/** Options to override properties of the request handler. */
-export interface RequestHandlerOverrideOptions {
-  /** A abort signal that can be used to cancel the request handling. */
-  abortSignal?: AbortSignal;
-  /** Adapter for Logging service. Provides option to direct the logging of the service. */
-  logger?: LoggerAdapter;
-}
-
-/**
- * A function type for parsing custom errors.
- * Return `undefined` from parser if the service should handle the error.
- */
-export type ErrorParser = (error: unknown) => ParsedError | undefined;
-export interface ParsedError {
-  errorMessage: string;
-  errorStatus?: number;
-  errorType: string;
 }

@@ -2,8 +2,19 @@ import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
 import type { LoggerAdapter } from "../adapters";
-import type { ErrorParser, ParsedError } from "../types";
 import { getStoreOrNull } from "../utils/store";
+
+/**
+ * A function type for parsing custom errors.
+ * Return `undefined` from parser if the service should handle the error.
+ */
+export type ErrorParser = (error: unknown) => ParsedError | undefined;
+/** Parsed error information. */
+export interface ParsedError {
+  errorMessage: string;
+  errorStatus?: number;
+  errorType: string;
+}
 
 export function parseErrorMessage(
   error: unknown,
