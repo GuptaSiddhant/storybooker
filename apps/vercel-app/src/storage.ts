@@ -5,6 +5,7 @@
 // oxlint-disable require-await
 
 import { Readable } from "node:stream";
+import type { ReadableStream as ReadableStreamWeb } from "node:stream/web";
 import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 import { del, head, list, put, type PutBlobResult } from "@vercel/blob";
 
@@ -122,7 +123,7 @@ export class VercelBlobService implements StorageAdapter {
             urls.push(blob.url);
           } catch {
             // File doesn't exist, skip it
-            options.logger?.debug(`File not found, skipping: ${fullPath}`);
+            options.logger?.debug?.(`File not found, skipping: ${fullPath}`);
           }
         }
       }
@@ -242,7 +243,7 @@ export class VercelBlobService implements StorageAdapter {
 
     if (content instanceof ReadableStream) {
       // Convert ReadableStream to Node.js Readable, then to Blob
-      const readable = Readable.fromWeb(content);
+      const readable = Readable.fromWeb(content as ReadableStreamWeb);
       const chunks: Uint8Array[] = [];
 
       for await (const chunk of readable) {

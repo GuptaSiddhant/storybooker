@@ -35,8 +35,8 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
     teamId?: string;
     keyPrefix?: string;
   }) {
-    this.#apiToken = options?.apiToken;
-    this.#configId = options?.configId || this.#configId;
+    this.#apiToken = options.apiToken;
+    this.#configId = options.configId;
     this.#teamId = options?.teamId;
     this.#keyPrefix = options?.keyPrefix || "sbr";
   }

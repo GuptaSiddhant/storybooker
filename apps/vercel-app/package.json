@@ -1,7 +1,9 @@
 {
   "name": "vercel-app",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "dev": "vercel dev"
   },
   "dependencies": {
@@ -10,6 +12,7 @@
     "@vercel/blob": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0"
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.0"
   }
 }
