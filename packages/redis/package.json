@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/redis",
-  "version": "0.19.3-pre.7",
+  "version": "0.19.3-pre.8",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with Redis services.",
   "author": {

@@ -87,17 +87,12 @@ for (const pkg of packages) {
 
 if (values.tag) {
   console.group(`Releasing v${version}`);
+  const message = values.message || `Version ${version}`;
   cp.execSync(`git add -A`, { encoding: "utf8" });
   console.log("Committing all changes...");
-  cp.execSync(
-    `git commit -m "Release v${version} ${values.message ? `\n${values.message}` : ""}"`,
-    { encoding: "utf8" },
-  );
+  cp.execSync(`git commit -m "${message}"`, { encoding: "utf8" });
   console.log("Tagging version...");
-  cp.execSync(
-    `git tag "v${version}" -am "${values.message || `Version ${version}`}"`,
-    { encoding: "utf8" },
-  );
+  cp.execSync(`git tag "v${version}" -am "${message}"`, { encoding: "utf8" });
   console.log("Pushing to origin...");
   cp.execSync(`git push --follow-tags`, { encoding: "utf8" });
   console.groupEnd();

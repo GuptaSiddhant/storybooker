@@ -64,10 +64,12 @@ jobs:
           cat release-message.txt
 
           NPM_TAG="latest"
-          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then        
-            prerelease=$(echo "$GITHUB_REF_NAME" | cut -d'-' -f2 | cut -d'.' -f1)
-            NPM_TAG=${prerelease:-next}
+          if [[ $GITHUB_REF_NAME == *"-"* ]]; then        
+            echo "Working on a prerelease version..."
+            TAG=$(echo "$GITHUB_REF_NAME" | cut -d'-' -f2 | cut -d'.' -f1)
+            NPM_TAG=${TAG:-next}
           fi
+          echo "NPM_TAG=${NPM_TAG}"
           echo "NPM_TAG=${NPM_TAG}" >> $GITHUB_ENV
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
@@ -80,7 +82,7 @@ jobs:
       - name: Publish on NPM
         working-directory: ./out
         run: |
-          NPM_TAG=${{ steps.get_release_data.outputs.NPM_TAG }}
+          NPM_TAG="${{ steps.get_release_data.outputs.NPM_TAG }}"
           echo "Publishing with tag: $NPM_TAG"
           yarn workspaces foreach -A --no-private npm publish --tolerate-republish --tag ${NPM_TAG:-latest}
         env:
