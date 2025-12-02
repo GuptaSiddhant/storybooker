@@ -20,22 +20,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Get Release data
-        id: get_release_data
-        if: github.ref_type == 'tag'
-        run: |
-          MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")
-          echo "$MESSAGE" >> release-message.txt
-          cat release-message.txt
-
-          NPM_TAG="latest"
-          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then
-            NPM_TAG="next"
-          fi
-          echo "NPM_TAG=${NPM_TAG}" >> $GITHUB_ENV
-        env:
-          GITHUB_REF_NAME: ${{ github.ref_name }}
-
       - name: Setup node
         uses: actions/setup-node@v4
         with:
@@ -71,6 +55,37 @@ jobs:
         working-directory: ./out
         run: npx turbo verify
 
+      - name: Get Release data
+        id: get_release_data
+        if: github.ref_type == 'tag'
+        run: |
+          MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")
+          echo "$MESSAGE" >> release-message.txt
+          cat release-message.txt
+
+          NPM_TAG="latest"
+          if [[ "${GITHUB_REF_NAME}" == *-* ]]; then        
+            prerelease=$(echo "$GITHUB_REF_NAME" | cut -d'-' -f2 | cut -d'.' -f1)
+            NPM_TAG=${prerelease:-next}
+          fi
+          echo "NPM_TAG=${NPM_TAG}" >> $GITHUB_ENV
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
+      - name: Publish on JSR - Core
+        working-directory: ./out/packages/core
+        continue-on-error: true
+        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }} --allow-slow-types --allow-dirty
+
+      - name: Publish on NPM
+        working-directory: ./out
+        run: |
+          NPM_TAG=${{ steps.get_release_data.outputs.NPM_TAG }}
+          echo "Publishing with tag: $NPM_TAG"
+          yarn workspaces foreach -A --no-private npm publish --tolerate-republish --tag ${NPM_TAG:-latest}
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
         id: gh-release
@@ -78,16 +93,3 @@ jobs:
         with:
           body_path: release-message.txt
           make_latest: ${{ steps.get_release_data.outputs.NPM_TAG == 'latest' }}
-
-      - name: Publish on JSR - Core
-        working-directory: ./out/packages/core
-        continue-on-error: true
-        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }} --allow-slow-types
-
-      - name: Publish on NPM
-        working-directory: ./out
-        run: |
-          NPM_TAG="${{ steps.get_release_data.outputs.NPM_TAG || 'latest' }}"
-          yarn workspaces foreach -A --no-private npm publish --tolerate-republish --tag $NPM_TAG
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

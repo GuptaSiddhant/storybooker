@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/gcp",
-  "version": "0.19.3-pre.6",
+  "version": "0.19.3-pre.7",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with GCP services.",
   "author": {

@@ -24,6 +24,9 @@ if (!version) {
 if (!/^\d+\.\d+\.\d+.*$/.test(version)) {
   throw new Error(`The version is ill-formatted (${version}).`);
 }
+if (!values.message) {
+  throw new Error("A commit/tag message (-m) is required.");
+}
 
 const verifySpawn = cp.spawnSync(`yarn`, ["verify"], {
   encoding: "utf8",
@@ -86,15 +89,14 @@ if (values.tag) {
   console.group(`Releasing v${version}`);
   cp.execSync(`git add -A`, { encoding: "utf8" });
   console.log("Committing all changes...");
-  cp.execSync(`git commit -m "release: v${version}\n${values.message || ""}"`, {
-    encoding: "utf8",
-  });
+  cp.execSync(
+    `git commit -m "Release v${version} ${values.message ? `\n${values.message}` : ""}"`,
+    { encoding: "utf8" },
+  );
   console.log("Tagging version...");
   cp.execSync(
     `git tag "v${version}" -am "${values.message || `Version ${version}`}"`,
-    {
-      encoding: "utf8",
-    },
+    { encoding: "utf8" },
   );
   console.log("Pushing to origin...");
   cp.execSync(`git push --follow-tags`, { encoding: "utf8" });
