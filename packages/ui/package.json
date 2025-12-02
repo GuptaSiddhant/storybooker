@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/ui",
-  "version": "0.19.2",
+  "version": "0.19.3-pre.1",
   "type": "module",
   "description": "Basic UI for Storybooker app",
   "author": {

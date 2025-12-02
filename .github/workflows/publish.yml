@@ -20,6 +20,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Get Tag message
+        id: tag-message
+        if: github.ref_type == 'tag'
+        run: |
+          MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")
+          echo "MESSAGE=$MESSAGE"
+          echo "MESSAGE=$MESSAGE" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
       - name: Setup node
         uses: actions/setup-node@v4
         with:
@@ -44,10 +54,6 @@ jobs:
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
-
-          echo "GIT_TAG_MESSAGE=$(git tag -l --format='%(contents)' "${GITHUB_REF_NAME}")" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_REF_NAME: ${{ github.ref_name }}
 
       - name: Install dependencies
         working-directory: ./out
@@ -74,6 +80,6 @@ jobs:
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{ steps.setup.outputs.GIT_TAG_MESSAGE }}
+          body: ${{ steps.tag-message.outputs.MESSAGE }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

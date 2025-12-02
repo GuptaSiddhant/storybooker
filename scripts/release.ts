@@ -21,7 +21,7 @@ const version = values.version || positionals[0];
 if (!version) {
   throw new Error("A version is required.");
 }
-if (!/^\d+\.\d+\.\d+$/.test(version)) {
+if (!/^\d+\.\d+\.\d+.*$/.test(version)) {
   throw new Error(`The version is ill-formatted (${version}).`);
 }
 
