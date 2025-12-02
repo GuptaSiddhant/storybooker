@@ -23,8 +23,6 @@
     "fmt": "turbo fmt",
     "functions": "yarn workspace azure-functions-app dev",
     "lint": "turbo lint",
-    "publish:jsr": "turbo publish:jsr",
-    "publish:npm": "yarn workspaces foreach -A --no-private npm publish --tolerate-republish",
     "release": "node ./scripts/release.ts",
     "server": "NODE_ENV=development deno serve -REW --unstable-sloppy-imports --watch ./scripts/server.ts",
     "test": "turbo test",
