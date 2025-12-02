@@ -82,11 +82,11 @@ jobs:
       - name: Publish on NPM
         working-directory: ./out
         run: |
-          NPM_TAG="${{ steps.get_release_data.outputs.NPM_TAG }}"
           echo "Publishing with tag: $NPM_TAG"
           yarn workspaces foreach -A --no-private npm publish --tolerate-republish --tag ${NPM_TAG:-latest}
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+          NPM_TAG: ${{ steps.get_release_data.outputs.NPM_TAG }}
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
