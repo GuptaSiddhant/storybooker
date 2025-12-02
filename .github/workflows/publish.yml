@@ -6,15 +6,12 @@ on:
     tags:
       - "*"
 
-permissions:
-  contents: write
-
 jobs:
   publish-all:
     name: Publish all packages
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       id-token: write
     environment:
       name: production
