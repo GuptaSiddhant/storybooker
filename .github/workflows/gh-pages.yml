@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   workflow_dispatch:
   push:
+    tags:
+      - "*"
     branches:
       - "main"
     paths:

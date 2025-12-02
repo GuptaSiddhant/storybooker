@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "hono",
+  "installCommand": "npx -y turbo prune vercel-app  && cp -R scripts out/scripts && cp tsconfig.base.json out/tsconfig.base.json && cd ./out && yarn install",
+  "buildCommand": "cd ./out && npx turbo run build",
+  "outputDirectory": "./out/apps/vercel-app/"
+}
