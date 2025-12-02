@@ -5,6 +5,9 @@
     "builtin": true,
     "node": true
   },
-  "rules": {},
+  "rules": {
+    "tsconfig-error": "warn",
+    "typescript/tsconfig-error": "warn"
+  },
   "overrides": []
 }

@@ -80,5 +80,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           body_path: release-message.txt
+          make_latest: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

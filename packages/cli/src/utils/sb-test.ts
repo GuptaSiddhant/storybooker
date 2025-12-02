@@ -22,7 +22,7 @@ export function testStoryBook({
   testCoverageDirpath: string | undefined;
   testReportDirpath: string | undefined;
 } {
-  if (test) {
+  if (typeof test === "string" || test === true) {
     try {
       runTest(test, { cwd, silent, testCoverageDir, testReportDir });
     } catch (error) {
@@ -79,7 +79,7 @@ function runTest(
     spawnSync(pkgManager, ["run", test], {
       cwd,
       shell: true,
-      stdio: silent ? undefined : "inherit",
+      stdio: silent === true ? undefined : "inherit",
     });
     return;
   }
@@ -108,7 +108,7 @@ function runTest(
     ],
     {
       cwd,
-      stdio: silent ? undefined : "inherit",
+      stdio: silent === true ? undefined : "inherit",
     },
   );
   return;

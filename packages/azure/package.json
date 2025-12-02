@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/azure",
-  "version": "0.19.3-pre.2",
+  "version": "0.19.3-pre.3",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with Azure services.",
   "author": {
@@ -76,8 +76,8 @@
     "start": "func start"
   },
   "dependencies": {
-    "@storybooker/core": "workspace:",
-    "@storybooker/ui": "workspace:"
+    "@storybooker/core": "workspace:*",
+    "@storybooker/ui": "workspace:*"
   },
   "devDependencies": {
     "@azure/cosmos": "^4.5.1",
@@ -86,8 +86,8 @@
     "@azure/storage-blob": "^12.0.0",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "oxlint": "^1.24.0",
-    "oxlint-tsgolint": "^0.3.0",
+    "oxlint": "^1.31.0",
+    "oxlint-tsgolint": "^0.8.0",
     "prettier": "^3.6.2",
     "tsdown": "^0.15.9"
   },

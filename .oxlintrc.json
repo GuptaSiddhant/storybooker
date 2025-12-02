@@ -34,6 +34,9 @@
     "no-undefined": "allow",
     "no-unsafe-type-assertion": "allow",
     "only-throw-error": "allow",
-    "return-await": "allow"
+    "return-await": "allow",
+    "switch-exhaustiveness-check": "warn",
+    "strict-boolean-expressions": "allow",
+    "typescript/strict-boolean-expressions": "allow"
   }
 }

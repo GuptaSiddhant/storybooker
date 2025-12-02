@@ -9,7 +9,7 @@ export function createAuthMiddleware(options: {
   const { authType, authValue } = options;
   return {
     onRequest: ({ request }) => {
-      if (!authValue) {
+      if (authValue === undefined || authValue === "") {
         return request;
       }
       if (!authType) {
@@ -21,6 +21,7 @@ export function createAuthMiddleware(options: {
           request.headers.set("Authorization", authValue);
           return request;
         }
+        //
         default: {
           return request;
         }

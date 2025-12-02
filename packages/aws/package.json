@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/aws",
-  "version": "0.19.3-pre.2",
+  "version": "0.19.3-pre.3",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with AWS services.",
   "author": {
@@ -63,15 +63,15 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
-    "@storybooker/core": "workspace:"
+    "@storybooker/core": "workspace:*"
   },
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.895.0",
     "@aws-sdk/client-s3": "^3.895.0",
     "@types/node": "^22.0.0",
     "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "oxlint": "^1.24.0",
-    "oxlint-tsgolint": "^0.3.0",
+    "oxlint": "^1.31.0",
+    "oxlint-tsgolint": "^0.8.0",
     "prettier": "^3.6.2",
     "tsdown": "^0.15.9"
   },

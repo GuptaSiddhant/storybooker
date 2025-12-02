@@ -85,7 +85,10 @@ export const createCommandModule: CommandModule = {
       throw new Error(z.prettifyError(result.error));
     }
 
-    const cwd = result.data.cwd ? path.resolve(result.data.cwd) : process.cwd();
+    const cwd =
+      result.data.cwd !== undefined && result.data.cwd !== ""
+        ? path.resolve(result.data.cwd)
+        : process.cwd();
     if (cwd && !fs.existsSync(cwd)) {
       throw new Error(`Path provided to CWD does not exists: '${cwd}'`);
     }
