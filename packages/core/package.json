@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/core",
-  "version": "0.19.3-pre.4",
+  "version": "0.19.3-pre.5",
   "type": "module",
   "description": "Storybooker platform agnostic router core.",
   "author": {
