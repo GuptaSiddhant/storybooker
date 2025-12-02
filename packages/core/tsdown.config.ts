@@ -7,6 +7,7 @@ export default defineConfig({
   dts: { tsgo: true },
   entry: {
     adapter: "./src/adapters/index.ts",
+    "adapter/fs": "./src/adapters/_fs-adapters.ts",
     index: "./src/index.ts",
     constants: "./src/utils/constants.ts",
     mimes: "./src/utils/mime-utils.ts",

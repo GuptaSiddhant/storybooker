@@ -12,7 +12,10 @@ Core Docs: https://storybooker.js.org/docs/core
 ```js
 import { serve } from "@hono/node-server";
 import { createHonoRouter } from "@storybooker/core";
-import { LocalFileDatabase, LocalFileStorage } from "@storybooker/core/adapter";
+import {
+  LocalFileDatabase,
+  LocalFileStorage,
+} from "@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
 const app = createHonoRouter({
@@ -33,7 +36,7 @@ import { createHonoRouter } from "jsr:@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "jsr:@storybooker/core/adapter";
+} from "jsr:@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 const app = createHonoRouter({

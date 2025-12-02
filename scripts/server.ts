@@ -13,7 +13,7 @@ import type {
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "../packages/core/dist/adapter.js";
+} from "../packages/core/dist/adapter/fs.js";
 import { createHonoRouter } from "../packages/core/dist/index.js";
 import { createBasicUIAdapter } from "../packages/ui/dist/index.js";
 

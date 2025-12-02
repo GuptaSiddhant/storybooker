@@ -19,7 +19,7 @@ import { createHonoRouter } from "@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "@storybooker/core/adapters";
+} from "@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker Hono router

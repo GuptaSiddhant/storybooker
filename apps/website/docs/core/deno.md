@@ -18,7 +18,7 @@ import { createHonoRouter } from "jsr:@storybooker/core";
 import {
   LocalFileDatabase,
   LocalFileStorage,
-} from "jsr:@storybooker/core/adapters";
+} from "jsr:@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker router

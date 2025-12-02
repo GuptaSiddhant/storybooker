@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/core",
-  "version": "0.19.3",
+  "version": "0.19.4",
   "type": "module",
   "description": "Storybooker platform agnostic router core.",
   "author": {
@@ -65,6 +65,10 @@
       "source": "./src/adapters/index.ts",
       "default": "./dist/adapter.js"
     },
+    "./adapter/fs": {
+      "source": "./src/adapters/_fs-adapters.ts",
+      "default": "./dist/adapter/fs.js"
+    },
     "./constants": {
       "source": "./src/utils/constants.ts",
       "default": "./dist/constants.js"
@@ -96,6 +100,7 @@
     "exports": {
       ".": "./dist/index.js",
       "./adapter": "./dist/adapter.js",
+      "./adapter/fs": "./dist/adapter/fs.js",
       "./constants": "./dist/constants.js",
       "./mimes": "./dist/mimes.js",
       "./router": "./dist/router.js",
