@@ -2,8 +2,8 @@ import "hono"; // import hono to trick vercel into recognizing hono apps
 
 import { createHonoRouter } from "@storybooker/core";
 import { createBasicUIAdapter } from "@storybooker/ui";
-import { VercelEdgeConfigDatabaseService } from "./database";
-import { VercelBlobService } from "./storage";
+import { VercelEdgeConfigDatabaseService } from "./database.ts";
+import { VercelBlobService } from "./storage.ts";
 
 const storageToken = process.env["BLOB_READ_WRITE_TOKEN"];
 if (!storageToken) {
