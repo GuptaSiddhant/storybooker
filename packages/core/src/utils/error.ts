@@ -16,10 +16,7 @@ export interface ParsedError {
   errorType: string;
 }
 
-export function parseErrorMessage(
-  error: unknown,
-  errorParser?: ErrorParser,
-): ParsedError {
+export function parseErrorMessage(error: unknown, errorParser?: ErrorParser): ParsedError {
   if (!error) {
     return { errorMessage: "", errorType: "unknown" };
   }
@@ -51,10 +48,7 @@ export function parseErrorMessage(
     };
   }
 
-  if (
-    error instanceof Error ||
-    (error && typeof error === "object" && "message" in error)
-  ) {
+  if (error instanceof Error || (error && typeof error === "object" && "message" in error)) {
     return { errorMessage: String(error.message), errorType: "error" };
   }
 
@@ -68,21 +62,14 @@ const zodValidationErrorSchema = z.object({
     message: z.string(),
   }),
 });
-export const prettifyZodValidationErrorMiddleware: MiddlewareHandler = async (
-  ctx,
-  next,
-) => {
+export const prettifyZodValidationErrorMiddleware: MiddlewareHandler = async (ctx, next) => {
   await next();
 
   const resContentType = ctx.res.headers.get("Content-Type") || "";
   if (ctx.res.status === 400 && resContentType.startsWith("application/json")) {
-    const result = zodValidationErrorSchema.safeParse(
-      await ctx.res.clone().json(),
-    );
+    const result = zodValidationErrorSchema.safeParse(await ctx.res.clone().json());
     if (result.success) {
-      const issues = JSON.parse(
-        result.data.error.message,
-      ) as z.core.$ZodIssue[];
+      const issues = JSON.parse(result.data.error.message) as z.core.$ZodIssue[];
       const message = `Validation error:\n${z.prettifyError({ issues })}`;
       throw new HTTPException(400, { message, res: ctx.res });
     }
@@ -117,8 +104,6 @@ function unwrapHttpException(error: HTTPException): {
   }
 
   const errorStatus = causeStatus ?? error.status;
-  const errorMessage = causeMessage
-    ? `${error.message}\n ↳ ${causeMessage}`
-    : error.message;
+  const errorMessage = causeMessage ? `${error.message}\n ↳ ${causeMessage}` : error.message;
   return { message: errorMessage, status: errorStatus };
 }

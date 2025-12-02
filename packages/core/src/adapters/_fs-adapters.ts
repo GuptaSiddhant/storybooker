@@ -71,9 +71,7 @@ export class LocalFileDatabase implements DatabaseAdapter {
     }
 
     if (Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
-        collectionId,
-      );
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId);
     }
 
     if (!this.#db[collectionId]) {
@@ -99,10 +97,7 @@ export class LocalFileDatabase implements DatabaseAdapter {
     await this.#saveToFile(options);
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, _options) => {
     if (!this.#db) {
       throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
@@ -125,11 +120,7 @@ export class LocalFileDatabase implements DatabaseAdapter {
       throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
     }
 
-    const {
-      limit = Number.POSITIVE_INFINITY,
-      sort,
-      filter,
-    } = listOptions || {};
+    const { limit = Number.POSITIVE_INFINITY, sort, filter } = listOptions || {};
 
     // oxlint-disable-next-line no-non-null-assertion
     const collection = this.#db[collectionId]!;
@@ -161,20 +152,13 @@ export class LocalFileDatabase implements DatabaseAdapter {
 
     const item = this.#db[collectionId]?.[documentId];
     if (!item) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     return item as Document;
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, options) => {
     return !!(await this.getDocument(collectionId, documentId, options));
   };
 
@@ -194,10 +178,7 @@ export class LocalFileDatabase implements DatabaseAdapter {
     // oxlint-disable-next-line no-non-null-assertion
     const collection = this.#db[collectionId]!;
     if (collection[documentData.id]) {
-      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
-        collectionId,
-        documentData.id,
-      );
+      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(collectionId, documentData.id);
     }
 
     collection[documentData.id] = documentData;
@@ -218,10 +199,7 @@ export class LocalFileDatabase implements DatabaseAdapter {
     }
 
     if (!(await this.hasDocument(collectionId, documentId, options))) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     // oxlint-disable-next-line no-non-null-assertion
@@ -247,10 +225,7 @@ export class LocalFileDatabase implements DatabaseAdapter {
 
     const prevItem = await this.getDocument(collectionId, documentId, options);
     if (!prevItem) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     // oxlint-disable-next-line no-non-null-assertion
@@ -303,18 +278,12 @@ export class LocalFileStorage implements StorageAdapter {
   }
 
   #genPath(...pathParts: (string | undefined)[]): string {
-    return path.join(
-      this.#basePath,
-      ...pathParts.filter((part) => part !== undefined),
-    );
+    return path.join(this.#basePath, ...pathParts.filter((part) => part !== undefined));
   }
 
   // Containers
 
-  createContainer: StorageAdapter["createContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     if (await this.hasContainer(containerId, options)) {
       throw new StorageAdapterErrors.ContainerAlreadyExistsError(containerId);
     }
@@ -322,10 +291,7 @@ export class LocalFileStorage implements StorageAdapter {
     await fsp.mkdir(this.#genPath(containerId), { recursive: true });
   };
 
-  deleteContainer: StorageAdapter["deleteContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  deleteContainer: StorageAdapter["deleteContainer"] = async (containerId, options) => {
     if (!(await this.hasContainer(containerId, options))) {
       throw new StorageAdapterErrors.ContainerDoesNotExistError(containerId);
     }
@@ -340,9 +306,7 @@ export class LocalFileStorage implements StorageAdapter {
   listContainers: StorageAdapter["listContainers"] = async () => {
     const dirPath = this.#genPath();
     if (!fs.existsSync(dirPath)) {
-      throw new StorageAdapterErrors.StorageNotInitializedError(
-        `Dir "${dirPath}" does not exist`,
-      );
+      throw new StorageAdapterErrors.StorageNotInitializedError(`Dir "${dirPath}" does not exist`);
     }
 
     const containers: string[] = [];
@@ -381,16 +345,9 @@ export class LocalFileStorage implements StorageAdapter {
     return fs.existsSync(path);
   };
 
-  downloadFile: StorageAdapter["downloadFile"] = async (
-    containerId,
-    filepath,
-    options,
-  ) => {
+  downloadFile: StorageAdapter["downloadFile"] = async (containerId, filepath, options) => {
     if (!(await this.hasFile(containerId, filepath, options))) {
-      throw new StorageAdapterErrors.FileDoesNotExistError(
-        containerId,
-        filepath,
-      );
+      throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);
     }
 
     const path = this.#genPath(containerId, filepath);
@@ -399,11 +356,7 @@ export class LocalFileStorage implements StorageAdapter {
     return { content, path };
   };
 
-  uploadFiles: StorageAdapter["uploadFiles"] = async (
-    containerId,
-    files,
-    options,
-  ) => {
+  uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, options) => {
     for (const file of files) {
       const filepath = this.#genPath(containerId, file.path);
       const dirpath = path.dirname(filepath);
@@ -414,9 +367,7 @@ export class LocalFileStorage implements StorageAdapter {
       } else {
         const data: string | Stream =
           // oxlint-disable-next-line no-nested-ternary
-          typeof file.content === "string"
-            ? file.content
-            : await file.content.text();
+          typeof file.content === "string" ? file.content : await file.content.text();
 
         await fsp.writeFile(filepath, data, {
           encoding: "utf8",
@@ -432,9 +383,7 @@ function writeWebStreamToFile(
   outputPath: string,
 ): Promise<null> {
   // Convert WebReadableStream to Node.js Readable stream
-  const nodeReadableStream = Readable.fromWeb(
-    webReadableStream as WebReadableStream,
-  );
+  const nodeReadableStream = Readable.fromWeb(webReadableStream as WebReadableStream);
 
   // Create a writable file stream
   const fileWritableStream = fs.createWriteStream(outputPath);

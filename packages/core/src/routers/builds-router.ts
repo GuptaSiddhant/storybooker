@@ -23,10 +23,7 @@ import {
   openapiResponseRedirect,
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
-import {
-  checkIsHTMLRequest,
-  validateBuildUploadZipBody,
-} from "../utils/request";
+import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request";
 import { responseError, responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
 import { createUIAdapterOptions } from "../utils/ui-utils";
@@ -77,12 +74,7 @@ export const buildsRouter = new OpenAPIHono()
       if (ui && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return context.html(
-          ui.renderBuildsListPage(
-            { builds, project },
-            createUIAdapterOptions(),
-          ),
-        );
+        return context.html(ui.renderBuildsListPage({ builds, project }, createUIAdapterOptions()));
       }
 
       return context.json({ builds });
@@ -123,9 +115,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(
-        ui.renderBuildCreatePage({ project, tagId }, createUIAdapterOptions()),
-      );
+      return context.html(ui.renderBuildCreatePage({ project, tagId }, createUIAdapterOptions()));
     },
   )
   .openapi(
@@ -163,10 +153,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
-        return await responseError(
-          `The project '${projectId}' does not exist.`,
-          404,
-        );
+        return await responseError(`The project '${projectId}' does not exist.`, 404);
       }
 
       await authenticateOrThrow({
@@ -330,10 +317,7 @@ export const buildsRouter = new OpenAPIHono()
       await buildsModel.update(buildId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(
-          urlBuilder.buildDetails(projectId, buildId),
-          303,
-        );
+        return responseRedirect(urlBuilder.buildDetails(projectId, buildId), 303);
       }
 
       return new Response(null, { status: 202 });
@@ -380,10 +364,7 @@ export const buildsRouter = new OpenAPIHono()
       const { variant: uploadVariant } = context.req.valid("query");
 
       return context.html(
-        ui.renderBuildUploadPage(
-          { build, uploadVariant, project },
-          createUIAdapterOptions(),
-        ),
+        ui.renderBuildUploadPage({ build, uploadVariant, project }, createUIAdapterOptions()),
       );
     },
   )
@@ -450,9 +431,7 @@ export const buildsRouter = new OpenAPIHono()
 
       // Form submission
       if (contentType.mediaType?.startsWith(mimes.formMultipart)) {
-        const { file, variant } = BuildUploadFormBodySchema.parse(
-          await context.req.parseBody(),
-        );
+        const { file, variant } = BuildUploadFormBodySchema.parse(await context.req.parseBody());
 
         await buildsModel.upload(buildId, variant, file);
 

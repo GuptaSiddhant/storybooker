@@ -27,13 +27,9 @@ export function checkIsJSONRequest(request?: Request): boolean {
   return !!accept?.includes(mimes.json);
 }
 
-export function validateIsFormEncodedRequest(
-  request?: Request,
-): undefined | ErrorObject {
+export function validateIsFormEncodedRequest(request?: Request): undefined | ErrorObject {
   const store = getStore();
-  const { contentType } = request
-    ? new SuperHeaders(request.headers)
-    : store.headers;
+  const { contentType } = request ? new SuperHeaders(request.headers) : store.headers;
 
   if (!contentType) {
     return {
@@ -52,9 +48,7 @@ export function validateIsFormEncodedRequest(
   return undefined;
 }
 
-export function validateBuildUploadZipBody(
-  request: Request,
-): ErrorObject | undefined {
+export function validateBuildUploadZipBody(request: Request): ErrorObject | undefined {
   const { headers: storeHeaders } = getStore();
   const { body } = request;
 
@@ -65,9 +59,7 @@ export function validateBuildUploadZipBody(
     };
   }
 
-  const { contentLength } = request
-    ? new SuperHeaders(request.headers)
-    : storeHeaders;
+  const { contentLength } = request ? new SuperHeaders(request.headers) : storeHeaders;
 
   if (contentLength === null) {
     return {
@@ -102,9 +94,7 @@ export function parseRequestCookieHeader(
   for (const cookie of cookieHeader.split(";")) {
     const [key, value] = cookie.split("=");
     if (key !== undefined && value !== undefined) {
-      cookies[decodeURIComponent(key.trim())] = decodeURIComponent(
-        value.trim(),
-      );
+      cookies[decodeURIComponent(key.trim())] = decodeURIComponent(value.trim());
     }
   }
 

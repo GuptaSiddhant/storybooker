@@ -52,9 +52,7 @@ export const accountRouter = new OpenAPIHono()
         request,
       });
 
-      return context.html(
-        ui.renderAccountsPage({ children }, createUIAdapterOptions()),
-      );
+      return context.html(ui.renderAccountsPage({ children }, createUIAdapterOptions()));
     },
   )
   .openapi(

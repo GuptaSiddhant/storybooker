@@ -105,10 +105,7 @@ export interface QueueAdapter {
    * @returns Number of messages in the topic
    * @throws if the topic does not exist.
    */
-  getMessageCount: (
-    topicId: string,
-    options: QueueAdapterOptions,
-  ) => Promise<number>;
+  getMessageCount: (topicId: string, options: QueueAdapterOptions) => Promise<number>;
 
   /**
    * Purge all messages from a topic.
@@ -116,10 +113,7 @@ export interface QueueAdapter {
    * @param options Common options like abortSignal.
    * @throws if the topic does not exist.
    */
-  purgeMessages: (
-    topicId: string,
-    options: QueueAdapterOptions,
-  ) => Promise<void>;
+  purgeMessages: (topicId: string, options: QueueAdapterOptions) => Promise<void>;
 }
 
 /**

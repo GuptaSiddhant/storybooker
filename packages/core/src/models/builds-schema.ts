@@ -6,12 +6,7 @@ import { BuildIdSchema, TagIdSchema } from "./~shared-schema";
 
 export { BuildIdSchema, buildUploadVariants };
 
-const buildContentAvailabilityOptions = [
-  "none",
-  "uploaded",
-  "processing",
-  "ready",
-] as const;
+const buildContentAvailabilityOptions = ["none", "uploaded", "processing", "ready"] as const;
 
 export type BuildType = z.infer<typeof BuildSchema>;
 /** @private */
@@ -46,8 +41,7 @@ export const BuildCreateSchema = BuildSchema.omit({
   updatedAt: true,
 }).extend({
   tags: z.union([TagIdSchema.array(), TagIdSchema]).meta({
-    description:
-      "Tag IDs associated with the build. Should be created beforehand.",
+    description: "Tag IDs associated with the build. Should be created beforehand.",
   }),
 });
 

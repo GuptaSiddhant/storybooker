@@ -63,9 +63,7 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
   }
 
   // oxlint-disable-next-line class-methods-use-this
-  #formatDocumentRow<Document extends StoryBookerDatabaseDocument>(row: {
-    id: string;
-  }): Document {
+  #formatDocumentRow<Document extends StoryBookerDatabaseDocument>(row: { id: string }): Document {
     if ("data" in row && typeof row["data"] === "string") {
       return { id: row.id, ...JSON.parse(row["data"]) } as Document;
     }
@@ -74,16 +72,13 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
 
   listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
     const collectionsTable = this.#getCollectionsTableName();
-    const [rows] = await this.#connection.execute<
-      StoryBookerDatabaseDocument[]
-    >(`SELECT id FROM \`${collectionsTable}\``);
+    const [rows] = await this.#connection.execute<StoryBookerDatabaseDocument[]>(
+      `SELECT id FROM \`${collectionsTable}\``,
+    );
     return rows.map((row) => row.id);
   };
 
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (collectionId, _options) => {
     try {
       const tableName = this.#getTableName(collectionId);
       const collectionsTable = this.#getCollectionsTableName();
@@ -100,35 +95,24 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     `);
 
       // Register collection
-      await this.#connection.execute(
-        `INSERT IGNORE INTO \`${collectionsTable}\` (id) VALUES (?)`,
-        [collectionId],
-      );
-    } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
+      await this.#connection.execute(`INSERT IGNORE INTO \`${collectionsTable}\` (id) VALUES (?)`, [
         collectionId,
-        error,
-      );
+      ]);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, _options) => {
     const collectionsTable = this.#getCollectionsTableName();
-    const [rows] = await this.#connection.execute<
-      StoryBookerDatabaseDocument[]
-    >(`SELECT 1 FROM \`${collectionsTable}\` WHERE id = ? LIMIT 1`, [
-      collectionId,
-    ]);
+    const [rows] = await this.#connection.execute<StoryBookerDatabaseDocument[]>(
+      `SELECT 1 FROM \`${collectionsTable}\` WHERE id = ? LIMIT 1`,
+      [collectionId],
+    );
     return rows.length > 0;
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, _options) => {
     const tableName = this.#getTableName(collectionId);
     const collectionsTable = this.#getCollectionsTableName();
 
@@ -137,15 +121,11 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
       await this.#connection.execute(`DROP TABLE IF EXISTS \`${tableName}\``);
 
       // Remove from collections registry
-      await this.#connection.execute(
-        `DELETE FROM \`${collectionsTable}\` WHERE id = ?`,
-        [collectionId],
-      );
-    } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
+      await this.#connection.execute(`DELETE FROM \`${collectionsTable}\` WHERE id = ?`, [
         collectionId,
-        error,
-      );
+      ]);
+    } catch (error) {
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -232,20 +212,13 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
 
     const [row] = rows;
     if (!row) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     return this.#formatDocumentRow<Document>(row);
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    _options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, _options) => {
     const tableName = this.#getTableName(collectionId);
     const [rows] = await this.#connection.execute<Document[]>(
       `SELECT 1 FROM \`${tableName}\` WHERE id = ? LIMIT 1`,
@@ -262,10 +235,10 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     const tableName = this.#getTableName(collectionId);
     const { id, ...data } = documentData;
     try {
-      await this.#connection.execute(
-        `INSERT INTO \`${tableName}\` (id, data) VALUES (?, ?)`,
-        [id, JSON.stringify(data)],
-      );
+      await this.#connection.execute(`INSERT INTO \`${tableName}\` (id, data) VALUES (?, ?)`, [
+        id,
+        JSON.stringify(data),
+      ]);
     } catch (error) {
       throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
         collectionId,
@@ -283,28 +256,24 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     const tableName = this.#getTableName(collectionId);
 
     // Get existing document
-    const [rows] = await this.#connection.execute<
-      StoryBookerDatabaseDocument[]
-    >(`SELECT data FROM \`${tableName}\` WHERE id = ? LIMIT 1`, [documentId]);
+    const [rows] = await this.#connection.execute<StoryBookerDatabaseDocument[]>(
+      `SELECT data FROM \`${tableName}\` WHERE id = ? LIMIT 1`,
+      [documentId],
+    );
 
     const [row] = rows;
     if (!row) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     const existingData =
-      "data" in row && typeof row["data"] === "string"
-        ? JSON.parse(row["data"])
-        : null;
+      "data" in row && typeof row["data"] === "string" ? JSON.parse(row["data"]) : null;
     const updatedData = { ...existingData, ...documentData };
 
-    await this.#connection.execute(
-      `UPDATE \`${tableName}\` SET data = ? WHERE id = ?`,
-      [JSON.stringify(updatedData), documentId],
-    );
+    await this.#connection.execute(`UPDATE \`${tableName}\` SET data = ? WHERE id = ?`, [
+      JSON.stringify(updatedData),
+      documentId,
+    ]);
   };
 
   deleteDocument: DatabaseAdapter["deleteDocument"] = async (
@@ -319,10 +288,7 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     );
 
     if (result.affectedRows === 0) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
   };
 }

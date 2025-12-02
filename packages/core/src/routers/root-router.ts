@@ -40,9 +40,7 @@ export const rootRouter = new OpenAPIHono()
 
       const projects = await new ProjectsModel().list({ limit: 5 });
 
-      return context.html(
-        ui.renderHomePage({ projects }, createUIAdapterOptions()),
-      );
+      return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));
     },
   )
   .openapi(

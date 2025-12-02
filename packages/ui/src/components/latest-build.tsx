@@ -21,9 +21,7 @@ export function LatestBuild({
       <div>
         <a href={urlBuilder.buildDetails(projectId, buildId)}>Details</a>
         {" / "}
-        <a href={urlBuilder.storybookIndexHtml(projectId, buildId)}>
-          StoryBook
-        </a>
+        <a href={urlBuilder.storybookIndexHtml(projectId, buildId)}>StoryBook</a>
       </div>
     </div>
   );

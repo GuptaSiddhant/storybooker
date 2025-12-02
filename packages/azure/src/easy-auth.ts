@@ -39,10 +39,7 @@ export type ModifyUserDetails = (
   options: AuthAdapterOptions,
 ) => AzureEasyAuthUser | Promise<AzureEasyAuthUser>;
 
-const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = ({
-  permission,
-  user,
-}) => {
+const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = ({ permission, user }) => {
   if (!user) {
     return false;
   }
@@ -81,26 +78,18 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
     this.modifyUserDetails = options?.modifyUserDetails || DEFAULT_MODIFY_USER;
   }
 
-  getUserDetails: AuthAdapter<AzureEasyAuthUser>["getUserDetails"] = async (
-    options,
-  ) => {
-    const principalHeader = options.request.headers.get(
-      "x-ms-client-principal",
-    );
+  getUserDetails: AuthAdapter<AzureEasyAuthUser>["getUserDetails"] = async (options) => {
+    const principalHeader = options.request.headers.get("x-ms-client-principal");
     if (!principalHeader) {
-      throw new Response(
-        `Unauthorized access. Please provide a valid EasyAuth principal header.`,
-        { status: 401 },
-      );
+      throw new Response(`Unauthorized access. Please provide a valid EasyAuth principal header.`, {
+        status: 401,
+      });
     }
 
     // Decode and parse the claims
-    const decodedPrincipal = Buffer.from(principalHeader, "base64").toString(
-      "utf8",
-    );
+    const decodedPrincipal = Buffer.from(principalHeader, "base64").toString("utf8");
 
-    const clientPrincipal: AzureEasyAuthClientPrincipal =
-      JSON.parse(decodedPrincipal);
+    const clientPrincipal: AzureEasyAuthClientPrincipal = JSON.parse(decodedPrincipal);
     const claims = clientPrincipal?.claims || [];
 
     const azpToken = claims.find((claim) => claim.typ === "azp")?.val;
@@ -116,14 +105,9 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
     }
 
     const name = claims.find((claim) => claim.typ === "name")?.val;
-    const email = claims.find(
-      (claim) => claim.typ === clientPrincipal.name_typ,
-    )?.val;
+    const email = claims.find((claim) => claim.typ === clientPrincipal.name_typ)?.val;
     const roles = claims
-      .filter(
-        (claim) =>
-          claim.typ === clientPrincipal.role_typ || claim.typ === "roles",
-      )
+      .filter((claim) => claim.typ === clientPrincipal.role_typ || claim.typ === "roles")
       .map((claim) => claim.val);
 
     const user: AzureEasyAuthUser = {
@@ -146,10 +130,7 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
     });
   };
 
-  logout: AuthAdapter<AzureEasyAuthUser>["logout"] = async (
-    _user,
-    { request },
-  ) => {
+  logout: AuthAdapter<AzureEasyAuthUser>["logout"] = async (_user, { request }) => {
     const url = new URL("/.auth/logout", request.url);
 
     return new Response(null, {

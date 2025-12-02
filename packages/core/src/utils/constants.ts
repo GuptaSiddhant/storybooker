@@ -28,9 +28,4 @@ export const PATTERNS = {
 >;
 
 export const TagTypes = ["branch", "pr", "jira"] as const;
-export const buildUploadVariants = [
-  "storybook",
-  "testReport",
-  "coverage",
-  "screenshots",
-] as const;
+export const buildUploadVariants = ["storybook", "testReport", "coverage", "screenshots"] as const;

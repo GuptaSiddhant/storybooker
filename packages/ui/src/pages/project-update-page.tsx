@@ -10,11 +10,7 @@ import { ProjectForm } from "../components/project-form";
 import { RawDataList } from "../components/raw-data";
 import { getUIStore } from "../utils/ui-store";
 
-export function ProjectUpdatePage({
-  project,
-}: {
-  project: ProjectType;
-}): JSXElement {
+export function ProjectUpdatePage({ project }: { project: ProjectType }): JSXElement {
   const title = `Update Project`;
   const { urlBuilder } = getUIStore();
 

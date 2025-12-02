@@ -11,11 +11,7 @@ import { IFrameContainer } from "../components/iframe";
 import { RawDataList } from "../components/raw-data";
 import { getUIStore } from "../utils/ui-store";
 
-export function AccountPage({
-  children,
-}: {
-  children: string | undefined;
-}): JSXElement {
+export function AccountPage({ children }: { children: string | undefined }): JSXElement {
   const { isAuthEnabled, user, urlBuilder } = getUIStore();
 
   const pageTitle = "Account";
@@ -36,12 +32,7 @@ export function AccountPage({
       </DocumentMain>
 
       <DocumentSidebar style={{ padding: "1rem" }}>
-        <UserInfo
-          displayName={displayName}
-          id={id}
-          imageUrl={imageUrl}
-          title={title}
-        />
+        <UserInfo displayName={displayName} id={id} imageUrl={imageUrl} title={title} />
         {Object.keys(rest).length > 0 ? <RawDataList data={rest} /> : null}
       </DocumentSidebar>
 
@@ -52,9 +43,7 @@ export function AccountPage({
           hx-get={logoutUrl}
           hx-confirm={"Are you sure that you wish to logout?"}
         >
-          <DestructiveButton style={{ height: "100%" }}>
-            Logout
-          </DestructiveButton>
+          <DestructiveButton style={{ height: "100%" }}>Logout</DestructiveButton>
         </form>
       ) : (
         <DocumentUserSection />
@@ -63,12 +52,7 @@ export function AccountPage({
   );
 }
 
-function UserInfo({
-  displayName,
-  id,
-  imageUrl,
-  title,
-}: StoryBookerUser): JSXElement {
+function UserInfo({ displayName, id, imageUrl, title }: StoryBookerUser): JSXElement {
   return (
     <div
       style={{

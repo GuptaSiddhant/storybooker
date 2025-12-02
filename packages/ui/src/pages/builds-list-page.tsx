@@ -24,11 +24,7 @@ export function BuildsListPage({
     <DocumentLayout title={title}>
       <DocumentHeader
         breadcrumbs={[project.name]}
-        toolbar={
-          <LinkButton href={urlBuilder.buildCreate(project.id)}>
-            + Create
-          </LinkButton>
-        }
+        toolbar={<LinkButton href={urlBuilder.buildCreate(project.id)}>+ Create</LinkButton>}
       >
         {title}
       </DocumentHeader>

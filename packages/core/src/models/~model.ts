@@ -42,18 +42,11 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
     this.logger.log(`[Model:${this.projectId || "All"}] ${message}`, ...args);
   }
   debug(message: string, ...args: unknown[]): void {
-    this.logger.debug?.(
-      `[Model:${this.projectId || "All"}] ${message}`,
-      ...args,
-    );
+    this.logger.debug?.(`[Model:${this.projectId || "All"}] ${message}`, ...args);
   }
   error(error: unknown, ...args: unknown[]): void {
     const { errorMessage } = parseErrorMessage(error);
-    this.logger.error(
-      `[Model:${this.projectId || "All"}] Error:`,
-      errorMessage,
-      ...args,
-    );
+    this.logger.error(`[Model:${this.projectId || "All"}] Error:`, errorMessage, ...args);
   }
 
   abstract list(options?: ListOptions<Data>): Promise<Data[]>;

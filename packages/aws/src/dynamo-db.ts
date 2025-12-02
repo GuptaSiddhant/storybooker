@@ -23,10 +23,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     return response.TableNames ?? [];
   };
 
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (collectionId, options) => {
     try {
       await this.#client.send(
         new Dynamo.CreateTableCommand({
@@ -38,17 +35,11 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, options) => {
     try {
       const response = await this.#client.send(
         new Dynamo.DescribeTableCommand({ TableName: collectionId }),
@@ -60,20 +51,13 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     }
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, options) => {
     try {
-      await this.#client.send(
-        new Dynamo.DeleteTableCommand({ TableName: collectionId }),
-        { abortSignal: options.abortSignal },
-      );
+      await this.#client.send(new Dynamo.DeleteTableCommand({ TableName: collectionId }), {
+        abortSignal: options.abortSignal,
+      });
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -84,10 +68,9 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     _listOptions: DatabaseDocumentListOptions<Document>,
     options: DatabaseAdapterOptions,
   ) => {
-    const response = await this.#client.send(
-      new Dynamo.ScanCommand({ TableName: collectionId }),
-      { abortSignal: options.abortSignal },
-    );
+    const response = await this.#client.send(new Dynamo.ScanCommand({ TableName: collectionId }), {
+      abortSignal: options.abortSignal,
+    });
     return (response.Items ?? []).map((item) => {
       const doc: Record<string, unknown> = {};
       for (const [key, value] of Object.entries(item)) {
@@ -129,11 +112,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
       document["id"] = documentId;
       return document as Document;
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
@@ -146,10 +125,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
       await this.#client.send(
         new Dynamo.PutItemCommand({
           Item: Object.fromEntries(
-            Object.entries(documentData).map(([key, value]) => [
-              key,
-              { S: String(value) },
-            ]),
+            Object.entries(documentData).map(([key, value]) => [key, { S: String(value) }]),
           ),
           TableName: collectionId,
         }),
@@ -164,11 +140,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     }
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, options) => {
     const response = await this.#client.send(
       new Dynamo.GetItemCommand({
         Key: { id: { S: documentId } },
@@ -179,11 +151,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     return !!response.Item;
   };
 
-  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (collectionId, documentId, options) => {
     try {
       await this.#client.send(
         new Dynamo.DeleteItemCommand({
@@ -193,11 +161,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
@@ -229,11 +193,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 }

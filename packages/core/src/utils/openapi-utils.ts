@@ -1,7 +1,4 @@
-import type {
-  ResponseConfig,
-  ZodContentObject,
-} from "@asteasolutions/zod-to-openapi";
+import type { ResponseConfig, ZodContentObject } from "@asteasolutions/zod-to-openapi";
 import { z } from "@hono/zod-openapi";
 import { mimes } from "./mime-utils";
 
@@ -29,15 +26,10 @@ export function openapiResponseRedirect(description: string): ResponseConfig {
 
 export const openapiErrorResponseContent: ZodContentObject = {
   [mimes.json]: {
-    schema: z
-      .object({ errorMessage: z.string() })
-      .meta({ id: "ResponseError" }),
+    schema: z.object({ errorMessage: z.string() }).meta({ id: "ResponseError" }),
   },
 };
-export const openapiCommonErrorResponses: Record<
-  number | string,
-  ResponseConfig
-> = {
+export const openapiCommonErrorResponses: Record<number | string, ResponseConfig> = {
   400: {
     content: openapiErrorResponseContent,
     description: "Invalid request data",

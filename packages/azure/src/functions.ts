@@ -11,16 +11,8 @@ import type {
   TimerFunctionOptions,
 } from "@azure/functions";
 import { createHonoRouter, createPurgeHandler } from "@storybooker/core";
-import type {
-  ErrorParser,
-  RouterOptions,
-  StoryBookerUser,
-} from "@storybooker/core/types";
-import {
-  generatePrefixFromBaseRoute,
-  SERVICE_NAME,
-  urlJoin,
-} from "@storybooker/core/utils";
+import type { ErrorParser, RouterOptions, StoryBookerUser } from "@storybooker/core/types";
+import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "@storybooker/core/utils";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
@@ -39,8 +31,9 @@ interface FunctionsApp {
 /**
  * Options to register the storybooker router
  */
-export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser>
-  extends RouterOptions<User> {
+export interface RegisterStorybookerRouterOptions<
+  User extends StoryBookerUser,
+> extends RouterOptions<User> {
   /**
    * Set the Azure Functions authentication level for all routes.
    *
@@ -105,17 +98,7 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
       const response = await router.fetch(request);
       return newAzureFunctionsResponse(response);
     },
-    methods: [
-      "GET",
-      "POST",
-      "DELETE",
-      "HEAD",
-      "PATCH",
-      "PUT",
-      "OPTIONS",
-      "TRACE",
-      "CONNECT",
-    ],
+    methods: ["GET", "POST", "DELETE", "HEAD", "PATCH", "PUT", "OPTIONS", "TRACE", "CONNECT"],
     route: urlJoin(route || "", "{**path}"),
   });
 
@@ -164,9 +147,7 @@ function newRequestFromAzureFunctions(request: HttpRequest): Request {
   return new Request(request.url, {
     headers: headersToObject(request.headers),
     method: request.method,
-    ...(hasBody
-      ? { body: request.body as ReadableStream, duplex: "half" }
-      : {}),
+    ...(hasBody ? { body: request.body as ReadableStream, duplex: "half" } : {}),
   });
 }
 
@@ -182,9 +163,7 @@ function newAzureFunctionsResponse(response: Response): HttpResponseInit {
   };
 }
 
-function headersToObject(
-  input: HttpRequest["headers"],
-): Record<string, string> {
+function headersToObject(input: HttpRequest["headers"]): Record<string, string> {
   const headers: Record<string, string> = {};
   // oxlint-disable-next-line no-array-for-each
   input.forEach((value, key) => (headers[key] = value));
@@ -213,9 +192,7 @@ function parseCookieString(cookieString: string): Cookie {
     domain: attrs["domain"],
     expires: attrs["expires"] ? new Date(attrs["expires"]) : undefined,
     httpOnly: attrs["httponly"] === "true",
-    maxAge: attrs["max-age"]
-      ? Number.parseInt(attrs["max-age"], 10)
-      : undefined,
+    maxAge: attrs["max-age"] ? Number.parseInt(attrs["max-age"], 10) : undefined,
     name: name || "",
     path: attrs["path"],
     sameSite: attrs["samesite"] as "Strict" | "Lax" | "None" | undefined,

@@ -65,28 +65,20 @@ function BuildVariantStatus({
   return (
     <Card style={{ minHeight: "8rem" }}>
       <span style={{ fontSize: "0.9rem" }}>
-        The {toTitleCase(variant)} is uploaded but not yet processed. It can be
-        still downloaded while it is being processed.
+        The {toTitleCase(variant)} is uploaded but not yet processed. It can be still downloaded
+        while it is being processed.
       </span>
 
       {isProcessing ? (
         <p>
-          The {toTitleCase(variant)} is currently being processed. Refresh page
-          to check status.
+          The {toTitleCase(variant)} is currently being processed. Refresh page to check status.
         </p>
       ) : null}
 
       {hasUpdatePermission ? (
-        <form
-          method="post"
-          action={url}
-          hx-post={url}
-          hx-disabled-elt="find button"
-        >
+        <form method="post" action={url} hx-post={url} hx-disabled-elt="find button">
           <button>
-            {isProcessing
-              ? `Force reprocess ${variant}`
-              : `Start processing ${variant}`}
+            {isProcessing ? `Force reprocess ${variant}` : `Start processing ${variant}`}
           </button>
         </form>
       ) : null}

@@ -1,9 +1,6 @@
 import { Buffer } from "node:buffer";
 import * as S3 from "@aws-sdk/client-s3";
-import {
-  StorageAdapterErrors,
-  type StorageAdapter,
-} from "@storybooker/core/adapter";
+import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 
 export class AwsS3StorageService implements StorageAdapter {
   #client: S3.S3Client;
@@ -12,10 +9,7 @@ export class AwsS3StorageService implements StorageAdapter {
     this.#client = client;
   }
 
-  createContainer: StorageAdapter["createContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     try {
       await this.#client.send(
         new S3.CreateBucketCommand({
@@ -24,17 +18,11 @@ export class AwsS3StorageService implements StorageAdapter {
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
-      throw new StorageAdapterErrors.ContainerAlreadyExistsError(
-        containerId,
-        error,
-      );
+      throw new StorageAdapterErrors.ContainerAlreadyExistsError(containerId, error);
     }
   };
 
-  deleteContainer: StorageAdapter["deleteContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  deleteContainer: StorageAdapter["deleteContainer"] = async (containerId, options) => {
     try {
       await this.#client.send(
         new S3.DeleteBucketCommand({
@@ -43,17 +31,11 @@ export class AwsS3StorageService implements StorageAdapter {
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
-      throw new StorageAdapterErrors.ContainerDoesNotExistError(
-        containerId,
-        error,
-      );
+      throw new StorageAdapterErrors.ContainerDoesNotExistError(containerId, error);
     }
   };
 
-  hasContainer: StorageAdapter["hasContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  hasContainer: StorageAdapter["hasContainer"] = async (containerId, options) => {
     const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
@@ -70,11 +52,7 @@ export class AwsS3StorageService implements StorageAdapter {
     return buckets.Buckets?.map((bucket) => bucket.Name!) ?? [];
   };
 
-  deleteFiles: StorageAdapter["deleteFiles"] = async (
-    containerId,
-    filePathsOrPrefix,
-    options,
-  ) => {
+  deleteFiles: StorageAdapter["deleteFiles"] = async (containerId, filePathsOrPrefix, options) => {
     try {
       const bucket = genBucketNameFromContainerId(containerId);
       let objects: { Key: string }[] = [];
@@ -111,11 +89,7 @@ export class AwsS3StorageService implements StorageAdapter {
     }
   };
 
-  uploadFiles: StorageAdapter["uploadFiles"] = async (
-    containerId,
-    files,
-    options,
-  ) => {
+  uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, options) => {
     const bucket = genBucketNameFromContainerId(containerId);
 
     const promises = files.map(async ({ content, path, mimeType }) => {
@@ -130,21 +104,14 @@ export class AwsS3StorageService implements StorageAdapter {
           { abortSignal: options.abortSignal },
         )
         .then((error: unknown) => {
-          options.logger.error(
-            `Failed to upload file ${path} to bucket ${bucket}:`,
-            error,
-          );
+          options.logger.error(`Failed to upload file ${path} to bucket ${bucket}:`, error);
         });
     });
 
     await Promise.allSettled(promises);
   };
 
-  hasFile: StorageAdapter["hasFile"] = async (
-    containerId,
-    filepath,
-    options,
-  ) => {
+  hasFile: StorageAdapter["hasFile"] = async (containerId, filepath, options) => {
     try {
       await this.#client.send(
         new S3.HeadObjectCommand({
@@ -159,11 +126,7 @@ export class AwsS3StorageService implements StorageAdapter {
     }
   };
 
-  downloadFile: StorageAdapter["downloadFile"] = async (
-    containerId,
-    filepath,
-    options,
-  ) => {
+  downloadFile: StorageAdapter["downloadFile"] = async (containerId, filepath, options) => {
     const bucket = genBucketNameFromContainerId(containerId);
     const resp = await this.#client.send(
       new S3.GetObjectCommand({ Bucket: bucket, Key: filepath }),
@@ -171,10 +134,7 @@ export class AwsS3StorageService implements StorageAdapter {
     );
 
     if (!resp.Body) {
-      throw new StorageAdapterErrors.FileDoesNotExistError(
-        containerId,
-        filepath,
-      );
+      throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);
     }
 
     return {

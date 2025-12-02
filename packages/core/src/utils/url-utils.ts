@@ -11,10 +11,7 @@ export function linkRoute(
 
   if (typeof link === "string") {
     if (baseUrl !== undefined) {
-      return appendSearchParamsToURL(
-        new URL(link, baseUrl),
-        searchParams,
-      ).toString();
+      return appendSearchParamsToURL(new URL(link, baseUrl), searchParams).toString();
     }
     return link;
   }
@@ -28,10 +25,7 @@ export function linkRoute(
   return appendSearchParamsToURL(link(client), searchParams).toString();
 }
 
-function appendSearchParamsToURL(
-  url: URL,
-  searchParams: URLSearchParams | undefined,
-): URL {
+function appendSearchParamsToURL(url: URL, searchParams: URLSearchParams | undefined): URL {
   // oxlint-disable-next-line no-array-for-each
   searchParams?.forEach((value, key) => {
     url.searchParams.append(key, value);
@@ -54,9 +48,7 @@ export function urlSearchParamsToObject(
   return result;
 }
 
-export function generatePrefixFromBaseRoute(
-  baseRoute: string,
-): `/${string}` | undefined {
+export function generatePrefixFromBaseRoute(baseRoute: string): `/${string}` | undefined {
   if (!baseRoute) {
     return undefined;
   }

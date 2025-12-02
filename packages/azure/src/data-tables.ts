@@ -1,8 +1,4 @@
-import type {
-  TableClient,
-  TableEntityResult,
-  TableServiceClient,
-} from "@azure/data-tables";
+import type { TableClient, TableEntityResult, TableServiceClient } from "@azure/data-tables";
 import {
   DatabaseAdapterErrors,
   type DatabaseAdapter,
@@ -17,10 +13,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
   #serviceClient: TableServiceClient;
   #tableClientGenerator: TableClientGenerator;
 
-  constructor(
-    serviceClient: TableServiceClient,
-    tableClientGenerator: TableClientGenerator,
-  ) {
+  constructor(serviceClient: TableServiceClient, tableClientGenerator: TableClientGenerator) {
     this.#serviceClient = serviceClient;
     this.#tableClientGenerator = tableClientGenerator;
   }
@@ -38,10 +31,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     return collections;
   };
 
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (collectionId, options) => {
     try {
       const tableName = genTableNameFromCollectionId(collectionId);
       await this.#serviceClient.createTable(tableName, {
@@ -49,17 +39,11 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
       });
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, options) => {
     try {
       const tableName = genTableNameFromCollectionId(collectionId);
       const iterator = this.#serviceClient.listTables({
@@ -78,10 +62,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     }
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, options) => {
     try {
       const tableName = genTableNameFromCollectionId(collectionId);
       await this.#serviceClient.deleteTable(tableName, {
@@ -89,10 +70,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
       });
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -157,19 +135,11 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
 
       return entityToItem<Document>(entity);
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, options) => {
     try {
       return Boolean(await this.getDocument(collectionId, documentId, options));
     } catch {
@@ -204,11 +174,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     }
   };
 
-  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (collectionId, documentId, options) => {
     try {
       const tableName = genTableNameFromCollectionId(collectionId);
       const tableClient = this.#tableClientGenerator(tableName);
@@ -216,11 +182,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
         abortSignal: options.abortSignal,
       });
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
 
     return;
@@ -244,11 +206,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
 
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 }

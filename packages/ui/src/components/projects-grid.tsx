@@ -4,11 +4,7 @@ import { Card, CardGrid } from "./card";
 import { LatestBuild } from "./latest-build";
 import { Time } from "./time";
 
-export function ProjectsGrid({
-  projects,
-}: {
-  projects: ProjectType[];
-}): JSXElement {
+export function ProjectsGrid({ projects }: { projects: ProjectType[] }): JSXElement {
   return (
     <CardGrid>
       {projects.map((project) => (

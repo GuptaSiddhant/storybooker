@@ -14,25 +14,17 @@ export function BuildStories({
   stories: BuildStoryType[] | null;
 }): JSXElement | null {
   if (build.storybook === "none") {
-    return (
-      <p style={{ margin: "1rem" }}>
-        The StoryBook is not yet uploaded for this build.
-      </p>
-    );
+    return <p style={{ margin: "1rem" }}>The StoryBook is not yet uploaded for this build.</p>;
   }
 
   if (build.storybook !== "ready") {
     return (
-      <p style={{ margin: "1rem" }}>
-        The StoryBook is not yet ready/processed for this build.
-      </p>
+      <p style={{ margin: "1rem" }}>The StoryBook is not yet ready/processed for this build.</p>
     );
   }
 
   if (!stories || stories.length === 0) {
-    return (
-      <ErrorMessage>Error loading stories from the StoryBook.</ErrorMessage>
-    );
+    return <ErrorMessage>Error loading stories from the StoryBook.</ErrorMessage>;
   }
 
   const allGroups = groupStoriesByTitle(stories);
@@ -64,9 +56,7 @@ export function BuildStories({
                     <summary style={{ fontWeight: "normal" }}>
                       {title} ({list.length})
                     </summary>
-                    <CardRow
-                      style={{ borderLeft: `1px solid var(--color-border)` }}
-                    >
+                    <CardRow style={{ borderLeft: `1px solid var(--color-border)` }}>
                       {list.map((story) => (
                         <StoryCard
                           projectId={projectId}
@@ -100,16 +90,8 @@ function StoryCard({
 }): JSXElement {
   const { urlBuilder } = getUIStore();
 
-  const storybookHref = urlBuilder.storybookIndexHtml(
-    projectId,
-    buildId,
-    story.id,
-  );
-  const storybookIframeHref = urlBuilder.storybookIFrameHtml(
-    projectId,
-    buildId,
-    story.id,
-  );
+  const storybookHref = urlBuilder.storybookIndexHtml(projectId, buildId, story.id);
+  const storybookIframeHref = urlBuilder.storybookIFrameHtml(projectId, buildId, story.id);
 
   const screenshotSrc = urlBuilder.storybookScreenshot(
     projectId,

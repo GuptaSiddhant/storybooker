@@ -38,10 +38,7 @@ export async function handleServeStoryBook({
 
     if (filepath.endsWith("index.html")) {
       // Appending custom UI to index.html
-      const data =
-        typeof content === "string"
-          ? content
-          : await new Response(content).text();
+      const data = typeof content === "string" ? content : await new Response(content).text();
       const bodyWithBackButton = data.replace(
         `</body>`,
         `
@@ -59,10 +56,7 @@ export async function handleServeStoryBook({
 
     if (filepath.endsWith("iframe.html")) {
       // Appending custom UI to index.html
-      const data =
-        typeof content === "string"
-          ? content
-          : await new Response(content).text();
+      const data = typeof content === "string" ? content : await new Response(content).text();
       const bodyWithBackButton = data.replace(
         `</body>`,
         `

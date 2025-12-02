@@ -9,11 +9,7 @@ export function Time(props: TimeProps): JSXElement {
   return (
     <time
       {...props}
-      datetime={
-        props.datetime instanceof Date
-          ? props.datetime.toISOString()
-          : props.datetime
-      }
+      datetime={props.datetime instanceof Date ? props.datetime.toISOString() : props.datetime}
     >
       {toLocalTime(props.datetime)}
     </time>

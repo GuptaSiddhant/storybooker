@@ -33,43 +33,28 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     return tables.map((table) => table.id);
   };
 
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (collectionId, _options) => {
     try {
       await this.#instance.createTable(collectionId, {
         families: [COLUMN_FAMILY],
       });
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, _options) => {
     const table = this.#instance.table(collectionId);
     const [exists] = await table.exists();
     return exists;
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, _options) => {
     try {
       const table = this.#instance.table(collectionId);
       await table.delete();
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -85,19 +70,14 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
       const [rows] = await table.getRows();
       const list: Document[] = [];
       for (const row of rows) {
-        const data = (row.data as Record<ColumnFamily, Document>)[
-          COLUMN_FAMILY
-        ];
+        const data = (row.data as Record<ColumnFamily, Document>)[COLUMN_FAMILY];
         const document: Document = { ...data, id: row.id };
         list.push(document);
       }
 
       return list;
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -112,10 +92,7 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     const row = table.row(documentId);
     const [exists] = await row.exists();
     if (!exists) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     const [rowData] = await row.get<Document>([COLUMN_FAMILY]);
@@ -141,11 +118,7 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     }
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    _options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, _options) => {
     const table = this.#instance.table(collectionId);
     const row = table.row(documentId);
     const [exists] = await row.exists();
@@ -162,11 +135,7 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
       const row = table.row(documentId);
       await row.delete();
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
@@ -180,11 +149,7 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
       const row = table.row(documentId);
       await row.save({ [COLUMN_FAMILY]: documentData });
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 }

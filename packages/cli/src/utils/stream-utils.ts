@@ -60,13 +60,8 @@ export function onUploadProgress(uploaded: number, total: number): void {
   const percent = ((uploaded / total) * 100).toFixed(2);
   const percentStr = percent.padStart(6, " ");
   const totalStr = (total / 1000).toFixed(2);
-  const uploadedStr = (uploaded / 1000)
-    .toFixed(2)
-    .padStart(totalStr.length, " ");
+  const uploadedStr = (uploaded / 1000).toFixed(2).padStart(totalStr.length, " ");
   process.stdout.write(
-    styleText(
-      "dim",
-      `\r  - Uploaded: ${uploadedStr} / ${totalStr} KB (${percentStr}%)`,
-    ),
+    styleText("dim", `\r  - Uploaded: ${uploadedStr} / ${totalStr} KB (${percentStr}%)`),
   );
 }

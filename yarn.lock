@@ -4948,6 +4948,62 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@oxfmt/darwin-arm64@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/darwin-arm64@npm:0.16.0"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/darwin-x64@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/darwin-x64@npm:0.16.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/linux-arm64-gnu@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/linux-arm64-gnu@npm:0.16.0"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/linux-arm64-musl@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/linux-arm64-musl@npm:0.16.0"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxfmt/linux-x64-gnu@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/linux-x64-gnu@npm:0.16.0"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@oxfmt/linux-x64-musl@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/linux-x64-musl@npm:0.16.0"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
+"@oxfmt/win32-arm64@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/win32-arm64@npm:0.16.0"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@oxfmt/win32-x64@npm:0.16.0":
+  version: 0.16.0
+  resolution: "@oxfmt/win32-x64@npm:0.16.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@oxlint-tsgolint/darwin-arm64@npm:0.8.3":
   version: 0.8.3
   resolution: "@oxlint-tsgolint/darwin-arm64@npm:0.8.3"
@@ -15154,6 +15210,41 @@ __metadata:
   languageName: node
   linkType: hard
 
+"oxfmt@npm:^0.16.0":
+  version: 0.16.0
+  resolution: "oxfmt@npm:0.16.0"
+  dependencies:
+    "@oxfmt/darwin-arm64": "npm:0.16.0"
+    "@oxfmt/darwin-x64": "npm:0.16.0"
+    "@oxfmt/linux-arm64-gnu": "npm:0.16.0"
+    "@oxfmt/linux-arm64-musl": "npm:0.16.0"
+    "@oxfmt/linux-x64-gnu": "npm:0.16.0"
+    "@oxfmt/linux-x64-musl": "npm:0.16.0"
+    "@oxfmt/win32-arm64": "npm:0.16.0"
+    "@oxfmt/win32-x64": "npm:0.16.0"
+  dependenciesMeta:
+    "@oxfmt/darwin-arm64":
+      optional: true
+    "@oxfmt/darwin-x64":
+      optional: true
+    "@oxfmt/linux-arm64-gnu":
+      optional: true
+    "@oxfmt/linux-arm64-musl":
+      optional: true
+    "@oxfmt/linux-x64-gnu":
+      optional: true
+    "@oxfmt/linux-x64-musl":
+      optional: true
+    "@oxfmt/win32-arm64":
+      optional: true
+    "@oxfmt/win32-x64":
+      optional: true
+  bin:
+    oxfmt: bin/oxfmt
+  checksum: 10c0/5003ed007badac3378a57152cef399fe1453238bf65344bee24ac9547571e633238c985b4e275e7f68bd0a6f893926aa876891b10b312b33932bb99b869e299b
+  languageName: node
+  linkType: hard
+
 "oxlint-tsgolint@npm:^0.8.0":
   version: 0.8.3
   resolution: "oxlint-tsgolint@npm:0.8.3"
@@ -18273,6 +18364,7 @@ __metadata:
   resolution: "storybooker-monorepo@workspace:."
   dependencies:
     "@ianvs/prettier-plugin-sort-imports": "npm:^4.4.1"
+    oxfmt: "npm:^0.16.0"
     prettier: "npm:^3.6.2"
     turbo: "npm:^2.5.6"
   languageName: unknown

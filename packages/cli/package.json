@@ -26,6 +26,7 @@
     "cli": "node ./dist/index.js --cwd ../../apps/test-ui",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
+    "oxfmt": "npx oxfmt ./src --check",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
     "openapi": "openapi-typescript ../core/dist/openapi.json -o ./src/service-schema.d.ts",

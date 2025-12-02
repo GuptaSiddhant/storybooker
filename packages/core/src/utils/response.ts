@@ -5,10 +5,7 @@ import { parseErrorMessage } from "./error";
 import { mimes } from "./mime-utils";
 import { createUIAdapterOptions } from "./ui-utils";
 
-export function responseRedirect(
-  location: string,
-  init: ResponseInit | number,
-): Response {
+export function responseRedirect(location: string, init: ResponseInit | number): Response {
   const status = typeof init === "number" ? init : (init?.status ?? 303);
   const headers = new Headers(typeof init === "number" ? {} : init?.headers);
 
@@ -33,14 +30,9 @@ export async function responseError(
 
   try {
     const { errorMessage, errorStatus, errorType } = parseErrorMessage(error);
-    logger.error(
-      `[${errorType}]`,
-      errorMessage,
-      error instanceof Error ? error.stack : "",
-    );
+    logger.error(`[${errorType}]`, errorMessage, error instanceof Error ? error.stack : "");
 
-    const status =
-      errorStatus ?? (typeof init === "number" ? init : (init?.status ?? 500));
+    const status = errorStatus ?? (typeof init === "number" ? init : (init?.status ?? 500));
     const headers = new Headers(typeof init === "number" ? {} : init?.headers);
 
     if (checkIsHXRequest()) {

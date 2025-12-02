@@ -45,9 +45,7 @@ export const tagsRouter = new OpenAPIHono()
       tags: [tagsTag],
       request: {
         params: projectIdPathParams,
-        query: z
-          .object({ type: z.union([z.enum(TagTypes), z.literal("")]) })
-          .partial(),
+        query: z.object({ type: z.union([z.enum(TagTypes), z.literal("")]) }).partial(),
       },
       responses: {
         200: {
@@ -78,10 +76,7 @@ export const tagsRouter = new OpenAPIHono()
       if (ui && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
         return context.html(
-          ui.renderTagsListPage(
-            { project, tags, defaultType: type },
-            createUIAdapterOptions(),
-          ),
+          ui.renderTagsListPage({ project, tags, defaultType: type }, createUIAdapterOptions()),
         );
       }
 
@@ -119,9 +114,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(
-        ui.renderTagCreatePage({ project }, createUIAdapterOptions()),
-      );
+      return context.html(ui.renderTagCreatePage({ project }, createUIAdapterOptions()));
     },
   )
   .openapi(
@@ -159,10 +152,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
-        return await responseError(
-          `The project '${projectId}' does not exist.`,
-          404,
-        );
+        return await responseError(`The project '${projectId}' does not exist.`, 404);
       }
 
       await authenticateOrThrow({
@@ -220,10 +210,7 @@ export const tagsRouter = new OpenAPIHono()
         const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
         return context.html(
-          ui.renderTagDetailsPage(
-            { builds, project, tag },
-            createUIAdapterOptions(),
-          ),
+          ui.renderTagDetailsPage({ builds, project, tag }, createUIAdapterOptions()),
         );
       }
 
@@ -300,9 +287,7 @@ export const tagsRouter = new OpenAPIHono()
       const tag = await new TagsModel(projectId).get(tagId);
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(
-        ui.renderTagUpdatePage({ project, tag }, createUIAdapterOptions()),
-      );
+      return context.html(ui.renderTagUpdatePage({ project, tag }, createUIAdapterOptions()));
     },
   )
   .openapi(

@@ -32,12 +32,8 @@ export function ProjectDetailsPage({
         breadcrumbs={[{ href: urlBuilder.projectsList(), label: "Projects" }]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <LinkButton href={urlBuilder.buildCreate(project.id)}>
-              + Create Build
-            </LinkButton>
-            <LinkButton href={urlBuilder.projectUpdate(project.id)}>
-              Edit
-            </LinkButton>
+            <LinkButton href={urlBuilder.buildCreate(project.id)}>+ Create Build</LinkButton>
+            <LinkButton href={urlBuilder.projectUpdate(project.id)}>Edit</LinkButton>
             <form
               method="post"
               action={purgeUrl}

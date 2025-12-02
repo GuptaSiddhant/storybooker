@@ -14,17 +14,15 @@ export function ProjectCreatePage(): JSXElement {
 
   return (
     <DocumentLayout title={title}>
-      <DocumentHeader
-        breadcrumbs={[{ href: urlBuilder.projectsList(), label: "Projects" }]}
-      >
+      <DocumentHeader breadcrumbs={[{ href: urlBuilder.projectsList(), label: "Projects" }]}>
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
         <ProjectForm project={undefined} />
       </DocumentMain>
       <DocumentSidebar style={{ fontSize: "0.9em", padding: "1rem" }}>
-        A project is a collection of StoryBook builds and tags. One project
-        corresponds to one StoryBook instance/project.
+        A project is a collection of StoryBook builds and tags. One project corresponds to one
+        StoryBook instance/project.
       </DocumentSidebar>
       <DocumentUserSection />
     </DocumentLayout>

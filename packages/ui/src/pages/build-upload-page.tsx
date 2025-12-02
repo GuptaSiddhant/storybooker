@@ -1,8 +1,4 @@
-import type {
-  BuildType,
-  BuildUploadVariant,
-  ProjectType,
-} from "@storybooker/core/types";
+import type { BuildType, BuildUploadVariant, ProjectType } from "@storybooker/core/types";
 import { BuildUploadForm } from "../components/build-upload-form";
 import {
   DocumentHeader,
@@ -40,11 +36,7 @@ export function BuildUploadPage({
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <BuildUploadForm
-          build={build}
-          projectId={project.id}
-          uploadVariant={uploadVariant}
-        />
+        <BuildUploadForm build={build} projectId={project.id} uploadVariant={uploadVariant} />
       </DocumentMain>
       <DocumentSidebar></DocumentSidebar>
       <DocumentUserSection />

@@ -63,11 +63,7 @@ export function BuildsTable({
                       const tag = tags.find((tag) => tag.id === id);
                       return (
                         <>
-                          <a
-                            safe
-                            href={urlBuilder.tagDetails(project.id, id)}
-                            title={id}
-                          >
+                          <a safe href={urlBuilder.tagDetails(project.id, id)} title={id}>
                             {tag ? `${tag.value} (${tag.type})` : id}
                           </a>
                           {index === arr.length - 1 ? null : <span>, </span>}
@@ -89,10 +85,7 @@ export function BuildsTable({
 
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
-                <a
-                  href={urlBuilder.storybookIndexHtml(project.id, item.id)}
-                  target="_blank"
-                >
+                <a href={urlBuilder.storybookIndexHtml(project.id, item.id)} target="_blank">
                   View
                 </a>
                 <a
@@ -111,25 +104,15 @@ export function BuildsTable({
           header: "Tests",
           cell: (item) => {
             if (item.testReport === "none") {
-              return (
-                <span class="description">
-                  No test/coverage report uploaded yet
-                </span>
-              );
+              return <span class="description">No test/coverage report uploaded yet</span>;
             }
 
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
-                <a
-                  href={urlBuilder.storybookTestReport(project.id, item.id)}
-                  target="_blank"
-                >
+                <a href={urlBuilder.storybookTestReport(project.id, item.id)} target="_blank">
                   Test Report
                 </a>
-                <a
-                  href={urlBuilder.storybookCoverage(project.id, item.id)}
-                  target="_blank"
-                >
+                <a href={urlBuilder.storybookCoverage(project.id, item.id)} target="_blank">
                   Coverage
                 </a>
               </div>
@@ -143,11 +126,7 @@ export function BuildsTable({
             return (
               <div style={{ display: "flex", gap: "1rem" }}>
                 <a
-                  href={urlBuilder.gitHub(
-                    project.gitHubRepository,
-                    "commit",
-                    item.id,
-                  )}
+                  href={urlBuilder.gitHub(project.gitHubRepository, "commit", item.id)}
                   target="_blank"
                 >
                   Commit

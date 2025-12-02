@@ -1,13 +1,8 @@
-import type {
-  StoryBookerPermission,
-  StoryBookerPermissionKey,
-} from "../adapters/auth";
+import type { StoryBookerPermission, StoryBookerPermissionKey } from "../adapters/auth";
 import { getStore } from "../utils/store";
 import { responseError } from "./response";
 
-export async function authenticateOrThrow(
-  permission: StoryBookerPermission,
-): Promise<void> {
+export async function authenticateOrThrow(permission: StoryBookerPermission): Promise<void> {
   const { abortSignal, auth, logger, request, user } = getStore();
   if (!auth) {
     // No authentication service configured, allow all actions
@@ -42,9 +37,7 @@ export async function authenticateOrThrow(
   }
 }
 
-export async function checkAuthorisation(
-  permission: StoryBookerPermission,
-): Promise<boolean> {
+export async function checkAuthorisation(permission: StoryBookerPermission): Promise<boolean> {
   try {
     await authenticateOrThrow(permission);
     return true;

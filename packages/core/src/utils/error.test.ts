@@ -58,8 +58,7 @@ describe("parseErrorMessage", () => {
 
     const result = parseErrorMessage(newError);
     expect(result).toEqual({
-      errorMessage:
-        "✖ Invalid input: expected string, received number\n  → at foo",
+      errorMessage: "✖ Invalid input: expected string, received number\n  → at foo",
       errorStatus: 400,
       errorType: "Zod",
     });

@@ -33,9 +33,7 @@ export function TagDetailsPage({
             <LinkButton href={urlBuilder.buildCreate(project.id, tag.id)}>
               + Create Build
             </LinkButton>
-            <LinkButton href={urlBuilder.tagUpdate(project.id, tag.id)}>
-              Edit
-            </LinkButton>
+            <LinkButton href={urlBuilder.tagUpdate(project.id, tag.id)}>Edit</LinkButton>
             <form
               method="post"
               action={deleteUrl}

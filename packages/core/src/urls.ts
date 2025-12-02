@@ -35,10 +35,9 @@ export class UrlBuilder {
     });
   }
   staticFile(filepath: string): string {
-    return linkRoute(
-      (client) => client[":filepath{.+}"].$url({ param: { filepath } }),
-      { baseUrl: this.#baseUrl },
-    );
+    return linkRoute((client) => client[":filepath{.+}"].$url({ param: { filepath } }), {
+      baseUrl: this.#baseUrl,
+    });
   }
 
   // accounts
@@ -49,10 +48,9 @@ export class UrlBuilder {
   }
 
   login(redirect?: string): string {
-    return linkRoute(
-      (client) => client.account.login.$url({ query: { redirect } }),
-      { baseUrl: this.#baseUrl },
-    );
+    return linkRoute((client) => client.account.login.$url({ query: { redirect } }), {
+      baseUrl: this.#baseUrl,
+    });
   }
   logout(): string {
     return linkRoute((client) => client.account.logout.$url(), {
@@ -72,22 +70,19 @@ export class UrlBuilder {
     });
   }
   projectDetails(projectId: string): string {
-    return linkRoute(
-      (client) => client.projects[":projectId"].$url({ param: { projectId } }),
-      { baseUrl: this.#baseUrl },
-    );
+    return linkRoute((client) => client.projects[":projectId"].$url({ param: { projectId } }), {
+      baseUrl: this.#baseUrl,
+    });
   }
   projectUpdate(projectId: string): string {
     return linkRoute(
-      (client) =>
-        client.projects[":projectId"].update.$url({ param: { projectId } }),
+      (client) => client.projects[":projectId"].update.$url({ param: { projectId } }),
       { baseUrl: this.#baseUrl },
     );
   }
   projectDelete(projectId: string): string {
     return linkRoute(
-      (client) =>
-        client.projects[":projectId"].delete.$url({ param: { projectId } }),
+      (client) => client.projects[":projectId"].delete.$url({ param: { projectId } }),
       { baseUrl: this.#baseUrl },
     );
   }
@@ -95,8 +90,7 @@ export class UrlBuilder {
   // builds
   buildsList(projectId: string): string {
     return linkRoute(
-      (client) =>
-        client.projects[":projectId"].builds.$url({ param: { projectId } }),
+      (client) => client.projects[":projectId"].builds.$url({ param: { projectId } }),
       { baseUrl: this.#baseUrl },
     );
   }
@@ -137,11 +131,7 @@ export class UrlBuilder {
       { baseUrl: this.#baseUrl },
     );
   }
-  buildUpload(
-    projectId: string,
-    buildId: string,
-    variant?: BuildUploadVariant,
-  ): string {
+  buildUpload(projectId: string, buildId: string, variant?: BuildUploadVariant): string {
     return linkRoute(
       (client) =>
         client.projects[":projectId"].builds[":buildId"].upload.$url({
@@ -209,16 +199,11 @@ export class UrlBuilder {
 
   // tasks
   taskPurge(projectId?: string): string {
-    return linkRoute(
-      (client) => client.tasks.purge.$url({ query: { projectId } }),
-      { baseUrl: this.#baseUrl },
-    );
+    return linkRoute((client) => client.tasks.purge.$url({ query: { projectId } }), {
+      baseUrl: this.#baseUrl,
+    });
   }
-  taskProcessZip(
-    projectId: string,
-    buildId: string,
-    variant: BuildUploadVariant,
-  ): string {
+  taskProcessZip(projectId: string, buildId: string, variant: BuildUploadVariant): string {
     return linkRoute(
       (client) =>
         client.tasks["process-zip"].$url({
@@ -229,11 +214,7 @@ export class UrlBuilder {
   }
 
   // serve
-  storybookIndexHtml(
-    projectId: string,
-    buildId: string,
-    storyId?: string,
-  ): string {
+  storybookIndexHtml(projectId: string, buildId: string, storyId?: string): string {
     return linkRoute(
       (client) =>
         client._[":projectId"][":buildId"][":filepath{.+}"].$url({
@@ -249,11 +230,7 @@ export class UrlBuilder {
       { baseUrl: this.#baseUrl },
     );
   }
-  storybookIFrameHtml(
-    projectId: string,
-    buildId: string,
-    storyId: string,
-  ): string {
+  storybookIFrameHtml(projectId: string, buildId: string, storyId: string): string {
     return linkRoute(
       (client) =>
         client._[":projectId"][":buildId"][":filepath{.+}"].$url({
@@ -309,11 +286,7 @@ export class UrlBuilder {
       { baseUrl: this.#baseUrl },
     );
   }
-  storybookScreenshot(
-    projectId: string,
-    buildId: string,
-    ...filename: string[]
-  ): string {
+  storybookScreenshot(projectId: string, buildId: string, ...filename: string[]): string {
     return linkRoute(
       (client) =>
         client._[":projectId"][":buildId"][":filepath{.+}"].$url({
@@ -345,10 +318,7 @@ export class UrlBuilder {
   // external
   // oxlint-disable-next-line class-methods-use-this
   gitHub(gitHubRepo: string, ...pathnames: string[]): string {
-    const url = new URL(
-      urlJoin(gitHubRepo, ...pathnames),
-      "https://github.com",
-    );
+    const url = new URL(urlJoin(gitHubRepo, ...pathnames), "https://github.com");
     return url.toString();
   }
 }

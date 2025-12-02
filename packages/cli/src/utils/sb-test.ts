@@ -36,10 +36,7 @@ export function testStoryBook({
   const existsTestReportDirpath = fs.existsSync(testReportDirpath);
 
   if (existsTestReportDirpath) {
-    console.log(
-      "> Test report saved at '%s'.",
-      path.relative(cwd, testReportDirpath),
-    );
+    console.log("> Test report saved at '%s'.", path.relative(cwd, testReportDirpath));
   } else {
     console.warn("> Test report was not created'.");
   }
@@ -47,18 +44,13 @@ export function testStoryBook({
   const testCoverageDirpath = path.join(cwd, testCoverageDir);
   const existsTestCoverageDirpath = fs.existsSync(testCoverageDirpath);
   if (existsTestCoverageDirpath) {
-    console.log(
-      "> Test coverage saved at '%s'.",
-      path.relative(cwd, testCoverageDirpath),
-    );
+    console.log("> Test coverage saved at '%s'.", path.relative(cwd, testCoverageDirpath));
   } else {
     console.warn("> Test coverage was not created'.");
   }
 
   return {
-    testCoverageDirpath: existsTestCoverageDirpath
-      ? testCoverageDirpath
-      : undefined,
+    testCoverageDirpath: existsTestCoverageDirpath ? testCoverageDirpath : undefined,
     testReportDirpath: existsTestReportDirpath ? testReportDirpath : undefined,
   };
 }

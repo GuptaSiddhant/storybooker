@@ -9,11 +9,7 @@ import {
 import { TagForm } from "../components/tag-form";
 import { getUIStore } from "../utils/ui-store";
 
-export function TagCreatePage({
-  project,
-}: {
-  project: ProjectType;
-}): JSXElement {
+export function TagCreatePage({ project }: { project: ProjectType }): JSXElement {
   const title = "Create Tag";
   const { urlBuilder } = getUIStore();
 

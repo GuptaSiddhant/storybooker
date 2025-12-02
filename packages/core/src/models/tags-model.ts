@@ -5,12 +5,7 @@ import { checkAuthorisation } from "../utils/auth";
 import { Model, type BaseModel, type ListOptions } from "./~model";
 import { BuildsModel } from "./builds-model";
 import { ProjectsModel } from "./projects-model";
-import {
-  TagSchema,
-  type TagCreateType,
-  type TagType,
-  type TagUpdateType,
-} from "./tags-schema";
+import { TagSchema, type TagCreateType, type TagType, type TagUpdateType } from "./tags-schema";
 
 export class TagsModel extends Model<TagType> {
   constructor(projectId: string) {
@@ -20,11 +15,7 @@ export class TagsModel extends Model<TagType> {
   async list(options: ListOptions<TagType> = {}): Promise<TagType[]> {
     this.log("List tags...");
 
-    const items = await this.database.listDocuments(
-      this.collectionId,
-      options,
-      this.dbOptions,
-    );
+    const items = await this.database.listDocuments(this.collectionId, options, this.dbOptions);
 
     return TagSchema.array().parse(items);
   }
@@ -48,11 +39,7 @@ export class TagsModel extends Model<TagType> {
         id: id,
         updatedAt: now,
       };
-      await this.database.createDocument<TagType>(
-        this.collectionId,
-        tag,
-        this.dbOptions,
-      );
+      await this.database.createDocument<TagType>(this.collectionId, tag, this.dbOptions);
 
       return tag;
     } catch (error) {
@@ -66,11 +53,7 @@ export class TagsModel extends Model<TagType> {
   async get(id: string): Promise<TagType> {
     this.log("Get tag '%s'...", id);
 
-    const item = await this.database.getDocument(
-      this.collectionId,
-      id,
-      this.dbOptions,
-    );
+    const item = await this.database.getDocument(this.collectionId, id, this.dbOptions);
 
     return TagSchema.parse(item);
   }
@@ -78,11 +61,7 @@ export class TagsModel extends Model<TagType> {
   async has(id: string): Promise<boolean> {
     this.log("Check tag '%s'...", id);
     try {
-      return await this.database.hasDocument(
-        this.collectionId,
-        id,
-        this.dbOptions,
-      );
+      return await this.database.hasDocument(this.collectionId, id, this.dbOptions);
     } catch {
       return false;
     }
@@ -104,9 +83,7 @@ export class TagsModel extends Model<TagType> {
   async delete(id: string): Promise<void> {
     this.log("Delete tag '%s'...", id);
 
-    const { gitHubDefaultBranch } = await new ProjectsModel().get(
-      this.projectId,
-    );
+    const { gitHubDefaultBranch } = await new ProjectsModel().get(this.projectId);
     if (id === TagsModel.createId(gitHubDefaultBranch)) {
       const message = `Cannot delete the tag associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
       this.error(message);

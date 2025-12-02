@@ -31,9 +31,7 @@ async function purgeProject(project: ProjectType): Promise<void> {
     latestBuildId,
     purgeBuildsAfterDays = DEFAULT_PURGE_AFTER_DAYS,
   } = project;
-  const expiryTime = new Date(
-    Date.now() - purgeBuildsAfterDays * ONE_DAY_IN_MS,
-  );
+  const expiryTime = new Date(Date.now() - purgeBuildsAfterDays * ONE_DAY_IN_MS);
   logger.log(
     `[Project: ${projectId}] Purge builds which were last modified more than ${purgeBuildsAfterDays} days ago - before ${new Date(
       expiryTime,
@@ -42,16 +40,13 @@ async function purgeProject(project: ProjectType): Promise<void> {
 
   const buildsModel = new BuildsModel(projectId);
   const expiredBuilds = await buildsModel.list({
-    filter: (item) =>
-      item.id !== latestBuildId && new Date(item.updatedAt) < expiryTime,
+    filter: (item) => item.id !== latestBuildId && new Date(item.updatedAt) < expiryTime,
   });
   for (const build of expiredBuilds) {
     // oxlint-disable-next-line no-await-in-loop
     await buildsModel.delete(build.id, true);
   }
-  logger.log(
-    `[Project: ${projectId}] Purged ${expiredBuilds.length} expired builds.`,
-  );
+  logger.log(`[Project: ${projectId}] Purged ${expiredBuilds.length} expired builds.`);
 
   const tagsModel = new TagsModel(projectId);
   const emptyTags = await tagsModel.list({
@@ -66,7 +61,5 @@ async function purgeProject(project: ProjectType): Promise<void> {
     // oxlint-disable-next-line no-await-in-loop
     await tagsModel.delete(tag.id);
   }
-  logger.log(
-    `[Project: ${projectId}] Purged ${emptyTags.length} empty tags...`,
-  );
+  logger.log(`[Project: ${projectId}] Purged ${emptyTags.length} empty tags...`);
 }

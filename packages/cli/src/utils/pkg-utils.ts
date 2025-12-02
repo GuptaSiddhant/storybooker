@@ -2,10 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 export type PkgManager = "npm" | "yarn" | "pnpm" | "bun" | "deno";
-export function detectPackageManager(
-  startDir: string = process.cwd(),
-  maxDepth = 5,
-): PkgManager {
+export function detectPackageManager(startDir: string = process.cwd(), maxDepth = 5): PkgManager {
   let currentDir = startDir;
   let depth = 0;
 

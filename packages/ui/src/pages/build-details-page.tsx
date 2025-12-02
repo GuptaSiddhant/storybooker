@@ -1,8 +1,4 @@
-import type {
-  BuildStoryType,
-  BuildType,
-  ProjectType,
-} from "@storybooker/core/types";
+import type { BuildStoryType, BuildType, ProjectType } from "@storybooker/core/types";
 import { BuildLinksFooter } from "../components/build-links";
 import { BuildProcessStatus } from "../components/build-process";
 import { BuildStories } from "../components/build-stories";
@@ -48,9 +44,7 @@ export function BuildDetailsPage({
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             {shouldShowUploadButton ? (
-              <LinkButton href={urlBuilder.buildUpload(project.id, build.id)}>
-                Upload
-              </LinkButton>
+              <LinkButton href={urlBuilder.buildUpload(project.id, build.id)}>Upload</LinkButton>
             ) : null}
             {hasDeletePermission ? (
               <form
@@ -65,9 +59,7 @@ export function BuildDetailsPage({
           </div>
         }
       >
-        {build.message
-          ? `[${build.id.slice(0, 7)}] ${build.message}`
-          : build.id.slice(0, 7)}
+        {build.message ? `[${build.id.slice(0, 7)}] ${build.message}` : build.id.slice(0, 7)}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
         <BuildProcessStatus

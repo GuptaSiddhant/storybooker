@@ -15,11 +15,7 @@ import { TagCreatePage } from "./pages/tag-create-page";
 import { TagDetailsPage } from "./pages/tag-details-page";
 import { TagUpdatePage } from "./pages/tag-update-page";
 import { TagsListPage } from "./pages/tags-list-pages";
-import {
-  DEFAULT_DARK_THEME,
-  DEFAULT_LIGHT_THEME,
-  type BrandTheme,
-} from "./styles/theme";
+import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./styles/theme";
 import { DEFAULT_STATIC_DIRS } from "./utils/constants";
 import { createUIStore, uiStore } from "./utils/ui-store";
 
@@ -74,11 +70,7 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
     renderBuildDetailsPage: (props, adapterOptions) => {
       uiStore.enterWith(createUIStore(adapterOptions, options));
       return (
-        <BuildDetailsPage
-          {...props}
-          hasDeletePermission={false}
-          hasUpdatePermission={false}
-        />
+        <BuildDetailsPage {...props} hasDeletePermission={false} hasUpdatePermission={false} />
       );
     },
     renderBuildUploadPage: (props, adapterOptions) => {

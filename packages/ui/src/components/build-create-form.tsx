@@ -7,10 +7,7 @@ export interface BuildFormProps {
   tagId?: string;
 }
 
-export function BuildCreateForm({
-  projectId,
-  tagId,
-}: BuildFormProps): JSXElement {
+export function BuildCreateForm({ projectId, tagId }: BuildFormProps): JSXElement {
   const { url, urlBuilder } = getUIStore();
 
   return (

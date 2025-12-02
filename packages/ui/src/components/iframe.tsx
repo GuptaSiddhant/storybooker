@@ -1,10 +1,7 @@
 import type { JSX } from "hono/jsx";
 
 export type IFrameProps = JSX.IntrinsicElements["iframe"];
-export function IFrameContainer({
-  children,
-  ...props
-}: IFrameProps): JSXElement {
+export function IFrameContainer({ children, ...props }: IFrameProps): JSXElement {
   return (
     <iframe
       srcdoc={`

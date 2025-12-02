@@ -6,9 +6,7 @@ import type { LoggerAdapter } from "./logger";
  * The service is responsible to authorise users from
  * accessing the app.
  */
-export interface AuthAdapter<
-  AuthUser extends StoryBookerUser = StoryBookerUser,
-> {
+export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser> {
   /**
    * An optional method that is called on app boot-up
    * to run async setup functions.
@@ -51,20 +49,14 @@ export interface AuthAdapter<
    *
    * @param options Common options like abortSignal.
    */
-  logout?: (
-    user: AuthUser,
-    options: AuthAdapterOptions,
-  ) => Promise<Response> | Response;
+  logout?: (user: AuthUser, options: AuthAdapterOptions) => Promise<Response> | Response;
 
   /**
    * Render custom HTML in account page. Must return valid HTML string;
    *
    * @param options Common options like abortSignal.
    */
-  renderAccountDetails?: (
-    user: AuthUser,
-    options: AuthAdapterOptions,
-  ) => Promise<string> | string;
+  renderAccountDetails?: (user: AuthUser, options: AuthAdapterOptions) => Promise<string> | string;
 }
 
 /**
@@ -76,9 +68,7 @@ export interface AuthAdapter<
  * - false - returns 403 response
  * - Response - returns the specified HTTP response
  */
-export type AuthAdapterAuthorise<
-  AuthUser extends StoryBookerUser = StoryBookerUser,
-> = (
+export type AuthAdapterAuthorise<AuthUser extends StoryBookerUser = StoryBookerUser> = (
   params: {
     permission: StoryBookerPermissionWithKey;
     user: AuthUser;
@@ -102,11 +92,7 @@ export type StoryBookerPermissionKey =
 /** Type of possible resources to check permissions for */
 export type StoryBookerPermissionResource = "project" | "build" | "tag";
 /** Type of possible actions to check permissions for */
-export type StoryBookerPermissionAction =
-  | "create"
-  | "read"
-  | "update"
-  | "delete";
+export type StoryBookerPermissionAction = "create" | "read" | "update" | "delete";
 
 /**
  * Base representation of a generic User

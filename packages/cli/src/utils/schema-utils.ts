@@ -12,20 +12,15 @@ declare module "zod" {
 }
 
 export const sharedSchemas = {
-  project: z
-    .string({ error: "ProjectID is required to match with project." })
-    .meta({
-      alias: ["p"],
-      description: "Project ID associated with the StoryBook.",
-    }),
+  project: z.string({ error: "ProjectID is required to match with project." }).meta({
+    alias: ["p"],
+    description: "Project ID associated with the StoryBook.",
+  }),
   url: z.url({ error: "URL is required to connect to the service." }).meta({
     alias: ["u"],
     description: "URL of the StoryBooker service.",
   }),
-  cwd: z
-    .string()
-    .optional()
-    .meta({ description: "Change the working directory for the command." }),
+  cwd: z.string().optional().meta({ description: "Change the working directory for the command." }),
 
   testReportDir: z.string().optional().meta({
     description: "Relative path of the test report directory to upload.",
@@ -44,9 +39,7 @@ export const sharedSchemas = {
   }),
 };
 
-export function zodSchemaToCommandBuilder(
-  objectSchema: z.core.$ZodObject,
-): CommandBuilder {
+export function zodSchemaToCommandBuilder(objectSchema: z.core.$ZodObject): CommandBuilder {
   const builder: CommandBuilder = {};
   for (const [key, schema] of Object.entries(objectSchema._zod.def.shape)) {
     const meta = schema instanceof z.ZodType ? schema.meta() : undefined;
@@ -70,9 +63,7 @@ export function zodSchemaToCommandBuilder(
     }
 
     let defaultValue =
-      schema instanceof z.core.$ZodDefault
-        ? schema._zod.def.defaultValue
-        : undefined;
+      schema instanceof z.core.$ZodDefault ? schema._zod.def.defaultValue : undefined;
     if (typeof defaultValue === "function") {
       defaultValue = String(defaultValue());
     }
@@ -97,9 +88,7 @@ export function zodSchemaToCommandBuilder(
   return builder;
 }
 
-function zodSchemaTypeToYargsBuilderType(
-  schema: z.core.$ZodType,
-): Options["type"] {
+function zodSchemaTypeToYargsBuilderType(schema: z.core.$ZodType): Options["type"] {
   if (schema instanceof z.core.$ZodArray) {
     return "array";
   }

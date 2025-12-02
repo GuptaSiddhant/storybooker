@@ -1,9 +1,7 @@
 import z from "zod";
 import { PATTERNS } from "../utils/constants";
 
-export const TagIdSchema = z
-  .string()
-  .meta({ description: "The ID of the tag.", id: "TagID" });
+export const TagIdSchema = z.string().meta({ description: "The ID of the tag.", id: "TagID" });
 
 export const BuildIdSchema = z
   .string()
@@ -12,8 +10,5 @@ export const BuildIdSchema = z
 
 export const ProjectIdSchema = z
   .string()
-  .refine(
-    (val) => new RegExp(PATTERNS.projectId.pattern).test(val),
-    PATTERNS.projectId.message,
-  )
+  .refine((val) => new RegExp(PATTERNS.projectId.pattern).test(val), PATTERNS.projectId.message)
   .meta({ description: "The ID of the project.", id: "ProjectID" });

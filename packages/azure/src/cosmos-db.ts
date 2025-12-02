@@ -26,9 +26,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
       const response = await this.#db.containers
         .readAll({ abortSignal: options.abortSignal })
         .fetchAll();
-      const collections: string[] = response.resources.map(
-        (resource) => resource.id,
-      );
+      const collections: string[] = response.resources.map((resource) => resource.id);
 
       return collections;
     } catch (error) {
@@ -36,28 +34,16 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     }
   };
 
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (collectionId, options) => {
     try {
-      await this.#db.containers.create(
-        { id: collectionId },
-        { abortSignal: options.abortSignal },
-      );
+      await this.#db.containers.create({ id: collectionId }, { abortSignal: options.abortSignal });
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, options) => {
     try {
       const response = await this.#db
         .container(collectionId)
@@ -68,20 +54,12 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     }
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, options) => {
     try {
-      await this.#db
-        .container(collectionId)
-        .delete({ abortSignal: options.abortSignal });
+      await this.#db.container(collectionId).delete({ abortSignal: options.abortSignal });
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -113,11 +91,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
       document.id = documentId;
       return document;
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
@@ -140,21 +114,13 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     }
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, options) => {
     const item = this.#db.container(collectionId).item(documentId);
     const response = await item.read({ abortSignal: options.abortSignal });
     return !!response.resource;
   };
 
-  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ) => {
+  deleteDocument: DatabaseAdapter["deleteDocument"] = async (collectionId, documentId, options) => {
     try {
       await this.#db
         .container(collectionId)
@@ -162,11 +128,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
         .delete({ abortSignal: options.abortSignal });
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
@@ -194,11 +156,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
 
       return;
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 }

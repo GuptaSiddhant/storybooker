@@ -54,9 +54,7 @@ export function RawDataList({
           >
             {key.includes(" ") ? key : camelCaseToSentenceCase(key)}
           </dt>
-          <dd
-            style={{ fontSize: "0.9em", margin: 0, overflowWrap: "break-word" }}
-          >
+          <dd style={{ fontSize: "0.9em", margin: 0, overflowWrap: "break-word" }}>
             {(typeof value === "string" ? (
               ISO_DATE_REGEXP.test(value) ? (
                 new Date(value).toLocaleString(locale)
@@ -125,9 +123,5 @@ export function RawDataTabular({
     );
   }
 
-  return (
-    <div style={{ height: "auto", overflow: "auto", width: "100%" }}>
-      {content}
-    </div>
-  );
+  return <div style={{ height: "auto", overflow: "auto", width: "100%" }}>{content}</div>;
 }

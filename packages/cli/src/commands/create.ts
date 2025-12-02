@@ -11,10 +11,7 @@ import type { paths } from "../service-schema";
 import { createAuthMiddleware } from "../utils/auth-utils";
 import { buildStoryBook } from "../utils/sb-build";
 import { testStoryBook } from "../utils/sb-test";
-import {
-  sharedSchemas,
-  zodSchemaToCommandBuilder,
-} from "../utils/schema-utils";
+import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils";
 import { toReadableStream } from "../utils/stream-utils";
 import type { ServiceClient } from "../utils/types";
 import { zip } from "../utils/zip";
@@ -170,33 +167,27 @@ async function createSBRBuild(
   { project, sha, message, labels }: z.infer<typeof CreateSchema>,
   ignorePrevious?: boolean,
 ): Promise<void> {
-  const { error, response } = await client.POST(
-    "/projects/{projectId}/builds/create",
-    {
-      params: { path: { projectId: project } },
-      body: {
-        authorEmail: "Siddhant@asd.com",
-        authorName: "Siddhant",
-        labels,
-        sha,
-        message,
-      },
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+  const { error, response } = await client.POST("/projects/{projectId}/builds/create", {
+    params: { path: { projectId: project } },
+    body: {
+      authorEmail: "Siddhant@asd.com",
+      authorName: "Siddhant",
+      labels,
+      sha,
+      message,
     },
-  );
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
 
   if (error) {
     if (ignorePrevious) {
-      console.warn(
-        styleText("yellow", "> StoryBooker Build entry already exits."),
-      );
+      console.warn(styleText("yellow", "> StoryBooker Build entry already exits."));
     } else {
       throw new Error(
-        error.errorMessage ||
-          `Request to service failed with status: ${response.status}.`,
+        error.errorMessage || `Request to service failed with status: ${response.status}.`,
       );
     }
   } else {
@@ -232,29 +223,25 @@ async function uploadSBRBuild(
   const fileSize = fs.statSync(zipFilepath).size;
 
   console.log(`> Uploading file '%s'...`, path.relative(cwd, zipFilepath));
-  const { error, response } = await client.POST(
-    "/projects/{projectId}/builds/{buildSHA}/upload",
-    {
-      params: {
-        path: { projectId: project, buildSHA: sha },
-        query: { variant },
-      },
-      // @ts-expect-error assign stream to object
-      body: toReadableStream(fs.createReadStream(zipFilepath), fileSize),
-      bodySerializer: (body) => body,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/zip",
-        "Content-Length": fileSize.toString(),
-      },
-      duplex: "half",
+  const { error, response } = await client.POST("/projects/{projectId}/builds/{buildSHA}/upload", {
+    params: {
+      path: { projectId: project, buildSHA: sha },
+      query: { variant },
     },
-  );
+    // @ts-expect-error assign stream to object
+    body: toReadableStream(fs.createReadStream(zipFilepath), fileSize),
+    bodySerializer: (body) => body,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/zip",
+      "Content-Length": fileSize.toString(),
+    },
+    duplex: "half",
+  });
 
   if (error) {
     throw new Error(
-      error.errorMessage ||
-        `Request to service failed with status: ${response.status}.`,
+      error.errorMessage || `Request to service failed with status: ${response.status}.`,
     );
   } else {
     console.log("> Uploaded '%s / %s / %s'.", project, sha, variant);

@@ -7,13 +7,7 @@ import {
 } from "../components/document";
 import { ErrorMessage } from "../components/error-message";
 
-export function ErrorPage({
-  title,
-  message,
-}: {
-  title: string;
-  message: string;
-}): JSXElement {
+export function ErrorPage({ title, message }: { title: string; message: string }): JSXElement {
   return (
     <DocumentLayout title={title}>
       <DocumentHeader

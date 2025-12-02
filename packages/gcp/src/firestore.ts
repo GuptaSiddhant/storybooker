@@ -24,26 +24,17 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
   };
 
   // oxlint-disable-next-line class-methods-use-this --- NOOP
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    _collectionId,
-    _options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (_collectionId, _options) => {
     // Firestore creates collections implicitly when you add a document.
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, _options) => {
     const col = this.#instance.collection(collectionId);
     const snapshot = await col.limit(1).get();
     return !snapshot.empty;
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, _options) => {
     // Firestore doesn't have a direct way to delete a collection
     // We need to delete all documents in the collection
     try {
@@ -58,10 +49,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
       }
       await batch.commit();
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -83,10 +71,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
 
       return list;
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -100,10 +85,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     const docRef = this.#instance.collection(collectionId).doc(documentId);
     const doc = await docRef.get();
     if (!doc.exists) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
     return { ...doc.data(), id: doc.id } as Document;
   };
@@ -114,9 +96,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     _options,
   ) => {
     try {
-      const docRef = this.#instance
-        .collection(collectionId)
-        .doc(documentData.id);
+      const docRef = this.#instance.collection(collectionId).doc(documentData.id);
       await docRef.create(documentData);
     } catch (error) {
       throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
@@ -127,11 +107,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     }
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    _options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, _options) => {
     const docRef = this.#instance.collection(collectionId).doc(documentId);
     const doc = await docRef.get();
     return doc.exists;
@@ -146,11 +122,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
       const docRef = this.#instance.collection(collectionId).doc(documentId);
       await docRef.delete();
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 
@@ -166,11 +138,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
         mergeFields: Object.keys(documentData),
       });
     } catch (error) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
   };
 }

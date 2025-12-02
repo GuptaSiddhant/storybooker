@@ -2,10 +2,7 @@ import { Buffer } from "node:buffer";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import type { File, Storage } from "@google-cloud/storage";
-import {
-  StorageAdapterErrors,
-  type StorageAdapter,
-} from "@storybooker/core/adapter";
+import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 
 export class GcpGcsStorageService implements StorageAdapter {
   #client: Storage;
@@ -14,40 +11,25 @@ export class GcpGcsStorageService implements StorageAdapter {
     this.#client = client;
   }
 
-  createContainer: StorageAdapter["createContainer"] = async (
-    containerId,
-    _options,
-  ) => {
+  createContainer: StorageAdapter["createContainer"] = async (containerId, _options) => {
     try {
       const bucketName = genBucketNameFromContainerId(containerId);
       await this.#client.createBucket(bucketName, {});
     } catch (error) {
-      throw new StorageAdapterErrors.ContainerAlreadyExistsError(
-        containerId,
-        error,
-      );
+      throw new StorageAdapterErrors.ContainerAlreadyExistsError(containerId, error);
     }
   };
 
-  deleteContainer: StorageAdapter["deleteContainer"] = async (
-    containerId,
-    _options,
-  ) => {
+  deleteContainer: StorageAdapter["deleteContainer"] = async (containerId, _options) => {
     try {
       const bucketName = genBucketNameFromContainerId(containerId);
       await this.#client.bucket(bucketName).delete();
     } catch (error) {
-      throw new StorageAdapterErrors.ContainerDoesNotExistError(
-        containerId,
-        error,
-      );
+      throw new StorageAdapterErrors.ContainerDoesNotExistError(containerId, error);
     }
   };
 
-  hasContainer: StorageAdapter["hasContainer"] = async (
-    containerId,
-    _options,
-  ) => {
+  hasContainer: StorageAdapter["hasContainer"] = async (containerId, _options) => {
     const bucketName = genBucketNameFromContainerId(containerId);
     const [exists] = await this.#client.bucket(bucketName).exists();
     return exists;
@@ -58,11 +40,7 @@ export class GcpGcsStorageService implements StorageAdapter {
     return buckets.map((bucket) => bucket.name);
   };
 
-  deleteFiles: StorageAdapter["deleteFiles"] = async (
-    containerId,
-    filePathsOrPrefix,
-    _options,
-  ) => {
+  deleteFiles: StorageAdapter["deleteFiles"] = async (containerId, filePathsOrPrefix, _options) => {
     const bucketName = genBucketNameFromContainerId(containerId);
     const bucket = this.#client.bucket(bucketName);
 
@@ -73,18 +51,13 @@ export class GcpGcsStorageService implements StorageAdapter {
       // Delete specific files
       await Promise.all(
         filePathsOrPrefix.map(
-          async (filepath) =>
-            await bucket.file(filepath).delete({ ignoreNotFound: true }),
+          async (filepath) => await bucket.file(filepath).delete({ ignoreNotFound: true }),
         ),
       );
     }
   };
 
-  uploadFiles: StorageAdapter["uploadFiles"] = async (
-    containerId,
-    files,
-    _options,
-  ) => {
+  uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, _options) => {
     const bucketName = genBucketNameFromContainerId(containerId);
     const bucket = this.#client.bucket(bucketName);
 
@@ -95,31 +68,20 @@ export class GcpGcsStorageService implements StorageAdapter {
     );
   };
 
-  hasFile: StorageAdapter["hasFile"] = async (
-    containerId,
-    filepath,
-    _options,
-  ) => {
+  hasFile: StorageAdapter["hasFile"] = async (containerId, filepath, _options) => {
     const bucketName = genBucketNameFromContainerId(containerId);
     const file = this.#client.bucket(bucketName).file(filepath);
     const [exists] = await file.exists();
     return exists;
   };
 
-  downloadFile: StorageAdapter["downloadFile"] = async (
-    containerId,
-    filepath,
-    _options,
-  ) => {
+  downloadFile: StorageAdapter["downloadFile"] = async (containerId, filepath, _options) => {
     const bucketName = genBucketNameFromContainerId(containerId);
     const file = this.#client.bucket(bucketName).file(filepath);
 
     const [exists] = await file.exists();
     if (!exists) {
-      throw new StorageAdapterErrors.FileDoesNotExistError(
-        containerId,
-        filepath,
-      );
+      throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);
     }
 
     const [metadata] = await file.getMetadata();
@@ -162,9 +124,7 @@ async function uploadFileToGcs(
   }
 
   const readable =
-    data instanceof ReadableStream
-      ? Readable.fromWeb(data as streamWeb.ReadableStream)
-      : data;
+    data instanceof ReadableStream ? Readable.fromWeb(data as streamWeb.ReadableStream) : data;
 
   if (readable instanceof Readable) {
     // Node.js Readable stream

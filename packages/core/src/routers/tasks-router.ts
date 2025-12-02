@@ -67,10 +67,7 @@ export const tasksRouter = new OpenAPIHono()
         await handleProcessZip(projectId, buildId, variant);
 
         if (checkIsHTMLRequest(true)) {
-          return responseRedirect(
-            urlBuilder.buildDetails(projectId, buildId),
-            303,
-          );
+          return responseRedirect(urlBuilder.buildDetails(projectId, buildId), 303);
         }
 
         context.status(204);

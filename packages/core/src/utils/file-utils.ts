@@ -9,9 +9,7 @@ export async function writeStreamToFile(
 ): Promise<void> {
   const writable = createWriteStream(filePath);
   const readable =
-    stream instanceof Readable
-      ? stream
-      : Readable.fromWeb(stream as WebReadableStream);
+    stream instanceof Readable ? stream : Readable.fromWeb(stream as WebReadableStream);
   for await (const chunk of readable) {
     if (!writable.write(chunk)) {
       // Wait if backpressure is applied
@@ -27,9 +25,7 @@ export function writeWebStreamToFile(
   outputPath: string,
 ): Promise<null> {
   // Convert WebReadableStream to Node.js Readable stream
-  const nodeReadableStream = Readable.fromWeb(
-    webReadableStream as WebReadableStream,
-  );
+  const nodeReadableStream = Readable.fromWeb(webReadableStream as WebReadableStream);
 
   // Create a writable file stream
   const fileWritableStream = createWriteStream(outputPath);

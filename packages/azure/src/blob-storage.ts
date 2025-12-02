@@ -1,14 +1,7 @@
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
-import type {
-  BlobClient,
-  BlobServiceClient,
-  BlockBlobClient,
-} from "@azure/storage-blob";
-import {
-  StorageAdapterErrors,
-  type StorageAdapter,
-} from "@storybooker/core/adapter";
+import type { BlobClient, BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
+import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 
 export class AzureBlobStorageService implements StorageAdapter {
   #client: BlobServiceClient;
@@ -17,44 +10,29 @@ export class AzureBlobStorageService implements StorageAdapter {
     this.#client = client;
   }
 
-  createContainer: StorageAdapter["createContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     try {
       const containerName = genContainerNameFromContainerId(containerId);
       await this.#client.createContainer(containerName, {
         abortSignal: options.abortSignal,
       });
     } catch (error) {
-      throw new StorageAdapterErrors.ContainerAlreadyExistsError(
-        containerId,
-        error,
-      );
+      throw new StorageAdapterErrors.ContainerAlreadyExistsError(containerId, error);
     }
   };
 
-  deleteContainer: StorageAdapter["deleteContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  deleteContainer: StorageAdapter["deleteContainer"] = async (containerId, options) => {
     try {
       const containerName = genContainerNameFromContainerId(containerId);
       await this.#client.getContainerClient(containerName).deleteIfExists({
         abortSignal: options.abortSignal,
       });
     } catch (error) {
-      throw new StorageAdapterErrors.ContainerDoesNotExistError(
-        containerId,
-        error,
-      );
+      throw new StorageAdapterErrors.ContainerDoesNotExistError(containerId, error);
     }
   };
 
-  hasContainer: StorageAdapter["hasContainer"] = async (
-    containerId,
-    options,
-  ) => {
+  hasContainer: StorageAdapter["hasContainer"] = async (containerId, options) => {
     const containerName = genContainerNameFromContainerId(containerId);
     return await this.#client.getContainerClient(containerName).exists({
       abortSignal: options.abortSignal,
@@ -72,11 +50,7 @@ export class AzureBlobStorageService implements StorageAdapter {
     return containers;
   };
 
-  deleteFiles: StorageAdapter["deleteFiles"] = async (
-    containerId,
-    filePathsOrPrefix,
-    options,
-  ) => {
+  deleteFiles: StorageAdapter["deleteFiles"] = async (containerId, filePathsOrPrefix, options) => {
     const containerName = genContainerNameFromContainerId(containerId);
     const containerClient = this.#client.getContainerClient(containerName);
     const blobClientsToDelete: BlobClient[] = [];
@@ -98,11 +72,9 @@ export class AzureBlobStorageService implements StorageAdapter {
       return;
     }
 
-    const response = await containerClient
-      .getBlobBatchClient()
-      .deleteBlobs(blobClientsToDelete, {
-        abortSignal: options.abortSignal,
-      });
+    const response = await containerClient.getBlobBatchClient().deleteBlobs(blobClientsToDelete, {
+      abortSignal: options.abortSignal,
+    });
 
     if (response.errorCode) {
       throw new StorageAdapterErrors.CustomError(
@@ -113,11 +85,7 @@ export class AzureBlobStorageService implements StorageAdapter {
     return;
   };
 
-  uploadFiles: StorageAdapter["uploadFiles"] = async (
-    containerId,
-    files,
-    options,
-  ) => {
+  uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, options) => {
     const containerName = genContainerNameFromContainerId(containerId);
     const containerClient = this.#client.getContainerClient(containerName);
 
@@ -134,38 +102,24 @@ export class AzureBlobStorageService implements StorageAdapter {
     );
 
     if (errors.length > 0) {
-      options.logger.error(
-        `Failed to upload ${errors.length} files. Errors:`,
-        errors,
-      );
+      options.logger.error(`Failed to upload ${errors.length} files. Errors:`, errors);
     }
   };
 
-  hasFile: StorageAdapter["hasFile"] = async (
-    containerId,
-    filepath,
-    options,
-  ) => {
+  hasFile: StorageAdapter["hasFile"] = async (containerId, filepath, options) => {
     const containerName = genContainerNameFromContainerId(containerId);
     const containerClient = this.#client.getContainerClient(containerName);
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
     return await blockBlobClient.exists({ abortSignal: options.abortSignal });
   };
 
-  downloadFile: StorageAdapter["downloadFile"] = async (
-    containerId,
-    filepath,
-    options,
-  ) => {
+  downloadFile: StorageAdapter["downloadFile"] = async (containerId, filepath, options) => {
     const containerName = genContainerNameFromContainerId(containerId);
     const containerClient = this.#client.getContainerClient(containerName);
     const blockBlobClient = containerClient.getBlockBlobClient(filepath);
 
     if (!(await blockBlobClient.exists())) {
-      throw new StorageAdapterErrors.FileDoesNotExistError(
-        containerId,
-        filepath,
-      );
+      throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);
     }
 
     const downloadResponse = await blockBlobClient.download(0, undefined, {

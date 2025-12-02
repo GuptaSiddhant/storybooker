@@ -21,10 +21,7 @@ export function toLocalTime(
   return new Date(value).toLocaleString(locale, options);
 }
 
-export function getText(
-  input: string,
-  replacements: Record<string, string>,
-): string {
+export function getText(input: string, replacements: Record<string, string>): string {
   let translation: string = typeof input === "string" ? input : String(input);
   if (replacements) {
     for (const rep of Object.entries(replacements)) {

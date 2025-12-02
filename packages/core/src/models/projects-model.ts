@@ -1,9 +1,6 @@
 import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/auth";
-import {
-  generateDatabaseCollectionId,
-  generateStorageContainerId,
-} from "../utils/adapter-utils";
+import { generateDatabaseCollectionId, generateStorageContainerId } from "../utils/adapter-utils";
 import { checkAuthorisation } from "../utils/auth";
 import { Model, type BaseModel, type ListOptions } from "./~model";
 import {
@@ -89,11 +86,7 @@ export class ProjectsModel extends Model<ProjectType> {
         createdAt: now,
         updatedAt: now,
       };
-      await this.database.createDocument<ProjectType>(
-        this.collectionId,
-        project,
-        this.dbOptions,
-      );
+      await this.database.createDocument<ProjectType>(this.collectionId, project, this.dbOptions);
 
       return project;
     } catch (error) {
@@ -107,11 +100,7 @@ export class ProjectsModel extends Model<ProjectType> {
   async get(id: string): Promise<ProjectType> {
     this.log("Get project '%s'...", id);
 
-    const item = await this.database.getDocument(
-      this.collectionId,
-      id,
-      this.dbOptions,
-    );
+    const item = await this.database.getDocument(this.collectionId, id, this.dbOptions);
 
     return ProjectSchema.parse(item);
   }
@@ -120,11 +109,7 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("Check project '%s'...", id);
 
     try {
-      return await this.database.hasDocument(
-        this.collectionId,
-        id,
-        this.dbOptions,
-      );
+      return await this.database.hasDocument(this.collectionId, id, this.dbOptions);
     } catch {
       return false;
     }
@@ -142,10 +127,7 @@ export class ProjectsModel extends Model<ProjectType> {
 
     if (data.gitHubDefaultBranch) {
       try {
-        this.debug(
-          "Create default-branch tag '%s'...",
-          data.gitHubDefaultBranch,
-        );
+        this.debug("Create default-branch tag '%s'...", data.gitHubDefaultBranch);
         await new TagsModel(id).create({
           type: "branch",
           value: data.gitHubDefaultBranch,
@@ -171,24 +153,15 @@ export class ProjectsModel extends Model<ProjectType> {
     );
 
     this.debug("Delete project-tags collection");
-    await this.database.deleteCollection(
-      generateDatabaseCollectionId(id, "Tags"),
-      this.dbOptions,
-    );
+    await this.database.deleteCollection(generateDatabaseCollectionId(id, "Tags"), this.dbOptions);
 
     this.debug("Create project container");
-    await this.storage.deleteContainer(
-      generateStorageContainerId(id),
-      this.storageOptions,
-    );
+    await this.storage.deleteContainer(generateStorageContainerId(id), this.storageOptions);
 
     return;
   }
 
-  async checkAuth(
-    action: StoryBookerPermissionAction,
-    id?: string,
-  ): Promise<boolean> {
+  async checkAuth(action: StoryBookerPermissionAction, id?: string): Promise<boolean> {
     return await checkAuthorisation({
       action,
       projectId: id ?? (this.projectId || undefined),
@@ -198,8 +171,7 @@ export class ProjectsModel extends Model<ProjectType> {
 
   id: BaseModel<ProjectType>["id"] = (id: string) => {
     return {
-      checkAuth: (action) =>
-        checkAuthorisation({ action, projectId: id, resource: "project" }),
+      checkAuth: (action) => checkAuthorisation({ action, projectId: id, resource: "project" }),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
       has: this.has.bind(this, id),

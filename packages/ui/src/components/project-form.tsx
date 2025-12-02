@@ -29,15 +29,9 @@ export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
         {project?.id ? null : (
           <div class="field">
             <label for="id">Project ID</label>
-            <input
-              id="id"
-              name="id"
-              pattern={PATTERNS.projectId.pattern}
-              required
-            />
+            <input id="id" name="id" pattern={PATTERNS.projectId.pattern} required />
             <span class="description">
-              Only lowercase alphabets, numbers and hyphen (-) allowed. Max
-              length: 60 chars
+              Only lowercase alphabets, numbers and hyphen (-) allowed. Max length: 60 chars
             </span>
           </div>
         )}
@@ -71,9 +65,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
             placeholder="packages/ui"
             value={project?.gitHubPath}
           />
-          <span class={"description"}>
-            Optional. If the Storybook is not is the root of repo.
-          </span>
+          <span class={"description"}>Optional. If the Storybook is not is the root of repo.</span>
         </div>
 
         <div class="field">
@@ -84,9 +76,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
             placeholder="main"
             value={project?.gitHubDefaultBranch || DEFAULT_GITHUB_BRANCH}
           />
-          <span class={"description"}>
-            Optional. If the default branch is not 'main'.
-          </span>
+          <span class={"description"}>Optional. If the default branch is not 'main'.</span>
         </div>
       </fieldset>
 
@@ -114,9 +104,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
             required
             type="number"
             inputmode="numeric"
-            value={(
-              project?.purgeBuildsAfterDays || DEFAULT_PURGE_AFTER_DAYS
-            ).toString()}
+            value={(project?.purgeBuildsAfterDays || DEFAULT_PURGE_AFTER_DAYS).toString()}
           />
           <span class={"description"} safe>
             Days after which the builds in the project should be purged.
@@ -128,11 +116,7 @@ export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
         <button type="submit">{project ? "Update" : "Create"} Project</button>
         <button type="reset">Reset</button>
         <LinkButton
-          href={
-            project
-              ? urlBuilder.projectDetails(project.id)
-              : urlBuilder.projectsList()
-          }
+          href={project ? urlBuilder.projectDetails(project.id) : urlBuilder.projectsList()}
         >
           Cancel
         </LinkButton>

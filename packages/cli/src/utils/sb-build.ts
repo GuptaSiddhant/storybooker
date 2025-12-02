@@ -38,18 +38,11 @@ export function buildStoryBook({
 
   const outputDirpath = output?.split("Output directory: ").at(1)?.trim();
 
-  if (
-    outputDirpath === undefined ||
-    outputDirpath === "" ||
-    !fs.existsSync(outputDirpath)
-  ) {
+  if (outputDirpath === undefined || outputDirpath === "" || !fs.existsSync(outputDirpath)) {
     console.error(`Could not find build output at '${outputDirpath}'.`);
     return undefined;
   }
 
-  console.log(
-    "> Built StoryBook to dir: '%s'.",
-    path.relative(cwd, outputDirpath),
-  );
+  console.log("> Built StoryBook to dir: '%s'.", path.relative(cwd, outputDirpath));
   return outputDirpath;
 }

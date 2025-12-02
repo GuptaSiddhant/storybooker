@@ -44,9 +44,7 @@ export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
           {TagTypes.map((type) => {
             const id = `type-${type}`;
             return (
-              <div
-                style={{ alignItems: "center", display: "flex", gap: "0.5rem" }}
-              >
+              <div style={{ alignItems: "center", display: "flex", gap: "0.5rem" }}>
                 <input
                   id={id}
                   name="type"
@@ -61,20 +59,14 @@ export function TagForm({ tag, projectId }: TagFormProps): JSXElement {
           })}
         </div>
 
-        <span class="description">
-          Type of tag defines behaviour of the tag.
-        </span>
+        <span class="description">Type of tag defines behaviour of the tag.</span>
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="submit">{tag ? "Update" : "Create"} Tags</button>
         <button type="reset">Reset</button>
         <LinkButton
-          href={
-            tag
-              ? urlBuilder.tagDetails(projectId, tag.id)
-              : urlBuilder.tagsList(projectId)
-          }
+          href={tag ? urlBuilder.tagDetails(projectId, tag.id) : urlBuilder.tagsList(projectId)}
         >
           Cancel
         </LinkButton>

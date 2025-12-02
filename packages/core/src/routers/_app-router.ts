@@ -12,14 +12,15 @@ import { rootRouter } from "./root-router";
 import { tagsRouter } from "./tags-router";
 import { tasksRouter } from "./tasks-router";
 
-type OpenAPIObjectConfig<Configure extends OpenAPIObjectConfigure<Env, "">> =
-  Configure extends (context: Context) => infer Config ? Config : Configure;
+type OpenAPIObjectConfig<Configure extends OpenAPIObjectConfigure<Env, "">> = Configure extends (
+  context: Context,
+) => infer Config
+  ? Config
+  : Configure;
 /**
  * @private
  */
-export const openapiConfig: OpenAPIObjectConfig<
-  OpenAPIObjectConfigure<Env, "">
-> = {
+export const openapiConfig: OpenAPIObjectConfig<OpenAPIObjectConfigure<Env, "">> = {
   openapi: "3.1.0",
   info: { version: pkgJson.version, title: SERVICE_NAME },
 };
@@ -53,8 +54,5 @@ export const appRouter = new OpenAPIHono({ strict: false })
       return context.notFound();
     }
 
-    return await ui.handleUnhandledRoute(
-      context.req.param("filepath"),
-      createUIAdapterOptions(),
-    );
+    return await ui.handleUnhandledRoute(context.req.param("filepath"), createUIAdapterOptions());
   });

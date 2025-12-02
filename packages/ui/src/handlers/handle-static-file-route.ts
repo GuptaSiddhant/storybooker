@@ -74,12 +74,7 @@ export async function handleStaticFileRoute(
 
   const contentType = getMimeType(staticFilepath);
 
-  logger.log(
-    "%s: '%s' (%s)",
-    "Serving static file from disk.",
-    staticFilepath,
-    contentType,
-  );
+  logger.log("%s: '%s' (%s)", "Serving static file from disk.", staticFilepath, contentType);
 
   const content = await fsp.readFile(staticFilepath);
 

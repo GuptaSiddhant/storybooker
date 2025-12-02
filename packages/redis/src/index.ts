@@ -53,42 +53,25 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
   }
 
   listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
-    const collections = await this.#client.sMembers(
-      this.#getCollectionsSetKey(),
-    );
+    const collections = await this.#client.sMembers(this.#getCollectionsSetKey());
     return collections;
   };
 
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  createCollection: DatabaseAdapter["createCollection"] = async (collectionId, _options) => {
     try {
       // Add collection to the set of collections
       await this.#client.sAdd(this.#getCollectionsSetKey(), collectionId);
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
   };
 
-  hasCollection: DatabaseAdapter["hasCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
-    const exists = await this.#client.sIsMember(
-      this.#getCollectionsSetKey(),
-      collectionId,
-    );
+  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, _options) => {
+    const exists = await this.#client.sIsMember(this.#getCollectionsSetKey(), collectionId);
     return exists > 0;
   };
 
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    _options,
-  ) => {
+  deleteCollection: DatabaseAdapter["deleteCollection"] = async (collectionId, _options) => {
     try {
       // Get all document keys for this collection
       const pattern = this.#getDocumentKey(collectionId, "*");
@@ -102,10 +85,7 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
       // Remove collection from the set
       await this.#client.sRem(this.#getCollectionsSetKey(), collectionId);
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
   };
 
@@ -187,21 +167,14 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     const value = await this.#client.get(key);
 
     if (!value) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     const document: Document = JSON.parse(value);
     return document;
   };
 
-  hasDocument: DatabaseAdapter["hasDocument"] = async (
-    collectionId,
-    documentId,
-    _options,
-  ) => {
+  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, _options) => {
     const key = this.#getDocumentKey(collectionId, documentId);
     const exists = await this.#client.exists(key);
     return exists === 1;
@@ -216,10 +189,7 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     try {
       await this.#client.sAdd(this.#getCollectionsSetKey(), collectionId);
     } catch (error) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(
-        collectionId,
-        error,
-      );
+      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
 
     try {
@@ -245,10 +215,7 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     // Get existing document
     const existingValue = await this.#client.get(key);
     if (!existingValue) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
     const existingDoc = JSON.parse(existingValue);
@@ -267,10 +234,7 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     const deleted = await this.#client.del(key);
 
     if (deleted === 0) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(
-        collectionId,
-        documentId,
-      );
+      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
   };
 }

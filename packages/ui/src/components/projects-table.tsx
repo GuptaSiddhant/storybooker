@@ -10,11 +10,7 @@ export interface ProjectsTableProps {
   projects: ProjectType[];
 }
 
-export function ProjectsTable({
-  caption,
-  toolbar,
-  projects,
-}: ProjectsTableProps): JSXElement {
+export function ProjectsTable({ caption, toolbar, projects }: ProjectsTableProps): JSXElement {
   const { locale, urlBuilder } = getUIStore();
 
   return (
@@ -46,20 +42,14 @@ export function ProjectsTable({
         {
           id: "build",
           header: `Latest Build`,
-          cell: (item) => (
-            <LatestBuild projectId={item.id} buildId={item.latestBuildId} />
-          ),
+          cell: (item) => <LatestBuild projectId={item.id} buildId={item.latestBuildId} />,
         },
         {
           id: "gitHub",
           header: "GitHub",
           cell: (item) => {
             const pathnames = item.gitHubPath
-              ? [
-                  "tree",
-                  item.gitHubDefaultBranch || DEFAULT_GITHUB_BRANCH,
-                  item.gitHubPath,
-                ]
+              ? ["tree", item.gitHubDefaultBranch || DEFAULT_GITHUB_BRANCH, item.gitHubPath]
               : [];
             const href = urlBuilder.gitHub(item.gitHubRepository, ...pathnames);
 

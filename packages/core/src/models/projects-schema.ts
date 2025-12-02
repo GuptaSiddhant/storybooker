@@ -1,8 +1,5 @@
 import z from "zod";
-import {
-  DEFAULT_GITHUB_BRANCH,
-  DEFAULT_PURGE_AFTER_DAYS,
-} from "../utils/constants";
+import { DEFAULT_GITHUB_BRANCH, DEFAULT_PURGE_AFTER_DAYS } from "../utils/constants";
 import { BuildIdSchema, ProjectIdSchema } from "./~shared-schema";
 
 export { ProjectIdSchema };
@@ -18,8 +15,7 @@ export const ProjectSchema = z
       .default(DEFAULT_GITHUB_BRANCH)
       .meta({ description: "Default branch to use for GitHub repository" }),
     gitHubPath: z.string().optional().meta({
-      description:
-        "Path to the storybook project with respect to repository root.",
+      description: "Path to the storybook project with respect to repository root.",
     }),
     gitHubRepository: z.string().check(
       z.minLength(1, "Query-param 'gitHubRepo' is required."),
@@ -37,14 +33,9 @@ export const ProjectSchema = z
 
     name: z.string().meta({ description: "Name of the project." }),
 
-    purgeBuildsAfterDays: z.coerce
-      .number()
-      .min(1)
-      .default(DEFAULT_PURGE_AFTER_DAYS)
-      .meta({
-        description:
-          "Days after which the builds in the project should be purged.",
-      }),
+    purgeBuildsAfterDays: z.coerce.number().min(1).default(DEFAULT_PURGE_AFTER_DAYS).meta({
+      description: "Days after which the builds in the project should be purged.",
+    }),
 
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
   })

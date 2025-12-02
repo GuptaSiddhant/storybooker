@@ -27,16 +27,10 @@ export function DocumentLayout({
           <title>
             {title} | {SERVICE_NAME}
           </title>
-          <link
-            rel="icon"
-            href={"https://storybooker.js.org/img/SBR_white_128.jpg"}
-          />
+          <link rel="icon" href={"https://storybooker.js.org/img/SBR_white_128.jpg"} />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link
-            href={urlBuilder.staticFile(ASSETS.globalStyles)}
-            rel="stylesheet"
-          />
+          <link href={urlBuilder.staticFile(ASSETS.globalStyles)} rel="stylesheet" />
           <link
             rel="preload"
             as="image"
@@ -51,11 +45,7 @@ export function DocumentLayout({
             src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2"
             crossorigin="anonymous"
           ></script>
-          <script
-            src={urlBuilder.staticFile(ASSETS.globalScript)}
-            defer
-            async
-          />
+          <script src={urlBuilder.staticFile(ASSETS.globalScript)} defer async />
         </head>
         <body>
           <div id="app">
@@ -84,10 +74,7 @@ export function DocumentLayout({
             </footer>
           </div>
 
-          <script
-            defer
-            src="https://unpkg.com/htmx-toaster/dist/htmx-toaster.min.js"
-          />
+          <script defer src="https://unpkg.com/htmx-toaster/dist/htmx-toaster.min.js" />
         </body>
       </html>
     </>
@@ -175,10 +162,7 @@ export function DocumentHeader({
             {breadcrumbs.map((crumb, index, arr) => {
               const href =
                 (typeof crumb === "object" ? crumb.href : "") ||
-                urlJoin(
-                  store.url,
-                  ...Array.from({ length: arr.length - index }).map(() => ".."),
-                );
+                urlJoin(store.url, ...Array.from({ length: arr.length - index }).map(() => ".."));
               return (
                 <li>
                   <a safe href={href}>

@@ -4,10 +4,7 @@ import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/auth";
 import { handleProcessZip } from "../handlers/handle-process-zip";
 import { urlBuilder } from "../urls";
-import {
-  generateDatabaseCollectionId,
-  generateStorageContainerId,
-} from "../utils/adapter-utils";
+import { generateDatabaseCollectionId, generateStorageContainerId } from "../utils/adapter-utils";
 import { checkAuthorisation } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
 import { getStore } from "../utils/store";
@@ -40,10 +37,7 @@ export class BuildsModel extends Model<BuildType> {
       this.collectionId,
       {
         sort: (itemA, itemB) => {
-          return (
-            new Date(itemB.updatedAt).getTime() -
-            new Date(itemA.updatedAt).getTime()
-          );
+          return new Date(itemB.updatedAt).getTime() - new Date(itemA.updatedAt).getTime();
         },
         ...options,
       },
@@ -64,9 +58,7 @@ export class BuildsModel extends Model<BuildType> {
         });
       }
 
-      const tags = Array.isArray(parsedTags)
-        ? parsedTags
-        : parsedTags.split(",");
+      const tags = Array.isArray(parsedTags) ? parsedTags : parsedTags.split(",");
       const tagIds = await Promise.all(
         tags.filter(Boolean).map(async (tagId) => {
           return await this.#updateOrCreateTag(tagId, id);
@@ -87,11 +79,7 @@ export class BuildsModel extends Model<BuildType> {
         tagIds: tagIds.filter(Boolean).join(","),
         updatedAt: now,
       };
-      await this.database.createDocument<BuildType>(
-        this.collectionId,
-        build,
-        this.dbOptions,
-      );
+      await this.database.createDocument<BuildType>(this.collectionId, build, this.dbOptions);
 
       try {
         const projectsModel = new ProjectsModel();
@@ -115,11 +103,7 @@ export class BuildsModel extends Model<BuildType> {
   async get(id: string): Promise<BuildType> {
     this.log("Get build '%s'...", id);
 
-    const item = await this.database.getDocument(
-      this.collectionId,
-      id,
-      this.dbOptions,
-    );
+    const item = await this.database.getDocument(this.collectionId, id, this.dbOptions);
 
     return BuildSchema.parse(item);
   }
@@ -128,11 +112,7 @@ export class BuildsModel extends Model<BuildType> {
     this.log("Check build '%s'...", id);
 
     try {
-      return await this.database.hasDocument(
-        this.collectionId,
-        id,
-        this.dbOptions,
-      );
+      return await this.database.hasDocument(this.collectionId, id, this.dbOptions);
     } catch {
       return false;
     }
@@ -157,11 +137,7 @@ export class BuildsModel extends Model<BuildType> {
     const build = await this.get(buildId);
 
     this.debug("Delete document '%s'", buildId);
-    await this.database.deleteDocument(
-      this.collectionId,
-      buildId,
-      this.dbOptions,
-    );
+    await this.database.deleteDocument(this.collectionId, buildId, this.dbOptions);
 
     try {
       this.debug("Delete files '%s'", buildId);
@@ -205,11 +181,7 @@ export class BuildsModel extends Model<BuildType> {
     }
   }
 
-  async upload(
-    buildId: string,
-    variant: BuildUploadVariant,
-    zipFile?: File,
-  ): Promise<void> {
+  async upload(buildId: string, variant: BuildUploadVariant, zipFile?: File): Promise<void> {
     const { config, request } = getStore();
     this.log("Upload build '%s' (%s)...", buildId, variant);
     const variantCopy = variant; // for switch fallthrough/default
@@ -228,32 +200,21 @@ export class BuildsModel extends Model<BuildType> {
         } = config || {};
 
         // Automatically process zip if feature is enabled and size is below limit
-        if (
-          size !== undefined &&
-          size <= maxInlineUploadProcessingSizeInBytes
-        ) {
-          await handleProcessZip(this.projectId, buildId, variant).catch(
-            (error: unknown) => {
-              this.error(error);
-            },
-          );
+        if (size !== undefined && size <= maxInlineUploadProcessingSizeInBytes) {
+          await handleProcessZip(this.projectId, buildId, variant).catch((error: unknown) => {
+            this.error(error);
+          });
           return;
         }
 
         // Otherwise queue processing task if enabled
         if (queueLargeZipFileProcessing) {
           this.log("Queue processing for build '%s' (%s)...", buildId, variant);
-          const url = urlBuilder.taskProcessZip(
-            this.projectId,
-            buildId,
-            variant,
-          );
+          const url = urlBuilder.taskProcessZip(this.projectId, buildId, variant);
           // Do not await fetch to avoid blocking
-          fetch(url, { headers: request.headers, method: "POST" }).catch(
-            (error: unknown) => {
-              this.error(error);
-            },
-          );
+          fetch(url, { headers: request.headers, method: "POST" }).catch((error: unknown) => {
+            this.error(error);
+          });
         }
 
         return;
@@ -288,11 +249,8 @@ export class BuildsModel extends Model<BuildType> {
     });
   }
 
-  async getStories(
-    idOrBuild: string | BuildType,
-  ): Promise<BuildStoryType[] | null> {
-    const { storybook, id } =
-      typeof idOrBuild === "string" ? await this.get(idOrBuild) : idOrBuild;
+  async getStories(idOrBuild: string | BuildType): Promise<BuildStoryType[] | null> {
+    const { storybook, id } = typeof idOrBuild === "string" ? await this.get(idOrBuild) : idOrBuild;
 
     if (storybook !== "ready") {
       return null;
@@ -310,16 +268,9 @@ export class BuildsModel extends Model<BuildType> {
         { logger },
       );
       const data: unknown =
-        typeof content === "string"
-          ? JSON.parse(content)
-          : await new Response(content).json();
+        typeof content === "string" ? JSON.parse(content) : await new Response(content).json();
 
-      if (
-        !data ||
-        typeof data !== "object" ||
-        !("entries" in data) ||
-        !data.entries
-      ) {
+      if (!data || typeof data !== "object" || !("entries" in data) || !data.entries) {
         return [];
       }
 
@@ -333,8 +284,7 @@ export class BuildsModel extends Model<BuildType> {
   // helpers
   async listByTag(tagId: string): Promise<BuildType[]> {
     const builds = await this.list({
-      filter: (item) =>
-        item.tagIds ? item.tagIds.split(",").includes(tagId) : false,
+      filter: (item) => (item.tagIds ? item.tagIds.split(",").includes(tagId) : false),
     });
 
     return builds;
@@ -365,9 +315,7 @@ export class BuildsModel extends Model<BuildType> {
   async #updateOrCreateTag(tagId: string, buildId: string): Promise<string> {
     const tagsModel = new TagsModel(this.projectId);
     // Either "my-tag" or "my-tag;branch" or "my-tag;branch;My tag"
-    const [id = tagId, tagType, tagValue] = tagId
-      .split(";")
-      .map((part) => part.trim());
+    const [id = tagId, tagType, tagValue] = tagId.split(";").map((part) => part.trim());
 
     try {
       const existingTag = await tagsModel.get(id);
@@ -381,10 +329,7 @@ export class BuildsModel extends Model<BuildType> {
         const type = (tagType as TagVariant) || TagsModel.guessType(id);
         const value = tagValue || id;
         this.log("A new tag '%s' (%s) is being created.", value, type);
-        const tag = await tagsModel.create(
-          { latestBuildId: buildId, type, value },
-          true,
-        );
+        const tag = await tagsModel.create({ latestBuildId: buildId, type, value }, true);
 
         return tag.id;
       } catch (error) {

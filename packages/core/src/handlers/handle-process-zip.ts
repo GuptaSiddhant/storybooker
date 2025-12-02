@@ -36,11 +36,10 @@ export async function handleProcessZip(
     await buildIdModel.update({ [variant]: "processing" });
 
     debugLog("Downloading zip file");
-    const file = await storage.downloadFile(
-      containerId,
-      `${buildId}/${variant}.zip`,
-      { abortSignal, logger },
-    );
+    const file = await storage.downloadFile(containerId, `${buildId}/${variant}.zip`, {
+      abortSignal,
+      logger,
+    });
 
     if (!file.content) {
       throw new Error("No file content found.");
@@ -68,18 +67,13 @@ export async function handleProcessZip(
     await buildIdModel.update({ [variant]: "ready" });
   } finally {
     debugLog("Cleaning up temp dir");
-    await fsp
-      .rm(localDirpath, { force: true, recursive: true })
-      .catch(logger.error);
+    await fsp.rm(localDirpath, { force: true, recursive: true }).catch(logger.error);
   }
 
   return;
 }
 
-async function dirpathToFiles(
-  dirpath: string,
-  prefix: string,
-): Promise<StoryBookerFile[]> {
+async function dirpathToFiles(dirpath: string, prefix: string): Promise<StoryBookerFile[]> {
   const allEntriesInDir = await fsp.readdir(dirpath, {
     encoding: "utf8",
     recursive: true,

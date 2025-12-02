@@ -1,10 +1,6 @@
 import type { JSX } from "hono/jsx";
 
-export function Card({
-  children,
-  style,
-  ...props
-}: JSX.IntrinsicElements["article"]): JSXElement {
+export function Card({ children, style, ...props }: JSX.IntrinsicElements["article"]): JSXElement {
   return (
     <article
       {...props}
@@ -31,11 +27,7 @@ export function Card({
   );
 }
 
-export function CardGrid({
-  children,
-  style,
-  ...props
-}: JSX.IntrinsicElements["div"]): JSXElement {
+export function CardGrid({ children, style, ...props }: JSX.IntrinsicElements["div"]): JSXElement {
   return (
     <div
       {...props}
@@ -58,11 +50,7 @@ export function CardGrid({
   );
 }
 
-export function CardRow({
-  children,
-  style,
-  ...props
-}: JSX.IntrinsicElements["div"]): JSXElement {
+export function CardRow({ children, style, ...props }: JSX.IntrinsicElements["div"]): JSXElement {
   return (
     <div
       {...props}

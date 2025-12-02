@@ -10,11 +10,7 @@ import {
 import { ProjectsTable } from "../components/projects-table";
 import { getUIStore } from "../utils/ui-store";
 
-export function ProjectsListPage({
-  projects,
-}: {
-  projects: ProjectType[];
-}): JSXElement {
+export function ProjectsListPage({ projects }: { projects: ProjectType[] }): JSXElement {
   const title = `All Projects`;
 
   const { urlBuilder } = getUIStore();

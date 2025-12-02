@@ -11,12 +11,7 @@ export interface TagsTableProps {
   tags: TagType[];
 }
 
-export function TagsTable({
-  tags,
-  project,
-  toolbar,
-  caption,
-}: TagsTableProps): JSXElement {
+export function TagsTable({ tags, project, toolbar, caption }: TagsTableProps): JSXElement {
   const { locale, urlBuilder } = getUIStore();
 
   return (
@@ -44,9 +39,7 @@ export function TagsTable({
           id: "id",
           header: "ID",
           cell: (item) => {
-            return (
-              <a href={urlBuilder.tagDetails(project.id, item.id)}>{item.id}</a>
-            );
+            return <a href={urlBuilder.tagDetails(project.id, item.id)}>{item.id}</a>;
           },
         },
         {
@@ -56,25 +49,15 @@ export function TagsTable({
             let href = "";
             switch (item.type) {
               case "branch": {
-                href = urlBuilder.gitHub(
-                  project.gitHubRepository,
-                  "tree",
-                  item.value,
-                );
+                href = urlBuilder.gitHub(project.gitHubRepository, "tree", item.value);
                 break;
               }
               case "pr": {
-                href = urlBuilder.gitHub(
-                  project.gitHubRepository,
-                  "pull",
-                  item.value,
-                );
+                href = urlBuilder.gitHub(project.gitHubRepository, "pull", item.value);
                 break;
               }
               case "jira": {
-                href = project.jiraDomain
-                  ? urlJoin(project.jiraDomain, "browse", item.value)
-                  : "";
+                href = project.jiraDomain ? urlJoin(project.jiraDomain, "browse", item.value) : "";
                 break;
               }
               default:
@@ -104,19 +87,13 @@ export function TagsTable({
         {
           id: "build",
           header: `Latest Build`,
-          cell: (item) => (
-            <LatestBuild projectId={project.id} buildId={item.latestBuildId} />
-          ),
+          cell: (item) => <LatestBuild projectId={project.id} buildId={item.latestBuildId} />,
         },
         {
           id: "actions",
           header: "Actions",
           cell: (item) => {
-            return (
-              <a href={urlBuilder.tagDetails(project.id, item.id)}>
-                View builds
-              </a>
-            );
+            return <a href={urlBuilder.tagDetails(project.id, item.id)}>View builds</a>;
           },
         },
       ]}

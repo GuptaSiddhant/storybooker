@@ -44,10 +44,7 @@ export interface StorageAdapter {
    * @param options Common options like abortSignal.
    * @throws if container with ID already exists.
    */
-  createContainer: (
-    containerId: string,
-    options: StorageAdapterOptions,
-  ) => Promise<void>;
+  createContainer: (containerId: string, options: StorageAdapterOptions) => Promise<void>;
 
   /**
    * Delete an existing container.
@@ -55,10 +52,7 @@ export interface StorageAdapter {
    * @param options Common options like abortSignal.
    * @throws if container with ID does not exist.
    */
-  deleteContainer: (
-    containerId: string,
-    options: StorageAdapterOptions,
-  ) => Promise<void>;
+  deleteContainer: (containerId: string, options: StorageAdapterOptions) => Promise<void>;
 
   /**
    * Check if container exists.
@@ -67,10 +61,7 @@ export interface StorageAdapter {
    * @returns if container is available of not
    * @throws never.
    */
-  hasContainer: (
-    containerId: string,
-    options: StorageAdapterOptions,
-  ) => Promise<boolean>;
+  hasContainer: (containerId: string, options: StorageAdapterOptions) => Promise<boolean>;
 
   // Files
 

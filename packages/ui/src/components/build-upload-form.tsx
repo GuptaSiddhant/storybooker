@@ -43,9 +43,7 @@ export function BuildUploadForm({
             const disabled = checkIsVariantDisabled(build, variant);
 
             return (
-              <div
-                style={{ alignItems: "center", display: "flex", gap: "0.5rem" }}
-              >
+              <div style={{ alignItems: "center", display: "flex", gap: "0.5rem" }}>
                 <input
                   id={id}
                   name="variant"
@@ -66,20 +64,13 @@ export function BuildUploadForm({
 
       <fieldset>
         <legend>Zip file</legend>
-        <input
-          type="file"
-          name="file"
-          accept={"application/zip"}
-          multiple={false}
-        />
+        <input type="file" name="file" accept={"application/zip"} multiple={false} />
       </fieldset>
 
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="submit">Upload file</button>
         <button type="reset">Reset</button>
-        <LinkButton href={urlBuilder.buildDetails(projectId, build.id)}>
-          Cancel
-        </LinkButton>
+        <LinkButton href={urlBuilder.buildDetails(projectId, build.id)}>Cancel</LinkButton>
       </div>
 
       <fieldset id="progress" style={{ display: "none" }}>

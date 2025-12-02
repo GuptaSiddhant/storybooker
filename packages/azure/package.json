@@ -71,6 +71,7 @@
     "check": "tsgo --noEmit",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
+    "oxfmt": "npx oxfmt ./src --check",
     "lint": "oxlint --type-aware ./src",
     "lint:fix": "yarn lint --fix",
     "start": "func start"

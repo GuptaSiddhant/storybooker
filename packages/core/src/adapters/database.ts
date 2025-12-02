@@ -47,10 +47,7 @@ export interface DatabaseAdapter {
    * @throws {DatabaseNotInitializedError} if the DB service is not connected.
    * @throws {CollectionAlreadyExistsError} if collection with ID already exists.
    */
-  createCollection: (
-    collectionId: string,
-    options: DatabaseAdapterOptions,
-  ) => Promise<void>;
+  createCollection: (collectionId: string, options: DatabaseAdapterOptions) => Promise<void>;
 
   /**
    * Delete an existing collection.
@@ -59,10 +56,7 @@ export interface DatabaseAdapter {
    * @throws {DatabaseNotInitializedError} if the DB service is not connected.
    * @throws {CollectionDoesNotExistError} if collection with ID does not exist.
    */
-  deleteCollection: (
-    collectionId: string,
-    options: DatabaseAdapterOptions,
-  ) => Promise<void>;
+  deleteCollection: (collectionId: string, options: DatabaseAdapterOptions) => Promise<void>;
 
   /**
    * Check if collection exists.
@@ -71,10 +65,7 @@ export interface DatabaseAdapter {
    * @returns if collection is available of not
    * @throws never.
    */
-  hasCollection: (
-    collectionId: string,
-    options: DatabaseAdapterOptions,
-  ) => Promise<boolean>;
+  hasCollection: (collectionId: string, options: DatabaseAdapterOptions) => Promise<boolean>;
 
   // Documents (items, entries, rows, etc)
 

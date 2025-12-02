@@ -26,10 +26,7 @@ export interface UIAdapter {
     options: UIAdapterOptions,
   ) => Response | Promise<Response>;
 
-  renderHomePage(
-    props: { projects: ProjectType[] },
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  renderHomePage(props: { projects: ProjectType[] }, options: UIAdapterOptions): RenderedContent;
   renderErrorPage(
     props: { title: string; message: string; status: number },
     options: UIAdapterOptions,
@@ -52,10 +49,7 @@ export interface UIAdapter {
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderProjectCreatePage(
-    props: unknown,
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  renderProjectCreatePage(props: unknown, options: UIAdapterOptions): RenderedContent;
   renderProjectUpdatePage(
     props: { project: ProjectType },
     options: UIAdapterOptions,
@@ -78,10 +72,7 @@ export interface UIAdapter {
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderTagCreatePage(
-    props: { project: ProjectType },
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  renderTagCreatePage(props: { project: ProjectType }, options: UIAdapterOptions): RenderedContent;
   renderTagUpdatePage(
     props: {
       tag: TagType;

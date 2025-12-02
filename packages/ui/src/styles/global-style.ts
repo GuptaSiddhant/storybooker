@@ -1,16 +1,11 @@
-import {
-  DEFAULT_DARK_THEME,
-  DEFAULT_LIGHT_THEME,
-  type BrandTheme,
-} from "./theme";
+import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./theme";
 
 // oxlint-disable no-useless-escape
 export function generateGlobalStyleSheet(theme: {
   darkTheme: BrandTheme | undefined;
   lightTheme: BrandTheme | undefined;
 }): string {
-  const { darkTheme = DEFAULT_DARK_THEME, lightTheme = DEFAULT_LIGHT_THEME } =
-    theme || {};
+  const { darkTheme = DEFAULT_DARK_THEME, lightTheme = DEFAULT_LIGHT_THEME } = theme || {};
 
   return /* css */ `
     :root {
