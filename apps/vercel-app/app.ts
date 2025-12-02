@@ -1,3 +1,5 @@
+import "hono";
+
 import { createHonoRouter } from "@storybooker/core";
 import { LocalFileDatabase, LocalFileStorage } from "@storybooker/core/adapter/fs";
 
