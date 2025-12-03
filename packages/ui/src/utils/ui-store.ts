@@ -11,7 +11,7 @@ export interface UIStore extends UIAdapterOptions {
 export const uiStore = new AsyncLocalStorage<UIStore>();
 
 export function createUIStore(adapterOptions: UIAdapterOptions, options: BasicUIOptions): UIStore {
-  const urlBuilder = new UrlBuilder(adapterOptions.url);
+  const urlBuilder = new UrlBuilder(false);
   return { ...adapterOptions, logo: options.logo, urlBuilder };
 }
 

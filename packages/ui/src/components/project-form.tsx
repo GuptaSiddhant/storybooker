@@ -13,13 +13,13 @@ export interface ProjectsFormProps {
 }
 
 export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
-  const { url, urlBuilder } = getUIStore();
+  const { urlBuilder } = getUIStore();
 
   return (
     <form
       method="post"
       hx-ext="response-targets"
-      hx-post={url}
+      hx-post={urlBuilder.projectCreate()}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
     >

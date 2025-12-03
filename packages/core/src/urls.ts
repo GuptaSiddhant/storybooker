@@ -10,18 +10,18 @@ export { urlJoin };
  * URL builder for the Storybooks router.
  */
 export class UrlBuilder {
-  url: string | undefined;
+  useStore: boolean;
 
-  constructor(url?: string) {
-    if (url) {
-      this.url = url;
-    }
+  constructor(useStore: boolean) {
+    this.useStore = useStore;
   }
 
   get #baseUrl(): string {
-    // oxlint-disable-next-line no-accessor-recursion
-    const url = this.url || getStore().url;
-    return new URL(url).origin;
+    if (!this.useStore) {
+      return "";
+    }
+
+    return new URL(getStore().url).origin;
   }
 
   homepage(): string {
@@ -324,4 +324,4 @@ export class UrlBuilder {
 }
 
 /** @private */
-export const urlBuilder: UrlBuilder = new UrlBuilder();
+export const urlBuilder: UrlBuilder = new UrlBuilder(true);

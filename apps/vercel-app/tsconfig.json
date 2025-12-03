@@ -5,6 +5,7 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "declaration": false
+    "declaration": false,
+    "rewriteRelativeImportExtensions": true
   }
 }

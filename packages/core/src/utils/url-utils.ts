@@ -5,7 +5,7 @@ type HonoClient = ReturnType<typeof hc<AppRouter>>;
 
 export function linkRoute(
   link: ((client: HonoClient) => URL) | URL | string,
-  options: { baseUrl: string; searchParams?: URLSearchParams },
+  options: { baseUrl?: string; searchParams?: URLSearchParams },
 ): string {
   const { baseUrl, searchParams } = options;
 
@@ -20,9 +20,16 @@ export function linkRoute(
     return appendSearchParamsToURL(link, searchParams).toString();
   }
 
-  const client = hc<AppRouter>(baseUrl);
+  if (baseUrl) {
+    const client = hc<AppRouter>(baseUrl);
 
-  return appendSearchParamsToURL(link(client), searchParams).toString();
+    return appendSearchParamsToURL(link(client), searchParams).toString();
+  }
+
+  const dummyBaseUrl = "http://host.local";
+  const client = hc<AppRouter>(dummyBaseUrl);
+  const url = appendSearchParamsToURL(link(client), searchParams).toString();
+  return url.replace(dummyBaseUrl, "");
 }
 
 function appendSearchParamsToURL(url: URL, searchParams: URLSearchParams | undefined): URL {

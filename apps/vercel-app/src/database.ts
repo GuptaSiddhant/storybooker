@@ -53,11 +53,11 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
 
   // Helper methods for key generation
   #getDocumentKey(collectionId: string, documentId: string): string {
-    return `${this.#keyPrefix}:collection:${collectionId}:doc:${documentId}`;
+    return `${this.#keyPrefix}_-_collection_-_${collectionId}_-_doc_-_${documentId}`;
   }
 
   #getCollectionsKey(): string {
-    return `${this.#keyPrefix}:collections`;
+    return `${this.#keyPrefix}_-_collections`;
   }
 
   listCollections: DatabaseAdapter["listCollections"] = async (options) => {
@@ -73,14 +73,14 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
   };
 
   createCollection: DatabaseAdapter["createCollection"] = async (collectionId, options) => {
+    // Get current collections list
+    const currentCollections = await this.listCollections(options).catch((): string[] => []);
+
+    if (currentCollections.includes(collectionId)) {
+      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId);
+    }
+
     try {
-      // Get current collections list
-      const currentCollections = await this.listCollections(options);
-
-      if (currentCollections.includes(collectionId)) {
-        throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId);
-      }
-
       // Add collection to the list
       const updatedCollections = [...currentCollections, collectionId];
       await this.#updateItems(
@@ -326,23 +326,18 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
 
   // Helper method to update Edge Config via Vercel API
   async #updateItems(operations: Operation[], abortSignal?: AbortSignal): Promise<void> {
-    await this.#requestEdgeConfigAPI("PATCH", "items", { items: operations }, abortSignal);
+    await this.#requestEdgeConfigAPI("PATCH", operations, abortSignal);
   }
 
   async #getAllItems(abortSignal?: AbortSignal): Promise<Record<string, any>> {
-    return await this.#requestEdgeConfigAPI<Record<string, any>>(
-      "GET",
-      "items",
-      undefined,
-      abortSignal,
-    );
+    return await this.#requestEdgeConfigAPI<Record<string, any>>("GET", "items", abortSignal);
   }
   async #getItem<Result>(key: string, abortSignal?: AbortSignal): Promise<Result> {
-    return await this.#requestEdgeConfigAPI<Result>("GET", `items/${key}`, undefined, abortSignal);
+    return await this.#requestEdgeConfigAPI<Result>("GET", `item/${key}`, abortSignal);
   }
   async #hasItem(key: string, abortSignal?: AbortSignal): Promise<boolean> {
     try {
-      await this.#requestEdgeConfigAPI("HEAD", `items/${key}`, undefined, abortSignal);
+      await this.#requestEdgeConfigAPI("HEAD", `item/${key}`, abortSignal);
       return true;
     } catch {
       return false;
@@ -351,19 +346,33 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
 
   //
   async #requestEdgeConfigAPI<Result>(
-    method: "HEAD" | "GET" | "POST" | "PATCH",
+    method: "HEAD" | "GET",
     path: string,
-    body?: unknown,
+    abortSignal?: AbortSignal,
+  ): Promise<Result>;
+  async #requestEdgeConfigAPI<Result>(
+    method: "PATCH",
+    operations: Operation[],
+    abortSignal?: AbortSignal,
+  ): Promise<Result>;
+  async #requestEdgeConfigAPI<Result>(
+    method: "HEAD" | "GET" | "PATCH",
+    pathOrOperations: string | Operation[],
     abortSignal?: AbortSignal,
   ): Promise<Result> {
-    const url = new URL(`https://api.vercel.com/v1/edge-config/${this.#configId}/${path}`);
+    const url =
+      method === "PATCH"
+        ? new URL(`https://api.vercel.com/v1/edge-config/${this.#configId}/items`)
+        : new URL(
+            `https://edge-config.vercel.com/${this.#configId}/${pathOrOperations.toString()}`,
+          );
     if (this.#teamId) {
       url.searchParams.append("teamId", this.#teamId);
     }
 
     const response = await fetch(url, {
       // oxlint-disable-next-line no-invalid-fetch-options
-      body: body ? JSON.stringify(body) : undefined,
+      body: method === "PATCH" ? JSON.stringify({ items: pathOrOperations }) : undefined,
       headers: { Authorization: `Bearer ${this.#apiToken}`, "Content-Type": "application/json" },
       method,
       signal: abortSignal,

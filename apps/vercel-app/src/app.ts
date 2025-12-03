@@ -2,8 +2,8 @@ import "hono"; // import hono to trick vercel into recognizing hono apps
 
 import { createHonoRouter } from "@storybooker/core";
 import { createBasicUIAdapter } from "@storybooker/ui";
-import { VercelEdgeConfigDatabaseService } from "./database.js";
-import { VercelBlobService } from "./storage.js";
+import { VercelEdgeConfigDatabaseService } from "./database.ts";
+import { VercelBlobService } from "./storage.ts";
 
 const storageToken = process.env["BLOB_READ_WRITE_TOKEN"];
 if (!storageToken) {
@@ -14,7 +14,7 @@ const edgeConfigId = process.env["EDGE_CONFIG_ID"];
 if (!edgeConfigId) {
   throw new Error("env EDGE_CONFIG_ID is not defined.");
 }
-const edgeClientToken = process.env["EDGE_CONFIG_TOKEN"];
+const edgeClientToken = process.env["VERCEL_OIDC_TOKEN"];
 if (!edgeClientToken) {
   throw new Error("env EDGE_CONFIG_TOKEN is not defined.");
 }
