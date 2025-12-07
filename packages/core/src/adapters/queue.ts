@@ -13,6 +13,11 @@ import type { LoggerAdapter } from "./logger";
  */
 export interface QueueAdapter {
   /**
+   * Metadata about the adapter.
+   */
+  metadata: { name: string };
+
+  /**
    * An optional method that is called on app boot-up
    * to run async setup functions.
    * @param options Common options like abortSignal.

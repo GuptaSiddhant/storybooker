@@ -27,7 +27,7 @@ export interface DatabaseAdapter<
   /**
    * Metadata about the adapter.
    */
-  get metadata(): { name: string };
+  metadata: { name: string };
 
   /**
    * An optional method that is called on app boot-up

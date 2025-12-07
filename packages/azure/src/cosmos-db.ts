@@ -14,7 +14,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     this.#db = client.database(dbName);
   }
 
-  metadata: DatabaseAdapter["metadata"] = { name: "AzureCosmosDatabaseService" };
+  metadata: DatabaseAdapter["metadata"] = { name: "Azure Cosmos DB" };
 
   init: DatabaseAdapter["init"] = async (options) => {
     await this.#db.client.databases.createIfNotExists(

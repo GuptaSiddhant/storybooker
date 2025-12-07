@@ -41,6 +41,8 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
   } = options;
 
   const adapter: UIAdapter = {
+    metadata: { name: "Basic UI" },
+
     handleUnhandledRoute: (filepath, adapterOptions) => {
       uiStore.enterWith(createUIStore(adapterOptions, options));
       return handleStaticFileRoute(filepath, {

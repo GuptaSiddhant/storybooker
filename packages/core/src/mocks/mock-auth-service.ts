@@ -11,6 +11,8 @@ export const mockUser: StoryBookerUser = {
 };
 
 export const mockAuthService: AuthAdapter = {
+  metadata: { name: "MockAuthService" },
+
   init: async (_options) => {
     // Mock init logic if needed
   },

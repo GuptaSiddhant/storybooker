@@ -9,7 +9,7 @@ export class AwsS3StorageService implements StorageAdapter {
     this.#client = client;
   }
 
-  metadata: StorageAdapter["metadata"] = { name: "AwsS3StorageService" };
+  metadata: StorageAdapter["metadata"] = { name: "AWS S3" };
 
   createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     try {

@@ -64,6 +64,8 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
   authorise: AuthAdapter<AzureEasyAuthUser>["authorise"];
   modifyUserDetails: ModifyUserDetails;
 
+  metadata: AuthAdapter["metadata"] = { name: "Azure Easy Auth" };
+
   constructor(options?: {
     /**
      * Custom function to authorise permission for user

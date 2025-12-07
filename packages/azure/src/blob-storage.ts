@@ -10,7 +10,7 @@ export class AzureBlobStorageService implements StorageAdapter {
     this.#client = client;
   }
 
-  metadata: StorageAdapter["metadata"] = { name: "AzureBlobStorageService" };
+  metadata: StorageAdapter["metadata"] = { name: "Azure Blob Storage" };
 
   createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     try {

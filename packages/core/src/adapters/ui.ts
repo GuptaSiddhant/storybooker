@@ -17,6 +17,11 @@ type RenderedContent = string | Promise<string>;
  */
 export interface UIAdapter {
   /**
+   * Metadata about the adapter.
+   */
+  metadata: { name: string };
+
+  /**
    * A special handler that is invoked when no existing StoryBooker route is matched.
    *
    * This can be used to serve special routes and/or static files from disk.

@@ -14,7 +14,7 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     this.#instance = instance;
   }
 
-  metadata: DatabaseAdapter["metadata"] = { name: "GcpFirestoreDatabaseAdapter" };
+  metadata: DatabaseAdapter["metadata"] = { name: "Google Cloud Firestore" };
 
   listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
     try {

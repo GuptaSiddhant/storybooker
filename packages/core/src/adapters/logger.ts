@@ -8,6 +8,10 @@
  */
 export interface LoggerAdapter {
   /**
+   * Metadata about the adapter.
+   */
+  metadata?: { name: string };
+  /**
    * Optional debug logs
    */
   debug?: (...args: unknown[]) => void;
