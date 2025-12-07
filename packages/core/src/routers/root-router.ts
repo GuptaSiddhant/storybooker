@@ -2,13 +2,14 @@ import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import z from "zod";
 import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
 import { ProjectsModel } from "../models/projects-model";
+import { UrlBuilder, urlBuilder } from "../urls";
 import { SERVICE_NAME } from "../utils";
 import { authenticateOrThrow } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
 import { openapiResponsesHtml } from "../utils/openapi-utils";
-import { checkIsJSONRequest } from "../utils/request";
+import { checkIsHTMLRequest } from "../utils/request";
+import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
 
 /**
  * @private
@@ -25,13 +26,9 @@ export const rootRouter = new OpenAPIHono()
             [mimes.json]: {
               schema: z.object({
                 name: z.string(),
-                metadata: z.object({
-                  database: z.string(),
-                  storage: z.string(),
-                  auth: z.string().optional(),
-                  logger: z.string().optional(),
-                  ui: z.string().optional(),
-                }),
+                adapters: z.record(z.string(), z.object({ name: z.string() })),
+                config: z.record(z.string(), z.unknown()),
+                urls: z.record(z.string(), z.string()),
               }),
             },
             ...openapiResponsesHtml,
@@ -41,29 +38,47 @@ export const rootRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { auth, database, logger, storage, ui } = getStore();
+      const { auth, database, logger, storage, ui, config } = getStore();
 
-      if (checkIsJSONRequest()) {
-        return context.json({
-          name: SERVICE_NAME,
-          metadata: {
-            auth: auth?.metadata.name,
-            database: database.metadata.name,
-            logger: logger.metadata?.name,
-            storage: storage.metadata.name,
-            ui: ui?.metadata.name,
-          },
-        });
+      if (ui?.renderHomePage && checkIsHTMLRequest(true)) {
+        await authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
+        const projects = await new ProjectsModel().list({ limit: 5 });
+
+        return responseHTML(context, ui.renderHomePage, { projects });
       }
 
-      if (!ui) {
-        return context.notFound();
+      const urls: Record<string, string> = {};
+      for (const urlKey of Object.getOwnPropertyNames(UrlBuilder.prototype)) {
+        const func = urlBuilder[urlKey as keyof UrlBuilder];
+        if (urlKey === "constructor" || typeof func !== "function") {
+          continue;
+        }
+
+        const keyword = "ARG0REMOVE";
+        const url = (func as (...args: string[]) => string).call(urlBuilder, keyword);
+        if (url.includes(keyword)) {
+          continue;
+        }
+
+        urls[urlKey] = url;
       }
 
-      await authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
-      const projects = await new ProjectsModel().list({ limit: 5 });
-
-      return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));
+      return context.json({
+        name: SERVICE_NAME,
+        adapters: {
+          auth: auth?.metadata,
+          database: database.metadata,
+          logger: logger.metadata,
+          storage: storage.metadata,
+          ui: ui?.metadata,
+        },
+        config: {
+          ...config,
+          middlewares: config?.middlewares?.map((mw) => mw.name),
+          errorParser: undefined,
+        },
+        urls,
+      });
     },
   )
   .openapi(

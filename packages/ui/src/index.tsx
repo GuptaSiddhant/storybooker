@@ -1,4 +1,5 @@
 import type { UIAdapter } from "@storybooker/core/adapter";
+import pkg from "../package.json" with { type: "json" };
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
 import { AccountPage } from "./pages/account-page";
 import { BuildCreatePage } from "./pages/build-create-page";
@@ -38,10 +39,18 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
     darkTheme = DEFAULT_DARK_THEME,
     lightTheme = DEFAULT_LIGHT_THEME,
     staticDirs = DEFAULT_STATIC_DIRS,
+    logo,
   } = options;
 
   const adapter: UIAdapter = {
-    metadata: { name: "Basic UI" },
+    metadata: {
+      name: "Basic UI",
+      description: "Basic server-rendered UI for StoryBooker.",
+      version: pkg.version,
+      logo,
+      staticDirs,
+      theme: { dark: darkTheme, light: lightTheme },
+    },
 
     handleUnhandledRoute: (filepath, adapterOptions) => {
       uiStore.enterWith(createUIStore(adapterOptions, options));

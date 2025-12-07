@@ -22,12 +22,6 @@ export function checkIsHTMLRequest(checkHX?: boolean, request?: Request): boolea
   return !!accept?.includes(mimes.html);
 }
 
-export function checkIsJSONRequest(request?: Request): boolean {
-  const req = request || getStore().request;
-  const accept = req.headers.get("accept");
-  return !!accept?.includes(mimes.json);
-}
-
 export function validateIsFormEncodedRequest(request?: Request): undefined | ErrorObject {
   const store = getStore();
   const { contentType } = request ? new SuperHeaders(request.headers) : store.headers;

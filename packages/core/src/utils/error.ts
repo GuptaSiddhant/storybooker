@@ -2,7 +2,7 @@ import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
-import type { LoggerAdapter } from "../adapters";
+import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters";
 import type { RouterOptions, StoryBookerUser } from "../types";
 import { getStoreOrNull } from "../utils/store";
 import { DEFAULT_LOCALE } from "./constants";
@@ -90,19 +90,21 @@ export function onUnhandledErrorHandler<User extends StoryBookerUser>(
     if (error instanceof Response) {
       return error;
     }
+    const logger = options.logger || createConsoleLoggerAdapter();
 
     const parsedError = parseErrorMessage(error);
     const { errorMessage, errorStatus, errorType } = parsedError;
-    options.logger?.error(`[${errorType}:${errorStatus}] ${errorMessage}`);
+    logger.error(`[${errorType}:${errorStatus}] ${errorMessage}`);
 
     if (options?.ui?.renderErrorPage && checkIsHTMLRequest(false, ctx.req.raw)) {
       return ctx.html(
         options.ui.renderErrorPage(parsedError, {
           isAuthEnabled: !!options.auth,
           locale: DEFAULT_LOCALE,
-          logger: options.logger || console,
+          logger,
           url: ctx.req.url,
           user: null,
+          adaptersMetadata: {},
         }),
         (errorStatus as ContentfulStatusCode) || 500,
       );

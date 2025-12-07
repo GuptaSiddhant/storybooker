@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { HTTPException } from "hono/http-exception";
 import z from "zod";
 import { BuildsModel } from "../models/builds-model";
 import { ProjectsModel } from "../models/projects-model";
@@ -20,8 +21,8 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
+import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const projectTag = "Projects";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -58,8 +59,8 @@ export const projectsRouter = new OpenAPIHono()
 
       const projects = await new ProjectsModel().list();
 
-      if (ui && checkIsHTMLRequest()) {
-        return context.html(ui.renderProjectsListPage({ projects }, createUIAdapterOptions()));
+      if (ui?.renderProjectsListPage && checkIsHTMLRequest()) {
+        return responseHTML(context, ui.renderProjectsListPage, { projects });
       }
 
       return context.json({ projects });
@@ -81,8 +82,8 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderProjectCreatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       await authenticateOrThrow({
@@ -91,7 +92,7 @@ export const projectsRouter = new OpenAPIHono()
         resource: "project",
       });
 
-      return context.html(ui.renderProjectCreatePage({}, createUIAdapterOptions()));
+      return responseHTML(context, ui.renderProjectCreatePage, {});
     },
   )
   .openapi(
@@ -173,18 +174,17 @@ export const projectsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderProjectDetailsPage && checkIsHTMLRequest()) {
         const recentTags = await new TagsModel(projectId).list({ limit: 10 });
         const recentBuilds = await new BuildsModel(projectId).list({
           limit: 10,
         });
 
-        return context.html(
-          ui.renderProjectDetailsPage(
-            { project, recentBuilds, recentTags },
-            createUIAdapterOptions(),
-          ),
-        );
+        return responseHTML(context, ui.renderProjectDetailsPage, {
+          project,
+          recentBuilds,
+          recentTags,
+        });
       }
 
       return context.json({ project });
@@ -245,8 +245,8 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderProjectUpdatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
@@ -258,7 +258,7 @@ export const projectsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderProjectUpdatePage({ project }, createUIAdapterOptions()));
+      return responseHTML(context, ui.renderProjectUpdatePage, { project });
     },
   )
   .openapi(

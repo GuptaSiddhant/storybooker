@@ -1,8 +1,8 @@
 import { SuperHeaders } from "@remix-run/headers";
 import { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
-import { timing, type TimingVariables } from "hono/timing";
-import type { StoryBookerUser } from "./adapters";
+import type { TimingVariables } from "hono/timing";
+import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
 import { appRouter } from "./routers/_app-router";
 import type { PurgeHandlerOptions, RouterOptions } from "./types";
@@ -27,8 +27,8 @@ if ("setEncoding" in process.stdout) {
 export function createHonoRouter<User extends StoryBookerUser>(
   options: RouterOptions<User>,
 ): Hono<{ Variables: TimingVariables }> {
-  const logger = options.logger || console;
-  const middlewares = options.config?.middlewares || [loggerMiddleware()];
+  const logger = options.logger || createConsoleLoggerAdapter();
+  const middlewares = options.config?.middlewares || [];
   const initPromises = Promise.allSettled([
     options.auth?.init?.({ logger }).catch(logger.error),
     options.database.init?.({ logger }).catch(logger.error),
@@ -37,11 +37,11 @@ export function createHonoRouter<User extends StoryBookerUser>(
 
   return new Hono<{ Variables: TimingVariables }>({ strict: false })
     .use(
+      loggerMiddleware(logger.log),
       prettifyZodValidationErrorMiddleware(logger),
-      timing(),
+      ...middlewares,
       setupStore<User>(options, initPromises),
       htmxRedirectResponse(),
-      ...middlewares,
     )
     .route("/", appRouter)
     .onError(onUnhandledErrorHandler<User>(options));
@@ -54,9 +54,10 @@ export function createHonoRouter<User extends StoryBookerUser>(
  * Note: The latest build on project's default branch is not deleted.
  */
 export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
-  const logger = options.logger || console;
+  const logger = options.logger || createConsoleLoggerAdapter();
 
   return async (...params: Parameters<HandlePurge>): Promise<void> => {
+    const dummyRequest = new Request("http://0.0.0.0/");
     localStore.enterWith({
       abortSignal: params[1].abortSignal,
       database: options.database,
@@ -65,9 +66,9 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
       locale: DEFAULT_LOCALE,
       logger: params[1]?.logger ?? logger,
       prefix: "/",
-      request: new Request(""),
+      request: dummyRequest,
       storage: options.storage,
-      url: "http://0.0.0.0/",
+      url: dummyRequest.url,
       user: null,
     });
 

@@ -7,8 +7,8 @@ import {
   openapiResponseRedirect,
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
+import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const accountTag = "Account";
 
@@ -42,8 +42,8 @@ export const accountRouter = new OpenAPIHono()
         return context.redirect(urlBuilder.login(pathname), 302);
       }
 
-      if (!ui) {
-        throw new HTTPException(500, { message: "UI is not available for this route." });
+      if (!ui?.renderAccountsPage) {
+        throw new HTTPException(405, { message: "UI is not available for this route." });
       }
 
       const children = await auth.renderAccountDetails?.(user, {
@@ -52,7 +52,7 @@ export const accountRouter = new OpenAPIHono()
         request,
       });
 
-      return context.html(ui.renderAccountsPage({ children }, createUIAdapterOptions()));
+      return responseHTML(context, ui.renderAccountsPage, { children });
     },
   )
   .openapi(
@@ -87,11 +87,11 @@ export const accountRouter = new OpenAPIHono()
 
       const { redirect = "" } = context.req.valid("query");
       const location = new URL(redirect, urlBuilder.homepage());
+      for (const [key, value] of response.headers) {
+        context.res.headers.set(key, value);
+      }
 
-      return context.redirect(location.toString(), {
-        headers: response.headers,
-        status: 302,
-      });
+      return context.redirect(location.toString());
     },
   )
   .openapi(
@@ -105,7 +105,7 @@ export const accountRouter = new OpenAPIHono()
         ...openapiCommonErrorResponses,
       },
     }),
-    async (ctx) => {
+    async (context) => {
       const { abortSignal, auth, logger, request, user } = getStore();
       if (!auth) {
         throw new HTTPException(500, { message: "Auth is not setup" });
@@ -127,10 +127,10 @@ export const accountRouter = new OpenAPIHono()
       const responseHeaders = new Headers(response.headers);
       const responseLocation = responseHeaders.get("location");
       responseHeaders.delete("location");
+      for (const [key, value] of responseHeaders) {
+        context.res.headers.set(key, value);
+      }
 
-      return ctx.redirect(responseLocation || urlBuilder.homepage(), {
-        headers: responseHeaders,
-        status: 302,
-      });
+      return context.redirect(responseLocation || urlBuilder.homepage());
     },
   );

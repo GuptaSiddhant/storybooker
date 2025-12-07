@@ -3,8 +3,8 @@
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
-import { logger } from "hono/logger";
 import { poweredBy } from "hono/powered-by";
+import { timing } from "hono/timing";
 import type { AuthAdapter, StoryBookerUser } from "../packages/core/dist/adapter.d.ts";
 import {
   createLocalFileDatabaseAdapter,
@@ -16,7 +16,7 @@ import { createBasicUIAdapter } from "../packages/ui/dist/index.js";
 export default createHonoRouter({
   auth: createLocalAuthAdapter(),
   config: {
-    middlewares: [logger(), poweredBy({ serverName: "SBR" })],
+    middlewares: [poweredBy({ serverName: "SBR" }), timing()],
     queueLargeZipFileProcessing: true,
   },
   database: createLocalFileDatabaseAdapter(".server/db.json"),

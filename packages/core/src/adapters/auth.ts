@@ -1,3 +1,4 @@
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -10,7 +11,7 @@ export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser>
   /**
    * Metadata about the adapter.
    */
-  metadata: { name: string };
+  metadata: StoryBookerAdapterMetadata;
 
   /**
    * An optional method that is called on app boot-up

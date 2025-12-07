@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { SuperHeaders } from "@remix-run/headers";
 import type { MiddlewareHandler } from "hono";
 import { endTime, startTime } from "hono/timing";
-import type { AuthAdapter, LoggerAdapter } from "../adapters";
+import { createConsoleLoggerAdapter, type AuthAdapter, type LoggerAdapter } from "../adapters";
 import type { RouterOptions, StoryBookerUser } from "../types";
 import type { ErrorParser } from "../utils/error";
 import { DEFAULT_LOCALE } from "./constants";
@@ -44,7 +44,7 @@ export function setupStore<User extends StoryBookerUser>(
   initPromises: Promise<unknown>,
 ): MiddlewareHandler {
   return async (ctx, next) => {
-    const logger = options.logger || console;
+    const logger = options.logger || createConsoleLoggerAdapter();
 
     startTime(ctx, "init-adapters", "Initialize adapters");
     await initPromises;

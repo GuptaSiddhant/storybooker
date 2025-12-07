@@ -23,8 +23,8 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
+import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -73,11 +73,10 @@ export const tagsRouter = new OpenAPIHono()
         filter: type ? (item): boolean => item.type === type : undefined,
       });
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderTagsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
-        return context.html(
-          ui.renderTagsListPage({ project, tags, defaultType: type }, createUIAdapterOptions()),
-        );
+
+        return responseHTML(context, ui.renderTagsListPage, { project, tags, defaultType: type });
       }
 
       return context.json({ tags });
@@ -100,8 +99,8 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderTagCreatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
@@ -114,7 +113,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderTagCreatePage({ project }, createUIAdapterOptions()));
+      return responseHTML(context, ui.renderTagCreatePage, { project });
     },
   )
   .openapi(
@@ -205,13 +204,11 @@ export const tagsRouter = new OpenAPIHono()
 
       const tag = await new TagsModel(projectId).get(tagId);
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderTagDetailsPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
         const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
-        return context.html(
-          ui.renderTagDetailsPage({ builds, project, tag }, createUIAdapterOptions()),
-        );
+        return responseHTML(context, ui.renderTagDetailsPage, { builds, project, tag });
       }
 
       return context.json({ tag });
@@ -272,8 +269,8 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderTagUpdatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { tagId, projectId } = context.req.valid("param");
@@ -287,7 +284,7 @@ export const tagsRouter = new OpenAPIHono()
       const tag = await new TagsModel(projectId).get(tagId);
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderTagUpdatePage({ project, tag }, createUIAdapterOptions()));
+      return responseHTML(context, ui.renderTagUpdatePage, { project, tag });
     },
   )
   .openapi(

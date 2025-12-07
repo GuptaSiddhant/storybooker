@@ -10,14 +10,14 @@ export { urlJoin };
  * URL builder for the Storybooks router.
  */
 export class UrlBuilder {
-  useStore: boolean;
+  #useStore: boolean;
 
   constructor(useStore: boolean) {
-    this.useStore = useStore;
+    this.#useStore = useStore;
   }
 
   get #baseUrl(): string {
-    if (!this.useStore) {
+    if (!this.#useStore) {
       return "";
     }
 

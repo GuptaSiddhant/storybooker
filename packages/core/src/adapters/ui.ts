@@ -7,9 +7,10 @@ import type {
   StoryBookerUser,
   TagType,
 } from "../types";
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils";
 import type { LoggerAdapter } from "./logger";
 
-type RenderedContent = string | Promise<string>;
+export type RenderedContent = string | Promise<string>;
 
 /**
  * Adapter for creating UI for StoryBooker service.
@@ -20,31 +21,28 @@ export interface UIAdapter {
   /**
    * Metadata about the adapter.
    */
-  metadata: { name: string };
+  metadata: StoryBookerAdapterMetadata;
 
   /**
    * A special handler that is invoked when no existing StoryBooker route is matched.
    *
    * This can be used to serve special routes and/or static files from disk.
    */
-  handleUnhandledRoute: (
-    filepath: string,
-    options: UIAdapterOptions,
-  ) => Response | Promise<Response>;
+  handleUnhandledRoute?(filepath: string, options: UIAdapterOptions): Response | Promise<Response>;
 
-  renderHomePage(props: { projects: ProjectType[] }, options: UIAdapterOptions): RenderedContent;
-  renderErrorPage(props: ParsedError, options: UIAdapterOptions): RenderedContent;
-  renderAccountsPage(
+  renderHomePage?(props: { projects: ProjectType[] }, options: UIAdapterOptions): RenderedContent;
+  renderErrorPage?(props: ParsedError, options: UIAdapterOptions): RenderedContent;
+  renderAccountsPage?(
     props: { children: string | undefined },
     options: UIAdapterOptions,
   ): RenderedContent;
 
   // Projects
-  renderProjectsListPage(
+  renderProjectsListPage?(
     props: { projects: ProjectType[] },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderProjectDetailsPage(
+  renderProjectDetailsPage?(
     props: {
       project: ProjectType;
       recentBuilds: BuildType[];
@@ -52,14 +50,14 @@ export interface UIAdapter {
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderProjectCreatePage(props: unknown, options: UIAdapterOptions): RenderedContent;
-  renderProjectUpdatePage(
+  renderProjectCreatePage?(props: unknown, options: UIAdapterOptions): RenderedContent;
+  renderProjectUpdatePage?(
     props: { project: ProjectType },
     options: UIAdapterOptions,
   ): RenderedContent;
 
   // Tags
-  renderTagsListPage(
+  renderTagsListPage?(
     props: {
       tags: TagType[];
       project: ProjectType;
@@ -67,7 +65,7 @@ export interface UIAdapter {
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderTagDetailsPage(
+  renderTagDetailsPage?(
     props: {
       tag: TagType;
       project: ProjectType;
@@ -75,8 +73,8 @@ export interface UIAdapter {
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderTagCreatePage(props: { project: ProjectType }, options: UIAdapterOptions): RenderedContent;
-  renderTagUpdatePage(
+  renderTagCreatePage?(props: { project: ProjectType }, options: UIAdapterOptions): RenderedContent;
+  renderTagUpdatePage?(
     props: {
       tag: TagType;
       project: ProjectType;
@@ -85,14 +83,14 @@ export interface UIAdapter {
   ): RenderedContent;
 
   // Builds
-  renderBuildsListPage(
+  renderBuildsListPage?(
     props: {
       builds: BuildType[];
       project: ProjectType;
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderBuildDetailsPage(
+  renderBuildDetailsPage?(
     props: {
       build: BuildType;
       project: ProjectType;
@@ -100,14 +98,14 @@ export interface UIAdapter {
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderBuildCreatePage(
+  renderBuildCreatePage?(
     props: {
       project: ProjectType;
       tagId?: string;
     },
     options: UIAdapterOptions,
   ): RenderedContent;
-  renderBuildUploadPage(
+  renderBuildUploadPage?(
     props: {
       build: BuildType;
       project: ProjectType;
@@ -128,4 +126,8 @@ export interface UIAdapterOptions {
   url: string;
   /** Current locale */
   locale: string;
+  /** Metadata about all adapters */
+  adaptersMetadata: Partial<
+    Record<"auth" | "database" | "logger" | "storage" | "ui", StoryBookerAdapterMetadata>
+  >;
 }

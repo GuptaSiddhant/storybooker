@@ -59,7 +59,10 @@ export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAd
   };
 
   return {
-    metadata: { name: "Local File" },
+    metadata: {
+      name: "Local File",
+      description: "A file based database stored in a single JSON file.",
+    },
 
     async init(options) {
       if (fs.existsSync(filepath)) {
@@ -266,7 +269,10 @@ export function createLocalFileStorageAdapter(pathPrefix = "."): StorageAdapter 
   // Containers
 
   return {
-    metadata: { name: "Local File System" },
+    metadata: {
+      name: "Local File System",
+      description: "A storage adapter that uses the local file system to store files.",
+    },
 
     init: async (_options) => {
       try {

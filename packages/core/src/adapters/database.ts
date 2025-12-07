@@ -2,6 +2,7 @@
 
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -28,7 +29,7 @@ export interface DatabaseAdapter<
   /**
    * Metadata about the adapter.
    */
-  metadata: { name: string };
+  metadata: StoryBookerAdapterMetadata;
 
   /**
    * An optional method that is called on app boot-up

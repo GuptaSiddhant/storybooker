@@ -1,5 +1,8 @@
-import type { MiddlewareHandler } from "hono";
+import type { Context, MiddlewareHandler } from "hono";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { RenderedContent, UIAdapterOptions } from "../adapters/ui";
 import { checkIsHXRequest } from "../utils/request";
+import { createUIAdapterOptions } from "./ui-utils";
 
 /**
  * Middleware to handle htmx redirects.
@@ -17,4 +20,16 @@ export function htmxRedirectResponse(): MiddlewareHandler {
       }
     }
   };
+}
+
+// oxlint-disable-next-line max-params
+export function responseHTML<Props extends Record<string, unknown>>(
+  context: Context,
+  render: (props: Props, options: UIAdapterOptions) => RenderedContent,
+  props: NoInfer<Props>,
+  init?: ResponseInit | Response | number,
+): Promise<Response> | Response {
+  const content = render(props, createUIAdapterOptions());
+
+  return context.html(content, init as unknown as ContentfulStatusCode);
 }

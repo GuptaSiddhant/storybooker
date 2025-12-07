@@ -26,8 +26,8 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request";
+import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const buildTag = "Builds";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -72,10 +72,10 @@ export const buildsRouter = new OpenAPIHono()
 
       const builds = await new BuildsModel(projectId).list();
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderBuildsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return context.html(ui.renderBuildsListPage({ builds, project }, createUIAdapterOptions()));
+        return responseHTML(context, ui.renderBuildsListPage, { builds, project });
       }
 
       return context.json({ builds });
@@ -101,8 +101,8 @@ export const buildsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderBuildCreatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
@@ -116,7 +116,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderBuildCreatePage({ project, tagId }, createUIAdapterOptions()));
+      return responseHTML(context, ui.renderBuildCreatePage, { project, tagId });
     },
   )
   .openapi(
@@ -209,7 +209,7 @@ export const buildsRouter = new OpenAPIHono()
       const model = new BuildsModel(projectId);
       const build = await model.get(buildId);
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderBuildDetailsPage && checkIsHTMLRequest()) {
         // const [hasDeletePermission, hasUpdatePermission] = await Promise.all([
         //   model.checkAuth("delete"),
         //   model.checkAuth("update"),
@@ -220,16 +220,7 @@ export const buildsRouter = new OpenAPIHono()
         const project = await new ProjectsModel().get(projectId);
         const stories = await model.getStories(build);
 
-        return context.html(
-          ui.renderBuildDetailsPage(
-            {
-              build,
-              stories,
-              project,
-            },
-            createUIAdapterOptions(),
-          ),
-        );
+        return responseHTML(context, ui.renderBuildDetailsPage, { build, stories, project });
       }
 
       return context.json({ build, url: context.req.url });
@@ -347,8 +338,8 @@ export const buildsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderBuildUploadPage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { buildId, projectId } = context.req.valid("param");
@@ -363,9 +354,7 @@ export const buildsRouter = new OpenAPIHono()
       const project = await new ProjectsModel().get(projectId);
       const { variant: uploadVariant } = context.req.valid("query");
 
-      return context.html(
-        ui.renderBuildUploadPage({ build, uploadVariant, project }, createUIAdapterOptions()),
-      );
+      return responseHTML(context, ui.renderBuildUploadPage, { build, uploadVariant, project });
     },
   )
   .openapi(

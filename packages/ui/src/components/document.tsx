@@ -1,5 +1,6 @@
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import { urlJoin } from "@storybooker/core/url";
+import { Style } from "hono/css";
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
 import { ASSETS } from "../utils/constants";
@@ -46,6 +47,7 @@ export function DocumentLayout({
             crossorigin="anonymous"
           ></script>
           <script src={urlBuilder.staticFile(ASSETS.globalScript)} defer async />
+          <Style />
         </head>
         <body>
           <div id="app">
