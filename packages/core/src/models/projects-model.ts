@@ -20,11 +20,7 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("List projects...");
 
     try {
-      const items = await this.database.listDocuments<ProjectType>(
-        this.collectionId,
-        options,
-        this.dbOptions,
-      );
+      const items = await this.database.listDocuments(this.collectionId, options, this.dbOptions);
 
       return items;
     } catch (error) {
@@ -86,7 +82,7 @@ export class ProjectsModel extends Model<ProjectType> {
         createdAt: now,
         updatedAt: now,
       };
-      await this.database.createDocument<ProjectType>(this.collectionId, project, this.dbOptions);
+      await this.database.createDocument(this.collectionId, project, this.dbOptions);
 
       return project;
     } catch (error) {

@@ -39,7 +39,7 @@ export class TagsModel extends Model<TagType> {
         id: id,
         updatedAt: now,
       };
-      await this.database.createDocument<TagType>(this.collectionId, tag, this.dbOptions);
+      await this.database.createDocument(this.collectionId, tag, this.dbOptions);
 
       return tag;
     } catch (error) {

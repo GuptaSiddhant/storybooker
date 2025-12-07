@@ -13,14 +13,14 @@ Core Docs: https://storybooker.js.org/docs/core
 import { serve } from "@hono/node-server";
 import { createHonoRouter } from "@storybooker/core";
 import {
-  LocalFileDatabase,
-  LocalFileStorage,
+  createLocalFileDatabaseAdapter,
+  createLocalFileStorageAdapter,
 } from "@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
 const app = createHonoRouter({
-  database: new LocalFileDatabase(),
-  storage: new LocalFileStorage(),
+  database: createLocalFileDatabaseAdapter(),
+  storage: createLocalFileStorageAdapter(),
   ui: createBasicUIAdapter(), // remove to create headless service
 });
 
@@ -34,14 +34,14 @@ serve(app);
 ```js
 import { createHonoRouter } from "jsr:@storybooker/core";
 import {
-  LocalFileDatabase,
-  LocalFileStorage,
+  createLocalFileDatabaseAdapter,
+  createLocalFileStorageAdapter,
 } from "jsr:@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 const app = createHonoRouter({
-  database: new LocalFileDatabase(),
-  storage: new LocalFileStorage(),
+  database: createLocalFileDatabaseAdapter(),
+  storage: createLocalFileStorageAdapter(),
   ui: createBasicUIAdapter(), // remove to create headless service
 });
 

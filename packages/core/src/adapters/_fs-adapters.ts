@@ -1,5 +1,4 @@
 // oxlint-disable no-await-in-loop
-// oxlint-disable max-classes-per-file
 // oxlint-disable max-params
 // oxlint-disable require-await
 // oxlint-disable no-unsafe-assignment
@@ -15,7 +14,6 @@ import {
   StorageAdapterErrors,
   type DatabaseAdapter,
   type DatabaseAdapterOptions,
-  type DatabaseDocumentListOptions,
   type StorageAdapter,
   type StoryBookerDatabaseDocument,
 } from "./index";
@@ -30,231 +28,219 @@ import {
  *
  * Usage:
  * ```ts
- * const database = new LocalFileStorage("./db.json");
+ * const database = createLocalFileDatabaseAdapter("./db.json");
  * ```
  */
-export class LocalFileDatabase implements DatabaseAdapter {
-  #filename: string;
-  #db: Record<string, Record<string, StoryBookerDatabaseDocument>> | undefined;
+export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAdapter {
+  const filepath = path.resolve(filename);
+  let db: Record<string, Record<string, StoryBookerDatabaseDocument>> | undefined = undefined;
 
-  constructor(filename = "db.json") {
-    this.#filename = filename;
-  }
-
-  init: DatabaseAdapter["init"] = async (options) => {
-    if (fs.existsSync(this.#filename)) {
-      await this.#readFromFile(options);
-    } else {
-      const basedir = path.dirname(this.#filename);
-      await fsp.mkdir(basedir, { recursive: true });
-      await fsp.writeFile(this.#filename, "{}", {
-        encoding: "utf8",
-        signal: options.abortSignal,
-      });
-    }
-  };
-
-  listCollections: DatabaseAdapter["listCollections"] = async () => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    return Object.keys(this.#db);
-  };
-
-  createCollection: DatabaseAdapter["createCollection"] = async (
-    collectionId,
-    options,
-  ): Promise<void> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId);
-    }
-
-    if (!this.#db[collectionId]) {
-      this.#db[collectionId] = {};
-    }
-    await this.#saveToFile(options);
-  };
-
-  deleteCollection: DatabaseAdapter["deleteCollection"] = async (
-    collectionId,
-    options,
-  ): Promise<void> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
-    }
-
-    // oxlint-disable-next-line no-dynamic-delete
-    delete this.#db[collectionId];
-    await this.#saveToFile(options);
-  };
-
-  hasCollection: DatabaseAdapter["hasCollection"] = async (collectionId, _options) => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    return Object.hasOwn(this.#db, collectionId);
-  };
-
-  listDocuments: DatabaseAdapter["listDocuments"] = async <
-    Document extends StoryBookerDatabaseDocument,
-  >(
-    collectionId: string,
-    listOptions: DatabaseDocumentListOptions<Document>,
-    _options: DatabaseAdapterOptions,
-  ): Promise<Document[]> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
-    }
-
-    const { limit = Number.POSITIVE_INFINITY, sort, filter } = listOptions || {};
-
-    // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[collectionId]!;
-    const items = Object.values(collection) as Document[];
-    if (sort && typeof sort === "function") {
-      items.sort(sort);
-    }
-    if (filter && typeof filter === "function") {
-      return items.filter((item) => filter(item)).slice(0, limit);
-    }
-
-    return items.slice(0, limit);
-  };
-
-  getDocument: DatabaseAdapter["getDocument"] = async <
-    Document extends StoryBookerDatabaseDocument,
-  >(
-    collectionId: string,
-    documentId: string,
-    _options: DatabaseAdapterOptions,
-  ): Promise<Document> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
-    }
-
-    const item = this.#db[collectionId]?.[documentId];
-    if (!item) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
-    }
-
-    return item as Document;
-  };
-
-  hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, options) => {
-    return !!(await this.getDocument(collectionId, documentId, options));
-  };
-
-  createDocument: DatabaseAdapter["createDocument"] = async (
-    collectionId,
-    documentData,
-    options,
-  ): Promise<void> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
-    }
-
-    // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[collectionId]!;
-    if (collection[documentData.id]) {
-      throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(collectionId, documentData.id);
-    }
-
-    collection[documentData.id] = documentData;
-    await this.#saveToFile(options);
-  };
-
-  deleteDocument: DatabaseAdapter["deleteDocument"] = async (
-    collectionId,
-    documentId,
-    options,
-  ): Promise<void> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
-    }
-
-    if (!(await this.hasDocument(collectionId, documentId, options))) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
-    }
-
-    // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[collectionId]!;
-    // oxlint-disable-next-line no-dynamic-delete
-    delete collection[documentId];
-    await this.#saveToFile(options);
-  };
-
-  updateDocument: DatabaseAdapter["updateDocument"] = async (
-    collectionId,
-    documentId,
-    documentData,
-    options,
-  ): Promise<void> => {
-    if (!this.#db) {
-      throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
-    }
-
-    if (!Object.hasOwn(this.#db, collectionId)) {
-      throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
-    }
-
-    const prevItem = await this.getDocument(collectionId, documentId, options);
-    if (!prevItem) {
-      throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
-    }
-
-    // oxlint-disable-next-line no-non-null-assertion
-    const collection = this.#db[collectionId]!;
-    collection[documentId] = { ...prevItem, ...documentData, id: documentId };
-    await this.#saveToFile(options);
-  };
-
-  async #readFromFile(options: { abortSignal?: AbortSignal }): Promise<void> {
+  const readFromFile = async (options: DatabaseAdapterOptions): Promise<void> => {
     try {
-      const db = await fsp.readFile(this.#filename, {
+      const newDB = await fsp.readFile(filepath, {
         encoding: "utf8",
         signal: options.abortSignal,
       });
-      this.#db = db ? JSON.parse(db) : {};
+      db = newDB ? JSON.parse(newDB) : {};
     } catch {
-      this.#db = {};
+      db = {};
     }
-  }
-  async #saveToFile(options: { abortSignal?: AbortSignal }): Promise<void> {
-    if (!this.#db) {
+  };
+
+  const saveToFile = async (options: DatabaseAdapterOptions): Promise<void> => {
+    if (!db) {
       throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
     }
 
-    await fsp.writeFile(this.#filename, JSON.stringify(this.#db, null, 2), {
+    await fsp.writeFile(filepath, JSON.stringify(db, null, 2), {
       encoding: "utf8",
       signal: options.abortSignal,
     });
-  }
+  };
+
+  return {
+    metadata: { name: "LocalFileDatabaseAdapter" },
+
+    async init(options) {
+      if (fs.existsSync(filepath)) {
+        const stat = await fsp.stat(filepath);
+        if (stat.isFile()) {
+          await readFromFile(options);
+        } else {
+          throw new DatabaseAdapterErrors.DatabaseNotInitializedError(
+            `Path "${filepath}" is not a file`,
+          );
+        }
+      } else {
+        db = {}; // Initialize empty DB
+        const basedir = path.dirname(filepath);
+        await fsp.mkdir(basedir, { recursive: true }).catch(() => {
+          // ignore error
+        });
+        await saveToFile(options);
+      }
+    },
+
+    // Collections
+
+    async createCollection(collectionId, options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId);
+      }
+
+      if (!db[collectionId]) {
+        db[collectionId] = {};
+      }
+      await saveToFile(options);
+    },
+
+    async listCollections() {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      return Object.keys(db);
+    },
+
+    async deleteCollection(collectionId, options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (!Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+      }
+
+      // oxlint-disable-next-line no-dynamic-delete
+      delete db[collectionId];
+      await saveToFile(options);
+    },
+
+    async hasCollection(collectionId, _options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      return Object.hasOwn(db, collectionId);
+    },
+
+    // Documents
+
+    async listDocuments(collectionId, listOptions, _options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (!Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+      }
+
+      const { limit = Number.POSITIVE_INFINITY, sort, filter } = listOptions || {};
+
+      // oxlint-disable-next-line no-non-null-assertion
+      const collection = db[collectionId]!;
+      const items = Object.values(collection);
+      if (sort) {
+        if (typeof sort === "function") {
+          items.sort(sort);
+        } else if (sort === "latest") {
+          items.sort((itemA, itemB) => {
+            return new Date(itemB.updatedAt).getTime() - new Date(itemA.updatedAt).getTime();
+          });
+        }
+      }
+
+      if (filter && typeof filter === "function") {
+        return items.filter((item) => filter(item)).slice(0, limit);
+      }
+
+      return items.slice(0, limit);
+    },
+
+    async getDocument(collectionId, documentId, _options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (!Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+      }
+
+      const item = db[collectionId]?.[documentId];
+      if (!item) {
+        throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
+      }
+
+      return item;
+    },
+
+    async hasDocument(collectionId, documentId, options) {
+      return !!(await this.getDocument(collectionId, documentId, options));
+    },
+
+    async createDocument(collectionId, documentData, options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (!Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+      }
+
+      // oxlint-disable-next-line no-non-null-assertion
+      const collection = db[collectionId]!;
+      if (collection[documentData.id]) {
+        throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(collectionId, documentData.id);
+      }
+
+      collection[documentData.id] = documentData;
+      await saveToFile(options);
+    },
+
+    async deleteDocument(collectionId, documentId, options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (!Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+      }
+
+      if (!(await this.hasDocument(collectionId, documentId, options))) {
+        throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
+      }
+
+      // oxlint-disable-next-line no-non-null-assertion
+      const collection = db[collectionId]!;
+      // oxlint-disable-next-line no-dynamic-delete
+      delete collection[documentId];
+      await saveToFile(options);
+    },
+
+    async updateDocument(collectionId, documentId, documentData, options) {
+      if (!db) {
+        throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
+      }
+
+      if (!Object.hasOwn(db, collectionId)) {
+        throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId);
+      }
+
+      const prevItem = await this.getDocument(collectionId, documentId, options);
+      if (!prevItem) {
+        throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
+      }
+
+      // oxlint-disable-next-line no-non-null-assertion
+      const collection = db[collectionId]!;
+      collection[documentId] = { ...prevItem, ...documentData, id: documentId };
+      await saveToFile(options);
+    },
+  };
 }
 
 /**
@@ -267,114 +253,121 @@ export class LocalFileDatabase implements DatabaseAdapter {
  *
  * Usage:
  * ```ts
- * const storage = new LocalFileStorage("./store/");
+ * const storage = createLocalFileStorageAdapter("./store/");
  * ```
  */
-export class LocalFileStorage implements StorageAdapter {
-  #basePath: string;
+export function createLocalFileStorageAdapter(pathPrefix = "."): StorageAdapter {
+  const basePath = path.resolve(pathPrefix);
 
-  constructor(pathPrefix = ".") {
-    this.#basePath = path.resolve(pathPrefix);
-  }
-
-  #genPath(...pathParts: (string | undefined)[]): string {
-    return path.join(this.#basePath, ...pathParts.filter((part) => part !== undefined));
+  function genPath(...pathParts: (string | undefined)[]): string {
+    return path.join(basePath, ...pathParts.filter((part) => part !== undefined));
   }
 
   // Containers
 
-  createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
-    if (await this.hasContainer(containerId, options)) {
-      throw new StorageAdapterErrors.ContainerAlreadyExistsError(containerId);
-    }
+  return {
+    metadata: { name: "LocalFileStorageAdapter" },
 
-    await fsp.mkdir(this.#genPath(containerId), { recursive: true });
-  };
-
-  deleteContainer: StorageAdapter["deleteContainer"] = async (containerId, options) => {
-    if (!(await this.hasContainer(containerId, options))) {
-      throw new StorageAdapterErrors.ContainerDoesNotExistError(containerId);
-    }
-
-    await fsp.rm(this.#genPath(containerId), { force: true, recursive: true });
-  };
-
-  hasContainer: StorageAdapter["hasContainer"] = async (containerId) => {
-    return fs.existsSync(this.#genPath(containerId));
-  };
-
-  listContainers: StorageAdapter["listContainers"] = async () => {
-    const dirPath = this.#genPath();
-    if (!fs.existsSync(dirPath)) {
-      throw new StorageAdapterErrors.StorageNotInitializedError(`Dir "${dirPath}" does not exist`);
-    }
-
-    const containers: string[] = [];
-    const entries = await fsp.readdir(dirPath, {
-      withFileTypes: true,
-    });
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        containers.push(entry.name);
+    init: async (_options) => {
+      try {
+        await fsp.mkdir(basePath, { recursive: true });
+      } catch (error) {
+        throw new StorageAdapterErrors.StorageNotInitializedError({ cause: error });
       }
-    }
-    return containers;
-  };
+    },
 
-  // Files
+    async createContainer(containerId, options) {
+      if (await this.hasContainer(containerId, options)) {
+        throw new StorageAdapterErrors.ContainerAlreadyExistsError(containerId);
+      }
 
-  deleteFiles: StorageAdapter["deleteFiles"] = async (
-    containerId,
-    filePathsOrPrefix,
-  ): Promise<void> => {
-    if (typeof filePathsOrPrefix === "string") {
-      await fsp.rm(this.#genPath(containerId, filePathsOrPrefix), {
-        force: true,
-        recursive: true,
+      await fsp.mkdir(genPath(containerId), { recursive: true });
+    },
+
+    async deleteContainer(containerId, options) {
+      if (!(await this.hasContainer(containerId, options))) {
+        throw new StorageAdapterErrors.ContainerDoesNotExistError(containerId);
+      }
+
+      await fsp.rm(genPath(containerId), { force: true, recursive: true });
+    },
+
+    async hasContainer(containerId) {
+      return fs.existsSync(genPath(containerId));
+    },
+
+    async listContainers() {
+      const dirPath = genPath();
+      if (!fs.existsSync(dirPath)) {
+        throw new StorageAdapterErrors.StorageNotInitializedError(
+          `Dir "${dirPath}" does not exist`,
+        );
+      }
+
+      const containers: string[] = [];
+      const entries = await fsp.readdir(dirPath, {
+        withFileTypes: true,
       });
-    } else {
-      for (const filepath of filePathsOrPrefix) {
-        // oxlint-disable-next-line no-await-in-loop
-        await fsp.rm(filepath, { force: true, recursive: true });
+      for (const entry of entries) {
+        if (entry.isDirectory()) {
+          containers.push(entry.name);
+        }
       }
-    }
-  };
+      return containers;
+    },
 
-  hasFile: StorageAdapter["hasFile"] = async (containerId, filepath) => {
-    const path = this.#genPath(containerId, filepath);
-    return fs.existsSync(path);
-  };
+    // Files
 
-  downloadFile: StorageAdapter["downloadFile"] = async (containerId, filepath, options) => {
-    if (!(await this.hasFile(containerId, filepath, options))) {
-      throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);
-    }
-
-    const path = this.#genPath(containerId, filepath);
-    const buffer = await fsp.readFile(path);
-    const content = new Blob([buffer as Buffer<ArrayBuffer>]);
-    return { content, path };
-  };
-
-  uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, options) => {
-    for (const file of files) {
-      const filepath = this.#genPath(containerId, file.path);
-      const dirpath = path.dirname(filepath);
-
-      await fsp.mkdir(dirpath, { recursive: true });
-      if (file.content instanceof ReadableStream) {
-        await writeWebStreamToFile(file.content, filepath);
-      } else {
-        const data: string | Stream =
-          // oxlint-disable-next-line no-nested-ternary
-          typeof file.content === "string" ? file.content : await file.content.text();
-
-        await fsp.writeFile(filepath, data, {
-          encoding: "utf8",
-          signal: options.abortSignal,
+    async deleteFiles(containerId, filePathsOrPrefix) {
+      if (typeof filePathsOrPrefix === "string") {
+        await fsp.rm(genPath(containerId, filePathsOrPrefix), {
+          force: true,
+          recursive: true,
         });
+      } else {
+        for (const filepath of filePathsOrPrefix) {
+          // oxlint-disable-next-line no-await-in-loop
+          await fsp.rm(filepath, { force: true, recursive: true });
+        }
       }
-    }
+    },
+
+    async hasFile(containerId, filepath) {
+      const path = genPath(containerId, filepath);
+      return fs.existsSync(path);
+    },
+
+    async downloadFile(containerId, filepath, options) {
+      if (!(await this.hasFile(containerId, filepath, options))) {
+        throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);
+      }
+
+      const path = genPath(containerId, filepath);
+      const buffer = await fsp.readFile(path);
+      const content = new Blob([buffer as Buffer<ArrayBuffer>]);
+      return { content, path };
+    },
+
+    async uploadFiles(containerId, files, options) {
+      for (const file of files) {
+        const filepath = genPath(containerId, file.path);
+        const dirpath = path.dirname(filepath);
+
+        await fsp.mkdir(dirpath, { recursive: true });
+        if (file.content instanceof ReadableStream) {
+          await writeWebStreamToFile(file.content, filepath);
+        } else {
+          const data: string | Stream =
+            // oxlint-disable-next-line no-nested-ternary
+            typeof file.content === "string" ? file.content : await file.content.text();
+
+          await fsp.writeFile(filepath, data, {
+            encoding: "utf8",
+            signal: options.abortSignal,
+          });
+        }
+      }
+    },
   };
 }
 

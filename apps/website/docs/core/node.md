@@ -17,17 +17,17 @@ Run following with `node server.mjs`
 import { serve } from "@hono/node-server";
 import { createHonoRouter } from "@storybooker/core";
 import {
-  LocalFileDatabase,
-  LocalFileStorage,
+  createLocalFileDatabaseAdapter,
+  createLocalFileStorageAdapter,
 } from "@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker Hono router
 const router = createHonoRouter({
   // provide a supported database service adapter
-  database: new LocalFileDatabase(),
+  database: createLocalFileDatabaseAdapter(),
   // provide a supported storage service adapter
-  storage: new LocalFileStorage(),
+  storage: createLocalFileStorageAdapter(),
   // provide a supported UI adapter
   ui: createBasicUIAdapter(),
 });

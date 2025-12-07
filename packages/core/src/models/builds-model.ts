@@ -35,12 +35,7 @@ export class BuildsModel extends Model<BuildType> {
 
     const items = await this.database.listDocuments(
       this.collectionId,
-      {
-        sort: (itemA, itemB) => {
-          return new Date(itemB.updatedAt).getTime() - new Date(itemA.updatedAt).getTime();
-        },
-        ...options,
-      },
+      { sort: "latest", ...options },
       this.dbOptions,
     );
 
@@ -79,7 +74,7 @@ export class BuildsModel extends Model<BuildType> {
         tagIds: tagIds.filter(Boolean).join(","),
         updatedAt: now,
       };
-      await this.database.createDocument<BuildType>(this.collectionId, build, this.dbOptions);
+      await this.database.createDocument(this.collectionId, build, this.dbOptions);
 
       try {
         const projectsModel = new ProjectsModel();
