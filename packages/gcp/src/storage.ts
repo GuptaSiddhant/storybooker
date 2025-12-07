@@ -11,6 +11,8 @@ export class GcpGcsStorageService implements StorageAdapter {
     this.#client = client;
   }
 
+  metadata: StorageAdapter["metadata"] = { name: "GcpGcsStorageService" };
+
   createContainer: StorageAdapter["createContainer"] = async (containerId, _options) => {
     try {
       const bucketName = genBucketNameFromContainerId(containerId);

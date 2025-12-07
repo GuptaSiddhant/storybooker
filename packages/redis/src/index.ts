@@ -28,6 +28,8 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     this.#keyPrefix = keyPrefix;
   }
 
+  metadata: DatabaseAdapter["metadata"] = { name: "RedisDatabaseAdapter" };
+
   init: DatabaseAdapter["init"] = async (_options) => {
     // Ensure Redis connection is ready
     if (!this.#client.isReady) {

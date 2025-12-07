@@ -14,6 +14,8 @@ export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
     this.#instance = instance;
   }
 
+  metadata: DatabaseAdapter["metadata"] = { name: "GcpFirestoreDatabaseAdapter" };
+
   listCollections: DatabaseAdapter["listCollections"] = async (_options) => {
     try {
       const collections = await this.#instance.listCollections();

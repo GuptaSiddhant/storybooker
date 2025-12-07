@@ -18,6 +18,8 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     this.#tableClientGenerator = tableClientGenerator;
   }
 
+  metadata: DatabaseAdapter["metadata"] = { name: "AzureDataTablesDatabaseService" };
+
   listCollections: DatabaseAdapter["listCollections"] = async (options) => {
     const collections: string[] = [];
     for await (const table of this.#serviceClient.listTables({

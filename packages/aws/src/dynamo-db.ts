@@ -16,6 +16,8 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     this.#client = client;
   }
 
+  metadata: DatabaseAdapter["metadata"] = { name: "AwsDynamoDatabaseService" };
+
   listCollections: DatabaseAdapter["listCollections"] = async (options) => {
     const response = await this.#client.send(new Dynamo.ListTablesCommand({}), {
       abortSignal: options.abortSignal,
