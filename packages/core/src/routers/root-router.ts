@@ -2,6 +2,8 @@ import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import z from "zod";
 import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
 import { ProjectsModel } from "../models/projects-model";
+import { SERVICE_NAME } from "../utils";
+import { authenticateOrThrow } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
 import { openapiResponsesHtml } from "../utils/openapi-utils";
 import { checkIsJSONRequest } from "../utils/request";
@@ -20,24 +22,45 @@ export const rootRouter = new OpenAPIHono()
       responses: {
         200: {
           content: {
+            [mimes.json]: {
+              schema: z.object({
+                name: z.string(),
+                metadata: z.object({
+                  database: z.string(),
+                  storage: z.string(),
+                  auth: z.string().optional(),
+                  logger: z.string().optional(),
+                  ui: z.string().optional(),
+                }),
+              }),
+            },
             ...openapiResponsesHtml,
-            [mimes.json]: { schema: z.object({}) },
           },
           description: "Render homepage or return a list of endpoint-urls.",
         },
       },
     }),
     async (context) => {
-      const { ui } = getStore();
+      const { auth, database, logger, storage, ui } = getStore();
 
       if (checkIsJSONRequest()) {
-        return context.json({});
+        return context.json({
+          name: SERVICE_NAME,
+          metadata: {
+            auth: auth?.metadata.name,
+            database: database.metadata.name,
+            logger: logger.metadata?.name,
+            storage: storage.metadata.name,
+            ui: ui?.metadata.name,
+          },
+        });
       }
 
       if (!ui) {
         return context.notFound();
       }
 
+      await authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
       const projects = await new ProjectsModel().list({ limit: 5 });
 
       return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));

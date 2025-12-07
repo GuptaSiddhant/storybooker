@@ -8,6 +8,11 @@ export default defineConfig({
   entry: {
     adapter: "./src/adapters/index.ts",
     "adapter/fs": "./src/adapters/_fs-adapters.ts",
+    "adapter/auth": "./src/adapters/auth.ts",
+    "adapter/database": "./src/adapters/database.ts",
+    "adapter/logger": "./src/adapters/logger.ts",
+    "adapter/storage": "./src/adapters/storage.ts",
+    "adapter/ui": "./src/adapters/ui.ts",
     index: "./src/index.ts",
     constants: "./src/utils/constants.ts",
     mimes: "./src/utils/mime-utils.ts",

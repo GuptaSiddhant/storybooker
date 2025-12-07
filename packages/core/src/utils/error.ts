@@ -1,8 +1,10 @@
 import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import type { LoggerAdapter } from "../adapters";
-import { getStoreOrNull } from "../utils/store";
+import { getStore, getStoreOrNull } from "../utils/store";
+import { mimes } from "./mime-utils";
+import { checkIsHTMLRequest } from "./request";
+import { createUIAdapterOptions } from "./ui-utils";
 
 /**
  * A function type for parsing custom errors.
@@ -76,12 +78,25 @@ export const prettifyZodValidationErrorMiddleware: MiddlewareHandler = async (ct
   }
 };
 
-export function onUnhandledErrorHandler(logger: LoggerAdapter): ErrorHandler {
+export function onUnhandledErrorHandler(): ErrorHandler {
   return (error) => {
-    const { errorMessage, errorType, errorStatus } = parseErrorMessage(error);
+    if (error instanceof Response) {
+      return error;
+    }
+    const { logger, ui } = getStore();
+
+    const parsedError = parseErrorMessage(error);
+    const { errorMessage, errorStatus, errorType } = parsedError;
     logger.error(`[${errorType}:${errorStatus}] ${errorMessage}`);
 
-    return new Response(errorMessage, { status: errorStatus || 500 });
+    if (ui?.renderErrorPage && checkIsHTMLRequest(true)) {
+      return new Response(ui.renderErrorPage(parsedError, createUIAdapterOptions()).toString(), {
+        headers: { "Content-Type": mimes.html },
+        status: errorStatus || 500,
+      });
+    }
+
+    return new Response(errorMessage, { status: errorStatus || 500, statusText: errorType });
   };
 }
 

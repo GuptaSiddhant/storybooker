@@ -83,7 +83,7 @@ export class BuildsModel extends Model<BuildType> {
           await projectsModel.update(this.projectId, { latestBuildId: id });
         }
       } catch (error) {
-        this.error(error);
+        this.error("Error updating project with latest build ID:", error);
       }
 
       return build;
@@ -197,7 +197,7 @@ export class BuildsModel extends Model<BuildType> {
         // Automatically process zip if feature is enabled and size is below limit
         if (size !== undefined && size <= maxInlineUploadProcessingSizeInBytes) {
           await handleProcessZip(this.projectId, buildId, variant).catch((error: unknown) => {
-            this.error(error);
+            this.error("Error processing zip file:", error);
           });
           return;
         }
@@ -208,7 +208,7 @@ export class BuildsModel extends Model<BuildType> {
           const url = urlBuilder.taskProcessZip(this.projectId, buildId, variant);
           // Do not await fetch to avoid blocking
           fetch(url, { headers: request.headers, method: "POST" }).catch((error: unknown) => {
-            this.error(error);
+            this.error("Error queuing zip file processing:", error);
           });
         }
 
@@ -271,7 +271,7 @@ export class BuildsModel extends Model<BuildType> {
 
       return Object.values(data.entries) as BuildStoryType[];
     } catch (error) {
-      this.error(error);
+      this.error("Error getting stories:", error);
       return null;
     }
   }

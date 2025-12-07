@@ -66,9 +66,29 @@
       "source": "./src/adapters/index.ts",
       "default": "./dist/adapter.js"
     },
+    "./adapter/auth": {
+      "source": "./src/adapters/auth.ts",
+      "default": "./dist/adapter/auth.js"
+    },
+    "./adapter/database": {
+      "source": "./src/adapters/database.ts",
+      "default": "./dist/adapter/database.js"
+    },
     "./adapter/fs": {
       "source": "./src/adapters/_fs-adapters.ts",
       "default": "./dist/adapter/fs.js"
+    },
+    "./adapter/logger": {
+      "source": "./src/adapters/logger.ts",
+      "default": "./dist/adapter/logger.js"
+    },
+    "./adapter/storage": {
+      "source": "./src/adapters/storage.ts",
+      "default": "./dist/adapter/storage.js"
+    },
+    "./adapter/ui": {
+      "source": "./src/adapters/ui.ts",
+      "default": "./dist/adapter/ui.js"
     },
     "./constants": {
       "source": "./src/utils/constants.ts",
@@ -101,7 +121,12 @@
     "exports": {
       ".": "./dist/index.js",
       "./adapter": "./dist/adapter.js",
+      "./adapter/auth": "./dist/adapter/auth.js",
+      "./adapter/database": "./dist/adapter/database.js",
       "./adapter/fs": "./dist/adapter/fs.js",
+      "./adapter/logger": "./dist/adapter/logger.js",
+      "./adapter/storage": "./dist/adapter/storage.js",
+      "./adapter/ui": "./dist/adapter/ui.js",
       "./constants": "./dist/constants.js",
       "./mimes": "./dist/mimes.js",
       "./router": "./dist/router.js",

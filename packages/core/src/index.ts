@@ -1,6 +1,5 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
-import type { Hono } from "hono";
+import { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
 import { timing, type TimingVariables } from "hono/timing";
 import type { StoryBookerUser } from "./adapters";
@@ -35,7 +34,7 @@ export function createHonoRouter<User extends StoryBookerUser>(
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
-  return new OpenAPIHono<{ Variables: TimingVariables }>({ strict: false })
+  return new Hono<{ Variables: TimingVariables }>({ strict: false })
     .use(
       prettifyZodValidationErrorMiddleware,
       timing(),
@@ -43,7 +42,7 @@ export function createHonoRouter<User extends StoryBookerUser>(
       ...middlewares,
     )
     .route("/", appRouter)
-    .onError(onUnhandledErrorHandler(logger));
+    .onError(onUnhandledErrorHandler());
 }
 
 /**
@@ -74,7 +73,7 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
       await handlePurge(...params);
       return;
     } catch (error) {
-      logger.error(parseErrorMessage(error, options.errorParser).errorMessage);
+      logger.error("PurgeError", parseErrorMessage(error, options.errorParser).errorMessage);
     }
   };
 }

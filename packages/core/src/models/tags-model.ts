@@ -96,7 +96,7 @@ export class TagsModel extends Model<TagType> {
       this.debug("Delete builds associated with tag '%s'...", id);
       await new BuildsModel(this.projectId).deleteByTag(id, false);
     } catch (error) {
-      this.error(error);
+      this.error("Error deleting builds associated with tag:", error);
     }
 
     return;

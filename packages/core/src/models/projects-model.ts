@@ -24,7 +24,7 @@ export class ProjectsModel extends Model<ProjectType> {
 
       return items;
     } catch (error) {
-      this.error(error);
+      this.error("Error listing projects:", error);
       return [];
     }
   }
@@ -51,7 +51,7 @@ export class ProjectsModel extends Model<ProjectType> {
         .createCollection(this.collectionId, this.dbOptions)
         .catch((error: unknown) => {
           // ignore error if collection already exists since there can only be one projects collection
-          this.error(error);
+          this.error("Error creating projects collection:", error);
         });
 
       await this.database.createCollection(
@@ -72,7 +72,7 @@ export class ProjectsModel extends Model<ProjectType> {
         })
         .catch((error: unknown) => {
           // log error but continue since project creation should not fail because of tag creation
-          this.error(error);
+          this.error("Error creating default branch tag:", error);
         });
 
       this.debug("Creating project entry '%s' in collection", projectId);
@@ -129,7 +129,7 @@ export class ProjectsModel extends Model<ProjectType> {
           value: data.gitHubDefaultBranch,
         });
       } catch (error) {
-        this.error(error);
+        this.error("Error creating default branch tag:", error);
       }
     }
 

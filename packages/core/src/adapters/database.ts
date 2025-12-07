@@ -20,6 +20,7 @@ import type { LoggerAdapter } from "./logger";
  * @throws {CollectionDoesNotExistError} if the collection does not exist.
  * @throws {DocumentAlreadyExistsError} if the document already exists in the collection.
  * @throws {DocumentDoesNotExistError} if the document does not exist in the collection.
+ * @throws {CustomError} if some other error occurs.
  */
 export interface DatabaseAdapter<
   DbDocument extends StoryBookerDatabaseDocument = StoryBookerDatabaseDocument,

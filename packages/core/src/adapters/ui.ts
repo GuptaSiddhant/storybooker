@@ -2,6 +2,7 @@ import type {
   BuildStoryType,
   BuildType,
   BuildUploadVariant,
+  ParsedError,
   ProjectType,
   StoryBookerUser,
   TagType,
@@ -32,10 +33,7 @@ export interface UIAdapter {
   ) => Response | Promise<Response>;
 
   renderHomePage(props: { projects: ProjectType[] }, options: UIAdapterOptions): RenderedContent;
-  renderErrorPage(
-    props: { title: string; message: string; status: number },
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  renderErrorPage(props: ParsedError, options: UIAdapterOptions): RenderedContent;
   renderAccountsPage(
     props: { children: string | undefined },
     options: UIAdapterOptions,

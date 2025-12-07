@@ -18,6 +18,7 @@ import type { LoggerAdapter } from "./logger";
  * @throws {ContainerAlreadyExistsError} if the container already exists.
  * @throws {ContainerDoesNotExistError} if the container does not exist.
  * @throws {FileDoesNotExistError} if the file does not exist in the container.
+ * @throws {CustomError} if some other error occurs.
  */
 export interface StorageAdapter {
   /**

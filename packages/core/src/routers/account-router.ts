@@ -120,8 +120,12 @@ export const accountRouter = new OpenAPIHono()
         return response;
       }
 
-      return responseRedirect(urlBuilder.homepage(), {
-        headers: response.headers,
+      const responseHeaders = new Headers(response.headers);
+      const responseLocation = responseHeaders.get("location");
+      responseHeaders.delete("location");
+
+      return responseRedirect(responseLocation || urlBuilder.homepage(), {
+        headers: responseHeaders,
         status: 302,
       });
     },

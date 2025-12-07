@@ -81,17 +81,16 @@ async function handleErrorResponseForHTMLRequest(
     return new Response(errorMessage, { headers, status });
   }
 
-  return await responseHTML(
-    ui.renderErrorPage(
-      {
-        message: errorMessage,
-        title: `Error ${status}`,
-        status,
-      },
-      createUIAdapterOptions(),
-    ),
-    { headers, status },
+  const content = ui.renderErrorPage(
+    {
+      message: errorMessage,
+      title: `Error ${status}`,
+      status,
+    },
+    createUIAdapterOptions(),
   );
+
+  return await responseHTML(content, { headers, status });
 }
 
 async function responseHTML(
