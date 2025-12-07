@@ -1,4 +1,5 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
+import { HTTPException } from "hono/http-exception";
 import z from "zod";
 import { BuildsModel } from "../models/builds-model";
 import { ProjectsModel } from "../models/projects-model";
@@ -22,7 +23,6 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
-import { responseError, responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
 import { createUIAdapterOptions } from "../utils/ui-utils";
 
@@ -152,7 +152,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
-        return await responseError(`The project '${projectId}' does not exist.`, 404);
+        throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
       await authenticateOrThrow({
@@ -165,7 +165,7 @@ export const tagsRouter = new OpenAPIHono()
       const tag = await new TagsModel(projectId).create(data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.tagDetails(projectId, tag.id), 303);
+        return context.redirect(urlBuilder.tagDetails(projectId, tag.id), 303);
       }
 
       return context.json({ tag }, 201);
@@ -245,7 +245,7 @@ export const tagsRouter = new OpenAPIHono()
       await new TagsModel(projectId).delete(tagId);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.tagsList(projectId), 303);
+        return context.redirect(urlBuilder.tagsList(projectId), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -331,7 +331,7 @@ export const tagsRouter = new OpenAPIHono()
       await tagsModel.update(tagId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.tagDetails(projectId, tagId), 303);
+        return context.redirect(urlBuilder.tagDetails(projectId, tagId), 303);
       }
 
       return new Response(null, { status: 202 });

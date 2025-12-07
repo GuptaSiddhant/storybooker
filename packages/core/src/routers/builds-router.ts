@@ -1,5 +1,7 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
+import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import z from "zod";
 import { BuildsModel } from "../models/builds-model";
 import {
@@ -24,7 +26,6 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request";
-import { responseError, responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
 import { createUIAdapterOptions } from "../utils/ui-utils";
 
@@ -153,7 +154,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
-        return await responseError(`The project '${projectId}' does not exist.`, 404);
+        throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
       await authenticateOrThrow({
@@ -167,7 +168,7 @@ export const buildsRouter = new OpenAPIHono()
       const url = urlBuilder.buildDetails(projectId, build.id);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(url, 303);
+        return context.redirect(url, 303);
       }
 
       return context.json({ build, url }, 201);
@@ -262,7 +263,7 @@ export const buildsRouter = new OpenAPIHono()
       await new BuildsModel(projectId).delete(buildId, true);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.buildsList(projectId), 303);
+        return context.redirect(urlBuilder.buildsList(projectId), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -301,10 +302,9 @@ export const buildsRouter = new OpenAPIHono()
       const buildsModel = new BuildsModel(projectId);
 
       if (!(await buildsModel.has(buildId))) {
-        return await responseError(
-          `The build '${buildId}' does not exist in project '${projectId}'.`,
-          404,
-        );
+        throw new HTTPException(404, {
+          message: `The build '${buildId}' does not exist in project '${projectId}'.`,
+        });
       }
 
       await authenticateOrThrow({
@@ -317,7 +317,7 @@ export const buildsRouter = new OpenAPIHono()
       await buildsModel.update(buildId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.buildDetails(projectId, buildId), 303);
+        return context.redirect(urlBuilder.buildDetails(projectId, buildId), 303);
       }
 
       return new Response(null, { status: 202 });
@@ -409,10 +409,9 @@ export const buildsRouter = new OpenAPIHono()
       const buildsModel = new BuildsModel(projectId);
 
       if (!(await buildsModel.has(buildId))) {
-        return await responseError(
-          `The build '${buildId}' does not exist in project '${projectId}'.`,
-          404,
-        );
+        throw new HTTPException(404, {
+          message: `The build '${buildId}' does not exist in project '${projectId}'.`,
+        });
       }
 
       await authenticateOrThrow({
@@ -424,7 +423,7 @@ export const buildsRouter = new OpenAPIHono()
       const { contentType } = new SuperHeaders(context.req.header());
 
       if (!contentType.toString()) {
-        return await responseError("Content-Type header is required", 400);
+        throw new HTTPException(400, { message: "Content-Type header is required" });
       }
 
       const redirectUrl = urlBuilder.buildDetails(projectId, buildId);
@@ -436,7 +435,7 @@ export const buildsRouter = new OpenAPIHono()
         await buildsModel.upload(buildId, variant, file);
 
         if (checkIsHTMLRequest(true)) {
-          return responseRedirect(redirectUrl, 303);
+          return context.redirect(redirectUrl, 303);
         }
 
         return new Response(null, { status: 204 });
@@ -445,7 +444,9 @@ export const buildsRouter = new OpenAPIHono()
       if (contentType.mediaType?.startsWith(mimes.zip)) {
         const bodyError = validateBuildUploadZipBody(context.req.raw);
         if (bodyError) {
-          return await responseError(bodyError.message, bodyError.status);
+          throw new HTTPException(bodyError.status as ContentfulStatusCode, {
+            message: bodyError.message,
+          });
         }
 
         const { variant } = context.req.valid("query");
@@ -453,15 +454,14 @@ export const buildsRouter = new OpenAPIHono()
         await buildsModel.upload(buildId, variant);
 
         if (checkIsHTMLRequest(true)) {
-          return responseRedirect(redirectUrl, 303);
+          return context.redirect(redirectUrl, 303);
         }
 
         return new Response(null, { status: 204 });
       }
 
-      return await responseError(
-        `Invalid content type, expected ${mimes.zip} or ${mimes.formMultipart}.`,
-        415,
-      );
+      throw new HTTPException(415, {
+        message: `Invalid content type, expected ${mimes.zip} or ${mimes.formMultipart}.`,
+      });
     },
   );

@@ -12,6 +12,7 @@ import {
   parseErrorMessage,
   prettifyZodValidationErrorMiddleware,
 } from "./utils/error";
+import { htmxRedirectResponse } from "./utils/response";
 import { localStore, setupStore } from "./utils/store";
 
 if ("setEncoding" in process.stdout) {
@@ -36,13 +37,14 @@ export function createHonoRouter<User extends StoryBookerUser>(
 
   return new Hono<{ Variables: TimingVariables }>({ strict: false })
     .use(
-      prettifyZodValidationErrorMiddleware,
+      prettifyZodValidationErrorMiddleware(logger),
       timing(),
       setupStore<User>(options, initPromises),
+      htmxRedirectResponse(),
       ...middlewares,
     )
     .route("/", appRouter)
-    .onError(onUnhandledErrorHandler());
+    .onError(onUnhandledErrorHandler<User>(options));
 }
 
 /**

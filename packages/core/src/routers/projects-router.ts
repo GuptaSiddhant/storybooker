@@ -20,7 +20,6 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
-import { responseRedirect } from "../utils/response";
 import { getStore } from "../utils/store";
 import { createUIAdapterOptions } from "../utils/ui-utils";
 
@@ -134,7 +133,7 @@ export const projectsRouter = new OpenAPIHono()
       const project = await new ProjectsModel().create(data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.projectDetails(project.id), 303);
+        return context.redirect(urlBuilder.projectDetails(project.id), 303);
       }
 
       return context.json({ project });
@@ -219,7 +218,7 @@ export const projectsRouter = new OpenAPIHono()
       await new ProjectsModel().delete(projectId);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.projectsList(), 303);
+        return context.redirect(urlBuilder.projectsList(), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -302,7 +301,7 @@ export const projectsRouter = new OpenAPIHono()
       await new ProjectsModel().update(projectId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.projectDetails(projectId), 303);
+        return context.redirect(urlBuilder.projectDetails(projectId), 303);
       }
 
       return new Response(null, { status: 202 });

@@ -46,7 +46,7 @@ export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser>
    *
    * @param options Common options like abortSignal.
    */
-  login?: (options: AuthAdapterOptions) => Promise<Response> | Response;
+  login: (options: AuthAdapterOptions) => Promise<Response> | Response;
 
   /**
    * Get user to logout from UI. The returning response should clear auth session.
@@ -54,7 +54,7 @@ export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser>
    *
    * @param options Common options like abortSignal.
    */
-  logout?: (user: AuthUser, options: AuthAdapterOptions) => Promise<Response> | Response;
+  logout: (user: AuthUser, options: AuthAdapterOptions) => Promise<Response> | Response;
 
   /**
    * Render custom HTML in account page. Must return valid HTML string;

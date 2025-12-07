@@ -25,7 +25,7 @@ export function ProjectUpdatePage({ project }: { project: ProjectType }): JSXEle
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <ProjectForm project={project} />
+        <ProjectForm project={project} actionUrl={urlBuilder.projectUpdate(project.id)} />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
         <RawDataList data={{ "Project ID": project.id }} />

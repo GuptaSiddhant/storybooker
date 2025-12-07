@@ -12,8 +12,9 @@ export function checkIsHXRequest(request?: Request): boolean {
   return req.headers.get("hx-request") === "true";
 }
 
-export function checkIsHTMLRequest(checkHX?: boolean): boolean {
-  const req = getStore().request;
+export function checkIsHTMLRequest(checkHX?: boolean, request?: Request): boolean {
+  const req = request || getStore().request;
+
   const accept = req.headers.get("accept");
   if (checkHX && checkIsHXRequest(req)) {
     return true;

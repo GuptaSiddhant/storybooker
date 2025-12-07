@@ -73,8 +73,6 @@ export function DocumentLayout({
               )}
             </footer>
           </div>
-
-          <script defer src="https://unpkg.com/htmx-toaster/dist/htmx-toaster.min.js" />
         </body>
       </html>
     </>
@@ -213,13 +211,16 @@ export function DocumentSidebar({
 }
 
 export function DocumentUserSection(): JSXElement {
-  const { isAuthEnabled, user, urlBuilder } = getUIStore();
+  const { isAuthEnabled, user, url, urlBuilder } = getUIStore();
 
   if (!user) {
+    const { pathname } = new URL(url);
+    const actionUrl = urlBuilder.login(pathname);
+
     return (
       <div id="user" style={{ padding: "1rem" }}>
         {isAuthEnabled ? (
-          <form action={urlBuilder.login()}>
+          <form action={actionUrl}>
             <button style={"padding:0"}>Login</button>
           </form>
         ) : (

@@ -28,7 +28,7 @@ export default createHonoRouter({
 });
 
 function createLocalAuthAdapter(): AuthAdapter {
-  let auth = false;
+  let auth = true;
   let user: StoryBookerUser | null = null;
 
   return {

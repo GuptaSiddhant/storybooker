@@ -1,11 +1,11 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
+import { HTTPException } from "hono/http-exception";
 import { handleProcessZip } from "../handlers/handle-process-zip";
 import { handlePurge } from "../handlers/handle-purge";
 import { buildUploadVariants } from "../models/builds-schema";
 import { urlBuilder } from "../urls";
 import { authenticateOrThrow } from "../utils/auth";
 import { checkIsHTMLRequest } from "../utils/request";
-import { responseError, responseRedirect } from "../utils/response";
 
 const tasksTag = "Tasks";
 
@@ -67,13 +67,16 @@ export const tasksRouter = new OpenAPIHono()
         await handleProcessZip(projectId, buildId, variant);
 
         if (checkIsHTMLRequest(true)) {
-          return responseRedirect(urlBuilder.buildDetails(projectId, buildId), 303);
+          return context.redirect(urlBuilder.buildDetails(projectId, buildId), 303);
         }
 
         context.status(204);
         return context.res;
       } catch (error) {
-        return responseError(error);
+        throw new HTTPException(500, {
+          cause: error,
+          message: "Failed to process uploaded zip file.",
+        });
       }
     },
   );
