@@ -122,8 +122,6 @@ export class BuildsModel extends Model<BuildType> {
       { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
-
-    return;
   }
 
   async delete(buildId: string, updateTag = true): Promise<void> {

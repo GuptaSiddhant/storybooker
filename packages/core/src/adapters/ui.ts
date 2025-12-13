@@ -10,7 +10,7 @@ import type {
 import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils";
 import type { LoggerAdapter } from "./logger";
 
-export type RenderedContent = string | Promise<string>;
+export type RenderedContent = string | Promise<string> | null;
 
 /**
  * Adapter for creating UI for StoryBooker service.
@@ -127,7 +127,11 @@ export interface UIAdapterOptions {
   /** Current locale */
   locale: string;
   /** Metadata about all adapters */
-  adaptersMetadata: Partial<
-    Record<"auth" | "database" | "logger" | "storage" | "ui", StoryBookerAdapterMetadata>
-  >;
+  adaptersMetadata: {
+    auth?: StoryBookerAdapterMetadata;
+    database?: StoryBookerAdapterMetadata;
+    logger?: StoryBookerAdapterMetadata;
+    storage?: StoryBookerAdapterMetadata;
+    ui?: StoryBookerAdapterMetadata;
+  };
 }

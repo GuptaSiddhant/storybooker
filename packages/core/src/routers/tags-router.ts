@@ -69,17 +69,20 @@ export const tagsRouter = new OpenAPIHono()
       });
 
       const { type } = context.req.valid("query");
-      const tags = await new TagsModel(projectId).list({
-        filter: type ? (item): boolean => item.type === type : undefined,
-      });
+      const tags = await new TagsModel(projectId).list();
+      const filteredTags = type ? tags.filter((tag) => tag.type === type) : tags;
 
       if (ui?.renderTagsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return responseHTML(context, ui.renderTagsListPage, { project, tags, defaultType: type });
+        return responseHTML(context, ui.renderTagsListPage, {
+          project,
+          tags: filteredTags,
+          defaultType: type,
+        });
       }
 
-      return context.json({ tags });
+      return context.json({ tags: filteredTags });
     },
   )
   .openapi(

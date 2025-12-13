@@ -23,8 +23,8 @@ export function BuildDetailsPage({
 }: {
   build: BuildType;
   project: ProjectType;
-  hasDeletePermission: boolean;
-  hasUpdatePermission: boolean;
+  hasDeletePermission?: boolean;
+  hasUpdatePermission?: boolean;
   stories: BuildStoryType[] | null;
 }): JSXElement {
   const { urlBuilder } = getUIStore();
@@ -65,7 +65,7 @@ export function BuildDetailsPage({
         <BuildProcessStatus
           build={build}
           projectId={project.id}
-          hasUpdatePermission={hasUpdatePermission}
+          hasUpdatePermission={!!hasUpdatePermission}
         />
         <hr style={{ margin: "0.5rem 0" }} />
         <BuildStories build={build} projectId={project.id} stories={stories} />
@@ -74,7 +74,7 @@ export function BuildDetailsPage({
         <BuildLinksFooter
           build={build}
           projectId={project.id}
-          hasUpdatePermission={hasUpdatePermission}
+          hasUpdatePermission={!!hasUpdatePermission}
         />
         <hr style={{ margin: "1rem 0" }} />
         <RawDataList data={build} />

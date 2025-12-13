@@ -9,10 +9,37 @@ import type {
 } from "./adapters";
 import type { ErrorParser } from "./utils/error";
 
-export type { StoryBookerUser } from "./adapters/auth";
-export type * from "./models/builds-schema";
-export type * from "./models/projects-schema";
-export type * from "./models/tags-schema";
+export type {
+  StoryBookerUser,
+  StoryBookerPermissionAction,
+  StoryBookerPermissionKey,
+  StoryBookerPermissionResource,
+  StoryBookerPermissionWithKey,
+} from "./adapters/auth";
+export type {
+  BuildCreateType,
+  BuildStoryType,
+  BuildType,
+  BuildUpdateType,
+  BuildUploadVariant,
+  BuildsGetResultType,
+  BuildsListResultType,
+} from "./models/builds-schema";
+export type {
+  ProjectCreateType,
+  ProjectGetResultType,
+  ProjectUpdateType,
+  ProjectType,
+  ProjectsListResultType,
+} from "./models/projects-schema";
+export type {
+  TagCreateType,
+  TagType,
+  TagUpdateType,
+  TagVariant,
+  TagsGetResultType,
+  TagsListResultType,
+} from "./models/tags-schema";
 export type { ErrorParser, ParsedError } from "./utils/error";
 
 /**
