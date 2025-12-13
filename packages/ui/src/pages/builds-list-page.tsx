@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildType, ProjectType } from "@storybooker/core/types";
 import { BuildsTable } from "../components/builds-table";
 import { LinkButton } from "../components/button";
@@ -16,7 +17,7 @@ export function BuildsListPage({
 }: {
   builds: BuildType[];
   project: ProjectType;
-}): JSXElement {
+}): RenderedContent {
   const title = `All Builds`;
   const { urlBuilder } = getUIStore();
 

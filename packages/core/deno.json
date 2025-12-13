@@ -11,10 +11,6 @@
       "openapi.json"
     ]
   },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@kitajs/html"
-  },
   "exports": {
     ".": "./src/index.ts",
     "./adapter": "./src/adapters/index.ts",
@@ -29,7 +25,6 @@
     "./router": "./src/routers/_app-router.ts",
     "./types": "./src/types.ts",
     "./url": "./src/urls.ts",
-    "./utils": "./src/utils/index.ts",
-    "./openapi.json": "./openapi.json"
+    "./utils": "./src/utils/index.ts"
   }
 }

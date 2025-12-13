@@ -5,10 +5,6 @@
       "dependsOn": ["^build"],
       "outputs": ["dist", "storybook-static", "build"]
     },
-    "check": {
-      "dependsOn": ["^build"],
-      "outputLogs": "new-only"
-    },
     "dev": {
       "persistent": true,
       "cache": false

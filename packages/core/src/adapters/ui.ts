@@ -10,7 +10,7 @@ import type {
 import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils";
 import type { LoggerAdapter } from "./logger";
 
-export type RenderedContent = string | Promise<string> | null;
+export type RenderedContent = string | Promise<string>;
 
 /**
  * Adapter for creating UI for StoryBooker service.

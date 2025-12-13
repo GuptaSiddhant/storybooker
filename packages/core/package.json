@@ -22,11 +22,10 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsdown",
-    "check": "tsgo --noEmit",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "npx oxfmt ./src --check",
-    "lint": "oxlint --type-aware ./src",
+    "oxfmt": "npx oxfmt ./src",
+    "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
@@ -53,85 +52,84 @@
     "tsdown": "catalog:",
     "vitest": "catalog:"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
     },
     "./adapter": {
       "source": "./src/adapters/index.ts",
-      "default": "./dist/adapter.js"
+      "default": "./dist/adapter.mjs"
     },
     "./adapter/auth": {
       "source": "./src/adapters/auth.ts",
-      "default": "./dist/adapter/auth.js"
+      "default": "./dist/adapter/auth.mjs"
     },
     "./adapter/database": {
       "source": "./src/adapters/database.ts",
-      "default": "./dist/adapter/database.js"
+      "default": "./dist/adapter/database.mjs"
     },
     "./adapter/fs": {
       "source": "./src/adapters/_fs-adapters.ts",
-      "default": "./dist/adapter/fs.js"
+      "default": "./dist/adapter/fs.mjs"
     },
     "./adapter/logger": {
       "source": "./src/adapters/logger.ts",
-      "default": "./dist/adapter/logger.js"
+      "default": "./dist/adapter/logger.mjs"
     },
     "./adapter/storage": {
       "source": "./src/adapters/storage.ts",
-      "default": "./dist/adapter/storage.js"
+      "default": "./dist/adapter/storage.mjs"
     },
     "./adapter/ui": {
       "source": "./src/adapters/ui.ts",
-      "default": "./dist/adapter/ui.js"
+      "default": "./dist/adapter/ui.mjs"
     },
     "./constants": {
       "source": "./src/utils/constants.ts",
-      "default": "./dist/constants.js"
+      "default": "./dist/constants.mjs"
     },
     "./mimes": {
       "source": "./src/utils/mime-utils.ts",
-      "default": "./dist/mimes.js"
+      "default": "./dist/mimes.mjs"
     },
     "./router": {
       "source": "./src/routers/_app-router.ts",
-      "default": "./dist/router.js"
+      "default": "./dist/router.mjs"
     },
     "./types": {
       "source": "./src/types.ts",
-      "default": "./dist/types.js"
+      "default": "./dist/types.mjs"
     },
     "./url": {
       "source": "./src/urls.ts",
-      "default": "./dist/url.js"
+      "default": "./dist/url.mjs"
     },
     "./utils": {
       "source": "./src/utils/index.ts",
-      "default": "./dist/utils.js"
+      "default": "./dist/utils.mjs"
     },
-    "./package.json": "./package.json",
-    "./openapi.json": "./openapi.json"
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
-      ".": "./dist/index.js",
-      "./adapter": "./dist/adapter.js",
-      "./adapter/auth": "./dist/adapter/auth.js",
-      "./adapter/database": "./dist/adapter/database.js",
-      "./adapter/fs": "./dist/adapter/fs.js",
-      "./adapter/logger": "./dist/adapter/logger.js",
-      "./adapter/storage": "./dist/adapter/storage.js",
-      "./adapter/ui": "./dist/adapter/ui.js",
-      "./constants": "./dist/constants.js",
-      "./mimes": "./dist/mimes.js",
-      "./router": "./dist/router.js",
-      "./types": "./dist/types.js",
-      "./url": "./dist/url.js",
-      "./utils": "./dist/utils.js",
+      ".": "./dist/index.mjs",
+      "./adapter": "./dist/adapter.mjs",
+      "./adapter/auth": "./dist/adapter/auth.mjs",
+      "./adapter/database": "./dist/adapter/database.mjs",
+      "./adapter/fs": "./dist/adapter/fs.mjs",
+      "./adapter/logger": "./dist/adapter/logger.mjs",
+      "./adapter/storage": "./dist/adapter/storage.mjs",
+      "./adapter/ui": "./dist/adapter/ui.mjs",
+      "./constants": "./dist/constants.mjs",
+      "./mimes": "./dist/mimes.mjs",
+      "./router": "./dist/router.mjs",
+      "./types": "./dist/types.mjs",
+      "./url": "./dist/url.mjs",
+      "./utils": "./dist/utils.mjs",
       "./package.json": "./package.json"
     }
   }

@@ -103,5 +103,4 @@ function runTest(
       stdio: silent === true ? undefined : "inherit",
     },
   );
-  return;
 }

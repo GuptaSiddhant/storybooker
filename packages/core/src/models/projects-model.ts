@@ -132,8 +132,6 @@ export class ProjectsModel extends Model<ProjectType> {
         this.error("Error creating default branch tag:", error);
       }
     }
-
-    return;
   }
 
   async delete(id: string): Promise<void> {
@@ -153,8 +151,6 @@ export class ProjectsModel extends Model<ProjectType> {
 
     this.debug("Create project container");
     await this.storage.deleteContainer(generateStorageContainerId(id), this.storageOptions);
-
-    return;
   }
 
   async checkAuth(action: StoryBookerPermissionAction, id?: string): Promise<boolean> {

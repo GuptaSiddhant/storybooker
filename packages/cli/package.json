@@ -22,12 +22,11 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsdown",
-    "check": "tsgo --noEmit",
     "cli": "node ./dist/index.js --cwd ../../apps/test-ui",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "npx oxfmt ./src --check",
-    "lint": "oxlint --type-aware ./src",
+    "oxfmt": "npx oxfmt ./src",
+    "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix",
     "openapi": "openapi-typescript ../core/dist/openapi.json -o ./src/service-schema.d.ts",
     "start": "node --watch ./dist/index.js --cwd ../../apps/test-ui"

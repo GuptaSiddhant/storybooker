@@ -69,8 +69,6 @@ export async function handleProcessZip(
     debugLog("Cleaning up temp dir");
     await fsp.rm(localDirpath, { force: true, recursive: true }).catch(logger.error);
   }
-
-  return;
 }
 
 async function dirpathToFiles(dirpath: string, prefix: string): Promise<StoryBookerFile[]> {

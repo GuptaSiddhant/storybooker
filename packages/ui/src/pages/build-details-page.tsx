@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildStoryType, BuildType, ProjectType } from "@storybooker/core/types";
 import { BuildLinksFooter } from "../components/build-links";
 import { BuildProcessStatus } from "../components/build-process";
@@ -26,7 +27,7 @@ export function BuildDetailsPage({
   hasDeletePermission?: boolean;
   hasUpdatePermission?: boolean;
   stories: BuildStoryType[] | null;
-}): JSXElement {
+}): RenderedContent {
   const { urlBuilder } = getUIStore();
   const shouldShowUploadButton =
     hasUpdatePermission &&

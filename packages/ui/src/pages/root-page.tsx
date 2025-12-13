@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
 import { css } from "hono/css";
@@ -16,7 +17,7 @@ export interface RootPageProps {
   projects: ProjectType[];
 }
 
-export function RootPage({ projects }: RootPageProps): JSXElement {
+export function RootPage({ projects }: RootPageProps): RenderedContent {
   const pageTitle = "Home";
   const { urlBuilder, adaptersMetadata } = getUIStore();
 

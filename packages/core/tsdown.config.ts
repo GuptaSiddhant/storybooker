@@ -26,6 +26,7 @@ export default defineConfig({
   onSuccess: postBuildSuccess,
   platform: "node",
   sourcemap: true,
+  target: "node22",
   treeshake: true,
   unbundle: false,
 });

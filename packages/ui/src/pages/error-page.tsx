@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ParsedError } from "@storybooker/core/types";
 import {
   DocumentHeader,
@@ -8,7 +9,7 @@ import {
 } from "../components/document";
 import { ErrorMessage } from "../components/error-message";
 
-export function ErrorPage({ errorMessage, errorType, errorStatus }: ParsedError): JSXElement {
+export function ErrorPage({ errorMessage, errorType, errorStatus }: ParsedError): RenderedContent {
   const title = `${errorType} ${errorStatus ? `- ${errorStatus}` : ""}`;
   return (
     <DocumentLayout title={title}>

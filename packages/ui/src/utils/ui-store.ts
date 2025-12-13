@@ -29,6 +29,8 @@ export function withStore<Props, Return>(
       logo: options.logo,
     });
 
-    return handler(props);
+    const result = handler(props);
+
+    return result;
   };
 }

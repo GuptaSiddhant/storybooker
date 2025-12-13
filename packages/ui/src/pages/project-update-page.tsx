@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType } from "@storybooker/core/types";
 import {
   DocumentHeader,
@@ -10,7 +11,7 @@ import { ProjectForm } from "../components/project-form";
 import { RawDataList } from "../components/raw-data";
 import { getUIStore } from "../utils/ui-store";
 
-export function ProjectUpdatePage({ project }: { project: ProjectType }): JSXElement {
+export function ProjectUpdatePage({ project }: { project: ProjectType }): RenderedContent {
   const title = `Update Project`;
   const { urlBuilder } = getUIStore();
 

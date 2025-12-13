@@ -6957,7 +6957,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/core@workspace:, @storybooker/core@workspace:*, @storybooker/core@workspace:packages/core":
+"@storybooker/core@workspace:*, @storybooker/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@storybooker/core@workspace:packages/core"
   dependencies:
@@ -7043,7 +7043,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/ui@workspace:, @storybooker/ui@workspace:*, @storybooker/ui@workspace:packages/ui":
+"@storybooker/ui@workspace:*, @storybooker/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@storybooker/ui@workspace:packages/ui"
   dependencies:
@@ -21625,8 +21625,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vercel-app@workspace:apps/vercel-app"
   dependencies:
-    "@storybooker/core": "workspace:"
-    "@storybooker/ui": "workspace:"
+    "@storybooker/core": "workspace:*"
+    "@storybooker/ui": "workspace:*"
     "@types/node": "catalog:"
     "@vercel/blob": "npm:^2.0.0"
     typescript: "npm:^5.9.0"

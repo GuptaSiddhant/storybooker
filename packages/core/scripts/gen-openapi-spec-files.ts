@@ -1,8 +1,8 @@
 import type { oas31 } from "openapi3-ts";
-import type { ResolvedOptions } from "tsdown";
+import type { ResolvedConfig } from "tsdown";
 
 export async function generateOpenApiSpecFiles(
-  config: ResolvedOptions | undefined,
+  config: ResolvedConfig | undefined,
   spec: oas31.OpenAPIObject,
 ): Promise<void> {
   const logger = config?.logger;
@@ -22,6 +22,4 @@ export async function generateOpenApiSpecFiles(
     encoding: "utf8",
   });
   logger?.success("Updated package.json with spec files exports.");
-
-  return;
 }

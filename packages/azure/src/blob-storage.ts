@@ -84,7 +84,6 @@ export class AzureBlobStorageService implements StorageAdapter {
         `Failed to delete ${response.subResponsesFailedCount} blobs in container ${containerId}: ${response.errorCode}`,
       );
     }
-    return;
   };
 
   uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, options) => {

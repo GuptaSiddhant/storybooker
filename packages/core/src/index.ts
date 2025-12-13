@@ -74,7 +74,6 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
 
     try {
       await handlePurge(...params);
-      return;
     } catch (error) {
       logger.error("PurgeError", parseErrorMessage(error, options.errorParser).errorMessage);
     }

@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType } from "@storybooker/core/types";
 import { BuildCreateForm } from "../components/build-create-form";
 import {
@@ -15,7 +16,7 @@ export function BuildCreatePage({
 }: {
   project: ProjectType;
   tagId?: string;
-}): JSXElement {
+}): RenderedContent {
   const title = `Create Build`;
   const { urlBuilder } = getUIStore();
 

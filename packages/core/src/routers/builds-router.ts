@@ -26,8 +26,8 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils";
 import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request";
-import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 
 const buildTag = "Builds";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -75,7 +75,7 @@ export const buildsRouter = new OpenAPIHono()
       if (ui?.renderBuildsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return responseHTML(context, ui.renderBuildsListPage, { builds, project });
+        return context.html(ui.renderBuildsListPage({ builds, project }, createUIAdapterOptions()));
       }
 
       return context.json({ builds });
@@ -116,7 +116,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return responseHTML(context, ui.renderBuildCreatePage, { project, tagId });
+      return context.html(ui.renderBuildCreatePage({ project, tagId }, createUIAdapterOptions()));
     },
   )
   .openapi(
@@ -220,7 +220,9 @@ export const buildsRouter = new OpenAPIHono()
         const project = await new ProjectsModel().get(projectId);
         const stories = await model.getStories(build);
 
-        return responseHTML(context, ui.renderBuildDetailsPage, { build, stories, project });
+        return context.html(
+          ui.renderBuildDetailsPage({ build, stories, project }, createUIAdapterOptions()),
+        );
       }
 
       return context.json({ build, url: context.req.url });
@@ -354,7 +356,9 @@ export const buildsRouter = new OpenAPIHono()
       const project = await new ProjectsModel().get(projectId);
       const { variant: uploadVariant } = context.req.valid("query");
 
-      return responseHTML(context, ui.renderBuildUploadPage, { build, uploadVariant, project });
+      return context.html(
+        ui.renderBuildUploadPage({ build, uploadVariant, project }, createUIAdapterOptions()),
+      );
     },
   )
   .openapi(

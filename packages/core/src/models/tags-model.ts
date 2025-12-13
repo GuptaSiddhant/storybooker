@@ -76,8 +76,6 @@ export class TagsModel extends Model<TagType> {
       { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
-
-    return;
   }
 
   async delete(id: string): Promise<void> {
@@ -98,8 +96,6 @@ export class TagsModel extends Model<TagType> {
     } catch (error) {
       this.error("Error deleting builds associated with tag:", error);
     }
-
-    return;
   }
 
   checkAuth = async (action: StoryBookerPermissionAction): Promise<boolean> => {

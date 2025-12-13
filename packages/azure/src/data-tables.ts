@@ -39,7 +39,6 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
       await this.#serviceClient.createTable(tableName, {
         abortSignal: options.abortSignal,
       });
-      return;
     } catch (error) {
       throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId, error);
     }
@@ -70,7 +69,6 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
       await this.#serviceClient.deleteTable(tableName, {
         abortSignal: options.abortSignal,
       });
-      return;
     } catch (error) {
       throw new DatabaseAdapterErrors.CollectionDoesNotExistError(collectionId, error);
     }
@@ -165,8 +163,6 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
         },
         { abortSignal: options.abortSignal },
       );
-
-      return;
     } catch (error) {
       throw new DatabaseAdapterErrors.DocumentAlreadyExistsError(
         collectionId,
@@ -186,8 +182,6 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     } catch (error) {
       throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }
-
-    return;
   };
 
   // oxlint-disable-next-line max-params
@@ -205,8 +199,6 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
         "Merge",
         { abortSignal: options.abortSignal },
       );
-
-      return;
     } catch (error) {
       throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId, error);
     }

@@ -8,8 +8,8 @@ import { authenticateOrThrow } from "../utils/auth";
 import { mimes } from "../utils/mime-utils";
 import { openapiResponsesHtml } from "../utils/openapi-utils";
 import { checkIsHTMLRequest } from "../utils/request";
-import { responseHTML } from "../utils/response";
 import { getStore } from "../utils/store";
+import { createUIAdapterOptions } from "../utils/ui-utils";
 
 /**
  * @private
@@ -44,7 +44,7 @@ export const rootRouter = new OpenAPIHono()
         await authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
         const projects = await new ProjectsModel().list({ limit: 5 });
 
-        return responseHTML(context, ui.renderHomePage, { projects });
+        return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));
       }
 
       const urls: Record<string, string> = {};

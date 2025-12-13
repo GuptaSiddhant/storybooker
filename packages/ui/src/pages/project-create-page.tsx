@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -8,7 +9,7 @@ import {
 import { ProjectForm } from "../components/project-form";
 import { getUIStore } from "../utils/ui-store";
 
-export function ProjectCreatePage(): JSXElement {
+export function ProjectCreatePage(): RenderedContent {
   const title = `Create Project`;
   const { urlBuilder } = getUIStore();
 

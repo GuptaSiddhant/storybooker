@@ -41,6 +41,10 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
     this.#keyPrefix = options?.keyPrefix || "sbr";
   }
 
+  metadata: DatabaseAdapter["metadata"] = {
+    name: "Vercel Edge Config",
+  };
+
   init: DatabaseAdapter["init"] = async (_options) => {
     // Edge Config doesn't require explicit initialization
     // Just verify we can read from it
