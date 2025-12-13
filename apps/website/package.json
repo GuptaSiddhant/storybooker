@@ -35,9 +35,9 @@
     "@docusaurus/types": "3.9.2",
     "@storybooker/core": "workspace:*",
     "@types/react": "^19.0.0",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.8.0",
-    "prettier": "^3.6.2",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
     "typescript": "^5.9.2"
   },
   "imports": {

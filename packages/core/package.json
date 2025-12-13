@@ -37,22 +37,21 @@
     "@hono/zod-openapi": "^1.1.5",
     "@remix-run/headers": "^0.16.0",
     "decompress": "^4.0.0",
-    "hono": "^4.10.6",
+    "hono": "catalog:",
     "js-yaml": "^4.1.1",
-    "zod": "^4.0.0"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/decompress": "^4.0.0",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^22.0.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "@vitest/coverage-v8": "^3.2.4",
-    "glob": "^10.0.0",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.8.0",
-    "prettier": "^3.6.2",
-    "tsdown": "^0.15.9",
-    "vitest": "^3.2.4"
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
+    "tsdown": "catalog:",
+    "vitest": "catalog:"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",

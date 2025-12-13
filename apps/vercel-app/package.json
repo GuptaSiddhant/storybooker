@@ -13,7 +13,7 @@
     "@vercel/blob": "^2.0.0"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "catalog:",
     "typescript": "^5.9.0",
     "vercel": "^48.12.1"
   }

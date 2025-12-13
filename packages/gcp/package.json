@@ -76,12 +76,12 @@
     "@google-cloud/bigtable": "^6.4.1",
     "@google-cloud/firestore": "^7.11.5",
     "@google-cloud/storage": "^7.17.1",
-    "@types/node": "^22.0.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.8.0",
-    "prettier": "^3.6.2",
-    "tsdown": "^0.15.9"
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
+    "tsdown": "catalog:"
   },
   "peerDependencies": {
     "@google-cloud/bigtable": "^6.0.0",

@@ -69,12 +69,12 @@
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.895.0",
     "@aws-sdk/client-s3": "^3.895.0",
-    "@types/node": "^22.0.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.8.0",
-    "prettier": "^3.6.2",
-    "tsdown": "^0.15.9"
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
+    "tsdown": "catalog:"
   },
   "peerDependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
