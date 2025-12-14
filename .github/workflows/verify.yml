@@ -31,7 +31,17 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
 
+      - name: Cache deps
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules/
+            packages/core/node_modules/
+          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
         env:
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
