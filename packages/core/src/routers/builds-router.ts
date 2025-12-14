@@ -2,8 +2,8 @@ import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
-import z from "zod";
-import { BuildsModel } from "../models/builds-model";
+import { z } from "zod";
+import { BuildsModel } from "../models/builds-model.ts";
 import {
   BuildCreateSchema,
   BuildIdSchema,
@@ -12,22 +12,22 @@ import {
   BuildUpdateSchema,
   BuildUploadFormBodySchema,
   BuildUploadQueryParamsSchema,
-} from "../models/builds-schema";
-import { ProjectsModel } from "../models/projects-model";
-import { ProjectIdSchema } from "../models/projects-schema";
-import { urlBuilder } from "../urls";
-import { authenticateOrThrow } from "../utils/auth";
-import { QUERY_PARAMS } from "../utils/constants";
-import { mimes } from "../utils/mime-utils";
+} from "../models/builds-schema.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
+import { ProjectIdSchema } from "../models/projects-schema.ts";
+import { urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { QUERY_PARAMS } from "../utils/constants.ts";
+import { mimes } from "../utils/mime-utils.ts";
 import {
   openapiCommonErrorResponses,
   openapiErrorResponseContent,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const buildTag = "Builds";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });

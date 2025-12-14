@@ -1,6 +1,6 @@
 import { SuperHeaders } from "@remix-run/headers";
-import { getStore } from "../utils/store";
-import { mimes } from "./mime-utils";
+import { getStore } from "../utils/store.ts";
+import { mimes } from "./mime-utils.ts";
 
 interface ErrorObject {
   message: string;

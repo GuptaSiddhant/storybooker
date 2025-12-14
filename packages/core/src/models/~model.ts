@@ -6,9 +6,9 @@ import type {
   StorageAdapterOptions,
   StoryBookerDatabaseDocument,
   StoryBookerPermissionAction,
-} from "../adapters";
-import { parseErrorMessage } from "../utils/error";
-import { getStore } from "../utils/store";
+} from "../adapters/index.ts";
+import { parseErrorMessage } from "../utils/error.ts";
+import { getStore } from "../utils/store.ts";
 
 export interface ListOptions<Item extends Record<string, unknown>> {
   limit?: number;

@@ -1,5 +1,5 @@
 import type { MiddlewareHandler } from "hono";
-import { checkIsHXRequest } from "../utils/request";
+import { checkIsHXRequest } from "../utils/request.ts";
 
 /**
  * Middleware to handle htmx redirects.

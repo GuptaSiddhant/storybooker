@@ -2,22 +2,23 @@ import { SuperHeaders } from "@remix-run/headers";
 import { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
 import type { TimingVariables } from "hono/timing";
-import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters";
-import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
-import { appRouter } from "./routers/_app-router";
-import type { PurgeHandlerOptions, RouterOptions } from "./types";
-import { DEFAULT_LOCALE } from "./utils/constants";
+import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters/index.ts";
+import { handlePurge, type HandlePurge } from "./handlers/handle-purge.ts";
+import { appRouter } from "./routers/_app-router.ts";
+import type { PurgeHandlerOptions, RouterOptions } from "./types.ts";
+import { DEFAULT_LOCALE } from "./utils/constants.ts";
 import {
   onUnhandledErrorHandler,
   parseErrorMessage,
   prettifyZodValidationErrorMiddleware,
-} from "./utils/error";
-import { htmxRedirectResponse } from "./utils/response";
-import { localStore, setupStore } from "./utils/store";
+} from "./utils/error.ts";
+import { htmxRedirectResponse } from "./utils/response.ts";
+import { localStore, setupStore } from "./utils/store.ts";
 
 if ("setEncoding" in process.stdout) {
   process.stdout.setEncoding("utf8");
 }
+export { appRouter, openapiConfig } from "./routers/_app-router.ts";
 
 /**
  * Callback to create a Hono App based on provided options.

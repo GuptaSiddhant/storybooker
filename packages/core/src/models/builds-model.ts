@@ -1,14 +1,17 @@
 // oxlint-disable switch-case-braces
 
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermissionAction } from "../adapters/auth";
-import { handleProcessZip } from "../handlers/handle-process-zip";
-import { urlBuilder } from "../urls";
-import { generateDatabaseCollectionId, generateStorageContainerId } from "../utils/adapter-utils";
-import { checkAuthorisation } from "../utils/auth";
-import { mimes } from "../utils/mime-utils";
-import { getStore } from "../utils/store";
-import { Model, type BaseModel, type ListOptions } from "./~model";
+import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
+import { handleProcessZip } from "../handlers/handle-process-zip.ts";
+import { urlBuilder } from "../urls.ts";
+import {
+  generateDatabaseCollectionId,
+  generateStorageContainerId,
+} from "../utils/adapter-utils.ts";
+import { checkAuthorisation } from "../utils/auth.ts";
+import { mimes } from "../utils/mime-utils.ts";
+import { getStore } from "../utils/store.ts";
+import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 import {
   BuildSchema,
   type BuildCreateType,
@@ -16,10 +19,10 @@ import {
   type BuildType,
   type BuildUpdateType,
   type BuildUploadVariant,
-} from "./builds-schema";
-import { ProjectsModel } from "./projects-model";
-import { TagsModel } from "./tags-model";
-import type { TagVariant } from "./tags-schema";
+} from "./builds-schema.ts";
+import { ProjectsModel } from "./projects-model.ts";
+import { TagsModel } from "./tags-model.ts";
+import type { TagVariant } from "./tags-schema.ts";
 
 export class BuildsModel extends Model<BuildType> {
   constructor(projectId: string) {

@@ -1,4 +1,4 @@
-import { SERVICE_NAME } from "../utils/constants";
+import { SERVICE_NAME } from "../utils/constants.ts";
 
 export function generateDatabaseCollectionId(
   projectId: string,

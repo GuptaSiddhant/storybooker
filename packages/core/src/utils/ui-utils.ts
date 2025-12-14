@@ -1,5 +1,5 @@
-import type { UIAdapterOptions } from "../adapters/ui";
-import { getStore } from "./store";
+import type { UIAdapterOptions } from "../adapters/ui.ts";
+import { getStore } from "./store.ts";
 
 export function createUIAdapterOptions(): UIAdapterOptions {
   const { auth, database, storage, ui, locale, logger, url, user } = getStore();

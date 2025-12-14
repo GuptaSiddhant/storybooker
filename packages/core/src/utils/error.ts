@@ -2,11 +2,11 @@ import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
-import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters";
-import type { RouterOptions, StoryBookerUser } from "../types";
-import { getStoreOrNull } from "../utils/store";
-import { DEFAULT_LOCALE } from "./constants";
-import { checkIsHTMLRequest } from "./request";
+import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters/index.ts";
+import type { RouterOptions, StoryBookerUser } from "../types.ts";
+import { getStoreOrNull } from "../utils/store.ts";
+import { DEFAULT_LOCALE } from "./constants.ts";
+import { checkIsHTMLRequest } from "./request.ts";
 
 /**
  * A function type for parsing custom errors.

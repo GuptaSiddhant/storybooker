@@ -1,10 +1,10 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
-import z from "zod";
-import { BuildsModel } from "../models/builds-model";
-import { ProjectsModel } from "../models/projects-model";
-import { ProjectIdSchema } from "../models/projects-schema";
-import { TagsModel } from "../models/tags-model";
+import { z } from "zod";
+import { BuildsModel } from "../models/builds-model.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
+import { ProjectIdSchema } from "../models/projects-schema.ts";
+import { TagsModel } from "../models/tags-model.ts";
 import {
   TagCreateSchema,
   TagIdSchema,
@@ -12,19 +12,19 @@ import {
   TagsListResultSchema,
   TagTypes,
   TagUpdateSchema,
-} from "../models/tags-schema";
-import { urlBuilder } from "../urls";
-import { authenticateOrThrow } from "../utils/auth";
-import { mimes } from "../utils/mime-utils";
+} from "../models/tags-schema.ts";
+import { urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { mimes } from "../utils/mime-utils.ts";
 import {
   openapiCommonErrorResponses,
   openapiErrorResponseContent,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { checkIsHTMLRequest } from "../utils/request";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { checkIsHTMLRequest } from "../utils/request.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });

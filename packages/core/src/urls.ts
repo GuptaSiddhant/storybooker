@@ -1,8 +1,8 @@
 import path from "node:path";
-import type { BuildUploadVariant } from "./models/builds-schema";
-import type { TagVariant } from "./models/tags-schema";
-import { getStore } from "./utils/store";
-import { linkRoute, urlJoin } from "./utils/url-utils";
+import type { BuildUploadVariant } from "./models/builds-schema.ts";
+import type { TagVariant } from "./models/tags-schema.ts";
+import { getStore } from "./utils/store.ts";
+import { linkRoute, urlJoin } from "./utils/url-utils.ts";
 
 export { urlJoin };
 

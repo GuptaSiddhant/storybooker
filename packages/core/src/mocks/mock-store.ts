@@ -2,8 +2,8 @@
 
 import { SuperHeaders } from "@remix-run/headers";
 import { vi } from "vitest";
-import type { DatabaseAdapter, StorageAdapter } from "../adapters";
-import type { Store } from "../utils/store";
+import type { DatabaseAdapter, StorageAdapter } from "../adapters/index.ts";
+import type { Store } from "../utils/store.ts";
 import { mockAuthService, mockUser } from "./mock-auth-service";
 
 export const mockStore: Store = {

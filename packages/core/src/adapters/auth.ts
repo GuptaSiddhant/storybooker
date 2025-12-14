@@ -1,4 +1,4 @@
-import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils";
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger";
 
 /**

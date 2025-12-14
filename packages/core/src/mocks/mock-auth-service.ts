@@ -1,7 +1,7 @@
 // oxlint-disable require-await
 // oxlint-disable sort-keys
 
-import type { AuthAdapter, StoryBookerUser } from "../adapters/auth";
+import type { AuthAdapter, StoryBookerUser } from "../adapters/auth.ts";
 
 export const mockUser: StoryBookerUser = {
   displayName: "Test User",

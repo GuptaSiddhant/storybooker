@@ -3,7 +3,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { Readable } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { writeStreamToFile, writeWebStreamToFile } from "./file-utils";
+import { writeStreamToFile, writeWebStreamToFile } from "./file-utils.ts";
 
 describe("writeStreamToFile", () => {
   it("should work with node-readable", async () => {

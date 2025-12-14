@@ -1,15 +1,18 @@
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermissionAction } from "../adapters/auth";
-import { generateDatabaseCollectionId, generateStorageContainerId } from "../utils/adapter-utils";
-import { checkAuthorisation } from "../utils/auth";
-import { Model, type BaseModel, type ListOptions } from "./~model";
+import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
+import {
+  generateDatabaseCollectionId,
+  generateStorageContainerId,
+} from "../utils/adapter-utils.ts";
+import { checkAuthorisation } from "../utils/auth.ts";
+import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 import {
   ProjectSchema,
   type ProjectCreateType,
   type ProjectType,
   type ProjectUpdateType,
-} from "./projects-schema";
-import { TagsModel } from "./tags-model";
+} from "./projects-schema.ts";
+import { TagsModel } from "./tags-model.ts";
 
 export class ProjectsModel extends Model<ProjectType> {
   constructor() {

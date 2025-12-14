@@ -25,6 +25,7 @@
     "./router": "./src/routers/_app-router.ts",
     "./types": "./src/types.ts",
     "./url": "./src/urls.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./openapi.json": "./openapi.json"
   }
 }

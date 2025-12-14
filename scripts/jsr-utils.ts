@@ -1,7 +1,5 @@
-import type { ResolvedConfig } from "tsdown";
-
 export async function updateDenoJsonToMatchPkgJson(
-  config: ResolvedConfig,
+  logger?: { success: (message: string) => void },
   signal?: AbortSignal,
 ): Promise<void> {
   const { readFile, writeFile } = await import("node:fs/promises");
@@ -27,7 +25,7 @@ export async function updateDenoJsonToMatchPkgJson(
     encoding: "utf8",
     signal,
   });
-  config.logger.success("Updated deno.json");
+  logger?.success("Updated deno.json");
 }
 
 export interface JsrPackageMeta {

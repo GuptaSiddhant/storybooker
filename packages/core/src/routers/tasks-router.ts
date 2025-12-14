@@ -1,11 +1,11 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
-import { handleProcessZip } from "../handlers/handle-process-zip";
-import { handlePurge } from "../handlers/handle-purge";
-import { buildUploadVariants } from "../models/builds-schema";
-import { urlBuilder } from "../urls";
-import { authenticateOrThrow } from "../utils/auth";
-import { checkIsHTMLRequest } from "../utils/request";
+import { handleProcessZip } from "../handlers/handle-process-zip.ts";
+import { handlePurge } from "../handlers/handle-purge.ts";
+import { buildUploadVariants } from "../models/builds-schema.ts";
+import { urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { checkIsHTMLRequest } from "../utils/request.ts";
 
 const tasksTag = "Tasks";
 

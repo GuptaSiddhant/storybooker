@@ -1,12 +1,12 @@
 import path from "node:path";
 import { SuperHeaders } from "@remix-run/headers";
 import { HTTPException } from "hono/http-exception";
-import { urlBuilder } from "../urls";
-import { generateStorageContainerId } from "../utils/adapter-utils";
-import { authenticateOrThrow } from "../utils/auth";
-import { CACHE_CONTROL_PUBLIC_YEAR, SERVICE_NAME } from "../utils/constants";
-import { getMimeType } from "../utils/mime-utils";
-import { getStore } from "../utils/store";
+import { urlBuilder } from "../urls.ts";
+import { generateStorageContainerId } from "../utils/adapter-utils.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { CACHE_CONTROL_PUBLIC_YEAR, SERVICE_NAME } from "../utils/constants.ts";
+import { getMimeType } from "../utils/mime-utils.ts";
+import { getStore } from "../utils/store.ts";
 
 export async function handleServeStoryBook({
   buildId,

@@ -25,8 +25,9 @@
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
     "oxfmt": "npx oxfmt ./src",
-    "lint": "oxlint --type-aware --type-check ./src",
+    "lint": "oxlint --type-aware --type-check --import-plugin ./src",
     "lint:fix": "yarn lint --fix",
+    "openapi": "node ./scripts/gen-openapi-json.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"
@@ -112,7 +113,8 @@
       "source": "./src/utils/index.ts",
       "default": "./dist/utils.mjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./openapi.json": "./openapi.json"
   },
   "publishConfig": {
     "exports": {

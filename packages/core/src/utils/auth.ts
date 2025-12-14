@@ -1,6 +1,6 @@
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermission, StoryBookerPermissionKey } from "../adapters/auth";
-import { getStore } from "../utils/store";
+import type { StoryBookerPermission, StoryBookerPermissionKey } from "../adapters/auth.ts";
+import { getStore } from "../utils/store.ts";
 
 export async function authenticateOrThrow(permission: StoryBookerPermission): Promise<void> {
   const { abortSignal, auth, logger, request, user } = getStore();

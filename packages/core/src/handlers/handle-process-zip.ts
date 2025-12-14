@@ -4,13 +4,13 @@ import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import decompress from "decompress";
-import type { StoryBookerFile } from "../adapters/storage";
-import { BuildsModel } from "../models/builds-model";
-import type { BuildUploadVariant } from "../models/builds-schema";
-import { generateStorageContainerId } from "../utils/adapter-utils";
-import { writeStreamToFile } from "../utils/file-utils";
-import { getMimeType } from "../utils/mime-utils";
-import { getStore } from "../utils/store";
+import type { StoryBookerFile } from "../adapters/storage.ts";
+import { BuildsModel } from "../models/builds-model.ts";
+import type { BuildUploadVariant } from "../models/builds-schema.ts";
+import { generateStorageContainerId } from "../utils/adapter-utils.ts";
+import { writeStreamToFile } from "../utils/file-utils.ts";
+import { getMimeType } from "../utils/mime-utils.ts";
+import { getStore } from "../utils/store.ts";
 
 export async function handleProcessZip(
   projectId: string,

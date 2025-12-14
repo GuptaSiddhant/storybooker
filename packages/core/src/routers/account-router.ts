@@ -1,14 +1,14 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
-import { urlBuilder } from "../urls";
-import { QUERY_PARAMS } from "../utils/constants";
+import { urlBuilder } from "../urls.ts";
+import { QUERY_PARAMS } from "../utils/constants.ts";
 import {
   openapiCommonErrorResponses,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const accountTag = "Account";
 
