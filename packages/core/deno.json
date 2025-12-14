@@ -4,12 +4,11 @@
   "version": "0.20.0",
   "license": "MIT",
   "publish": {
-    "include": [
-      "src",
-      "README.md",
-      "package.json",
-      "openapi.json"
-    ]
+    "include": ["src", "README.md", "openapi.json"]
+  },
+  "imports": {
+    "hono": "npm:hono",
+    "zod": "npm:zod"
   },
   "exports": {
     ".": "./src/index.ts",

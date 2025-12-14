@@ -1,7 +1,6 @@
 import { swaggerUI } from "@hono/swagger-ui";
 import { OpenAPIHono, type OpenAPIObjectConfigure } from "@hono/zod-openapi";
 import type { Context, Env } from "hono";
-// import pkgJson from "../../package.json" with { type: "json" };
 import { SERVICE_NAME } from "../utils/constants.ts";
 import { getStore } from "../utils/store.ts";
 import { createUIAdapterOptions } from "../utils/ui-utils.ts";
