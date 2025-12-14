@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/sql",
-  "version": "0.19.4",
+  "version": "0.20.0",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with SQL services.",
   "author": {
