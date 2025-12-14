@@ -31,7 +31,7 @@ jobs:
 
       - name: Setup Turbo
         run: |
-          npx -y turbo prune website
+          npx -y turbo@canary prune website
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts

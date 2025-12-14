@@ -40,7 +40,7 @@ jobs:
             fi  
           done
 
-          npx -y turbo prune storybooker ${pkgNames[@]}           
+          npx -y turbo@canary prune storybooker ${pkgNames[@]}           
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
