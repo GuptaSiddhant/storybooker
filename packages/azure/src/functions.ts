@@ -7,10 +7,12 @@ import type {
   HttpRequest,
   HttpResponseInit,
   HttpTriggerOptions,
+  InvocationContext,
   SetupOptions,
   TimerFunctionOptions,
 } from "@azure/functions";
 import { createHonoRouter, createPurgeHandler } from "@storybooker/core";
+import type { LoggerAdapter } from "@storybooker/core/adapter";
 import type { ErrorParser, RouterOptions, StoryBookerUser } from "@storybooker/core/types";
 import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "@storybooker/core/utils";
 
@@ -111,7 +113,8 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
 
     app.timer(`${SERVICE_NAME}-timer_purge`, {
       // oxlint-disable-next-line require-await
-      handler: async (_timer, context) => purgeHandler({}, { logger: context }),
+      handler: async (_timer, context) =>
+        purgeHandler({}, { logger: createAzureContextLogger(context) }),
       runOnStartup: false,
       schedule,
     });
@@ -133,8 +136,18 @@ const parseAzureRestError: ErrorParser = (error) => {
     };
   }
 
+  // oxlint-disable-next-line no-useless-return
   return;
 };
+
+function createAzureContextLogger(context: InvocationContext): LoggerAdapter {
+  return {
+    debug: context.debug.bind(context),
+    error: context.error.bind(context),
+    log: context.log.bind(context),
+    metadata: { name: "Azure Functions" },
+  };
+}
 
 /**
  * Utils (@refer https://github.com/Marplex/hono-azurefunc-adapter/)

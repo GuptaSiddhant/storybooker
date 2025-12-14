@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType } from "@storybooker/core/types";
 import { DestructiveButton, LinkButton } from "../components/button";
 import {
@@ -10,7 +11,7 @@ import {
 import { ProjectsTable } from "../components/projects-table";
 import { getUIStore } from "../utils/ui-store";
 
-export function ProjectsListPage({ projects }: { projects: ProjectType[] }): JSXElement {
+export function ProjectsListPage({ projects }: { projects: ProjectType[] }): RenderedContent {
   const title = `All Projects`;
 
   const { urlBuilder } = getUIStore();

@@ -1,8 +1,8 @@
-import type { UIAdapterOptions } from "../adapters/ui";
-import { getStore } from "./store";
+import type { UIAdapterOptions } from "../adapters/ui.ts";
+import { getStore } from "./store.ts";
 
 export function createUIAdapterOptions(): UIAdapterOptions {
-  const { auth, locale, logger, url, user } = getStore();
+  const { auth, database, storage, ui, locale, logger, url, user } = getStore();
 
   return {
     isAuthEnabled: !!auth,
@@ -10,5 +10,12 @@ export function createUIAdapterOptions(): UIAdapterOptions {
     logger,
     url,
     user,
+    adaptersMetadata: {
+      auth: auth?.metadata,
+      database: database?.metadata,
+      logger: logger?.metadata,
+      storage: storage?.metadata,
+      ui: ui?.metadata,
+    },
   };
 }

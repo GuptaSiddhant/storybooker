@@ -1,14 +1,14 @@
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
-import { urlBuilder } from "../urls";
-import { QUERY_PARAMS } from "../utils/constants";
+import { HTTPException } from "hono/http-exception";
+import { urlBuilder } from "../urls.ts";
+import { QUERY_PARAMS } from "../utils/constants.ts";
 import {
   openapiCommonErrorResponses,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { responseError, responseRedirect } from "../utils/response";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const accountTag = "Account";
 
@@ -33,17 +33,17 @@ export const accountRouter = new OpenAPIHono()
     async (context) => {
       const { abortSignal, auth, logger, request, user, ui } = getStore();
 
-      if (!auth || !ui) {
-        return await responseError("Auth is not setup", 500);
+      if (!auth) {
+        throw new HTTPException(500, { message: "Auth is not setup" });
       }
 
       if (!user) {
-        if (auth.login) {
-          const { pathname } = new URL(urlBuilder.account());
-          return responseRedirect(urlBuilder.login(pathname), 302);
-        }
+        const { pathname } = new URL(urlBuilder.account());
+        return context.redirect(urlBuilder.login(pathname), 302);
+      }
 
-        return responseRedirect(urlBuilder.homepage(), 401);
+      if (!ui?.renderAccountsPage) {
+        throw new HTTPException(405, { message: "UI is not available for this route." });
       }
 
       const children = await auth.renderAccountDetails?.(user, {
@@ -75,8 +75,8 @@ export const accountRouter = new OpenAPIHono()
     async (context) => {
       const { abortSignal, auth, logger, request } = getStore();
 
-      if (!auth?.login) {
-        return await responseError("Auth is not setup", 500);
+      if (!auth) {
+        throw new HTTPException(500, { message: "Auth is not setup" });
       }
 
       const response = await auth.login({ abortSignal, logger, request });
@@ -87,11 +87,11 @@ export const accountRouter = new OpenAPIHono()
 
       const { redirect = "" } = context.req.valid("query");
       const location = new URL(redirect, urlBuilder.homepage());
+      for (const [key, value] of response.headers) {
+        context.res.headers.set(key, value);
+      }
 
-      return responseRedirect(location.toString(), {
-        headers: response.headers,
-        status: 302,
-      });
+      return context.redirect(location.toString());
     },
   )
   .openapi(
@@ -105,10 +105,14 @@ export const accountRouter = new OpenAPIHono()
         ...openapiCommonErrorResponses,
       },
     }),
-    async () => {
+    async (context) => {
       const { abortSignal, auth, logger, request, user } = getStore();
-      if (!auth?.logout || !user) {
-        return await responseError("Auth is not setup", 500);
+      if (!auth) {
+        throw new HTTPException(500, { message: "Auth is not setup" });
+      }
+
+      if (!user) {
+        throw new HTTPException(401, { message: "User is not authenticated" });
       }
 
       const response = await auth.logout(user, {
@@ -120,9 +124,13 @@ export const accountRouter = new OpenAPIHono()
         return response;
       }
 
-      return responseRedirect(urlBuilder.homepage(), {
-        headers: response.headers,
-        status: 302,
-      });
+      const responseHeaders = new Headers(response.headers);
+      const responseLocation = responseHeaders.get("location");
+      responseHeaders.delete("location");
+      for (const [key, value] of responseHeaders) {
+        context.res.headers.set(key, value);
+      }
+
+      return context.redirect(responseLocation || urlBuilder.homepage());
     },
   );

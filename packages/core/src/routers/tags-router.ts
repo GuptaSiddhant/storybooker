@@ -1,9 +1,10 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
-import z from "zod";
-import { BuildsModel } from "../models/builds-model";
-import { ProjectsModel } from "../models/projects-model";
-import { ProjectIdSchema } from "../models/projects-schema";
-import { TagsModel } from "../models/tags-model";
+import { HTTPException } from "hono/http-exception";
+import { z } from "zod";
+import { BuildsModel } from "../models/builds-model.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
+import { ProjectIdSchema } from "../models/projects-schema.ts";
+import { TagsModel } from "../models/tags-model.ts";
 import {
   TagCreateSchema,
   TagIdSchema,
@@ -11,20 +12,19 @@ import {
   TagsListResultSchema,
   TagTypes,
   TagUpdateSchema,
-} from "../models/tags-schema";
-import { urlBuilder } from "../urls";
-import { authenticateOrThrow } from "../utils/auth";
-import { mimes } from "../utils/mime-utils";
+} from "../models/tags-schema.ts";
+import { urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { mimes } from "../utils/mime-utils.ts";
 import {
   openapiCommonErrorResponses,
   openapiErrorResponseContent,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { checkIsHTMLRequest } from "../utils/request";
-import { responseError, responseRedirect } from "../utils/response";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { checkIsHTMLRequest } from "../utils/request.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -69,18 +69,21 @@ export const tagsRouter = new OpenAPIHono()
       });
 
       const { type } = context.req.valid("query");
-      const tags = await new TagsModel(projectId).list({
-        filter: type ? (item): boolean => item.type === type : undefined,
-      });
+      const tags = await new TagsModel(projectId).list();
+      const filteredTags = type ? tags.filter((tag) => tag.type === type) : tags;
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderTagsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
+
         return context.html(
-          ui.renderTagsListPage({ project, tags, defaultType: type }, createUIAdapterOptions()),
+          ui.renderTagsListPage(
+            { project, tags: filteredTags, defaultType: type },
+            createUIAdapterOptions(),
+          ),
         );
       }
 
-      return context.json({ tags });
+      return context.json({ tags: filteredTags });
     },
   )
   .openapi(
@@ -100,8 +103,8 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderTagCreatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
@@ -114,7 +117,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderTagCreatePage({ project }, createUIAdapterOptions()));
+      return context.html(ui?.renderTagCreatePage({ project }, createUIAdapterOptions()));
     },
   )
   .openapi(
@@ -152,7 +155,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
-        return await responseError(`The project '${projectId}' does not exist.`, 404);
+        throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
       await authenticateOrThrow({
@@ -165,7 +168,7 @@ export const tagsRouter = new OpenAPIHono()
       const tag = await new TagsModel(projectId).create(data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.tagDetails(projectId, tag.id), 303);
+        return context.redirect(urlBuilder.tagDetails(projectId, tag.id), 303);
       }
 
       return context.json({ tag }, 201);
@@ -205,7 +208,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const tag = await new TagsModel(projectId).get(tagId);
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderTagDetailsPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
         const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
@@ -245,7 +248,7 @@ export const tagsRouter = new OpenAPIHono()
       await new TagsModel(projectId).delete(tagId);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.tagsList(projectId), 303);
+        return context.redirect(urlBuilder.tagsList(projectId), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -272,8 +275,8 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderTagUpdatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { tagId, projectId } = context.req.valid("param");
@@ -331,7 +334,7 @@ export const tagsRouter = new OpenAPIHono()
       await tagsModel.update(tagId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.tagDetails(projectId, tagId), 303);
+        return context.redirect(urlBuilder.tagDetails(projectId, tagId), 303);
       }
 
       return new Response(null, { status: 202 });

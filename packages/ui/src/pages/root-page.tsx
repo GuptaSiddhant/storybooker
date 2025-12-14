@@ -1,5 +1,8 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
+import { css } from "hono/css";
+import { Badge } from "../components/badge";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -14,9 +17,9 @@ export interface RootPageProps {
   projects: ProjectType[];
 }
 
-export function RootPage({ projects }: RootPageProps): JSXElement {
+export function RootPage({ projects }: RootPageProps): RenderedContent {
   const pageTitle = "Home";
-  const { urlBuilder } = getUIStore();
+  const { urlBuilder, adaptersMetadata } = getUIStore();
 
   return (
     <DocumentLayout
@@ -52,7 +55,7 @@ export function RootPage({ projects }: RootPageProps): JSXElement {
       <DocumentHeader
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <a href={urlBuilder.projectsList()}>All Project</a>
+            <a href={urlBuilder.projectsList()}>All Projects</a>
           </div>
         }
       >
@@ -61,7 +64,35 @@ export function RootPage({ projects }: RootPageProps): JSXElement {
       <DocumentMain style={{ padding: 0 }}>
         <ProjectsGrid projects={projects} />
       </DocumentMain>
-      <DocumentSidebar />
+      <DocumentSidebar style={{ padding: "1rem" }}>
+        <details open>
+          <summary style={{ fontWeight: "bold", margin: 0 }}>Adapters</summary>
+          <hr />
+          {Object.entries(adaptersMetadata).map(([adapterId, metadata]) => (
+            <details key={adapterId} style={{ margin: "1rem 0" }}>
+              <summary
+                style={{ textTransform: "uppercase", fontSize: "0.8em", fontWeight: "bold" }}
+              >
+                {adapterId}
+              </summary>
+              <div
+                class={css`
+                  display: flex;
+                  flex-direction: column;
+                  gap: 0.2em;
+                  margin-top: 0.5em;
+                `}
+              >
+                <span style={{ fontSize: "0.9em" }}>{metadata.name}</span>
+                {metadata.version && <Badge>{metadata.version}</Badge>}
+                {metadata.description && (
+                  <span style={{ margin: 0, fontSize: "0.8em" }}>{metadata.description}</span>
+                )}
+              </div>
+            </details>
+          ))}
+        </details>
+      </DocumentSidebar>
 
       <DocumentUserSection />
     </DocumentLayout>

@@ -1,12 +1,15 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
-import z from "zod";
-import { handleServeStoryBook } from "../handlers/handle-serve-storybook";
-import { ProjectsModel } from "../models/projects-model";
-import { mimes } from "../utils/mime-utils";
-import { openapiResponsesHtml } from "../utils/openapi-utils";
-import { checkIsJSONRequest } from "../utils/request";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+import { z } from "zod";
+import { handleServeStoryBook } from "../handlers/handle-serve-storybook.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
+import { UrlBuilder, urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { SERVICE_NAME } from "../utils/constants.ts";
+import { mimes } from "../utils/mime-utils.ts";
+import { openapiResponsesHtml } from "../utils/openapi-utils.ts";
+import { checkIsHTMLRequest } from "../utils/request.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 /**
  * @private
@@ -20,27 +23,62 @@ export const rootRouter = new OpenAPIHono()
       responses: {
         200: {
           content: {
+            [mimes.json]: {
+              schema: z.object({
+                name: z.string(),
+                adapters: z.record(z.string(), z.object({ name: z.string() })),
+                config: z.record(z.string(), z.unknown()),
+                urls: z.record(z.string(), z.string()),
+              }),
+            },
             ...openapiResponsesHtml,
-            [mimes.json]: { schema: z.object({}) },
           },
           description: "Render homepage or return a list of endpoint-urls.",
         },
       },
     }),
     async (context) => {
-      const { ui } = getStore();
+      const { auth, database, logger, storage, ui, config } = getStore();
 
-      if (checkIsJSONRequest()) {
-        return context.json({});
+      if (ui?.renderHomePage && checkIsHTMLRequest(true)) {
+        await authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
+        const projects = await new ProjectsModel().list({ limit: 5 });
+
+        return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));
       }
 
-      if (!ui) {
-        return context.notFound();
+      const urls: Record<string, string> = {};
+      for (const urlKey of Object.getOwnPropertyNames(UrlBuilder.prototype)) {
+        const func = urlBuilder[urlKey as keyof UrlBuilder];
+        if (urlKey === "constructor" || typeof func !== "function") {
+          continue;
+        }
+
+        const keyword = "ARG0REMOVE";
+        const url = (func as (...args: string[]) => string).call(urlBuilder, keyword);
+        if (url.includes(keyword)) {
+          continue;
+        }
+
+        urls[urlKey] = url;
       }
 
-      const projects = await new ProjectsModel().list({ limit: 5 });
-
-      return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));
+      return context.json({
+        name: SERVICE_NAME,
+        adapters: {
+          auth: auth?.metadata,
+          database: database.metadata,
+          logger: logger.metadata,
+          storage: storage.metadata,
+          ui: ui?.metadata,
+        },
+        config: {
+          ...config,
+          middlewares: config?.middlewares?.map((mw) => mw.name),
+          errorParser: undefined,
+        },
+        urls,
+      });
     },
   )
   .openapi(

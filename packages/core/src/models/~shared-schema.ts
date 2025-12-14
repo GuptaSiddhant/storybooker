@@ -1,5 +1,5 @@
-import z from "zod";
-import { PATTERNS } from "../utils/constants";
+import { z } from "zod";
+import { PATTERNS } from "../utils/constants.ts";
 
 export const TagIdSchema = z.string().meta({ description: "The ID of the tag.", id: "TagID" });
 

@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildStoryType, BuildType, ProjectType } from "@storybooker/core/types";
 import { BuildLinksFooter } from "../components/build-links";
 import { BuildProcessStatus } from "../components/build-process";
@@ -23,10 +24,10 @@ export function BuildDetailsPage({
 }: {
   build: BuildType;
   project: ProjectType;
-  hasDeletePermission: boolean;
-  hasUpdatePermission: boolean;
+  hasDeletePermission?: boolean;
+  hasUpdatePermission?: boolean;
   stories: BuildStoryType[] | null;
-}): JSXElement {
+}): RenderedContent {
   const { urlBuilder } = getUIStore();
   const shouldShowUploadButton =
     hasUpdatePermission &&
@@ -65,7 +66,7 @@ export function BuildDetailsPage({
         <BuildProcessStatus
           build={build}
           projectId={project.id}
-          hasUpdatePermission={hasUpdatePermission}
+          hasUpdatePermission={!!hasUpdatePermission}
         />
         <hr style={{ margin: "0.5rem 0" }} />
         <BuildStories build={build} projectId={project.id} stories={stories} />
@@ -74,7 +75,7 @@ export function BuildDetailsPage({
         <BuildLinksFooter
           build={build}
           projectId={project.id}
-          hasUpdatePermission={hasUpdatePermission}
+          hasUpdatePermission={!!hasUpdatePermission}
         />
         <hr style={{ margin: "1rem 0" }} />
         <RawDataList data={build} />

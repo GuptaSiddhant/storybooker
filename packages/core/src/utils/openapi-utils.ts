@@ -1,10 +1,10 @@
 import type { ResponseConfig, ZodContentObject } from "@asteasolutions/zod-to-openapi";
 import { z } from "@hono/zod-openapi";
-import { mimes } from "./mime-utils";
+import { mimes } from "./mime-utils.ts";
 
-export const openapiResponsesHtml: ZodContentObject = {
+export const openapiResponsesHtml = {
   [mimes.html]: { schema: z.string().openapi({ example: "<!DOCTYPE html>" }) },
-} as const;
+} as const satisfies ZodContentObject;
 
 export function openapiResponseRedirect(description: string): ResponseConfig {
   return {

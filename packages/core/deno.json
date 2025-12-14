@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
   "name": "@storybooker/core",
-  "version": "0.19.4",
+  "version": "0.20.0",
   "license": "MIT",
   "publish": {
     "include": [
@@ -11,14 +11,15 @@
       "openapi.json"
     ]
   },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "@kitajs/html"
-  },
   "exports": {
     ".": "./src/index.ts",
     "./adapter": "./src/adapters/index.ts",
+    "./adapter/auth": "./src/adapters/auth.ts",
+    "./adapter/database": "./src/adapters/database.ts",
     "./adapter/fs": "./src/adapters/_fs-adapters.ts",
+    "./adapter/logger": "./src/adapters/logger.ts",
+    "./adapter/storage": "./src/adapters/storage.ts",
+    "./adapter/ui": "./src/adapters/ui.ts",
     "./constants": "./src/utils/constants.ts",
     "./mimes": "./src/utils/mime-utils.ts",
     "./router": "./src/routers/_app-router.ts",

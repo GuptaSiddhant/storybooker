@@ -3,6 +3,7 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
+import { Readable } from "node:stream";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import { getMimeType, mimes } from "@storybooker/core/mimes";
 import { generateGlobalSprite } from "../icons/global-sprite";
@@ -24,9 +25,7 @@ export async function handleStaticFileRoute(
   const { logger } = getUIStore();
 
   if (filepath.startsWith(ASSETS.globalStyles)) {
-    const stylesheet = generateGlobalStyleSheet({ darkTheme, lightTheme });
-
-    return new Response(stylesheet, {
+    return new Response(generateGlobalStyleSheet({ darkTheme, lightTheme }), {
       headers: new Headers({
         "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
         "content-type": mimes.css,
@@ -36,9 +35,7 @@ export async function handleStaticFileRoute(
   }
 
   if (filepath.startsWith(ASSETS.globalScript)) {
-    const script = generateGlobalScript();
-
-    return new Response(script, {
+    return new Response(generateGlobalScript(), {
       headers: new Headers({
         "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
         "content-type": mimes.js,
@@ -48,9 +45,7 @@ export async function handleStaticFileRoute(
   }
 
   if (filepath.startsWith(ASSETS.globalSprite)) {
-    const sprite = generateGlobalSprite();
-
-    return new Response(sprite, {
+    return new Response(generateGlobalSprite(), {
       headers: new Headers({
         "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
         "content-type": mimes.svg,
@@ -67,22 +62,20 @@ export async function handleStaticFileRoute(
 
   const staticFilepath = staticFilepaths.find((path) => fs.existsSync(path));
   if (!staticFilepath) {
-    return new Response(`[${SERVICE_NAME}] Matching route not found.`, {
-      status: 404,
-    });
+    return new Response(`[${SERVICE_NAME}] Matching route not found.`, { status: 404 });
   }
 
   const contentType = getMimeType(staticFilepath);
 
   logger.log("%s: '%s' (%s)", "Serving static file from disk.", staticFilepath, contentType);
 
-  const content = await fsp.readFile(staticFilepath);
-
-  return new Response(new Uint8Array(content), {
-    headers: new Headers({
-      "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
-      "content-type": contentType,
-    }),
-    status: 200,
+  const fileHandle = await fsp.open(staticFilepath, "r");
+  const nodeStream = fileHandle.createReadStream();
+  const webStream = Readable.toWeb(nodeStream) as ReadableStream;
+  const headers = new Headers({
+    "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
+    "content-type": contentType,
   });
+
+  return new Response(webStream, { headers, status: 200 });
 }

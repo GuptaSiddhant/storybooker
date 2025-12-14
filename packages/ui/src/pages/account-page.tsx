@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { StoryBookerUser } from "@storybooker/core/types";
 import { DestructiveButton } from "../components/button";
 import {
@@ -11,7 +12,7 @@ import { IFrameContainer } from "../components/iframe";
 import { RawDataList } from "../components/raw-data";
 import { getUIStore } from "../utils/ui-store";
 
-export function AccountPage({ children }: { children: string | undefined }): JSXElement {
+export function AccountPage({ children }: { children: string | undefined }): RenderedContent {
   const { isAuthEnabled, user, urlBuilder } = getUIStore();
 
   const pageTitle = "Account";

@@ -6,14 +6,41 @@ import type {
   StorageAdapter,
   StoryBookerUser,
   UIAdapter,
-} from "./adapters";
-import type { ErrorParser } from "./utils/error";
+} from "./adapters/index.ts";
+import type { ErrorParser } from "./utils/error.ts";
 
-export type { StoryBookerUser } from "./adapters/auth";
-export type * from "./models/builds-schema";
-export type * from "./models/projects-schema";
-export type * from "./models/tags-schema";
-export type { ErrorParser, ParsedError } from "./utils/error";
+export type {
+  StoryBookerUser,
+  StoryBookerPermissionAction,
+  StoryBookerPermissionKey,
+  StoryBookerPermissionResource,
+  StoryBookerPermissionWithKey,
+} from "./adapters/auth.ts";
+export type {
+  BuildCreateType,
+  BuildStoryType,
+  BuildType,
+  BuildUpdateType,
+  BuildUploadVariant,
+  BuildsGetResultType,
+  BuildsListResultType,
+} from "./models/builds-schema.ts";
+export type {
+  ProjectCreateType,
+  ProjectGetResultType,
+  ProjectUpdateType,
+  ProjectType,
+  ProjectsListResultType,
+} from "./models/projects-schema.ts";
+export type {
+  TagCreateType,
+  TagType,
+  TagUpdateType,
+  TagVariant,
+  TagsGetResultType,
+  TagsListResultType,
+} from "./models/tags-schema.ts";
+export type { ErrorParser, ParsedError } from "./utils/error.ts";
 
 /**
  * Options for creating a router.

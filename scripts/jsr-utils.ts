@@ -1,16 +1,11 @@
-import type { ResolvedOptions } from "tsdown";
-
 export async function updateDenoJsonToMatchPkgJson(
-  config: ResolvedOptions,
+  logger?: { success: (message: string) => void },
   signal?: AbortSignal,
 ): Promise<void> {
   const { readFile, writeFile } = await import("node:fs/promises");
   const pkgJsonPath = "./package.json";
-  const pkgJson = JSON.parse(
-    await readFile(pkgJsonPath, { encoding: "utf8", signal }),
-  );
-  const exports: Record<string, string | { source: string }> =
-    pkgJson["exports"] || {};
+  const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8", signal }));
+  const exports: Record<string, string | { source: string }> = pkgJson["exports"] || {};
 
   const denoExports: Record<string, string> = {};
   for (const [key, value] of Object.entries(exports)) {
@@ -21,9 +16,7 @@ export async function updateDenoJsonToMatchPkgJson(
   }
 
   const denoJsonPath = "./deno.json";
-  const denoJson = JSON.parse(
-    await readFile(denoJsonPath, { encoding: "utf8", signal }),
-  );
+  const denoJson = JSON.parse(await readFile(denoJsonPath, { encoding: "utf8", signal }));
   denoJson["exports"] = denoExports;
   denoJson["version"] = pkgJson["version"];
 
@@ -32,9 +25,7 @@ export async function updateDenoJsonToMatchPkgJson(
     encoding: "utf8",
     signal,
   });
-  config.logger.success("Updated deno.json");
-
-  return;
+  logger?.success("Updated deno.json");
 }
 
 export interface JsrPackageMeta {
@@ -48,9 +39,7 @@ export interface JsrPackageMeta {
   versions: Record<string, unknown>;
 }
 
-export async function fetchJsrPackageMeta(
-  packageName: string,
-): Promise<JsrPackageMeta | null> {
+export async function fetchJsrPackageMeta(packageName: string): Promise<JsrPackageMeta | null> {
   const url = `https://jsr.io/${packageName}/meta.json`;
   const headers = new Headers({ Accept: "application/json" });
   const response = await fetch(url, { headers });

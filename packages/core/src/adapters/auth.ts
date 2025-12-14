@@ -1,3 +1,4 @@
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -7,6 +8,11 @@ import type { LoggerAdapter } from "./logger";
  * accessing the app.
  */
 export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser> {
+  /**
+   * Metadata about the adapter.
+   */
+  metadata: StoryBookerAdapterMetadata;
+
   /**
    * An optional method that is called on app boot-up
    * to run async setup functions.
@@ -41,7 +47,7 @@ export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser>
    *
    * @param options Common options like abortSignal.
    */
-  login?: (options: AuthAdapterOptions) => Promise<Response> | Response;
+  login: (options: AuthAdapterOptions) => Promise<Response> | Response;
 
   /**
    * Get user to logout from UI. The returning response should clear auth session.
@@ -49,7 +55,7 @@ export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser>
    *
    * @param options Common options like abortSignal.
    */
-  logout?: (user: AuthUser, options: AuthAdapterOptions) => Promise<Response> | Response;
+  logout: (user: AuthUser, options: AuthAdapterOptions) => Promise<Response> | Response;
 
   /**
    * Render custom HTML in account page. Must return valid HTML string;

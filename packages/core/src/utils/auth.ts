@@ -1,6 +1,6 @@
-import type { StoryBookerPermission, StoryBookerPermissionKey } from "../adapters/auth";
-import { getStore } from "../utils/store";
-import { responseError } from "./response";
+import { HTTPException } from "hono/http-exception";
+import type { StoryBookerPermission, StoryBookerPermissionKey } from "../adapters/auth.ts";
+import { getStore } from "../utils/store.ts";
 
 export async function authenticateOrThrow(permission: StoryBookerPermission): Promise<void> {
   const { abortSignal, auth, logger, request, user } = getStore();
@@ -10,7 +10,7 @@ export async function authenticateOrThrow(permission: StoryBookerPermission): Pr
   }
 
   if (!user) {
-    throw await responseError("Unauthenticated access", 401);
+    throw new HTTPException(401, { message: "Unauthenticated. Please log in to continue." });
   }
 
   const key: StoryBookerPermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
@@ -28,12 +28,12 @@ export async function authenticateOrThrow(permission: StoryBookerPermission): Pr
     }
 
     if (response === false) {
-      throw await responseError(`Permission denied [${key}]`, 403);
+      throw new HTTPException(403, { message: `Permission denied [${key}]` });
     }
 
     throw response;
   } catch (error) {
-    throw await responseError(error, 403);
+    throw new HTTPException(403, { cause: error });
   }
 }
 

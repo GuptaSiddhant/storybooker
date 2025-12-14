@@ -1,6 +1,6 @@
 import { SuperHeaders } from "@remix-run/headers";
-import { getStore } from "../utils/store";
-import { mimes } from "./mime-utils";
+import { getStore } from "../utils/store.ts";
+import { mimes } from "./mime-utils.ts";
 
 interface ErrorObject {
   message: string;
@@ -12,19 +12,14 @@ export function checkIsHXRequest(request?: Request): boolean {
   return req.headers.get("hx-request") === "true";
 }
 
-export function checkIsHTMLRequest(checkHX?: boolean): boolean {
-  const req = getStore().request;
+export function checkIsHTMLRequest(checkHX?: boolean, request?: Request): boolean {
+  const req = request || getStore().request;
+
   const accept = req.headers.get("accept");
   if (checkHX && checkIsHXRequest(req)) {
     return true;
   }
   return !!accept?.includes(mimes.html);
-}
-
-export function checkIsJSONRequest(request?: Request): boolean {
-  const req = request || getStore().request;
-  const accept = req.headers.get("accept");
-  return !!accept?.includes(mimes.json);
 }
 
 export function validateIsFormEncodedRequest(request?: Request): undefined | ErrorObject {

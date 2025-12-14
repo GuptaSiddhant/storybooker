@@ -10,6 +10,8 @@ export class AzureBlobStorageService implements StorageAdapter {
     this.#client = client;
   }
 
+  metadata: StorageAdapter["metadata"] = { name: "Azure Blob Storage" };
+
   createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     try {
       const containerName = genContainerNameFromContainerId(containerId);
@@ -82,7 +84,6 @@ export class AzureBlobStorageService implements StorageAdapter {
         `Failed to delete ${response.subResponsesFailedCount} blobs in container ${containerId}: ${response.errorCode}`,
       );
     }
-    return;
   };
 
   uploadFiles: StorageAdapter["uploadFiles"] = async (containerId, files, options) => {

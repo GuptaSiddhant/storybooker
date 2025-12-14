@@ -1,3 +1,6 @@
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
+
+// oxlint-disable no-console
 /**
  * Service adapter to log to desired destination.
  *
@@ -7,6 +10,10 @@
  * @default NodeJS.console
  */
 export interface LoggerAdapter {
+  /**
+   * Metadata about the adapter.
+   */
+  metadata: StoryBookerAdapterMetadata;
   /**
    * Optional debug logs
    */
@@ -19,4 +26,16 @@ export interface LoggerAdapter {
    * Normal logs
    */
   log: (...args: unknown[]) => void;
+}
+
+export function createConsoleLoggerAdapter(): LoggerAdapter {
+  return {
+    metadata: {
+      name: "console",
+    },
+
+    debug: console.debug.bind(console),
+    error: console.error.bind(console),
+    log: console.log.bind(console),
+  };
 }

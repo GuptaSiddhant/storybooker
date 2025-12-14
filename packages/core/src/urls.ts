@@ -1,8 +1,8 @@
 import path from "node:path";
-import type { BuildUploadVariant } from "./models/builds-schema";
-import type { TagVariant } from "./models/tags-schema";
-import { getStore } from "./utils/store";
-import { linkRoute, urlJoin } from "./utils/url-utils";
+import type { BuildUploadVariant } from "./models/builds-schema.ts";
+import type { TagVariant } from "./models/tags-schema.ts";
+import { getStore } from "./utils/store.ts";
+import { linkRoute, urlJoin } from "./utils/url-utils.ts";
 
 export { urlJoin };
 
@@ -10,14 +10,14 @@ export { urlJoin };
  * URL builder for the Storybooks router.
  */
 export class UrlBuilder {
-  useStore: boolean;
+  #useStore: boolean;
 
   constructor(useStore: boolean) {
-    this.useStore = useStore;
+    this.#useStore = useStore;
   }
 
   get #baseUrl(): string {
-    if (!this.useStore) {
+    if (!this.#useStore) {
       return "";
     }
 

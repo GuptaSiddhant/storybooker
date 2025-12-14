@@ -1,28 +1,28 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
-import z from "zod";
-import { BuildsModel } from "../models/builds-model";
-import { ProjectsModel } from "../models/projects-model";
+import { HTTPException } from "hono/http-exception";
+import { z } from "zod";
+import { BuildsModel } from "../models/builds-model.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
 import {
   ProjectCreateSchema,
   ProjectGetResultSchema,
   ProjectIdSchema,
   ProjectsListResultSchema,
   ProjectUpdateSchema,
-} from "../models/projects-schema";
-import { TagsModel } from "../models/tags-model";
-import { urlBuilder } from "../urls";
-import { authenticateOrThrow } from "../utils/auth";
-import { mimes } from "../utils/mime-utils";
+} from "../models/projects-schema.ts";
+import { TagsModel } from "../models/tags-model.ts";
+import { urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { mimes } from "../utils/mime-utils.ts";
 import {
   openapiCommonErrorResponses,
   openapiErrorResponseContent,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { checkIsHTMLRequest } from "../utils/request";
-import { responseRedirect } from "../utils/response";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { checkIsHTMLRequest } from "../utils/request.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const projectTag = "Projects";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -59,7 +59,7 @@ export const projectsRouter = new OpenAPIHono()
 
       const projects = await new ProjectsModel().list();
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderProjectsListPage && checkIsHTMLRequest()) {
         return context.html(ui.renderProjectsListPage({ projects }, createUIAdapterOptions()));
       }
 
@@ -82,8 +82,8 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderProjectCreatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       await authenticateOrThrow({
@@ -134,7 +134,7 @@ export const projectsRouter = new OpenAPIHono()
       const project = await new ProjectsModel().create(data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.projectDetails(project.id), 303);
+        return context.redirect(urlBuilder.projectDetails(project.id), 303);
       }
 
       return context.json({ project });
@@ -174,7 +174,7 @@ export const projectsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderProjectDetailsPage && checkIsHTMLRequest()) {
         const recentTags = await new TagsModel(projectId).list({ limit: 10 });
         const recentBuilds = await new BuildsModel(projectId).list({
           limit: 10,
@@ -219,7 +219,7 @@ export const projectsRouter = new OpenAPIHono()
       await new ProjectsModel().delete(projectId);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.projectsList(), 303);
+        return context.redirect(urlBuilder.projectsList(), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -246,8 +246,8 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderProjectUpdatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
@@ -302,7 +302,7 @@ export const projectsRouter = new OpenAPIHono()
       await new ProjectsModel().update(projectId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.projectDetails(projectId), 303);
+        return context.redirect(urlBuilder.projectDetails(projectId), 303);
       }
 
       return new Response(null, { status: 202 });

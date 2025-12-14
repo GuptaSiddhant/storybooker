@@ -8,11 +8,13 @@ export interface BuildFormProps {
 }
 
 export function BuildCreateForm({ projectId, tagId }: BuildFormProps): JSXElement {
-  const { url, urlBuilder } = getUIStore();
+  const { urlBuilder } = getUIStore();
+  const url = urlBuilder.buildCreate(projectId);
 
   return (
     <form
       method="post"
+      action={url}
       hx-ext="response-targets"
       hx-post={url}
       hx-target-error="#form-error"

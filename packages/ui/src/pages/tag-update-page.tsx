@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType, TagType } from "@storybooker/core/types";
 import {
   DocumentHeader,
@@ -15,7 +16,7 @@ export function TagUpdatePage({
 }: {
   tag: TagType;
   project: ProjectType;
-}): JSXElement {
+}): RenderedContent {
   const title = "Update Tag";
   const { urlBuilder } = getUIStore();
 

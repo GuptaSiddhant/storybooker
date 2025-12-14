@@ -1,23 +1,24 @@
-import { OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
-import type { Hono } from "hono";
+import { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
-import { timing, type TimingVariables } from "hono/timing";
-import type { StoryBookerUser } from "./adapters";
-import { handlePurge, type HandlePurge } from "./handlers/handle-purge";
-import { appRouter } from "./routers/_app-router";
-import type { PurgeHandlerOptions, RouterOptions } from "./types";
-import { DEFAULT_LOCALE } from "./utils/constants";
+import type { TimingVariables } from "hono/timing";
+import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters/index.ts";
+import { handlePurge, type HandlePurge } from "./handlers/handle-purge.ts";
+import { appRouter } from "./routers/_app-router.ts";
+import type { PurgeHandlerOptions, RouterOptions } from "./types.ts";
+import { DEFAULT_LOCALE } from "./utils/constants.ts";
 import {
   onUnhandledErrorHandler,
   parseErrorMessage,
   prettifyZodValidationErrorMiddleware,
-} from "./utils/error";
-import { localStore, setupStore } from "./utils/store";
+} from "./utils/error.ts";
+import { htmxRedirectResponse } from "./utils/response.ts";
+import { localStore, setupStore } from "./utils/store.ts";
 
 if ("setEncoding" in process.stdout) {
   process.stdout.setEncoding("utf8");
 }
+export { appRouter, openapiConfig } from "./routers/_app-router.ts";
 
 /**
  * Callback to create a Hono App based on provided options.
@@ -27,23 +28,24 @@ if ("setEncoding" in process.stdout) {
 export function createHonoRouter<User extends StoryBookerUser>(
   options: RouterOptions<User>,
 ): Hono<{ Variables: TimingVariables }> {
-  const logger = options.logger || console;
-  const middlewares = options.config?.middlewares || [loggerMiddleware()];
+  const logger = options.logger || createConsoleLoggerAdapter();
+  const middlewares = options.config?.middlewares || [];
   const initPromises = Promise.allSettled([
     options.auth?.init?.({ logger }).catch(logger.error),
     options.database.init?.({ logger }).catch(logger.error),
     options.storage.init?.({ logger }).catch(logger.error),
   ]);
 
-  return new OpenAPIHono<{ Variables: TimingVariables }>({ strict: false })
+  return new Hono<{ Variables: TimingVariables }>({ strict: false })
     .use(
-      prettifyZodValidationErrorMiddleware,
-      timing(),
-      setupStore<User>(options, initPromises),
+      loggerMiddleware(logger.log),
+      prettifyZodValidationErrorMiddleware(logger),
       ...middlewares,
+      setupStore<User>(options, initPromises),
+      htmxRedirectResponse(),
     )
     .route("/", appRouter)
-    .onError(onUnhandledErrorHandler(logger));
+    .onError(onUnhandledErrorHandler<User>(options));
 }
 
 /**
@@ -53,9 +55,10 @@ export function createHonoRouter<User extends StoryBookerUser>(
  * Note: The latest build on project's default branch is not deleted.
  */
 export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
-  const logger = options.logger || console;
+  const logger = options.logger || createConsoleLoggerAdapter();
 
   return async (...params: Parameters<HandlePurge>): Promise<void> => {
+    const dummyRequest = new Request("http://0.0.0.0/");
     localStore.enterWith({
       abortSignal: params[1].abortSignal,
       database: options.database,
@@ -64,17 +67,16 @@ export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
       locale: DEFAULT_LOCALE,
       logger: params[1]?.logger ?? logger,
       prefix: "/",
-      request: new Request(""),
+      request: dummyRequest,
       storage: options.storage,
-      url: "http://0.0.0.0/",
+      url: dummyRequest.url,
       user: null,
     });
 
     try {
       await handlePurge(...params);
-      return;
     } catch (error) {
-      logger.error(parseErrorMessage(error, options.errorParser).errorMessage);
+      logger.error("PurgeError", parseErrorMessage(error, options.errorParser).errorMessage);
     }
   };
 }

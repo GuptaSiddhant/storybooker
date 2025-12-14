@@ -1,3 +1,4 @@
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -12,6 +13,11 @@ import type { LoggerAdapter } from "./logger";
  *    Each message has a unique identifier.
  */
 export interface QueueAdapter {
+  /**
+   * Metadata about the adapter.
+   */
+  metadata: StoryBookerAdapterMetadata;
+
   /**
    * An optional method that is called on app boot-up
    * to run async setup functions.

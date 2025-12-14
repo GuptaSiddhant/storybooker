@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import {
   DocumentHeader,
   DocumentLayout,
@@ -8,7 +9,7 @@ import {
 import { ProjectForm } from "../components/project-form";
 import { getUIStore } from "../utils/ui-store";
 
-export function ProjectCreatePage(): JSXElement {
+export function ProjectCreatePage(): RenderedContent {
   const title = `Create Project`;
   const { urlBuilder } = getUIStore();
 
@@ -18,7 +19,7 @@ export function ProjectCreatePage(): JSXElement {
         {title}
       </DocumentHeader>
       <DocumentMain style={{ padding: "1rem" }}>
-        <ProjectForm project={undefined} />
+        <ProjectForm project={undefined} actionUrl={urlBuilder.projectCreate()} />
       </DocumentMain>
       <DocumentSidebar style={{ fontSize: "0.9em", padding: "1rem" }}>
         A project is a collection of StoryBook builds and tags. One project corresponds to one

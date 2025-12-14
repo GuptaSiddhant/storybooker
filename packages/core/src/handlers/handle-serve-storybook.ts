@@ -1,12 +1,12 @@
 import path from "node:path";
 import { SuperHeaders } from "@remix-run/headers";
-import { urlBuilder } from "../urls";
-import { generateStorageContainerId } from "../utils/adapter-utils";
-import { authenticateOrThrow } from "../utils/auth";
-import { CACHE_CONTROL_PUBLIC_YEAR, SERVICE_NAME } from "../utils/constants";
-import { getMimeType } from "../utils/mime-utils";
-import { responseError } from "../utils/response";
-import { getStore } from "../utils/store";
+import { HTTPException } from "hono/http-exception";
+import { urlBuilder } from "../urls.ts";
+import { generateStorageContainerId } from "../utils/adapter-utils.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { CACHE_CONTROL_PUBLIC_YEAR, SERVICE_NAME } from "../utils/constants.ts";
+import { getMimeType } from "../utils/mime-utils.ts";
+import { getStore } from "../utils/store.ts";
 
 export async function handleServeStoryBook({
   buildId,
@@ -29,7 +29,7 @@ export async function handleServeStoryBook({
     );
 
     if (!content) {
-      return await responseError("File does not contain any content", 404);
+      throw new HTTPException(404, { message: "File does not contain any content" });
     }
 
     const headers = new SuperHeaders();
@@ -74,7 +74,7 @@ ${relativeHrefScripts}
 
     return new Response(content, { headers, status: 200 });
   } catch (error) {
-    return await responseError(error, 404);
+    throw new HTTPException(404, { message: "File not found", cause: error });
   }
 }
 

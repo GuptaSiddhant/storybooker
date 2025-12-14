@@ -1,14 +1,17 @@
 // oxlint-disable switch-case-braces
 
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermissionAction } from "../adapters/auth";
-import { handleProcessZip } from "../handlers/handle-process-zip";
-import { urlBuilder } from "../urls";
-import { generateDatabaseCollectionId, generateStorageContainerId } from "../utils/adapter-utils";
-import { checkAuthorisation } from "../utils/auth";
-import { mimes } from "../utils/mime-utils";
-import { getStore } from "../utils/store";
-import { Model, type BaseModel, type ListOptions } from "./~model";
+import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
+import { handleProcessZip } from "../handlers/handle-process-zip.ts";
+import { urlBuilder } from "../urls.ts";
+import {
+  generateDatabaseCollectionId,
+  generateStorageContainerId,
+} from "../utils/adapter-utils.ts";
+import { checkAuthorisation } from "../utils/auth.ts";
+import { mimes } from "../utils/mime-utils.ts";
+import { getStore } from "../utils/store.ts";
+import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 import {
   BuildSchema,
   type BuildCreateType,
@@ -16,10 +19,10 @@ import {
   type BuildType,
   type BuildUpdateType,
   type BuildUploadVariant,
-} from "./builds-schema";
-import { ProjectsModel } from "./projects-model";
-import { TagsModel } from "./tags-model";
-import type { TagVariant } from "./tags-schema";
+} from "./builds-schema.ts";
+import { ProjectsModel } from "./projects-model.ts";
+import { TagsModel } from "./tags-model.ts";
+import type { TagVariant } from "./tags-schema.ts";
 
 export class BuildsModel extends Model<BuildType> {
   constructor(projectId: string) {
@@ -35,12 +38,7 @@ export class BuildsModel extends Model<BuildType> {
 
     const items = await this.database.listDocuments(
       this.collectionId,
-      {
-        sort: (itemA, itemB) => {
-          return new Date(itemB.updatedAt).getTime() - new Date(itemA.updatedAt).getTime();
-        },
-        ...options,
-      },
+      { sort: "latest", ...options },
       this.dbOptions,
     );
 
@@ -79,7 +77,7 @@ export class BuildsModel extends Model<BuildType> {
         tagIds: tagIds.filter(Boolean).join(","),
         updatedAt: now,
       };
-      await this.database.createDocument<BuildType>(this.collectionId, build, this.dbOptions);
+      await this.database.createDocument(this.collectionId, build, this.dbOptions);
 
       try {
         const projectsModel = new ProjectsModel();
@@ -88,7 +86,7 @@ export class BuildsModel extends Model<BuildType> {
           await projectsModel.update(this.projectId, { latestBuildId: id });
         }
       } catch (error) {
-        this.error(error);
+        this.error("Error updating project with latest build ID:", error);
       }
 
       return build;
@@ -127,8 +125,6 @@ export class BuildsModel extends Model<BuildType> {
       { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
-
-    return;
   }
 
   async delete(buildId: string, updateTag = true): Promise<void> {
@@ -202,7 +198,7 @@ export class BuildsModel extends Model<BuildType> {
         // Automatically process zip if feature is enabled and size is below limit
         if (size !== undefined && size <= maxInlineUploadProcessingSizeInBytes) {
           await handleProcessZip(this.projectId, buildId, variant).catch((error: unknown) => {
-            this.error(error);
+            this.error("Error processing zip file:", error);
           });
           return;
         }
@@ -213,7 +209,7 @@ export class BuildsModel extends Model<BuildType> {
           const url = urlBuilder.taskProcessZip(this.projectId, buildId, variant);
           // Do not await fetch to avoid blocking
           fetch(url, { headers: request.headers, method: "POST" }).catch((error: unknown) => {
-            this.error(error);
+            this.error("Error queuing zip file processing:", error);
           });
         }
 
@@ -276,7 +272,7 @@ export class BuildsModel extends Model<BuildType> {
 
       return Object.values(data.entries) as BuildStoryType[];
     } catch (error) {
-      this.error(error);
+      this.error("Error getting stories:", error);
       return null;
     }
   }

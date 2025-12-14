@@ -3,22 +3,34 @@ import type { UIAdapterOptions } from "@storybooker/core/adapter";
 import { UrlBuilder } from "@storybooker/core/url";
 import type { BasicUIOptions } from "..";
 
-export interface UIStore extends UIAdapterOptions {
+interface UIStore extends UIAdapterOptions {
   logo?: string;
   urlBuilder: UrlBuilder;
 }
 
-export const uiStore = new AsyncLocalStorage<UIStore>();
-
-export function createUIStore(adapterOptions: UIAdapterOptions, options: BasicUIOptions): UIStore {
-  const urlBuilder = new UrlBuilder(false);
-  return { ...adapterOptions, logo: options.logo, urlBuilder };
-}
+const uiStoreContext = new AsyncLocalStorage<UIStore>();
 
 export function getUIStore(): UIStore {
-  const store = uiStore.getStore();
+  const store = uiStoreContext.getStore();
   if (!store) {
     throw new Error("UI Store not available");
   }
   return store;
+}
+
+export function withStore<Props, Return>(
+  options: BasicUIOptions,
+  handler: (props: NoInfer<Props>) => Return,
+): (props: Props, adapterOptions: UIAdapterOptions) => Return {
+  return (props, adapterOptions) => {
+    uiStoreContext.enterWith({
+      ...adapterOptions,
+      urlBuilder: new UrlBuilder(false),
+      logo: options.logo,
+    });
+
+    const result = handler(props);
+
+    return result;
+  };
 }

@@ -1,10 +1,8 @@
 // oxlint-disable sort-keys
 
-import z from "zod";
-import { buildUploadVariants } from "../utils/constants";
-import { BuildIdSchema, TagIdSchema } from "./~shared-schema";
-
-export { BuildIdSchema, buildUploadVariants };
+import { z } from "zod";
+import { buildUploadVariants } from "../utils/constants.ts";
+import { BuildIdSchema, TagIdSchema } from "./~shared-schema.ts";
 
 const buildContentAvailabilityOptions = ["none", "uploaded", "processing", "ready"] as const;
 
@@ -82,3 +80,5 @@ export const BuildStorySchema = z.object({
   componentPath: z.string().optional(),
   storiesImports: z.array(z.string()).optional(),
 });
+
+export { BuildIdSchema, buildUploadVariants };

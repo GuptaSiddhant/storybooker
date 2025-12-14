@@ -16,17 +16,17 @@ Run following with `deno serve -REW server.ts`
 
 import { createHonoRouter } from "jsr:@storybooker/core";
 import {
-  LocalFileDatabase,
-  LocalFileStorage,
+  createLocalFileDatabaseAdapter,
+  createLocalFileStorageAdapter,
 } from "jsr:@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker router
 const router = createHonoRouter({
   // provide a supported database service adapter
-  database: new LocalFileDatabase(),
+  database: createLocalFileDatabaseAdapter(),
   // provide a supported storage service adapter
-  storage: new LocalFileStorage(),
+  storage: createLocalFileStorageAdapter(),
   // provide a supported UI adapter
   ui: createBasicUIAdapter(),
 });

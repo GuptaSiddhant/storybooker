@@ -39,15 +39,15 @@ Purging deletes all builds older than certain days based on Project's configurat
 
 ## Adapters (for testing)
 
-### `LocalFileDatabase`
+### `createLocalFileStorageAdapter`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/adapters/~/LocalFileDatabase)
+> [API Docs](https://jsr.io/@storybooker/core/doc/adapter/fs/~/createLocalFileStorageAdapter)
 
 A simple database adapter that uses local file to store data. Defaults to `./db.json` file.
 
-### `LocalFileStorage`
+### `createLocalFileStorageAdapter`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/adapters/~/LocalFileStorage)
+> [API Docs](https://jsr.io/@storybooker/core/doc/adapter/fs/~/createLocalFileStorageAdapter)
 
 A simple storage adapter that uses local folder to store files. Defaults to current folder.
 

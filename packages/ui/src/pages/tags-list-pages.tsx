@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import { TagTypes } from "@storybooker/core/constants";
 import type { ProjectType, TagType } from "@storybooker/core/types";
 import { LinkButton } from "../components/button";
@@ -18,10 +19,11 @@ export function TagsListPage({
 }: {
   tags: TagType[];
   project: ProjectType;
-  defaultType: string | null | undefined;
-}): JSXElement {
-  const title = `All Tags ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
+  defaultType?: string | null | undefined;
+}): RenderedContent {
   const { urlBuilder } = getUIStore();
+
+  const title = `All Tags ${defaultType ? `(${defaultType.toUpperCase()})` : ""}`;
 
   return (
     <DocumentLayout title={title}>
@@ -35,12 +37,7 @@ export function TagsListPage({
         <TagsTable caption={""} project={project} tags={tags} />
       </DocumentMain>
       <DocumentSidebar style={{ padding: "1rem" }}>
-        <form
-          style={{
-            display: "flex",
-            gap: "1rem",
-          }}
-        >
+        <form style={{ display: "flex", gap: "1rem" }}>
           <div class="field" style={{ minWidth: "100px" }}>
             <label for="filter-type">Type</label>
             <select id="filter-type" name="type">
@@ -52,6 +49,7 @@ export function TagsListPage({
               ))}
             </select>
           </div>
+
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button style={{ height: "max-content" }}>Filter</button>
             <LinkButton href={urlBuilder.tagsList(project.id)} class="outline">

@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/ui",
-  "version": "0.19.4",
+  "version": "0.20.0",
   "type": "module",
   "description": "Basic UI for Storybooker app",
   "author": {
@@ -21,11 +21,10 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsdown",
-    "check": "tsgo --noEmit",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "npx oxfmt ./src --check",
-    "lint": "oxlint --type-aware ./src",
+    "oxfmt": "npx oxfmt ./src",
+    "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
@@ -33,26 +32,26 @@
     "hono": "^4.10.6"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.8.0",
-    "prettier": "^3.6.2",
-    "tsdown": "^0.15.9"
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
+    "tsdown": "catalog:"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
       "source": "./src/index.tsx",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {
-      ".": "./dist/index.js",
+      ".": "./dist/index.mjs",
       "./package.json": "./package.json"
     }
   }

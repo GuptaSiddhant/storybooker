@@ -1,4 +1,4 @@
-import type { BuildStoryType } from "../models/builds-schema";
+import type { BuildStoryType } from "../models/builds-schema.ts";
 
 type GroupedStories = Record<string, Record<string, BuildStoryType[]>>;
 

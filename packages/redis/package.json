@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/redis",
-  "version": "0.19.4",
+  "version": "0.20.0",
   "type": "module",
   "description": "StoryBooker Adapter for interacting with Redis services.",
   "author": {
@@ -46,30 +46,29 @@
   "exports": {
     ".": {
       "source": "./src/index.ts",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
     "build": "tsdown",
-    "check": "tsgo --noEmit",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "npx oxfmt ./src --check",
-    "lint": "oxlint --type-aware ./src",
+    "oxfmt": "npx oxfmt ./src",
+    "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
     "@storybooker/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251024.1",
-    "oxlint": "^1.31.0",
-    "oxlint-tsgolint": "^0.8.0",
-    "prettier": "^3.6.2",
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "catalog:",
     "redis": "^5.10.0",
-    "tsdown": "^0.15.9"
+    "tsdown": "catalog:"
   },
   "peerDependencies": {
     "redis": "^5.10.0"
@@ -79,12 +78,12 @@
       "optional": true
     }
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "publishConfig": {
     "exports": {
-      ".": "./dist/index.js",
+      ".": "./dist/index.mjs",
       "./package.json": "./package.json"
     }
   }

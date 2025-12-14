@@ -4,12 +4,11 @@ import type {
   LoggerAdapter,
   StorageAdapter,
   StorageAdapterOptions,
+  StoryBookerDatabaseDocument,
   StoryBookerPermissionAction,
-} from "../adapters";
-import { parseErrorMessage } from "../utils/error";
-import { getStore } from "../utils/store";
-
-type Obj = Record<string, unknown>;
+} from "../adapters/index.ts";
+import { parseErrorMessage } from "../utils/error.ts";
+import { getStore } from "../utils/store.ts";
 
 export interface ListOptions<Item extends Record<string, unknown>> {
   limit?: number;
@@ -18,10 +17,10 @@ export interface ListOptions<Item extends Record<string, unknown>> {
   sort?: "latest" | ((item1: Item, item2: Item) => number);
 }
 
-export abstract class Model<Data extends Obj> implements BaseModel<Data> {
+export abstract class Model<Data extends StoryBookerDatabaseDocument> implements BaseModel<Data> {
   projectId: string;
   collectionId: string;
-  database: DatabaseAdapter;
+  database: DatabaseAdapter<Data>;
   storage: StorageAdapter;
   logger: LoggerAdapter;
   dbOptions: DatabaseAdapterOptions;
@@ -31,7 +30,7 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
     const { abortSignal, database, storage, logger } = getStore();
     this.projectId = projectId || "";
     this.collectionId = collectionId;
-    this.database = database;
+    this.database = database as unknown as DatabaseAdapter<Data>;
     this.storage = storage;
     this.logger = logger;
     this.dbOptions = { abortSignal, logger };
@@ -59,7 +58,7 @@ export abstract class Model<Data extends Obj> implements BaseModel<Data> {
   abstract checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
 }
 
-export interface BaseModel<Data extends Obj> {
+export interface BaseModel<Data extends StoryBookerDatabaseDocument> {
   list(options?: ListOptions<Data>): Promise<Data[]>;
   create(data: unknown): Promise<Data>;
   get(id: string): Promise<Data>;
@@ -70,7 +69,7 @@ export interface BaseModel<Data extends Obj> {
   id: (id: string) => BaseIdModel<Data>;
 }
 
-export interface BaseIdModel<Data extends Obj> {
+export interface BaseIdModel<Data extends StoryBookerDatabaseDocument> {
   id: string;
   get(): Promise<Data>;
   has(): Promise<boolean>;

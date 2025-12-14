@@ -1,7 +1,9 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { SuperHeaders } from "@remix-run/headers";
-import z from "zod";
-import { BuildsModel } from "../models/builds-model";
+import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
+import { z } from "zod";
+import { BuildsModel } from "../models/builds-model.ts";
 import {
   BuildCreateSchema,
   BuildIdSchema,
@@ -10,23 +12,22 @@ import {
   BuildUpdateSchema,
   BuildUploadFormBodySchema,
   BuildUploadQueryParamsSchema,
-} from "../models/builds-schema";
-import { ProjectsModel } from "../models/projects-model";
-import { ProjectIdSchema } from "../models/projects-schema";
-import { urlBuilder } from "../urls";
-import { authenticateOrThrow } from "../utils/auth";
-import { QUERY_PARAMS } from "../utils/constants";
-import { mimes } from "../utils/mime-utils";
+} from "../models/builds-schema.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
+import { ProjectIdSchema } from "../models/projects-schema.ts";
+import { urlBuilder } from "../urls.ts";
+import { authenticateOrThrow } from "../utils/auth.ts";
+import { QUERY_PARAMS } from "../utils/constants.ts";
+import { mimes } from "../utils/mime-utils.ts";
 import {
   openapiCommonErrorResponses,
   openapiErrorResponseContent,
   openapiResponseRedirect,
   openapiResponsesHtml,
-} from "../utils/openapi-utils";
-import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request";
-import { responseError, responseRedirect } from "../utils/response";
-import { getStore } from "../utils/store";
-import { createUIAdapterOptions } from "../utils/ui-utils";
+} from "../utils/openapi-utils.ts";
+import { checkIsHTMLRequest, validateBuildUploadZipBody } from "../utils/request.ts";
+import { getStore } from "../utils/store.ts";
+import { createUIAdapterOptions } from "../utils/ui-utils.ts";
 
 const buildTag = "Builds";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -71,7 +72,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const builds = await new BuildsModel(projectId).list();
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderBuildsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
         return context.html(ui.renderBuildsListPage({ builds, project }, createUIAdapterOptions()));
@@ -100,8 +101,8 @@ export const buildsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderBuildCreatePage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
@@ -153,7 +154,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const projectModel = new ProjectsModel().id(projectId);
       if (!(await projectModel.has())) {
-        return await responseError(`The project '${projectId}' does not exist.`, 404);
+        throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
       await authenticateOrThrow({
@@ -167,7 +168,7 @@ export const buildsRouter = new OpenAPIHono()
       const url = urlBuilder.buildDetails(projectId, build.id);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(url, 303);
+        return context.redirect(url, 303);
       }
 
       return context.json({ build, url }, 201);
@@ -208,7 +209,7 @@ export const buildsRouter = new OpenAPIHono()
       const model = new BuildsModel(projectId);
       const build = await model.get(buildId);
 
-      if (ui && checkIsHTMLRequest()) {
+      if (ui?.renderBuildDetailsPage && checkIsHTMLRequest()) {
         // const [hasDeletePermission, hasUpdatePermission] = await Promise.all([
         //   model.checkAuth("delete"),
         //   model.checkAuth("update"),
@@ -220,14 +221,7 @@ export const buildsRouter = new OpenAPIHono()
         const stories = await model.getStories(build);
 
         return context.html(
-          ui.renderBuildDetailsPage(
-            {
-              build,
-              stories,
-              project,
-            },
-            createUIAdapterOptions(),
-          ),
+          ui.renderBuildDetailsPage({ build, stories, project }, createUIAdapterOptions()),
         );
       }
 
@@ -262,7 +256,7 @@ export const buildsRouter = new OpenAPIHono()
       await new BuildsModel(projectId).delete(buildId, true);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.buildsList(projectId), 303);
+        return context.redirect(urlBuilder.buildsList(projectId), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -301,10 +295,9 @@ export const buildsRouter = new OpenAPIHono()
       const buildsModel = new BuildsModel(projectId);
 
       if (!(await buildsModel.has(buildId))) {
-        return await responseError(
-          `The build '${buildId}' does not exist in project '${projectId}'.`,
-          404,
-        );
+        throw new HTTPException(404, {
+          message: `The build '${buildId}' does not exist in project '${projectId}'.`,
+        });
       }
 
       await authenticateOrThrow({
@@ -317,7 +310,7 @@ export const buildsRouter = new OpenAPIHono()
       await buildsModel.update(buildId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return responseRedirect(urlBuilder.buildDetails(projectId, buildId), 303);
+        return context.redirect(urlBuilder.buildDetails(projectId, buildId), 303);
       }
 
       return new Response(null, { status: 202 });
@@ -347,8 +340,8 @@ export const buildsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui) {
-        return context.notFound();
+      if (!ui?.renderBuildUploadPage) {
+        throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { buildId, projectId } = context.req.valid("param");
@@ -409,10 +402,9 @@ export const buildsRouter = new OpenAPIHono()
       const buildsModel = new BuildsModel(projectId);
 
       if (!(await buildsModel.has(buildId))) {
-        return await responseError(
-          `The build '${buildId}' does not exist in project '${projectId}'.`,
-          404,
-        );
+        throw new HTTPException(404, {
+          message: `The build '${buildId}' does not exist in project '${projectId}'.`,
+        });
       }
 
       await authenticateOrThrow({
@@ -424,7 +416,7 @@ export const buildsRouter = new OpenAPIHono()
       const { contentType } = new SuperHeaders(context.req.header());
 
       if (!contentType.toString()) {
-        return await responseError("Content-Type header is required", 400);
+        throw new HTTPException(400, { message: "Content-Type header is required" });
       }
 
       const redirectUrl = urlBuilder.buildDetails(projectId, buildId);
@@ -436,7 +428,7 @@ export const buildsRouter = new OpenAPIHono()
         await buildsModel.upload(buildId, variant, file);
 
         if (checkIsHTMLRequest(true)) {
-          return responseRedirect(redirectUrl, 303);
+          return context.redirect(redirectUrl, 303);
         }
 
         return new Response(null, { status: 204 });
@@ -445,7 +437,9 @@ export const buildsRouter = new OpenAPIHono()
       if (contentType.mediaType?.startsWith(mimes.zip)) {
         const bodyError = validateBuildUploadZipBody(context.req.raw);
         if (bodyError) {
-          return await responseError(bodyError.message, bodyError.status);
+          throw new HTTPException(bodyError.status as ContentfulStatusCode, {
+            message: bodyError.message,
+          });
         }
 
         const { variant } = context.req.valid("query");
@@ -453,15 +447,14 @@ export const buildsRouter = new OpenAPIHono()
         await buildsModel.upload(buildId, variant);
 
         if (checkIsHTMLRequest(true)) {
-          return responseRedirect(redirectUrl, 303);
+          return context.redirect(redirectUrl, 303);
         }
 
         return new Response(null, { status: 204 });
       }
 
-      return await responseError(
-        `Invalid content type, expected ${mimes.zip} or ${mimes.formMultipart}.`,
-        415,
-      );
+      throw new HTTPException(415, {
+        message: `Invalid content type, expected ${mimes.zip} or ${mimes.formMultipart}.`,
+      });
     },
   );

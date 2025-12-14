@@ -10,16 +10,18 @@ import { ErrorMessage } from "./error-message";
 
 export interface ProjectsFormProps {
   project: ProjectType | undefined;
+  actionUrl: string;
 }
 
-export function ProjectForm({ project }: ProjectsFormProps): JSXElement {
+export function ProjectForm({ actionUrl, project }: ProjectsFormProps): JSXElement {
   const { urlBuilder } = getUIStore();
 
   return (
     <form
       method="post"
+      action={actionUrl}
       hx-ext="response-targets"
-      hx-post={urlBuilder.projectCreate()}
+      hx-post={actionUrl}
       hx-target-error="#form-error"
       style={{ maxWidth: "60ch" }}
     >

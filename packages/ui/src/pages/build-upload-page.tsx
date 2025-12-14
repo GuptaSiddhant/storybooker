@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildType, BuildUploadVariant, ProjectType } from "@storybooker/core/types";
 import { BuildUploadForm } from "../components/build-upload-form";
 import {
@@ -17,7 +18,7 @@ export function BuildUploadPage({
   build: BuildType;
   project: ProjectType;
   uploadVariant?: BuildUploadVariant;
-}): JSXElement {
+}): RenderedContent {
   const title = `Upload Build files`;
   const { urlBuilder } = getUIStore();
 

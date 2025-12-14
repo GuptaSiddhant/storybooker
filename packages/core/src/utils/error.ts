@@ -1,8 +1,12 @@
 import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
-import type { LoggerAdapter } from "../adapters";
-import { getStoreOrNull } from "../utils/store";
+import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters/index.ts";
+import type { RouterOptions, StoryBookerUser } from "../types.ts";
+import { getStoreOrNull } from "../utils/store.ts";
+import { DEFAULT_LOCALE } from "./constants.ts";
+import { checkIsHTMLRequest } from "./request.ts";
 
 /**
  * A function type for parsing custom errors.
@@ -62,26 +66,51 @@ const zodValidationErrorSchema = z.object({
     message: z.string(),
   }),
 });
-export const prettifyZodValidationErrorMiddleware: MiddlewareHandler = async (ctx, next) => {
-  await next();
+export function prettifyZodValidationErrorMiddleware(logger: LoggerAdapter): MiddlewareHandler {
+  return async (ctx, next) => {
+    await next();
 
-  const resContentType = ctx.res.headers.get("Content-Type") || "";
-  if (ctx.res.status === 400 && resContentType.startsWith("application/json")) {
-    const result = zodValidationErrorSchema.safeParse(await ctx.res.clone().json());
-    if (result.success) {
-      const issues = JSON.parse(result.data.error.message) as z.core.$ZodIssue[];
-      const message = `Validation error:\n${z.prettifyError({ issues })}`;
-      throw new HTTPException(400, { message, res: ctx.res });
+    const resContentType = ctx.res.headers.get("Content-Type") || "";
+    if (ctx.res.status === 400 && resContentType.startsWith("application/json")) {
+      const result = zodValidationErrorSchema.safeParse(await ctx.res.clone().json());
+      if (result.success) {
+        const issues = JSON.parse(result.data.error.message) as z.core.$ZodIssue[];
+        const message = `Validation error:\n${z.prettifyError({ issues })}`;
+        logger.error(`[Zod] ${message}`);
+        throw new HTTPException(400, { message, res: ctx.res });
+      }
     }
-  }
-};
+  };
+}
 
-export function onUnhandledErrorHandler(logger: LoggerAdapter): ErrorHandler {
-  return (error) => {
-    const { errorMessage, errorType, errorStatus } = parseErrorMessage(error);
+export function onUnhandledErrorHandler<User extends StoryBookerUser>(
+  options: RouterOptions<User>,
+): ErrorHandler {
+  return (error, ctx) => {
+    if (error instanceof Response) {
+      return error;
+    }
+    const logger = options.logger || createConsoleLoggerAdapter();
+
+    const parsedError = parseErrorMessage(error);
+    const { errorMessage, errorStatus, errorType } = parsedError;
     logger.error(`[${errorType}:${errorStatus}] ${errorMessage}`);
 
-    return new Response(errorMessage, { status: errorStatus || 500 });
+    if (options?.ui?.renderErrorPage && checkIsHTMLRequest(false, ctx.req.raw)) {
+      return ctx.html(
+        options.ui.renderErrorPage(parsedError, {
+          isAuthEnabled: !!options.auth,
+          locale: DEFAULT_LOCALE,
+          logger,
+          url: ctx.req.url,
+          user: null,
+          adaptersMetadata: {},
+        }),
+        (errorStatus as ContentfulStatusCode) || 500,
+      );
+    }
+
+    return new Response(errorMessage, { status: errorStatus || 500, statusText: errorType });
   };
 }
 

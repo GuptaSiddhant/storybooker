@@ -18,6 +18,10 @@ export class VercelBlobService implements StorageAdapter {
     this.#baseUrl = baseUrl;
   }
 
+  metadata: StorageAdapter["metadata"] = {
+    name: "Vercel Storage",
+  };
+
   createContainer: StorageAdapter["createContainer"] = async (_containerId, _options) => {
     // Vercel Blob doesn't have explicit container creation
     // Containers are implicit through path prefixes

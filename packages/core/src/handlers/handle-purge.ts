@@ -1,10 +1,10 @@
 import type { LoggerAdapter } from "../adapters/logger";
-import { BuildsModel } from "../models/builds-model";
-import { ProjectsModel } from "../models/projects-model";
-import type { ProjectType } from "../models/projects-schema";
-import { TagsModel } from "../models/tags-model";
-import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "../utils/constants";
-import { getStore } from "../utils/store";
+import { BuildsModel } from "../models/builds-model.ts";
+import { ProjectsModel } from "../models/projects-model.ts";
+import type { ProjectType } from "../models/projects-schema.ts";
+import { TagsModel } from "../models/tags-model.ts";
+import { DEFAULT_PURGE_AFTER_DAYS, ONE_DAY_IN_MS } from "../utils/constants.ts";
+import { getStore } from "../utils/store.ts";
 
 export type HandlePurge = (
   params: { projectId?: string },

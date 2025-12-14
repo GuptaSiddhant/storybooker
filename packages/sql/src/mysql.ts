@@ -37,6 +37,8 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     this.#tablePrefix = tablePrefix;
   }
 
+  metadata: DatabaseAdapter["metadata"] = { name: "MySQL" };
+
   init: DatabaseAdapter["init"] = async (_options) => {
     // Create collections metadata table
     try {

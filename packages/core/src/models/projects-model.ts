@@ -1,15 +1,18 @@
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermissionAction } from "../adapters/auth";
-import { generateDatabaseCollectionId, generateStorageContainerId } from "../utils/adapter-utils";
-import { checkAuthorisation } from "../utils/auth";
-import { Model, type BaseModel, type ListOptions } from "./~model";
+import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
+import {
+  generateDatabaseCollectionId,
+  generateStorageContainerId,
+} from "../utils/adapter-utils.ts";
+import { checkAuthorisation } from "../utils/auth.ts";
+import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 import {
   ProjectSchema,
   type ProjectCreateType,
   type ProjectType,
   type ProjectUpdateType,
-} from "./projects-schema";
-import { TagsModel } from "./tags-model";
+} from "./projects-schema.ts";
+import { TagsModel } from "./tags-model.ts";
 
 export class ProjectsModel extends Model<ProjectType> {
   constructor() {
@@ -20,15 +23,11 @@ export class ProjectsModel extends Model<ProjectType> {
     this.log("List projects...");
 
     try {
-      const items = await this.database.listDocuments<ProjectType>(
-        this.collectionId,
-        options,
-        this.dbOptions,
-      );
+      const items = await this.database.listDocuments(this.collectionId, options, this.dbOptions);
 
       return items;
     } catch (error) {
-      this.error(error);
+      this.error("Error listing projects:", error);
       return [];
     }
   }
@@ -55,7 +54,7 @@ export class ProjectsModel extends Model<ProjectType> {
         .createCollection(this.collectionId, this.dbOptions)
         .catch((error: unknown) => {
           // ignore error if collection already exists since there can only be one projects collection
-          this.error(error);
+          this.error("Error creating projects collection:", error);
         });
 
       await this.database.createCollection(
@@ -76,7 +75,7 @@ export class ProjectsModel extends Model<ProjectType> {
         })
         .catch((error: unknown) => {
           // log error but continue since project creation should not fail because of tag creation
-          this.error(error);
+          this.error("Error creating default branch tag:", error);
         });
 
       this.debug("Creating project entry '%s' in collection", projectId);
@@ -86,7 +85,7 @@ export class ProjectsModel extends Model<ProjectType> {
         createdAt: now,
         updatedAt: now,
       };
-      await this.database.createDocument<ProjectType>(this.collectionId, project, this.dbOptions);
+      await this.database.createDocument(this.collectionId, project, this.dbOptions);
 
       return project;
     } catch (error) {
@@ -133,11 +132,9 @@ export class ProjectsModel extends Model<ProjectType> {
           value: data.gitHubDefaultBranch,
         });
       } catch (error) {
-        this.error(error);
+        this.error("Error creating default branch tag:", error);
       }
     }
-
-    return;
   }
 
   async delete(id: string): Promise<void> {
@@ -157,8 +154,6 @@ export class ProjectsModel extends Model<ProjectType> {
 
     this.debug("Create project container");
     await this.storage.deleteContainer(generateStorageContainerId(id), this.storageOptions);
-
-    return;
   }
 
   async checkAuth(action: StoryBookerPermissionAction, id?: string): Promise<boolean> {

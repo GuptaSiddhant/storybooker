@@ -2,6 +2,7 @@
 
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -18,8 +19,14 @@ import type { LoggerAdapter } from "./logger";
  * @throws {ContainerAlreadyExistsError} if the container already exists.
  * @throws {ContainerDoesNotExistError} if the container does not exist.
  * @throws {FileDoesNotExistError} if the file does not exist in the container.
+ * @throws {CustomError} if some other error occurs.
  */
 export interface StorageAdapter {
+  /**
+   * Metadata about the adapter.
+   */
+  metadata: StoryBookerAdapterMetadata;
+
   /**
    * An optional method that is called on app boot-up
    * to run async setup functions.

@@ -2,6 +2,7 @@
 
 import { HTTPException } from "hono/http-exception";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger";
 
 /**
@@ -20,8 +21,16 @@ import type { LoggerAdapter } from "./logger";
  * @throws {CollectionDoesNotExistError} if the collection does not exist.
  * @throws {DocumentAlreadyExistsError} if the document already exists in the collection.
  * @throws {DocumentDoesNotExistError} if the document does not exist in the collection.
+ * @throws {CustomError} if some other error occurs.
  */
-export interface DatabaseAdapter {
+export interface DatabaseAdapter<
+  DbDocument extends StoryBookerDatabaseDocument = StoryBookerDatabaseDocument,
+> {
+  /**
+   * Metadata about the adapter.
+   */
+  metadata: StoryBookerAdapterMetadata;
+
   /**
    * An optional method that is called on app boot-up
    * to run async setup functions.
@@ -77,11 +86,11 @@ export interface DatabaseAdapter {
    * @returns List of documents
    * @throws if the collection does not exist.
    */
-  listDocuments: <Document extends StoryBookerDatabaseDocument>(
+  listDocuments: (
     collectionId: string,
-    listOptions: DatabaseDocumentListOptions<Document>,
+    listOptions: DatabaseDocumentListOptions<DbDocument>,
     options: DatabaseAdapterOptions,
-  ) => Promise<Document[]>;
+  ) => Promise<DbDocument[]>;
 
   /**
    * Create a new document in the collection.
@@ -90,9 +99,9 @@ export interface DatabaseAdapter {
    * @param options Common options like abortSignal.
    * @throws if the collection does not exist.
    */
-  createDocument: <Document extends StoryBookerDatabaseDocument>(
+  createDocument: (
     collectionId: string,
-    documentData: Document,
+    documentData: DbDocument,
     options: DatabaseAdapterOptions,
   ) => Promise<void>;
 
@@ -104,11 +113,11 @@ export interface DatabaseAdapter {
    * @returns Data of the document
    * @throws if the collection or document does not exist.
    */
-  getDocument: <Document extends StoryBookerDatabaseDocument>(
+  getDocument: (
     collectionId: string,
     documentId: string,
     options: DatabaseAdapterOptions,
-  ) => Promise<Document>;
+  ) => Promise<DbDocument>;
 
   /**
    * Check matching document data available in the requested collection.
@@ -132,10 +141,10 @@ export interface DatabaseAdapter {
    * @param options Common options like abortSignal.
    * @throws if the collection or document does not exist.
    */
-  updateDocument: <Document extends StoryBookerDatabaseDocument>(
+  updateDocument: (
     collectionId: string,
     documentId: string,
-    documentData: Partial<Omit<Document, "id">>,
+    documentData: Partial<Omit<DbDocument, "id">>,
     options: DatabaseAdapterOptions,
   ) => Promise<void>;
 
@@ -159,6 +168,9 @@ export interface DatabaseAdapter {
  */
 export interface StoryBookerDatabaseDocument {
   id: string;
+  updatedAt: string;
+  createdAt: string;
+  [key: string]: unknown;
 }
 
 /** Common Database adapter options.  */

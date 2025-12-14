@@ -1,3 +1,4 @@
+import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType } from "@storybooker/core/types";
 import {
   DocumentHeader,
@@ -9,7 +10,7 @@ import {
 import { TagForm } from "../components/tag-form";
 import { getUIStore } from "../utils/ui-store";
 
-export function TagCreatePage({ project }: { project: ProjectType }): JSXElement {
+export function TagCreatePage({ project }: { project: ProjectType }): RenderedContent {
   const title = "Create Tag";
   const { urlBuilder } = getUIStore();
 
