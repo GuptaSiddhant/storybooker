@@ -36,7 +36,8 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "tsdown": "catalog:"
+    "tsdown": "catalog:",
+    "unplugin-raw": "^0.6.3"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

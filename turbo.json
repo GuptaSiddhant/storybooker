@@ -21,7 +21,7 @@
       "outputs": ["./node_modules/.vite/vitest"]
     },
     "verify": {
-      "dependsOn": ["build", "lint"]
+      "dependsOn": ["build", "lint", "test"]
     }
   }
 }

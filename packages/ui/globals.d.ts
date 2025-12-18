@@ -5,3 +5,8 @@ declare global {
   type JSXElement = ReturnType<FC>;
   type JSXChildren = Child;
 }
+
+declare module "*?raw" {
+  const content: string;
+  export default content;
+}

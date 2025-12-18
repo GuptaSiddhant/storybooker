@@ -34,7 +34,8 @@
   "[default]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "typescript.experimental.useTsgo": true,
   "deno.enable": true,
-  "deno.enablePaths": ["./server"]
+  "deno.enablePaths": ["./server"],
+  "typescript.experimental.useTsgo": true,
+  "typescript.native-preview.tsdk": "./node_modules/@typescript/native-preview"
 }

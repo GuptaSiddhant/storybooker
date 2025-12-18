@@ -2,6 +2,7 @@
 // oxlint-disable explicit-function-return-type
 // oxlint-disable no-empty-function
 
+import { HTTPException } from "hono/http-exception";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mockAuthService } from "../mocks/mock-auth-service";
 import { mockStore } from "../mocks/mock-store";
@@ -38,7 +39,7 @@ describe("authenticateOrThrow", () => {
         action: "delete",
         projectId: undefined,
       }),
-    ).rejects.toThrow(Response);
+    ).rejects.toThrow(HTTPException);
   });
 
   it("returns if auth.authorise returns true", async () => {
@@ -64,7 +65,7 @@ describe("authenticateOrThrow", () => {
         action: "delete",
         projectId: undefined,
       }),
-    ).rejects.toThrow(Response);
+    ).rejects.toThrow(HTTPException);
   });
 
   it("throws if auth.authorise returns a response", async () => {
@@ -81,7 +82,7 @@ describe("authenticateOrThrow", () => {
         action: "delete",
         projectId: undefined,
       }),
-    ).rejects.toBeInstanceOf(Response);
+    ).rejects.toBeInstanceOf(HTTPException);
   });
 
   it("throws 403 if auth.authorise throws", async () => {
@@ -99,7 +100,7 @@ describe("authenticateOrThrow", () => {
         action: "delete",
         projectId: undefined,
       }),
-    ).rejects.toThrow(Response);
+    ).rejects.toThrow(HTTPException);
   });
 });
 

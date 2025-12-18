@@ -46,7 +46,6 @@ export function zodSchemaToCommandBuilder(objectSchema: z.core.$ZodObject): Comm
 
     let optional = false;
     try {
-      // @ts-expect-error undefined
       const valueOrPromise = schema["~standard"].validate(undefined, {});
       if (valueOrPromise instanceof Promise) {
         throw new TypeError("Cannot handle async schema");

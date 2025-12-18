@@ -1,5 +1,6 @@
 import { argv } from "node:process";
 import { defineConfig } from "tsdown";
+import Raw from "unplugin-raw/rolldown";
 
 export default defineConfig({
   clean: !argv.includes("-w"),
@@ -11,4 +12,5 @@ export default defineConfig({
   sourcemap: true,
   treeshake: true,
   unbundle: false,
+  plugins: [Raw()],
 });
