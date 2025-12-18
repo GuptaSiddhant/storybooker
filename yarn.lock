@@ -6967,6 +6967,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@storybooker/cli@workspace:packages/cli":
+  version: 0.0.0-use.local
+  resolution: "@storybooker/cli@workspace:packages/cli"
+  dependencies:
+    "@types/node": "catalog:"
+    "@types/yargs": "npm:^17.0.33"
+    "@typescript/native-preview": "catalog:"
+    openapi-fetch: "npm:^0.14.0"
+    openapi-typescript: "npm:^7.9.1"
+    oxfmt: "catalog:"
+    oxlint: "catalog:"
+    oxlint-tsgolint: "catalog:"
+    tsdown: "catalog:"
+    typescript: "npm:^5.9.2"
+    yargs: "npm:^18.0.0"
+    zod: "npm:^4.2.0"
+  bin:
+    cli: ./dist/index.js
+  languageName: unknown
+  linkType: soft
+
 "@storybooker/core@workspace:*, @storybooker/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@storybooker/core@workspace:packages/core"
@@ -20374,27 +20395,6 @@ __metadata:
     oxlint-tsgolint: "catalog:"
     prettier: "npm:^3.7.4"
     turbo: "npm:^2.6.4-canary.5"
-  languageName: unknown
-  linkType: soft
-
-"storybooker@workspace:packages/cli":
-  version: 0.0.0-use.local
-  resolution: "storybooker@workspace:packages/cli"
-  dependencies:
-    "@types/node": "catalog:"
-    "@types/yargs": "npm:^17.0.33"
-    "@typescript/native-preview": "catalog:"
-    openapi-fetch: "npm:^0.14.0"
-    openapi-typescript: "npm:^7.9.1"
-    oxfmt: "catalog:"
-    oxlint: "catalog:"
-    oxlint-tsgolint: "catalog:"
-    tsdown: "catalog:"
-    typescript: "npm:^5.9.2"
-    yargs: "npm:^18.0.0"
-    zod: "npm:^4.2.0"
-  bin:
-    storybooker: ./dist/index.js
   languageName: unknown
   linkType: soft
 
