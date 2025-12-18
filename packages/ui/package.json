@@ -36,7 +36,6 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "prettier": "catalog:",
     "tsdown": "catalog:"
   },
   "main": "./dist/index.mjs",

@@ -66,7 +66,6 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "prettier": "catalog:",
     "redis": "^5.10.0",
     "tsdown": "catalog:"
   },

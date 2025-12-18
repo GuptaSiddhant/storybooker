@@ -21,11 +21,7 @@
   "oxc.enable": true,
   "oxc.fmt.experimental": true,
   "oxc.lint.run": "onType",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
-  "[json]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
   "[javascript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
@@ -35,7 +31,10 @@
   "[typescriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
+  "[default]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "typescript.experimental.useTsgo": true,
   "deno.enable": true,
-  "deno.enablePaths": ["./server"],
-  "typescript.experimental.useTsgo": true
+  "deno.enablePaths": ["./server"]
 }

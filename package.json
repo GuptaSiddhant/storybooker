@@ -22,15 +22,27 @@
     "fmt": "turbo fmt",
     "functions": "yarn workspace azure-functions-app dev",
     "lint": "turbo lint",
+    "prepare": "husky",
     "release": "node ./scripts/release.ts",
     "server": "NODE_ENV=development OTEL_DENO=true deno serve -REW --watch ./scripts/server.ts",
     "test": "turbo test",
     "verify": "turbo verify --filter='./packages/*'"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "prettier": "^3.7.4",
     "turbo": "^2.6.4-canary.5"
   },
   "overrides": {
     "debug": "4.4.1"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "oxfmt --no-error-on-unmatched-pattern",
+    "!(*.js|*.ts|*.tsx)": "prettier --write --ignore-unknown",
+    "*": "oxlint --type-aware --type-check --import-plugin --fix"
   }
 }

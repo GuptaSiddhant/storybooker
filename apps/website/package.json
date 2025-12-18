@@ -39,7 +39,6 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "prettier": "catalog:",
     "typescript": "^5.9.2"
   },
   "imports": {

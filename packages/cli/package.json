@@ -43,7 +43,6 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
-    "prettier": "catalog:",
     "tsdown": "catalog:",
     "typescript": "^5.9.2"
   }
