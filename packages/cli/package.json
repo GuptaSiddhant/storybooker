@@ -15,7 +15,7 @@
   "homepage": "https://storybooker.js.org",
   "repository": {
     "type": "git",
-    "url": "https://github.com/guptasiddhant/storybooker",
+    "url": "https://github.com/GuptaSiddhant/storybooker",
     "directory": "packages/cli"
   },
   "license": "MIT",
