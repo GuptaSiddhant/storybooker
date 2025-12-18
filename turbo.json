@@ -4,7 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist", "storybook-static", "build"],
-      "passThroughEnv": [
+      "env": [
         "EDGE_CONFIG_ID",
         "EDGE_CONFIG_TOKEN",
         "EDGE_CONFIG",

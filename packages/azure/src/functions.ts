@@ -12,7 +12,7 @@ import type {
   TimerFunctionOptions,
 } from "@azure/functions";
 import { createHonoRouter, createPurgeHandler } from "@storybooker/core";
-import type { LoggerAdapter } from "@storybooker/core/adapter";
+import type { AuthAdapter, LoggerAdapter } from "@storybooker/core/adapter";
 import type { ErrorParser, RouterOptions, StoryBookerUser } from "@storybooker/core/types";
 import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "@storybooker/core/utils";
 
@@ -33,19 +33,21 @@ interface FunctionsApp {
 /**
  * Options to register the storybooker router
  */
-export interface RegisterStorybookerRouterOptions<
-  User extends StoryBookerUser,
-> extends RouterOptions<User> {
+export interface RegisterStorybookerRouterOptions<User extends StoryBookerUser> extends Omit<
+  RouterOptions<User>,
+  "auth"
+> {
   /**
-   * Set the Azure Functions authentication level for all routes.
+   * For authenticating routes, either use an AuthAdapter or Functions auth-level property.
    *
-   * This is a good option to set if the service is used in
-   * Headless mode and requires single token authentication
-   * for all the requests.
+   * - AuthAdapter allows full customization of authentication logic. This will set the function to "anonymous" auth-level.
+   * - Auth-level is a simpler way to set predefined authentication levels ("function", "admin").
+   *   This is a good option to set if the service is used in
+   *   Headless mode and requires single token authentication for all the requests.
    *
-   * This setting does not affect health-check route.
+   * @see https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-http-webhook-trigger?tabs=python-v2%2Cisolated-process%2Cnodejs-v4%2Cfunctionsv2&pivots=programming-language-javascript#http-auth (AuthLevels)
    */
-  authLevel?: HttpTriggerOptions["authLevel"];
+  auth?: AuthAdapter<User> | Exclude<HttpTriggerOptions["authLevel"], "anonymous">;
 
   /**
    * Define the route on which all router is placed.
@@ -81,19 +83,23 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
   options: RegisterStorybookerRouterOptions<User>,
 ): void {
   app.setup?.({ enableHttpStream: true });
-  const { authLevel, purgeScheduleCron, route, ...routerOptions } = options;
+  const { auth, purgeScheduleCron, route, ...rest } = options;
 
+  const routerOptions: RouterOptions<User> = rest;
   routerOptions.config ??= {};
   routerOptions.config.errorParser ??= parseAzureRestError;
 
   if (route) {
     routerOptions.config.prefix = generatePrefixFromBaseRoute(route);
   }
+  if (typeof auth === "object") {
+    routerOptions.auth = auth;
+  }
 
   const router = createHonoRouter(routerOptions);
 
   app.http(SERVICE_NAME, {
-    authLevel,
+    authLevel: typeof auth === "string" ? auth : "anonymous",
     handler: async (httpRequest) => {
       const request = newRequestFromAzureFunctions(httpRequest);
       const response = await router.fetch(request);

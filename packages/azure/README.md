@@ -35,7 +35,7 @@ if (!storageConnectionString) {
 }
 
 registerStoryBookerRouter(app, {
-  auth: new AzureEasyAuthService(), // optional auth adapter
+  auth: new AzureEasyAuthService(), // optional auth adapter or auth-level string
   database: new AzureDataTablesDatabaseService(
     new TableServiceClient(storageConnectionString),
     (tableName) =>
