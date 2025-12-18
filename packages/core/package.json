@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/core",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "type": "module",
   "description": "Storybooker platform agnostic router core.",
   "author": {
@@ -36,9 +36,9 @@
     "@hono/zod-openapi": "^1.1.5",
     "@remix-run/headers": "^0.16.0",
     "decompress": "^4.0.0",
-    "hono": "catalog:",
+    "hono": "^4.11.0",
     "js-yaml": "^4.1.1",
-    "zod": "catalog:"
+    "zod": "^4.2.0"
   },
   "devDependencies": {
     "@types/decompress": "^4.0.0",

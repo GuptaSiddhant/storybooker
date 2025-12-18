@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/ui",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "type": "module",
   "description": "Basic UI for Storybooker app",
   "author": {
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "@storybooker/core": "workspace:*",
-    "hono": "^4.10.6"
+    "hono": "^4.11.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",

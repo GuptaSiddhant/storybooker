@@ -1,6 +1,6 @@
 {
   "name": "storybooker",
-  "version": "0.20.1",
+  "version": "0.20.2",
   "type": "module",
   "bin": "./dist/index.js",
   "description": "Storybooker CLI for uploading builds and files.",
@@ -33,7 +33,7 @@
   "dependencies": {
     "openapi-fetch": "^0.14.0",
     "yargs": "^18.0.0",
-    "zod": "catalog:"
+    "zod": "^4.2.0"
   },
   "devDependencies": {
     "@types/node": "catalog:",
