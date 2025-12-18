@@ -34,13 +34,13 @@ jobs:
           for i in "${pkgDirs[@]}"; do
             dirname=$(basename "$i")
             if [ "$dirname" == "cli" ]; then
-              continue
+              pkgNames+=("storybooker")
             else 
               pkgNames+=("@storybooker/$dirname")
             fi  
           done
 
-          npx -y turbo@canary prune storybooker ${pkgNames[@]}           
+          npx -y turbo@canary prune ${pkgNames[@]}           
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
@@ -78,7 +78,7 @@ jobs:
         working-directory: ./out
         run: |
           echo "Publishing with tag: $NPM_TAG"
-          yarn workspaces foreach -A --no-private npm publish --tolerate-republish --tag ${NPM_TAG:-latest}
+          yarn workspaces foreach -A --no-private npm publish --tolerate-republish --provenance --access public --tag ${NPM_TAG:-latest}
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
@@ -108,6 +108,7 @@ jobs:
         id: setup
         run: |
           npx -y turbo@canary prune @storybooker/core
+          node scripts/prune-jsr-pkg-json.ts ./out/package.json
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
@@ -125,4 +126,4 @@ jobs:
       - name: Publish on JSR - Core
         working-directory: ./out/packages/core
         continue-on-error: true
-        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }} --allow-slow-types --allow-dirty
+        run: npx -y jsr publish --allow-slow-types --allow-dirty --token ${{ secrets.JSR_API_TOKEN }}
