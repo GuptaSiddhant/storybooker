@@ -73,7 +73,7 @@ export class BuildsModel extends Model<BuildType> {
         storybook: "none",
         testReport: "none",
         id,
-        message: rest.message || "",
+        message: rest.message ?? "",
         tagIds: tagIds.filter(Boolean).join(","),
         updatedAt: now,
       };
@@ -148,7 +148,7 @@ export class BuildsModel extends Model<BuildType> {
 
     if (updateTag) {
       this.debug("Update tags for build '%s'", buildId);
-      const tagIds = build.tagIds?.split(",") || [];
+      const tagIds = build.tagIds?.split(",") ?? [];
       const tagsModel = new TagsModel(this.projectId);
       await Promise.allSettled(
         tagIds.map(async (tagId) => {
@@ -193,7 +193,7 @@ export class BuildsModel extends Model<BuildType> {
         const {
           maxInlineUploadProcessingSizeInBytes = 5 * 1024 * 1024,
           queueLargeZipFileProcessing = false,
-        } = config || {};
+        } = config ?? {};
 
         // Automatically process zip if feature is enabled and size is below limit
         if (size !== undefined && size <= maxInlineUploadProcessingSizeInBytes) {
@@ -297,7 +297,7 @@ export class BuildsModel extends Model<BuildType> {
 
     await Promise.allSettled(
       builds.map(async (build): Promise<void> => {
-        const buildTagIds = build.tagIds?.split(",") || [];
+        const buildTagIds = build.tagIds?.split(",") ?? [];
         if (!force && buildTagIds.length > 1) {
           const newIds = buildTagIds.filter((id) => id !== tagId);
           await this.update(build.id, { tagIds: newIds.join(",") });
@@ -322,8 +322,8 @@ export class BuildsModel extends Model<BuildType> {
       return id;
     } catch {
       try {
-        const type = (tagType as TagVariant) || TagsModel.guessType(id);
-        const value = tagValue || id;
+        const type = (tagType as TagVariant) ?? TagsModel.guessType(id);
+        const value = tagValue ?? id;
         this.log("A new tag '%s' (%s) is being created.", value, type);
         const tag = await tagsModel.create({ latestBuildId: buildId, type, value }, true);
 

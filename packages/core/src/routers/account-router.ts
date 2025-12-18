@@ -131,6 +131,6 @@ export const accountRouter = new OpenAPIHono()
         context.res.headers.set(key, value);
       }
 
-      return context.redirect(responseLocation || urlBuilder.homepage());
+      return context.redirect(responseLocation ?? urlBuilder.homepage());
     },
   );

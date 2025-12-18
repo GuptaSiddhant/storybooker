@@ -58,7 +58,7 @@ export function Table<Item extends TableItem>({
               return (
                 <tr>
                   {cols.map((col) => {
-                    const value = col.cell?.(item) || item[col.id];
+                    const value = col.cell?.(item) ?? item[col.id];
                     return <td style={col.style}>{value}</td>;
                   })}
                 </tr>

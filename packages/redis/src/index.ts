@@ -129,8 +129,8 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
       } else if (listOptions.sort === "latest") {
         // Assume documents have a createdAt or similar timestamp field
         filteredDocs.sort((docA, docB) => {
-          const aTime = (docA as any).createdAt || (docA as any).timestamp || 0;
-          const bTime = (docB as any).createdAt || (docB as any).timestamp || 0;
+          const aTime = (docA as any).createdAt ?? (docA as any).timestamp ?? 0;
+          const bTime = (docB as any).createdAt ?? (docB as any).timestamp ?? 0;
           return bTime - aTime; // Descending order (latest first)
         });
       }

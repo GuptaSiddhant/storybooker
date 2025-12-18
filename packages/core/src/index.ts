@@ -28,8 +28,8 @@ export { appRouter, openapiConfig } from "./routers/_app-router.ts";
 export function createHonoRouter<User extends StoryBookerUser>(
   options: RouterOptions<User>,
 ): Hono<{ Variables: TimingVariables }> {
-  const logger = options.logger || createConsoleLoggerAdapter();
-  const middlewares = options.config?.middlewares || [];
+  const logger = options.logger ?? createConsoleLoggerAdapter();
+  const middlewares = options.config?.middlewares ?? [];
   const initPromises = Promise.allSettled([
     options.auth?.init?.({ logger }).catch(logger.error),
     options.database.init?.({ logger }).catch(logger.error),
@@ -55,7 +55,7 @@ export function createHonoRouter<User extends StoryBookerUser>(
  * Note: The latest build on project's default branch is not deleted.
  */
 export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
-  const logger = options.logger || createConsoleLoggerAdapter();
+  const logger = options.logger ?? createConsoleLoggerAdapter();
 
   return async (...params: Parameters<HandlePurge>): Promise<void> => {
     const dummyRequest = new Request("http://0.0.0.0/");

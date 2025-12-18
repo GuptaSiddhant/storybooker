@@ -95,9 +95,7 @@ export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAd
         throw new DatabaseAdapterErrors.CollectionAlreadyExistsError(collectionId);
       }
 
-      if (!db[collectionId]) {
-        db[collectionId] = {};
-      }
+      db[collectionId] ??= {};
       await saveToFile(options);
     },
 
@@ -182,7 +180,7 @@ export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAd
     },
 
     async hasDocument(collectionId, documentId, options) {
-      return !!(await this.getDocument(collectionId, documentId, options));
+      return Boolean(await this.getDocument(collectionId, documentId, options));
     },
 
     async createDocument(collectionId, documentData, options) {

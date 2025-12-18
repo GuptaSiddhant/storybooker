@@ -81,7 +81,7 @@ export class AzureDataTablesDatabaseService implements DatabaseAdapter {
     listOptions: DatabaseDocumentListOptions<Document>,
     options: DatabaseAdapterOptions,
   ): Promise<Document[]> => {
-    const { filter, limit, select, sort } = listOptions || {};
+    const { filter, limit, select, sort } = listOptions ?? {};
 
     const tableName = genTableNameFromCollectionId(collectionId);
     const tableClient = this.#tableClientGenerator(tableName);
@@ -218,6 +218,6 @@ function entityToItem<Item extends { id: string }>(
 ): Item {
   return {
     ...entity,
-    id: entity.rowKey || entity.partitionKey || entity.etag,
+    id: entity.rowKey ?? entity.partitionKey ?? entity.etag,
   } as unknown as Item;
 }

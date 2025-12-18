@@ -84,9 +84,8 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
   const { authLevel, purgeScheduleCron, route, ...routerOptions } = options;
 
   routerOptions.config ??= {};
-  if (!routerOptions.config.errorParser) {
-    routerOptions.config.errorParser = parseAzureRestError;
-  }
+  routerOptions.config.errorParser ??= parseAzureRestError;
+
   if (route) {
     routerOptions.config.prefix = generatePrefixFromBaseRoute(route);
   }
@@ -101,11 +100,11 @@ export function registerStoryBookerRouter<User extends StoryBookerUser>(
       return newAzureFunctionsResponse(response);
     },
     methods: ["GET", "POST", "DELETE", "HEAD", "PATCH", "PUT", "OPTIONS", "TRACE", "CONNECT"],
-    route: urlJoin(route || "", "{**path}"),
+    route: urlJoin(route ?? "", "{**path}"),
   });
 
   if (purgeScheduleCron !== null && app.timer) {
-    const schedule = purgeScheduleCron || DEFAULT_PURGE_SCHEDULE_CRON;
+    const schedule = purgeScheduleCron ?? DEFAULT_PURGE_SCHEDULE_CRON;
     const purgeHandler = createPurgeHandler({
       database: routerOptions.database,
       storage: routerOptions.storage,
@@ -198,7 +197,7 @@ function parseCookieString(cookieString: string): Cookie {
     .map((item) => item.split("="))
     .map(([key, value]) => [key?.trim().toLowerCase(), value ?? "true"]);
 
-  const [name, encodedValue] = first || [];
+  const [name, encodedValue] = first ?? [];
   const attrs: Record<string, string> = Object.fromEntries(attributesArray);
 
   return {
@@ -206,7 +205,7 @@ function parseCookieString(cookieString: string): Cookie {
     expires: attrs["expires"] ? new Date(attrs["expires"]) : undefined,
     httpOnly: attrs["httponly"] === "true",
     maxAge: attrs["max-age"] ? Number.parseInt(attrs["max-age"], 10) : undefined,
-    name: name || "",
+    name: name ?? "",
     path: attrs["path"],
     sameSite: attrs["samesite"] as "Strict" | "Lax" | "None" | undefined,
     secure: attrs["secure"] === "true",

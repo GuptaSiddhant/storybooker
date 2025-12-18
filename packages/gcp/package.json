@@ -64,7 +64,7 @@
     "build": "tsdown",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "npx oxfmt ./src",
+    "oxfmt": "oxfmt ./src",
     "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix"
   },
@@ -77,6 +77,7 @@
     "@google-cloud/storage": "^7.17.1",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
+    "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "prettier": "catalog:",

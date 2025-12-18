@@ -49,7 +49,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
       const response = await this.#db
         .container(collectionId)
         .read({ abortSignal: options.abortSignal });
-      return !!response.resource;
+      return Boolean(response.resource);
     } catch {
       return false;
     }
@@ -116,7 +116,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
   hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, options) => {
     const item = this.#db.container(collectionId).item(documentId);
     const response = await item.read({ abortSignal: options.abortSignal });
-    return !!response.resource;
+    return Boolean(response.resource);
   };
 
   deleteDocument: DatabaseAdapter["deleteDocument"] = async (collectionId, documentId, options) => {

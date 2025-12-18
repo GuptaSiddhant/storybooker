@@ -28,7 +28,7 @@ export abstract class Model<Data extends StoryBookerDatabaseDocument> implements
 
   constructor(projectId: string | null, collectionId: string) {
     const { abortSignal, database, storage, logger } = getStore();
-    this.projectId = projectId || "";
+    this.projectId = projectId ?? "";
     this.collectionId = collectionId;
     this.database = database as unknown as DatabaseAdapter<Data>;
     this.storage = storage;

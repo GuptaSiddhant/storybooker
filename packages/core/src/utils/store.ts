@@ -48,7 +48,7 @@ export function setupStore<User extends StoryBookerUser>(
   initPromises: Promise<unknown>,
 ): MiddlewareHandler {
   return async (ctx, next) => {
-    const logger = options.logger || createConsoleLoggerAdapter();
+    const logger = options.logger ?? createConsoleLoggerAdapter();
 
     startTime(ctx, "init-adapters", "Initialize adapters");
     await initPromises;
@@ -56,7 +56,7 @@ export function setupStore<User extends StoryBookerUser>(
 
     const request = ctx.req.raw;
     const headers = new SuperHeaders(request.headers);
-    const locale = headers.acceptLanguage.languages[0] || DEFAULT_LOCALE;
+    const locale = headers.acceptLanguage.languages[0] ?? DEFAULT_LOCALE;
 
     startTime(ctx, "get-user", "Get user details");
     const user = await options.auth?.getUserDetails({
@@ -73,7 +73,7 @@ export function setupStore<User extends StoryBookerUser>(
       headers,
       locale,
       logger,
-      prefix: options.config?.prefix || "",
+      prefix: options.config?.prefix ?? "",
       request,
       url: request.url,
       user,

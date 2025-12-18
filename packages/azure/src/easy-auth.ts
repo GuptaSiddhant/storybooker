@@ -76,8 +76,8 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
      */
     modifyUserDetails?: ModifyUserDetails;
   }) {
-    this.authorise = options?.authorise || DEFAULT_AUTHORISE;
-    this.modifyUserDetails = options?.modifyUserDetails || DEFAULT_MODIFY_USER;
+    this.authorise = options?.authorise ?? DEFAULT_AUTHORISE;
+    this.modifyUserDetails = options?.modifyUserDetails ?? DEFAULT_MODIFY_USER;
   }
 
   getUserDetails: AuthAdapter<AzureEasyAuthUser>["getUserDetails"] = async (options) => {
@@ -92,7 +92,7 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
     const decodedPrincipal = Buffer.from(principalHeader, "base64").toString("utf8");
 
     const clientPrincipal: AzureEasyAuthClientPrincipal = JSON.parse(decodedPrincipal);
-    const claims = clientPrincipal?.claims || [];
+    const claims = clientPrincipal?.claims ?? [];
 
     const azpToken = claims.find((claim) => claim.typ === "azp")?.val;
     if (azpToken) {
@@ -114,8 +114,8 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
 
     const user: AzureEasyAuthUser = {
       clientPrincipal,
-      displayName: name || "",
-      id: email || "",
+      displayName: name ?? "",
+      id: email ?? "",
       roles,
       title: roles.join(", "),
       type: "user",

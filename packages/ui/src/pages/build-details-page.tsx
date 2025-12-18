@@ -66,7 +66,7 @@ export function BuildDetailsPage({
         <BuildProcessStatus
           build={build}
           projectId={project.id}
-          hasUpdatePermission={!!hasUpdatePermission}
+          hasUpdatePermission={Boolean(hasUpdatePermission)}
         />
         <hr style={{ margin: "0.5rem 0" }} />
         <BuildStories build={build} projectId={project.id} stories={stories} />
@@ -75,7 +75,7 @@ export function BuildDetailsPage({
         <BuildLinksFooter
           build={build}
           projectId={project.id}
-          hasUpdatePermission={!!hasUpdatePermission}
+          hasUpdatePermission={Boolean(hasUpdatePermission)}
         />
         <hr style={{ margin: "1rem 0" }} />
         <RawDataList data={build} />

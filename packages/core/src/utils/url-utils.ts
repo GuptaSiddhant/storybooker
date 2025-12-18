@@ -74,8 +74,8 @@ export function urlJoin(...parts: string[]): string {
   // Detect protocol + host in the first argument if present
   const match = parts[0]?.match(/^([a-zA-Z][a-zA-Z0-9+\-.]*:)?(\/\/[^/?#]*)?/);
   if (match && (match[1] || match[2])) {
-    protocol = match[1] || ""; // e.g. "https:"
-    host = match[2] || ""; // e.g. "//example.com"
+    protocol = match[1] ?? ""; // e.g. "https:"
+    host = match[2] ?? ""; // e.g. "//example.com"
     const remainder = parts[0]?.slice((match[0] || "").length);
     parts = remainder ? [remainder, ...parts.slice(1)] : parts.slice(1);
   }

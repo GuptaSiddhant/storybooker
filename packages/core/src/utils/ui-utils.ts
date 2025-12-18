@@ -5,7 +5,7 @@ export function createUIAdapterOptions(): UIAdapterOptions {
   const { auth, database, storage, ui, locale, logger, url, user } = getStore();
 
   return {
-    isAuthEnabled: !!auth,
+    isAuthEnabled: Boolean(auth),
     locale,
     logger,
     url,

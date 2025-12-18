@@ -8,18 +8,18 @@ interface ErrorObject {
 }
 
 export function checkIsHXRequest(request?: Request): boolean {
-  const req = request || getStore().request;
+  const req = request ?? getStore().request;
   return req.headers.get("hx-request") === "true";
 }
 
 export function checkIsHTMLRequest(checkHX?: boolean, request?: Request): boolean {
-  const req = request || getStore().request;
+  const req = request ?? getStore().request;
 
   const accept = req.headers.get("accept");
   if (checkHX && checkIsHXRequest(req)) {
     return true;
   }
-  return !!accept?.includes(mimes.html);
+  return Boolean(accept?.includes(mimes.html));
 }
 
 export function validateIsFormEncodedRequest(request?: Request): undefined | ErrorObject {

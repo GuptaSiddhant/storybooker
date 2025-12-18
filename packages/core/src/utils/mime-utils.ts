@@ -447,7 +447,7 @@ const mimes = {
 
 function getMimeType(extn: string): string {
   // oxlint-disable-next-line prefer-template
-  let tmp = ("" + extn).trim().toLowerCase();
+  let tmp = String(extn).trim().toLowerCase();
   let idx = tmp.lastIndexOf(".");
   // oxlint-disable-next-line no-bitwise no-negated-condition no-plusplus
   const key = (!~idx ? tmp : tmp.slice(++idx)) as keyof typeof mimes;

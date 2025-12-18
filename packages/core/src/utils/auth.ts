@@ -13,7 +13,7 @@ export async function authenticateOrThrow(permission: StoryBookerPermission): Pr
     throw new HTTPException(401, { message: "Unauthenticated. Please log in to continue." });
   }
 
-  const key: StoryBookerPermissionKey = `${permission.resource}:${permission.action}:${permission.projectId || ""}`;
+  const key: StoryBookerPermissionKey = `${permission.resource}:${permission.action}:${permission.projectId ?? ""}`;
   logger.debug?.("[Auth] Check authorisation for '%s'", key);
 
   try {

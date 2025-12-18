@@ -161,7 +161,7 @@ export function DocumentHeader({
           <ul>
             {breadcrumbs.map((crumb, index, arr) => {
               const href =
-                (typeof crumb === "object" ? crumb.href : "") ||
+                (typeof crumb === "object" ? crumb.href : "") ??
                 urlJoin(store.url, ...Array.from({ length: arr.length - index }).map(() => ".."));
               return (
                 <li>

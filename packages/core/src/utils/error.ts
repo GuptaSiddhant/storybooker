@@ -70,7 +70,7 @@ export function prettifyZodValidationErrorMiddleware(logger: LoggerAdapter): Mid
   return async (ctx, next) => {
     await next();
 
-    const resContentType = ctx.res.headers.get("Content-Type") || "";
+    const resContentType = ctx.res.headers.get("Content-Type") ?? "";
     if (ctx.res.status === 400 && resContentType.startsWith("application/json")) {
       const result = zodValidationErrorSchema.safeParse(await ctx.res.clone().json());
       if (result.success) {
@@ -90,7 +90,7 @@ export function onUnhandledErrorHandler<User extends StoryBookerUser>(
     if (error instanceof Response) {
       return error;
     }
-    const logger = options.logger || createConsoleLoggerAdapter();
+    const logger = options.logger ?? createConsoleLoggerAdapter();
 
     const parsedError = parseErrorMessage(error);
     const { errorMessage, errorStatus, errorType } = parsedError;
@@ -99,18 +99,18 @@ export function onUnhandledErrorHandler<User extends StoryBookerUser>(
     if (options?.ui?.renderErrorPage && checkIsHTMLRequest(false, ctx.req.raw)) {
       return ctx.html(
         options.ui.renderErrorPage(parsedError, {
-          isAuthEnabled: !!options.auth,
+          isAuthEnabled: Boolean(options.auth),
           locale: DEFAULT_LOCALE,
           logger,
           url: ctx.req.url,
           user: null,
           adaptersMetadata: {},
         }),
-        (errorStatus as ContentfulStatusCode) || 500,
+        (errorStatus as ContentfulStatusCode) ?? 500,
       );
     }
 
-    return new Response(errorMessage, { status: errorStatus || 500, statusText: errorType });
+    return new Response(errorMessage, { status: errorStatus ?? 500, statusText: errorType });
   };
 }
 

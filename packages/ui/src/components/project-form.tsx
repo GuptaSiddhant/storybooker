@@ -76,7 +76,7 @@ export function ProjectForm({ actionUrl, project }: ProjectsFormProps): JSXEleme
             id="gitHubDefaultBranch"
             name="gitHubDefaultBranch"
             placeholder="main"
-            value={project?.gitHubDefaultBranch || DEFAULT_GITHUB_BRANCH}
+            value={project?.gitHubDefaultBranch ?? DEFAULT_GITHUB_BRANCH}
           />
           <span class={"description"}>Optional. If the default branch is not 'main'.</span>
         </div>
@@ -106,7 +106,7 @@ export function ProjectForm({ actionUrl, project }: ProjectsFormProps): JSXEleme
             required
             type="number"
             inputmode="numeric"
-            value={(project?.purgeBuildsAfterDays || DEFAULT_PURGE_AFTER_DAYS).toString()}
+            value={(project?.purgeBuildsAfterDays ?? DEFAULT_PURGE_AFTER_DAYS).toString()}
           />
           <span class={"description"} safe>
             Days after which the builds in the project should be purged.

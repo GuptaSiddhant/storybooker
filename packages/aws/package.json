@@ -58,7 +58,7 @@
     "build": "tsdown",
     "dev": "tsdown -w ./src",
     "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "npx oxfmt ./src",
+    "oxfmt": "oxfmt ./src",
     "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix"
   },
@@ -70,6 +70,7 @@
     "@aws-sdk/client-s3": "^3.895.0",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
+    "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "prettier": "catalog:",
