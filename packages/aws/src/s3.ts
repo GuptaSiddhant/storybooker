@@ -41,8 +41,8 @@ export class AwsS3StorageService implements StorageAdapter {
     const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
-    return !!buckets.Buckets?.some(
-      (bucket) => bucket.Name === genBucketNameFromContainerId(containerId),
+    return Boolean(
+      buckets.Buckets?.some((bucket) => bucket.Name === genBucketNameFromContainerId(containerId)),
     );
   };
 

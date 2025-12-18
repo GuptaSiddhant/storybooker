@@ -7,8 +7,8 @@ on:
       - "*"
 
 jobs:
-  publish-all:
-    name: Publish all packages
+  publish-npm:
+    name: Publish all packages to NPM
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -74,18 +74,11 @@ jobs:
         env:
           GITHUB_REF_NAME: ${{ github.ref_name }}
 
-      - name: Publish on JSR - Core
-        working-directory: ./out/packages/core
-        continue-on-error: true
-        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }} --allow-slow-types --allow-dirty
-
       - name: Publish on NPM
         working-directory: ./out
         run: |
           echo "Publishing with tag: $NPM_TAG"
           yarn workspaces foreach -A --no-private npm publish --tolerate-republish --tag ${NPM_TAG:-latest}
-        # env:
-        #   NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
@@ -94,3 +87,42 @@ jobs:
         with:
           body_path: release-message.txt
           make_latest: ${{ steps.get_release_data.outputs.NPM_TAG == 'latest' }}
+
+  publish-jsr:
+    name: Publish all packages to JSR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: "yarn"
+
+      - name: Setup Turbo
+        id: setup
+        run: |
+          npx -y turbo@canary prune @storybooker/core
+          cp tsconfig.base.json out/tsconfig.base.json
+          cp .oxlintrc.json out/.oxlintrc.json
+          cp -R scripts out/scripts
+
+      - name: Install dependencies
+        working-directory: ./out
+        run: yarn install --immutable
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+
+      - name: Verify
+        working-directory: ./out
+        run: npx turbo verify
+
+      - name: Publish on JSR - Core
+        working-directory: ./out/packages/core
+        continue-on-error: true
+        run: npx -y jsr publish --token ${{ secrets.JSR_API_TOKEN }} --allow-slow-types --allow-dirty
