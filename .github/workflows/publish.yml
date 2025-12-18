@@ -34,7 +34,7 @@ jobs:
           for i in "${pkgDirs[@]}"; do
             dirname=$(basename "$i")
             if [ "$dirname" == "cli" ]; then
-              pkgNames+=("storybooker")
+              continue;
             else 
               pkgNames+=("@storybooker/$dirname")
             fi  
