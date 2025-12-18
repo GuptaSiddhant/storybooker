@@ -15,7 +15,7 @@
     "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
     "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix",
-    "openapi": "cp ../../packages/core/dist/openapi.json ./static/openapi.json"
+    "openapi": "cp ../packages/core/dist/openapi.json ./static/openapi.json"
   },
   "dependencies": {
     "@docusaurus/core": "3.9.2",

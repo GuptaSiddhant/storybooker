@@ -8,8 +8,9 @@
   "license": "MIT",
   "packageManager": "yarn@4.12.0",
   "workspaces": [
-    "./apps/*",
-    "./packages/*"
+    "./examples/*",
+    "./packages/*",
+    "website"
   ],
   "scripts": {
     "build": "turbo build",
@@ -42,7 +43,6 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "oxfmt --no-error-on-unmatched-pattern",
-    "!(*.js|*.ts|*.tsx)": "prettier --write --ignore-unknown",
-    "*": "oxlint --type-aware --type-check --import-plugin --fix"
+    "!(*.js|*.ts|*.tsx)": "prettier --write --ignore-unknown"
   }
 }

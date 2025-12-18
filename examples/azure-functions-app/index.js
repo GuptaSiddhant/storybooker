@@ -18,8 +18,7 @@ if (!storageConnectionString) {
 registerStoryBookerRouter(app, {
   database: new AzureDataTablesDatabaseService(
     TableServiceClient.fromConnectionString(storageConnectionString),
-    (tableName) =>
-      TableClient.fromConnectionString(storageConnectionString, tableName),
+    (tableName) => TableClient.fromConnectionString(storageConnectionString, tableName),
   ),
   storage: new AzureBlobStorageService(
     BlobServiceClient.fromConnectionString(storageConnectionString),

@@ -4,10 +4,10 @@
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
-import { Readable } from "node:stream";
-import type { ReadableStream as ReadableStreamWeb } from "node:stream/web";
 import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 import { del, head, list, put, type PutBlobResult } from "@vercel/blob";
+import { Readable } from "node:stream";
+import type { ReadableStream as ReadableStreamWeb } from "node:stream/web";
 
 export class VercelBlobService implements StorageAdapter {
   #token: string;

@@ -22,13 +22,13 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsdown",
-    "cli": "node ./dist/index.js --cwd ../../apps/test-ui",
+    "cli": "node ./dist/index.js --cwd ../../examples/test-ui",
     "dev": "tsdown -w ./src",
     "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
     "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix",
     "openapi": "openapi-typescript ../core/dist/openapi.json -o ./src/service-schema.d.ts",
-    "start": "node --watch ./dist/index.js --cwd ../../apps/test-ui"
+    "start": "node --watch ./dist/index.js --cwd ../../examples/test-ui"
   },
   "dependencies": {
     "openapi-fetch": "^0.14.0",
