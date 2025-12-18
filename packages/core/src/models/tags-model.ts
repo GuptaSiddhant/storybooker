@@ -2,10 +2,10 @@ import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
 import { generateDatabaseCollectionId } from "../utils/adapter-utils.ts";
 import { checkAuthorisation } from "../utils/auth.ts";
-import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 import { BuildsModel } from "./builds-model.ts";
 import { ProjectsModel } from "./projects-model.ts";
 import { TagSchema, type TagCreateType, type TagType, type TagUpdateType } from "./tags-schema.ts";
+import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 
 export class TagsModel extends Model<TagType> {
   constructor(projectId: string) {

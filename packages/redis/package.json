@@ -53,8 +53,7 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown -w ./src",
-    "fmt": "prettier src --write --config ../../.prettierrc",
-    "oxfmt": "oxfmt ./src",
+    "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
     "lint": "oxlint --type-aware --type-check ./src",
     "lint:fix": "yarn lint --fix"
   },

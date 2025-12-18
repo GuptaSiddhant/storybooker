@@ -11,7 +11,6 @@ import {
 import { checkAuthorisation } from "../utils/auth.ts";
 import { mimes } from "../utils/mime-utils.ts";
 import { getStore } from "../utils/store.ts";
-import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 import {
   BuildSchema,
   type BuildCreateType,
@@ -23,6 +22,7 @@ import {
 import { ProjectsModel } from "./projects-model.ts";
 import { TagsModel } from "./tags-model.ts";
 import type { TagVariant } from "./tags-schema.ts";
+import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 
 export class BuildsModel extends Model<BuildType> {
   constructor(projectId: string) {

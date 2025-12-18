@@ -1,6 +1,6 @@
-import path from "node:path";
 import { SuperHeaders } from "@remix-run/headers";
 import { HTTPException } from "hono/http-exception";
+import path from "node:path";
 import { urlBuilder } from "../urls.ts";
 import { generateStorageContainerId } from "../utils/adapter-utils.ts";
 import { authenticateOrThrow } from "../utils/auth.ts";

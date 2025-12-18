@@ -1,13 +1,13 @@
 // oxlint-disable class-methods-use-this
 // oxlint-disable require-await
 
-import { Buffer } from "node:buffer";
 import type {
   AuthAdapter,
   AuthAdapterAuthorise,
   AuthAdapterOptions,
   StoryBookerUser,
 } from "@storybooker/core/adapter";
+import { Buffer } from "node:buffer";
 
 export type {
   AuthAdapterAuthorise,

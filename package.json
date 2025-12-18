@@ -19,20 +19,16 @@
     "cli": "yarn workspace storybooker start",
     "cli:dev": "yarn workspace storybooker dev",
     "docs": "yarn workspace website start",
-    "fmt": "yarn workspaces foreach -Ap run fmt",
-    "oxfmt": "yarn workspaces foreach -Ap run oxfmt",
+    "fmt": "turbo fmt",
     "functions": "yarn workspace azure-functions-app dev",
     "lint": "turbo lint",
     "release": "node ./scripts/release.ts",
-    "server": "NODE_ENV=development OTEL_DENO=true deno serve -REW --unstable-sloppy-imports --watch ./scripts/server.ts",
+    "server": "NODE_ENV=development OTEL_DENO=true deno serve -REW --watch ./scripts/server.ts",
     "test": "turbo test",
     "verify": "turbo verify --filter='./packages/*'"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
-    "oxfmt": "^0.16.0",
-    "prettier": "catalog:",
-    "turbo": "^2.6.4-canary.3"
+    "turbo": "^2.6.4-canary.5"
   },
   "overrides": {
     "debug": "4.4.1"

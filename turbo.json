@@ -12,9 +12,6 @@
     "fmt": {
       "outputLogs": "new-only"
     },
-    "oxfmt": {
-      "outputLogs": "new-only"
-    },
     "lint": {
       "dependsOn": ["^build"],
       "outputLogs": "new-only"

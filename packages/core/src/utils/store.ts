@@ -1,7 +1,7 @@
-import { AsyncLocalStorage } from "node:async_hooks";
 import { SuperHeaders } from "@remix-run/headers";
 import type { MiddlewareHandler } from "hono";
 import { endTime, startTime } from "hono/timing";
+import { AsyncLocalStorage } from "node:async_hooks";
 import {
   createConsoleLoggerAdapter,
   type AuthAdapter,

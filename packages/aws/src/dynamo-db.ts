@@ -47,7 +47,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
         new Dynamo.DescribeTableCommand({ TableName: collectionId }),
         { abortSignal: options.abortSignal },
       );
-      return !!response.Table;
+      return Boolean(response.Table);
     } catch {
       return false;
     }
@@ -150,7 +150,7 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
       }),
       { abortSignal: options.abortSignal },
     );
-    return !!response.Item;
+    return Boolean(response.Item);
   };
 
   deleteDocument: DatabaseAdapter["deleteDocument"] = async (collectionId, documentId, options) => {

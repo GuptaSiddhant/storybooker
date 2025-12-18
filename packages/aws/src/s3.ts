@@ -1,6 +1,6 @@
-import { Buffer } from "node:buffer";
 import * as S3 from "@aws-sdk/client-s3";
 import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
+import { Buffer } from "node:buffer";
 
 export class AwsS3StorageService implements StorageAdapter {
   #client: S3.S3Client;

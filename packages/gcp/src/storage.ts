@@ -1,8 +1,8 @@
+import type { File, Storage } from "@google-cloud/storage";
+import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 import { Buffer } from "node:buffer";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
-import type { File, Storage } from "@google-cloud/storage";
-import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
 
 export class GcpGcsStorageService implements StorageAdapter {
   #client: Storage;
