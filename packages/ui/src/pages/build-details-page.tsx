@@ -18,17 +18,16 @@ import { getUIStore } from "../utils/ui-store.ts";
 export function BuildDetailsPage({
   build,
   project,
-  hasDeletePermission = true,
-  hasUpdatePermission = true,
   stories,
 }: {
   build: BuildType;
   project: ProjectType;
-  hasDeletePermission?: boolean;
-  hasUpdatePermission?: boolean;
   stories: BuildStoryType[] | null;
 }): RenderedContent {
-  const { urlBuilder } = getUIStore();
+  const { urlBuilder, user } = getUIStore();
+  const hasUpdatePermission = Boolean(user?.permissions["build:update"]);
+  const hasDeletePermission = Boolean(user?.permissions["build:delete"]);
+
   const shouldShowUploadButton =
     hasUpdatePermission &&
     (build.coverage === "none" ||

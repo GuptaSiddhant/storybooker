@@ -36,7 +36,7 @@
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "prettier": "^3.7.4",
-    "turbo": "^2.6.4-canary.5"
+    "turbo": "^2.7.0"
   },
   "overrides": {
     "debug": "4.4.1"
