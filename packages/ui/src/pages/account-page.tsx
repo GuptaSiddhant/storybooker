@@ -53,7 +53,12 @@ export function AccountPage({ children }: { children: string | undefined }): Ren
   );
 }
 
-function UserInfo({ displayName, id, imageUrl, title }: StoryBookerUser): JSXElement {
+function UserInfo({
+  displayName,
+  id,
+  imageUrl,
+  title,
+}: Omit<StoryBookerUser, "permissions">): JSXElement {
   return (
     <div
       style={{

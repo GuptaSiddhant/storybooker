@@ -8,7 +8,7 @@ import { mockAuthService, mockUser } from "./mock-auth-service";
 
 export const mockStore: Store = {
   abortSignal: undefined,
-  auth: mockAuthService,
+  auth: mockAuthService(),
   headers: new SuperHeaders(),
   logger: {
     metadata: { name: "Mock Logger" },

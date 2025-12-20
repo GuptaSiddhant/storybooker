@@ -19,7 +19,7 @@ export async function handleServeStoryBook({
 }): Promise<Response> {
   const { abortSignal, logger, storage } = getStore();
   const storageFilepath = path.posix.join(buildId, filepath);
-  await authenticateOrThrow({ action: "read", projectId, resource: "build" });
+  authenticateOrThrow({ action: "read", projectId, resource: "build" });
 
   try {
     const { content, mimeType } = await storage.downloadFile(

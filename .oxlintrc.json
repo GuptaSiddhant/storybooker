@@ -17,7 +17,10 @@
     "arrow-body-style": "allow",
     "id-length": ["warn", { "exceptions": ["z"] }],
     "func-style": ["allow"],
-    "max-lines-per-function": ["warn", { "max": 50, "skipBlankLines": true, "skipComments": true }],
+    "max-lines-per-function": [
+      "warn",
+      { "max": 50, "skipBlankLines": true, "skipComments": true }
+    ],
     "import/consistent-type-specifier-style": "allow",
     "import/exports-last": "allow",
     "import/extensions": ["deny", "always"],
@@ -44,5 +47,13 @@
     "switch-exhaustiveness-check": "warn",
     "strict-boolean-expressions": "allow",
     "typescript/strict-boolean-expressions": "allow"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.spec.ts", "**/mocks/**"],
+      "rules": {
+        "typescript/no-confusing-void-expression": "allow"
+      }
+    }
+  ]
 }

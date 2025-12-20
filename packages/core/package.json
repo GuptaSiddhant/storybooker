@@ -112,7 +112,8 @@
       "source": "./src/utils/index.ts",
       "default": "./dist/utils.mjs"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./openapi.json": "./openapi.json"
   },
   "publishConfig": {
     "exports": {

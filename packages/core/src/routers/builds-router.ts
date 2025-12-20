@@ -64,7 +64,7 @@ export const buildsRouter = new OpenAPIHono()
       const { projectId } = context.req.valid("param");
       const { ui } = getStore();
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "read",
         projectId,
         resource: "build",
@@ -108,7 +108,7 @@ export const buildsRouter = new OpenAPIHono()
       const { projectId } = context.req.valid("param");
       const { tagId } = context.req.valid("query");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "create",
         projectId,
         resource: "build",
@@ -157,7 +157,7 @@ export const buildsRouter = new OpenAPIHono()
         throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "create",
         projectId,
         resource: "build",
@@ -200,7 +200,7 @@ export const buildsRouter = new OpenAPIHono()
       const { projectId, buildId } = context.req.valid("param");
       const { ui } = getStore();
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "read",
         projectId,
         resource: "build",
@@ -247,7 +247,7 @@ export const buildsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { projectId, buildId } = context.req.valid("param");
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "delete",
         projectId,
         resource: "build",
@@ -300,7 +300,7 @@ export const buildsRouter = new OpenAPIHono()
         });
       }
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId,
         resource: "build",
@@ -346,7 +346,7 @@ export const buildsRouter = new OpenAPIHono()
 
       const { buildId, projectId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId,
         resource: "build",
@@ -407,7 +407,7 @@ export const buildsRouter = new OpenAPIHono()
         });
       }
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId,
         resource: "build",

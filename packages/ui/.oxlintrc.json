@@ -21,7 +21,10 @@
       "rules": {
         "no-undef": "allow",
         "no-array-method-this-argument": "allow",
-        "no-array-callback-reference": "allow"
+        "no-array-callback-reference": "allow",
+        "typescript/no-unsafe-call": "allow",
+        "typescript/no-unsafe-assignment": "allow",
+        "typescript/no-unsafe-member-access": "allow"
       }
     }
   ]

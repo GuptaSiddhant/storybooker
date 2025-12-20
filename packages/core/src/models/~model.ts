@@ -55,7 +55,7 @@ export abstract class Model<Data extends StoryBookerDatabaseDocument> implements
   abstract update(id: string, data: unknown): Promise<void>;
   abstract delete(id: string): Promise<void>;
   abstract id: (id: string) => BaseIdModel<Data>;
-  abstract checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
+  abstract checkAuth(action: StoryBookerPermissionAction): boolean;
 }
 
 export interface BaseModel<Data extends StoryBookerDatabaseDocument> {
@@ -65,7 +65,7 @@ export interface BaseModel<Data extends StoryBookerDatabaseDocument> {
   has(id: string): Promise<boolean>;
   update(id: string, data: unknown): Promise<void>;
   delete(id: string): Promise<void>;
-  checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
+  checkAuth(action: StoryBookerPermissionAction): boolean;
   id: (id: string) => BaseIdModel<Data>;
 }
 
@@ -75,5 +75,5 @@ export interface BaseIdModel<Data extends StoryBookerDatabaseDocument> {
   has(): Promise<boolean>;
   update(data: unknown): Promise<void>;
   delete(): Promise<void>;
-  checkAuth(action: StoryBookerPermissionAction): Promise<boolean>;
+  checkAuth(action: StoryBookerPermissionAction): boolean;
 }

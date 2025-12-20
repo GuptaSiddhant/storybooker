@@ -9,7 +9,11 @@ import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
 } from "../packages/core/src/adapters/_fs-adapters.ts";
-import type { AuthAdapter, StoryBookerUser } from "../packages/core/src/adapters/index.ts";
+import {
+  type AuthAdapter,
+  type StoryBookerUser,
+  StoryBookerPermissionsAllEnabled,
+} from "../packages/core/src/adapters/index.ts";
 import { createHonoRouter } from "../packages/core/src/index.ts";
 import { createBasicUIAdapter } from "../packages/ui/src/index.tsx";
 
@@ -40,10 +44,9 @@ function createLocalAuthAdapter(): AuthAdapter {
         id: "user",
         imageUrl: "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
         title: "testAdmin",
+        permissions: StoryBookerPermissionsAllEnabled,
       };
     },
-
-    authorise: () => true,
 
     async getUserDetails() {
       return auth ? user : null;

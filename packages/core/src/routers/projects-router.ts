@@ -51,7 +51,7 @@ export const projectsRouter = new OpenAPIHono()
     async (context) => {
       const { ui } = getStore();
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "read",
         projectId: undefined,
         resource: "project",
@@ -80,13 +80,13 @@ export const projectsRouter = new OpenAPIHono()
         ...openapiCommonErrorResponses,
       },
     }),
-    async (context) => {
+    (context) => {
       const { ui } = getStore();
       if (!ui?.renderProjectCreatePage) {
         throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "create",
         projectId: undefined,
         resource: "project",
@@ -125,7 +125,7 @@ export const projectsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "create",
         projectId: undefined,
         resource: "project",
@@ -166,7 +166,7 @@ export const projectsRouter = new OpenAPIHono()
       const { ui } = getStore();
       const { projectId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "read",
         projectId,
         resource: "project",
@@ -210,7 +210,7 @@ export const projectsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { projectId } = context.req.valid("param");
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "delete",
         projectId,
         resource: "project",
@@ -251,7 +251,7 @@ export const projectsRouter = new OpenAPIHono()
       }
 
       const { projectId } = context.req.valid("param");
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId,
         resource: "project",
@@ -292,7 +292,7 @@ export const projectsRouter = new OpenAPIHono()
     async (context) => {
       const { projectId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId: undefined,
         resource: "project",

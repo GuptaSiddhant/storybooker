@@ -22,18 +22,7 @@ export interface AuthAdapter<AuthUser extends StoryBookerUser = StoryBookerUser>
   init?: (options: Omit<AuthAdapterOptions, "request">) => Promise<void>;
 
   /**
-   * This callback is called before every protected route and determines if user
-   * has access to the route. It receives a permission object.
-   *
-   * @returns
-   * - Respond with `true` to allow user to proceed.
-   * - Respond with `false` to block user.
-   * - Respond with `Response` to return custom response
-   */
-  authorise: AuthAdapterAuthorise<AuthUser>;
-
-  /**
-   * Get details about the user based on incoming request.
+   * Get details about the user and permissions based on incoming request.
    *
    * @param options Common options like abortSignal.
    *
@@ -85,7 +74,7 @@ export type AuthAdapterAuthorise<AuthUser extends StoryBookerUser = StoryBookerU
 /**  Type of permission to check */
 export interface StoryBookerPermission {
   action: StoryBookerPermissionAction;
-  projectId: string | undefined;
+  projectId?: string;
   resource: StoryBookerPermissionResource;
 }
 /** Permission object with key */
@@ -94,7 +83,7 @@ export type StoryBookerPermissionWithKey = StoryBookerPermission & {
 };
 /** Permission in a string format */
 export type StoryBookerPermissionKey =
-  `${StoryBookerPermissionResource}:${StoryBookerPermissionAction}:${string}`;
+  `${StoryBookerPermissionResource}:${StoryBookerPermissionAction}`;
 /** Type of possible resources to check permissions for */
 export type StoryBookerPermissionResource = "project" | "build" | "tag";
 /** Type of possible actions to check permissions for */
@@ -112,6 +101,8 @@ export interface StoryBookerUser {
   imageUrl?: string;
   /** Title or Team-name of the User shown in UI. */
   title?: string;
+  /** Permissions assigned to the user. Missing permissions are considered false. */
+  permissions: Partial<Record<StoryBookerPermissionKey, boolean>>;
 }
 
 /** Common Auth adapter options.  */
@@ -123,3 +114,22 @@ export interface AuthAdapterOptions {
   /** Logger */
   logger: LoggerAdapter;
 }
+
+export const StoryBookerPermissionsAllEnabled = {
+  "build:create": true,
+  "build:delete": true,
+  "project:update": true,
+  "build:read": true,
+  "tag:delete": true,
+  "build:update": true,
+  "tag:create": true,
+  "project:read": true,
+  "project:create": true,
+  "tag:read": true,
+  "project:delete": true,
+  "tag:update": true,
+} satisfies Record<StoryBookerPermissionKey, true>;
+
+export const StoryBookerPermissionsList = Object.keys(
+  StoryBookerPermissionsAllEnabled,
+) as StoryBookerPermissionKey[];

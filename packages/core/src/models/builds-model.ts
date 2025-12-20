@@ -237,8 +237,8 @@ export class BuildsModel extends Model<BuildType> {
     };
   };
 
-  async checkAuth(action: StoryBookerPermissionAction): Promise<boolean> {
-    return await checkAuthorisation({
+  checkAuth(action: StoryBookerPermissionAction): boolean {
+    return checkAuthorisation({
       action,
       projectId: this.projectId,
       resource: "build",

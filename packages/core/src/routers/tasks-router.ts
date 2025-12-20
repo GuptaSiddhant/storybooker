@@ -33,15 +33,9 @@ export const tasksRouter = new OpenAPIHono()
     async (context) => {
       const { projectId } = context.req.valid("query");
 
-      await Promise.all([
-        authenticateOrThrow({
-          action: "update",
-          projectId,
-          resource: "project",
-        }),
-        authenticateOrThrow({ action: "delete", projectId, resource: "build" }),
-        authenticateOrThrow({ action: "delete", projectId, resource: "tag" }),
-      ]);
+      authenticateOrThrow({ action: "update", projectId, resource: "project" });
+      authenticateOrThrow({ action: "delete", projectId, resource: "build" });
+      authenticateOrThrow({ action: "delete", projectId, resource: "tag" });
 
       await handlePurge({ projectId }, { abortSignal: context.req.raw.signal });
 

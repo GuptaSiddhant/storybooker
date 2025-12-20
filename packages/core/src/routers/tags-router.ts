@@ -62,7 +62,7 @@ export const tagsRouter = new OpenAPIHono()
       const { ui } = getStore();
       const { projectId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "read",
         projectId,
         resource: "tag",
@@ -109,7 +109,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const { projectId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "create",
         projectId,
         resource: "tag",
@@ -158,7 +158,7 @@ export const tagsRouter = new OpenAPIHono()
         throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "create",
         projectId,
         resource: "tag",
@@ -200,7 +200,7 @@ export const tagsRouter = new OpenAPIHono()
       const { ui } = getStore();
       const { projectId, tagId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "read",
         projectId,
         resource: "tag",
@@ -239,7 +239,7 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { projectId, tagId } = context.req.valid("param");
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "delete",
         projectId,
         resource: "tag",
@@ -281,7 +281,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const { tagId, projectId } = context.req.valid("param");
 
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId,
         resource: "tag",
@@ -324,7 +324,7 @@ export const tagsRouter = new OpenAPIHono()
       const { tagId, projectId } = context.req.valid("param");
 
       const tagsModel = new TagsModel(projectId);
-      await authenticateOrThrow({
+      authenticateOrThrow({
         action: "update",
         projectId,
         resource: "tag",

@@ -98,8 +98,8 @@ export class TagsModel extends Model<TagType> {
     }
   }
 
-  checkAuth = async (action: StoryBookerPermissionAction): Promise<boolean> => {
-    return await checkAuthorisation({
+  checkAuth = (action: StoryBookerPermissionAction): boolean => {
+    return checkAuthorisation({
       action,
       projectId: this.projectId,
       resource: "tag",

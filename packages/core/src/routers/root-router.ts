@@ -41,7 +41,7 @@ export const rootRouter = new OpenAPIHono()
       const { auth, database, logger, storage, ui, config } = getStore();
 
       if (ui?.renderHomePage && checkIsHTMLRequest(true)) {
-        await authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
+        authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
         const projects = await new ProjectsModel().list({ limit: 5 });
 
         return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));

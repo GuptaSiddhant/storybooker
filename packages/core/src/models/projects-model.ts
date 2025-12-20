@@ -156,8 +156,8 @@ export class ProjectsModel extends Model<ProjectType> {
     await this.storage.deleteContainer(generateStorageContainerId(id), this.storageOptions);
   }
 
-  async checkAuth(action: StoryBookerPermissionAction, id?: string): Promise<boolean> {
-    return await checkAuthorisation({
+  checkAuth(action: StoryBookerPermissionAction, id?: string): boolean {
+    return checkAuthorisation({
       action,
       projectId: id ?? (this.projectId || undefined),
       resource: "project",

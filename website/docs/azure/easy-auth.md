@@ -23,7 +23,7 @@ import {
 
 // Optionally create a custom authorise function
 // to handle permission checks
-const authorise: AuthServiceAuthorise = async (permission, { user }) => {
+const authorise: AuthServiceAuthorise = async (permission, user) => {
   // check permission against user (roles)
   return true; // or false
 };

@@ -1,22 +1,24 @@
 // oxlint-disable class-methods-use-this
-// oxlint-disable require-await
 
-import type {
-  AuthAdapter,
-  AuthAdapterAuthorise,
-  AuthAdapterOptions,
-  StoryBookerUser,
-} from "@storybooker/core/adapter";
+import {
+  StoryBookerPermissionsList,
+  StoryBookerPermissionsAllEnabled,
+  type AuthAdapter,
+  type AuthAdapterOptions,
+  type StoryBookerPermissionAction,
+  type StoryBookerPermissionResource,
+  type StoryBookerPermissionWithKey,
+  type StoryBookerUser,
+} from "@storybooker/core/adapter/auth";
 import { Buffer } from "node:buffer";
 
 export type {
-  AuthAdapterAuthorise,
   StoryBookerPermission,
   StoryBookerPermissionAction,
   StoryBookerPermissionKey,
   StoryBookerPermissionResource,
   StoryBookerPermissionWithKey,
-} from "@storybooker/core/adapter";
+} from "@storybooker/core/adapter/auth";
 
 export interface AzureEasyAuthClientPrincipal {
   claims: { typ: string; val: string }[];
@@ -31,21 +33,22 @@ export interface AzureEasyAuthUser extends StoryBookerUser {
   clientPrincipal?: AzureEasyAuthClientPrincipal;
 }
 
+export type AuthAdapterAuthorise<AuthUser extends StoryBookerUser = StoryBookerUser> = (
+  permission: StoryBookerPermissionWithKey,
+  user: Omit<AuthUser, "permissions">,
+) => boolean;
+
 /**
  * Modify the final user details object created from EasyAuth Client Principal.
  */
-export type ModifyUserDetails = (
-  user: AzureEasyAuthUser,
+export type ModifyUserDetails = <User extends Omit<AzureEasyAuthUser, "permissions">>(
+  user: User,
   options: AuthAdapterOptions,
-) => AzureEasyAuthUser | Promise<AzureEasyAuthUser>;
+) => User | Promise<User>;
 
-const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = ({ permission, user }) => {
+const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = (permission, user) => {
   if (!user) {
     return false;
-  }
-
-  if (user.type === "application") {
-    return true;
   }
 
   if (permission.action === "read") {
@@ -59,10 +62,15 @@ const DEFAULT_MODIFY_USER: ModifyUserDetails = (user) => user;
 
 /**
  * StoryBooker Auth adapter for Azure EasyAuth.
+ *
+ * @example
+ * ```ts
+ * const auth = new AzureEasyAuthService();
+ * ```
  */
 export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
-  authorise: AuthAdapter<AzureEasyAuthUser>["authorise"];
-  modifyUserDetails: ModifyUserDetails;
+  #authorise: AuthAdapterAuthorise<AzureEasyAuthUser>;
+  #modifyUserDetails: ModifyUserDetails;
 
   metadata: AuthAdapter["metadata"] = { name: "Azure Easy Auth" };
 
@@ -76,8 +84,8 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
      */
     modifyUserDetails?: ModifyUserDetails;
   }) {
-    this.authorise = options?.authorise ?? DEFAULT_AUTHORISE;
-    this.modifyUserDetails = options?.modifyUserDetails ?? DEFAULT_MODIFY_USER;
+    this.#authorise = options?.authorise ?? DEFAULT_AUTHORISE;
+    this.#modifyUserDetails = options?.modifyUserDetails ?? DEFAULT_MODIFY_USER;
   }
 
   getUserDetails: AuthAdapter<AzureEasyAuthUser>["getUserDetails"] = async (options) => {
@@ -100,10 +108,11 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
         clientPrincipal,
         displayName: "App",
         id: azpToken,
+        permissions: StoryBookerPermissionsAllEnabled,
         roles: null,
         type: "application",
       };
-      return this.modifyUserDetails(user, options);
+      return user;
     }
 
     const name = claims.find((claim) => claim.typ === "name")?.val;
@@ -112,7 +121,7 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
       .filter((claim) => claim.typ === clientPrincipal.role_typ || claim.typ === "roles")
       .map((claim) => claim.val);
 
-    const user: AzureEasyAuthUser = {
+    const userWithoutPermissions: Omit<AzureEasyAuthUser, "permissions"> = {
       clientPrincipal,
       displayName: name ?? "",
       id: email ?? "",
@@ -120,10 +129,14 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
       title: roles.join(", "),
       type: "user",
     };
-    return this.modifyUserDetails(user, options);
+
+    return {
+      ...(await this.#modifyUserDetails(userWithoutPermissions, options)),
+      permissions: authoriseUserPermissions(this.#authorise, userWithoutPermissions),
+    };
   };
 
-  login: AuthAdapter<AzureEasyAuthUser>["login"] = async ({ request }) => {
+  login: AuthAdapter<AzureEasyAuthUser>["login"] = ({ request }) => {
     const url = new URL("/.auth/login", request.url);
 
     return new Response(null, {
@@ -132,7 +145,7 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
     });
   };
 
-  logout: AuthAdapter<AzureEasyAuthUser>["logout"] = async (_user, { request }) => {
+  logout: AuthAdapter<AzureEasyAuthUser>["logout"] = (_user, { request }) => {
     const url = new URL("/.auth/logout", request.url);
 
     return new Response(null, {
@@ -140,4 +153,22 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
       status: 302,
     });
   };
+}
+
+function authoriseUserPermissions(
+  authorise: AuthAdapterAuthorise<AzureEasyAuthUser>,
+  user: Omit<AzureEasyAuthUser, "permissions">,
+): AzureEasyAuthUser["permissions"] {
+  const permissions: AzureEasyAuthUser["permissions"] = {};
+
+  for (const key of StoryBookerPermissionsList) {
+    const [resource, action] = key.split(":") as [
+      StoryBookerPermissionResource,
+      StoryBookerPermissionAction,
+    ];
+    const permission: StoryBookerPermissionWithKey = { action, key, resource };
+    permissions[key] = authorise(permission, user);
+  }
+
+  return permissions;
 }

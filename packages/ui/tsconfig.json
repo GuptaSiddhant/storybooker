@@ -5,7 +5,6 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx",
     "noEmit": true
