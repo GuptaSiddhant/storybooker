@@ -22,7 +22,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsdown",
-    "dev": "tsdown -w ./src",
+    "dev": "tsdown -w",
     "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
     "lint": "oxlint --type-aware --type-check --import-plugin ./src",
     "lint:fix": "yarn lint --fix",
@@ -112,8 +112,7 @@
       "source": "./src/utils/index.ts",
       "default": "./dist/utils.mjs"
     },
-    "./package.json": "./package.json",
-    "./openapi.json": "./openapi.json"
+    "./package.json": "./package.json"
   },
   "publishConfig": {
     "exports": {

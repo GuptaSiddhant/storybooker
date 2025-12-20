@@ -1,8 +1,8 @@
 import type { JSX } from "hono/jsx";
-import type { IconName } from "../icons/global-sprite";
-import { ASSETS } from "../utils/constants";
-import { toTitleCase } from "../utils/text-utils";
-import { getUIStore } from "../utils/ui-store";
+import type { IconName } from "../icons/_icons.ts";
+import { ASSETS } from "../utils/constants.ts";
+import { toTitleCase } from "../utils/text-utils.ts";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export type { IconName };
 

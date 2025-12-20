@@ -6,9 +6,9 @@ import {
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { TagForm } from "../components/tag-form";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { TagForm } from "../components/tag-form.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function TagCreatePage({ project }: { project: ProjectType }): RenderedContent {
   const title = "Create Tag";

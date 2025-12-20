@@ -1,14 +1,14 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType } from "@storybooker/core/types";
-import { BuildCreateForm } from "../components/build-create-form";
+import { BuildCreateForm } from "../components/build-create-form.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function BuildCreatePage({
   project,

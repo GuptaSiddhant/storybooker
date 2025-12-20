@@ -1,14 +1,14 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildType, BuildUploadVariant, ProjectType } from "@storybooker/core/types";
-import { BuildUploadForm } from "../components/build-upload-form";
+import { BuildUploadForm } from "../components/build-upload-form.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function BuildUploadPage({
   build,

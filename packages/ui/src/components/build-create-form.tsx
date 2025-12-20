@@ -1,6 +1,6 @@
-import { getUIStore } from "../utils/ui-store";
-import { LinkButton } from "./button";
-import { ErrorMessage } from "./error-message";
+import { getUIStore } from "../utils/ui-store.ts";
+import { LinkButton } from "./button.tsx";
+import { ErrorMessage } from "./error-message.tsx";
 
 export interface BuildFormProps {
   projectId: string;

@@ -1,6 +1,6 @@
-import { ISO_DATE_REGEXP } from "../utils/constants";
-import { camelCaseToSentenceCase } from "../utils/text-utils";
-import { getUIStore } from "../utils/ui-store";
+import { ISO_DATE_REGEXP } from "../utils/constants.ts";
+import { camelCaseToSentenceCase } from "../utils/text-utils.ts";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function RawDataPreview({
   data,

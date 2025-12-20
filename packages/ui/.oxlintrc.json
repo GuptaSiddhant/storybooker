@@ -14,5 +14,15 @@
     "sort-keys": "allow",
     "no-nested-ternary": "allow",
     "unicorn/no-nested-ternary": "allow"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["**/*.js"],
+      "rules": {
+        "no-undef": "allow",
+        "no-array-method-this-argument": "allow",
+        "no-array-callback-reference": "allow"
+      }
+    }
+  ]
 }

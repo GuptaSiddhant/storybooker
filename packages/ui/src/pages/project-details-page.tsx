@@ -1,18 +1,18 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildType, ProjectType, TagType } from "@storybooker/core/types";
-import { BuildsTable } from "../components/builds-table";
-import { DestructiveButton, LinkButton } from "../components/button";
+import { BuildsTable } from "../components/builds-table.tsx";
+import { DestructiveButton, LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { RawDataList } from "../components/raw-data";
-import { TagsTable } from "../components/tags-table";
-import { confirmDelete } from "../utils/text-utils";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { RawDataList } from "../components/raw-data.tsx";
+import { TagsTable } from "../components/tags-table.tsx";
+import { confirmDelete } from "../utils/text-utils.ts";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function ProjectDetailsPage({
   project,

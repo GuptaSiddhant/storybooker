@@ -5,13 +5,13 @@
 
 import { poweredBy } from "hono/powered-by";
 import { timing } from "hono/timing";
-import type { AuthAdapter, StoryBookerUser } from "../packages/core/dist/adapter.d.mts";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "../packages/core/dist/adapter/fs.mjs";
-import { createHonoRouter } from "../packages/core/dist/index.mjs";
-import { createBasicUIAdapter } from "../packages/ui/dist/index.mjs";
+} from "../packages/core/src/adapters/_fs-adapters.ts";
+import type { AuthAdapter, StoryBookerUser } from "../packages/core/src/adapters/index.ts";
+import { createHonoRouter } from "../packages/core/src/index.ts";
+import { createBasicUIAdapter } from "../packages/ui/src/index.tsx";
 
 export default createHonoRouter({
   auth: createLocalAuthAdapter(),

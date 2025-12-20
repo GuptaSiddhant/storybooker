@@ -1,25 +1,25 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildStoryType, BuildType, ProjectType } from "@storybooker/core/types";
-import { BuildLinksFooter } from "../components/build-links";
-import { BuildProcessStatus } from "../components/build-process";
-import { BuildStories } from "../components/build-stories";
-import { DestructiveButton, LinkButton } from "../components/button";
+import { BuildLinksFooter } from "../components/build-links.tsx";
+import { BuildProcessStatus } from "../components/build-process.tsx";
+import { BuildStories } from "../components/build-stories.tsx";
+import { DestructiveButton, LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { RawDataList } from "../components/raw-data";
-import { confirmDelete } from "../utils/text-utils";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { RawDataList } from "../components/raw-data.tsx";
+import { confirmDelete } from "../utils/text-utils.ts";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function BuildDetailsPage({
   build,
   project,
-  hasDeletePermission,
-  hasUpdatePermission,
+  hasDeletePermission = true,
+  hasUpdatePermission = true,
   stories,
 }: {
   build: BuildType;

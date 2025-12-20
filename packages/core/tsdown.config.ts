@@ -2,6 +2,8 @@ import { spawnSync } from "node:child_process";
 import { defineConfig } from "tsdown";
 import { updateDenoJsonToMatchPkgJson } from "../../scripts/jsr-utils.ts";
 
+const isWatchMode = process.argv.includes("--watch") || process.argv.includes("-w");
+
 export default defineConfig({
   dts: { tsgo: true },
   entry: {
@@ -30,8 +32,11 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   failOnWarn: true,
   shims: true,
-  onSuccess: async (config, signal) => {
+  onSuccess: async (config) => {
+    if (isWatchMode) {
+      return;
+    }
     spawnSync("node", ["./scripts/gen-openapi-json.ts"], { stdio: "inherit" });
-    await updateDenoJsonToMatchPkgJson(config.logger, signal);
+    await updateDenoJsonToMatchPkgJson(config.logger);
   },
 });

@@ -7,7 +7,6 @@ export const ISO_DATE_REGEXP =
 
 export const ASSETS = {
   globalStyles: "sbr-style.css",
-  globalScript: "sbr-script.js",
   globalSprite: "sbr-sprite.svg",
 };
 

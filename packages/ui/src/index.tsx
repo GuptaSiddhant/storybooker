@@ -1,24 +1,24 @@
 import type { UIAdapter } from "@storybooker/core/adapter";
 import pkg from "../package.json" with { type: "json" };
-import { handleStaticFileRoute } from "./handlers/handle-static-file-route";
-import { AccountPage } from "./pages/account-page";
-import { BuildCreatePage } from "./pages/build-create-page";
-import { BuildDetailsPage } from "./pages/build-details-page";
-import { BuildUploadPage } from "./pages/build-upload-page";
-import { BuildsListPage } from "./pages/builds-list-page";
-import { ErrorPage } from "./pages/error-page";
-import { ProjectCreatePage } from "./pages/project-create-page";
-import { ProjectDetailsPage } from "./pages/project-details-page";
-import { ProjectUpdatePage } from "./pages/project-update-page";
-import { ProjectsListPage } from "./pages/projects-list-page";
-import { RootPage } from "./pages/root-page";
-import { TagCreatePage } from "./pages/tag-create-page";
-import { TagDetailsPage } from "./pages/tag-details-page";
-import { TagUpdatePage } from "./pages/tag-update-page";
-import { TagsListPage } from "./pages/tags-list-pages";
-import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./styles/theme";
-import { DEFAULT_STATIC_DIRS } from "./utils/constants";
-import { withStore } from "./utils/ui-store";
+import { handleStaticFileRoute } from "./handlers/handle-static-file-route.ts";
+import { AccountPage } from "./pages/account-page.tsx";
+import { BuildCreatePage } from "./pages/build-create-page.tsx";
+import { BuildDetailsPage } from "./pages/build-details-page.tsx";
+import { BuildUploadPage } from "./pages/build-upload-page.tsx";
+import { BuildsListPage } from "./pages/builds-list-page.tsx";
+import { ErrorPage } from "./pages/error-page.tsx";
+import { ProjectCreatePage } from "./pages/project-create-page.tsx";
+import { ProjectDetailsPage } from "./pages/project-details-page.tsx";
+import { ProjectUpdatePage } from "./pages/project-update-page.tsx";
+import { ProjectsListPage } from "./pages/projects-list-page.tsx";
+import { RootPage } from "./pages/root-page.tsx";
+import { TagCreatePage } from "./pages/tag-create-page.tsx";
+import { TagDetailsPage } from "./pages/tag-details-page.tsx";
+import { TagUpdatePage } from "./pages/tag-update-page.tsx";
+import { TagsListPage } from "./pages/tags-list-pages.tsx";
+import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./styles/theme.ts";
+import { DEFAULT_STATIC_DIRS } from "./utils/constants.ts";
+import { withStore } from "./utils/ui-store.ts";
 
 export interface BasicUIOptions {
   /** Valid HTML string to place a logo/text in Header. */

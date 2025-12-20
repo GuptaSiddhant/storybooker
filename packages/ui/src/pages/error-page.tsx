@@ -6,8 +6,8 @@ import {
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { ErrorMessage } from "../components/error-message";
+} from "../components/document.tsx";
+import { ErrorMessage } from "../components/error-message.tsx";
 
 export function ErrorPage({ errorMessage, errorType, errorStatus }: ParsedError): RenderedContent {
   const title = `${errorType} ${errorStatus ? `- ${errorStatus}` : ""}`;

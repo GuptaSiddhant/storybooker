@@ -1,8 +1,9 @@
 import { buildUploadVariants } from "@storybooker/core/constants";
 import type { BuildType, BuildUploadVariant } from "@storybooker/core/types";
-import { getUIStore } from "../utils/ui-store";
-import { LinkButton } from "./button";
-import { ErrorMessage } from "./error-message";
+import { CLIENT_SCRIPTS } from "../scripts/_scripts.ts";
+import { getUIStore } from "../utils/ui-store.ts";
+import { LinkButton } from "./button.tsx";
+import { ErrorMessage } from "./error-message.tsx";
 
 export interface BuildUploadFormProps {
   build: BuildType;
@@ -76,6 +77,7 @@ export function BuildUploadForm({
       <fieldset id="progress" style={{ display: "none" }}>
         <span>Uploading: 0%</span>
         <progress value="0" max="100" style={{ width: "100%" }}></progress>
+        <script defer>{CLIENT_SCRIPTS.htmxProgress}</script>
       </fieldset>
 
       <ErrorMessage id="form-error" />

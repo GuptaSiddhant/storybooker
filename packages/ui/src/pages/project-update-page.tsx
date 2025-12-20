@@ -6,10 +6,10 @@ import {
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { ProjectForm } from "../components/project-form";
-import { RawDataList } from "../components/raw-data";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { ProjectForm } from "../components/project-form.tsx";
+import { RawDataList } from "../components/raw-data.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function ProjectUpdatePage({ project }: { project: ProjectType }): RenderedContent {
   const title = `Update Project`;

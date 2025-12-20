@@ -5,9 +5,9 @@ import {
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { ProjectForm } from "../components/project-form";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { ProjectForm } from "../components/project-form.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function ProjectCreatePage(): RenderedContent {
   const title = `Create Project`;

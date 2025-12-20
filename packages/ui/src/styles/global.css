@@ -11,6 +11,7 @@
     U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
     U+2215, U+FEFF, U+FFFD;
 }
+
 /* latin */
 @font-face {
   font-family: "IBM Plex Mono";
@@ -24,6 +25,7 @@
     U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
     U+2215, U+FEFF, U+FFFD;
 }
+
 /* latin */
 @font-face {
   font-family: "IBM Plex Mono";
@@ -102,6 +104,7 @@ body {
   width: 200px;
   /* padding: 1rem; */
 }
+
 #app > #user {
   grid-area: user;
   width: 200px;
@@ -112,12 +115,15 @@ body {
     display: flex;
     flex-direction: column;
   }
+
   #logo {
     display: none;
   }
+
   #user {
     width: 100% !important;
   }
+
   #app > aside {
     width: 100%;
   }
@@ -194,6 +200,7 @@ a:visited {
   color: var(--color-text-accent);
   text-decoration: none;
 }
+
 a:hover {
   color: var(--color-text-accent);
   text-decoration: underline;
@@ -209,6 +216,7 @@ a:hover {
   padding: 0.5rem;
   overflow: auto;
 }
+
 .raw-data:empty {
   display: none;
 }
@@ -227,16 +235,11 @@ a:hover {
   margin: 0;
   list-style: none;
 }
+
 .page-heading > ul > li {
   font-weight: normal;
   list-style: none;
   font-size: 0.9em;
-}
-.page-heading > ul > li::after {
-  content: \"/\";
-  color: inherit;
-  margin: 0 0.5rem;
-  opacity: 0.5;
 }
 
 .description {
@@ -306,6 +309,7 @@ button[type="submit"] {
   color: var(--color-text-invert);
   padding: 0.25rem 1rem;
 }
+
 button[type="submit"].outline,
 .outline {
   background: none;
@@ -327,6 +331,7 @@ button[type="submit"].outline,
   justify-content: center;
   color: inherit;
 }
+
 .button:hover {
   text-decoration: none;
 }

@@ -1,16 +1,16 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import { TagTypes } from "@storybooker/core/constants";
 import type { ProjectType, TagType } from "@storybooker/core/types";
-import { LinkButton } from "../components/button";
+import { LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { TagsTable } from "../components/tags-table";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { TagsTable } from "../components/tags-table.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function TagsListPage({
   tags,

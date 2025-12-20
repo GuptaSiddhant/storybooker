@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@hono/zod-openapi";
 import { DEFAULT_GITHUB_BRANCH, DEFAULT_PURGE_AFTER_DAYS } from "../utils/constants.ts";
 import { BuildIdSchema, ProjectIdSchema } from "./~shared-schema.ts";
 

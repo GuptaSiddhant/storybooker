@@ -6,12 +6,11 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { generateGlobalSprite } from "../icons/global-sprite";
-import { generateGlobalScript } from "../scripts/global-script";
-import { generateGlobalStyleSheet } from "../styles/global-style";
-import type { BrandTheme } from "../styles/theme";
-import { ASSETS, CACHE_CONTROL_PUBLIC_WEEK } from "../utils/constants";
-import { getUIStore } from "../utils/ui-store";
+import { icons } from "../icons/_icons.ts";
+import { generateGlobalStyleSheet } from "../styles/global-style.ts";
+import type { BrandTheme } from "../styles/theme.ts";
+import { ASSETS, CACHE_CONTROL_PUBLIC_WEEK } from "../utils/constants.ts";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export async function handleStaticFileRoute(
   filepath: string,
@@ -34,24 +33,8 @@ export async function handleStaticFileRoute(
     });
   }
 
-  if (filepath.startsWith(ASSETS.globalScript)) {
-    return new Response(generateGlobalScript(), {
-      headers: new Headers({
-        "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
-        "content-type": mimes.js,
-      }),
-      status: 200,
-    });
-  }
-
   if (filepath.startsWith(ASSETS.globalSprite)) {
-    return new Response(generateGlobalSprite(), {
-      headers: new Headers({
-        "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
-        "content-type": mimes.svg,
-      }),
-      status: 200,
-    });
+    return generateGlobalSpriteResponse();
   }
 
   // Check FS for static file
@@ -78,4 +61,28 @@ export async function handleStaticFileRoute(
   });
 
   return new Response(webStream, { headers, status: 200 });
+}
+
+function generateGlobalSpriteResponse(): Response {
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="0" height="0">
+  <defs>
+    ${Object.entries(icons)
+      .map(([name, icon]) => {
+        return String(icon)
+          .replace("<svg", `<symbol id="${name}" fill="currentcolor"`)
+          .replace("</svg>", "</symbol>");
+      })
+      .join("\n")}
+  </defs>
+</svg>`,
+    {
+      headers: new Headers({
+        "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
+        "content-type": mimes.svg,
+      }),
+      status: 200,
+    },
+  );
 }

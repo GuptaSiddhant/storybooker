@@ -1,6 +1,6 @@
 // @ts-expect-error importing raw css file to embed in generated stylesheet
-import globalStyles from "./global.css?raw";
-import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./theme";
+import globalStyles from "./global.css?raw" with { type: "text" };
+import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./theme.ts";
 
 // oxlint-disable no-useless-escape
 export function generateGlobalStyleSheet(theme: {

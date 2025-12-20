@@ -1,8 +1,8 @@
 import type { ProjectType } from "@storybooker/core/types";
-import { getUIStore } from "../utils/ui-store";
-import { Card, CardGrid } from "./card";
-import { LatestBuild } from "./latest-build";
-import { Time } from "./time";
+import { getUIStore } from "../utils/ui-store.ts";
+import { Card, CardGrid } from "./card.tsx";
+import { LatestBuild } from "./latest-build.tsx";
+import { Time } from "./time.tsx";
 
 export function ProjectsGrid({ projects }: { projects: ProjectType[] }): JSXElement {
   return (

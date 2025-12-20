@@ -1,8 +1,8 @@
 import { DEFAULT_GITHUB_BRANCH } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
-import { getUIStore } from "../utils/ui-store";
-import { LatestBuild } from "./latest-build";
-import { Table } from "./table";
+import { getUIStore } from "../utils/ui-store.ts";
+import { LatestBuild } from "./latest-build.tsx";
+import { Table } from "./table.tsx";
 
 export interface ProjectsTableProps {
   caption?: JSXChildren;

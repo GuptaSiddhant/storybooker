@@ -1,8 +1,8 @@
 import type { BuildStoryType, BuildType } from "@storybooker/core/types";
-import { groupStoriesByTitle } from "../utils/story-utils";
-import { getUIStore } from "../utils/ui-store";
-import { Card, CardRow } from "./card";
-import { ErrorMessage } from "./error-message";
+import { groupStoriesByTitle } from "../utils/story-utils.ts";
+import { getUIStore } from "../utils/ui-store.ts";
+import { Card, CardRow } from "./card.tsx";
+import { ErrorMessage } from "./error-message.tsx";
 
 export function BuildStories({
   build,

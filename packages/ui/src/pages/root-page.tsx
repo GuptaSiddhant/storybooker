@@ -2,16 +2,16 @@ import type { RenderedContent } from "@storybooker/core/adapter";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
 import { css } from "hono/css";
-import { Badge } from "../components/badge";
+import { Badge } from "../components/badge.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { ProjectsGrid } from "../components/projects-grid";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { ProjectsGrid } from "../components/projects-grid.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export interface RootPageProps {
   projects: ProjectType[];

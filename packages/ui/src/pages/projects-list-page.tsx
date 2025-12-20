@@ -1,15 +1,15 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { ProjectType } from "@storybooker/core/types";
-import { DestructiveButton, LinkButton } from "../components/button";
+import { DestructiveButton, LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { ProjectsTable } from "../components/projects-table";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { ProjectsTable } from "../components/projects-table.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function ProjectsListPage({ projects }: { projects: ProjectType[] }): RenderedContent {
   const title = `All Projects`;

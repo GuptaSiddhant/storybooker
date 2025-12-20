@@ -1,5 +1,5 @@
 import type { JSX } from "hono/jsx";
-import { toLocalTime } from "../utils/text-utils";
+import { toLocalTime } from "../utils/text-utils.ts";
 
 export interface TimeProps extends JSX.HTMLAttributes {
   datetime: string | Date;

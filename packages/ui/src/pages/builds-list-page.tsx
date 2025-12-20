@@ -1,15 +1,15 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { BuildType, ProjectType } from "@storybooker/core/types";
-import { BuildsTable } from "../components/builds-table";
-import { LinkButton } from "../components/button";
+import { BuildsTable } from "../components/builds-table.tsx";
+import { LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function BuildsListPage({
   builds,

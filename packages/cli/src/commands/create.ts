@@ -8,11 +8,11 @@ import createClient from "openapi-fetch";
 import type { CommandModule } from "yargs";
 import z from "zod";
 import type { paths } from "../service-schema";
-import { createAuthMiddleware } from "../utils/auth-utils";
+import { createAuthMiddleware } from "../utils/auth-utils.ts";
 import { buildStoryBook } from "../utils/sb-build";
 import { testStoryBook } from "../utils/sb-test";
-import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils";
-import { toReadableStream } from "../utils/stream-utils";
+import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils.ts";
+import { toReadableStream } from "../utils/stream-utils.ts";
 import type { ServiceClient } from "../utils/types";
 import { zip } from "../utils/zip";
 

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@hono/zod-openapi";
 import { TagTypes } from "../utils/constants.ts";
 import { BuildIdSchema, TagIdSchema } from "./~shared-schema.ts";
 

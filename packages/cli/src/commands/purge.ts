@@ -5,8 +5,8 @@ import createClient from "openapi-fetch";
 import type { CommandModule } from "yargs";
 import z from "zod";
 import type { paths } from "../service-schema";
-import { createAuthMiddleware } from "../utils/auth-utils";
-import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils";
+import { createAuthMiddleware } from "../utils/auth-utils.ts";
+import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils.ts";
 
 const PurgeSchema = z.object({
   project: sharedSchemas.project,

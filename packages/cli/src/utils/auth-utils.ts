@@ -1,6 +1,6 @@
 import type { Middleware } from "openapi-fetch";
 import type z from "zod";
-import type { sharedSchemas } from "./schema-utils";
+import type { sharedSchemas } from "./schema-utils.ts";
 
 export function createAuthMiddleware(options: {
   authType: z.infer<typeof sharedSchemas.authType>;

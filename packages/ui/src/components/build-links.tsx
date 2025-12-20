@@ -1,5 +1,5 @@
 import type { BuildType } from "@storybooker/core/types";
-import { getUIStore } from "../utils/ui-store";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function BuildLinksFooter({
   build,

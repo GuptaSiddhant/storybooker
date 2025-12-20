@@ -1,4 +1,4 @@
-import { getUIStore } from "../utils/ui-store";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function LatestBuild({
   projectId,

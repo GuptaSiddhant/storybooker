@@ -4,7 +4,7 @@ import { styleText } from "node:util";
 import type { CommandModule } from "yargs";
 import z from "zod";
 import { testStoryBook } from "../utils/sb-test";
-import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils";
+import { sharedSchemas, zodSchemaToCommandBuilder } from "../utils/schema-utils.ts";
 
 const schema = z.object({
   cwd: sharedSchemas.cwd,

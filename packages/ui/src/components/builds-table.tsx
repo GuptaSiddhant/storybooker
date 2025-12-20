@@ -1,6 +1,6 @@
 import type { BuildType, ProjectType, TagType } from "@storybooker/core/types";
-import { getUIStore } from "../utils/ui-store";
-import { Table } from "./table";
+import { getUIStore } from "../utils/ui-store.ts";
+import { Table } from "./table.tsx";
 
 export interface BuildsTableProps {
   caption?: JSXChildren;

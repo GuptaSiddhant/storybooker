@@ -1,16 +1,16 @@
 import type { RenderedContent } from "@storybooker/core/adapter";
 import type { StoryBookerUser } from "@storybooker/core/types";
-import { DestructiveButton } from "../components/button";
+import { DestructiveButton } from "../components/button.tsx";
 import {
   DocumentHeader,
   DocumentLayout,
   DocumentMain,
   DocumentSidebar,
   DocumentUserSection,
-} from "../components/document";
-import { IFrameContainer } from "../components/iframe";
-import { RawDataList } from "../components/raw-data";
-import { getUIStore } from "../utils/ui-store";
+} from "../components/document.tsx";
+import { IFrameContainer } from "../components/iframe.tsx";
+import { RawDataList } from "../components/raw-data.tsx";
+import { getUIStore } from "../utils/ui-store.ts";
 
 export function AccountPage({ children }: { children: string | undefined }): RenderedContent {
   const { isAuthEnabled, user, urlBuilder } = getUIStore();

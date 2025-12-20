@@ -1,11 +1,11 @@
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import { urlJoin } from "@storybooker/core/url";
-import { Style } from "hono/css";
+import { css, Style } from "hono/css";
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
-import { ASSETS } from "../utils/constants";
-import { getUIStore } from "../utils/ui-store";
-import { Icon } from "./icon";
+import { ASSETS } from "../utils/constants.ts";
+import { getUIStore } from "../utils/ui-store.ts";
+import { Icon } from "./icon.tsx";
 
 export function DocumentLayout({
   title,
@@ -46,7 +46,6 @@ export function DocumentLayout({
             src="https://cdn.jsdelivr.net/npm/htmx-ext-response-targets@2.0.2"
             crossorigin="anonymous"
           ></script>
-          <script src={urlBuilder.staticFile(ASSETS.globalScript)} defer async />
           <Style />
         </head>
         <body>
@@ -168,6 +167,9 @@ export function DocumentHeader({
                   <a safe href={href}>
                     {typeof crumb === "object" ? crumb.label : crumb}
                   </a>
+                  <span class={css`display: inline-block; padding: 0 0.25rem; opacity: 0.5;`}>
+                    /
+                  </span>
                 </li>
               );
             })}
