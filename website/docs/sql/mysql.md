@@ -16,7 +16,7 @@ npm i storybooker mysql
 ## Usage
 
 ```js
-import { MySQLDatabaseAdapter } from "storybooker/adapter/mysql";
+import { MySQLDatabaseAdapter } from "storybooker/mysql";
 import mysql from "mysql";
 
 // Initialize the SQL client

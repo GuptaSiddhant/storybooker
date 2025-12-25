@@ -37,7 +37,7 @@ To setup a simple app with StoryBooker and Azure Functions, create a new Azure F
 // @ts-check
 
 import { app } from "@azure/functions";
-import { registerStoryBookerRouter } from "storybooker/adapter/azure-functions";
+import { registerStoryBookerRouter } from "storybooker/azure-functions";
 
 registerStoryBookerRouter(app, {
   // provide your adapters here.

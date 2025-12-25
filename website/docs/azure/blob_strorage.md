@@ -17,7 +17,7 @@ npm i storybooker @azure/storage-blob
 
 ```js
 import { BlobServiceClient } from "@azure/storage-blob";
-import { AzureBlobStorageService } from "storybooker/adapter/azure-blob-storage";
+import { AzureBlobStorageService } from "storybooker/azure-blob-storage";
 
 // Your connection string
 const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];

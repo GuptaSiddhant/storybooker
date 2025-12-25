@@ -1,4 +1,4 @@
-import type { BuildType, ProjectType, TagType } from "storybooker/types";
+import type { BuildType, ProjectType, TagType } from "storybooker/~internal/types";
 import { getUIStore } from "../utils/ui-store.ts";
 import { Icon } from "./icon.tsx";
 import { Table } from "./table.tsx";

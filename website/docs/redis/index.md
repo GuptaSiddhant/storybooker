@@ -16,7 +16,7 @@ npm i storybooker redis
 ## Usage
 
 ```js
-import { RedisDatabaseService } from "storybooker/adapter/redis";
+import { RedisDatabaseService } from "storybooker/redis";
 import { createClient } from "redis";
 
 // Your connection string

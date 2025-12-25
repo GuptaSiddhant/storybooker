@@ -19,7 +19,7 @@ npm i storybooker
 import {
   AzureEasyAuthService,
   type AuthServiceAuthorise,
-} from "storybooker/adapter/azure-easy-auth";
+} from "storybooker/azure-easy-auth";
 
 // Optionally create a custom authorise function
 // to handle permission checks

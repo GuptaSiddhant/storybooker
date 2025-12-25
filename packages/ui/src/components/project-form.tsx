@@ -1,5 +1,9 @@
-import { DEFAULT_GITHUB_BRANCH, DEFAULT_PURGE_AFTER_DAYS, PATTERNS } from "storybooker/constants";
-import type { ProjectType } from "storybooker/types";
+import {
+  DEFAULT_GITHUB_BRANCH,
+  DEFAULT_PURGE_AFTER_DAYS,
+  PATTERNS,
+} from "storybooker/~internal/constants";
+import type { ProjectType } from "storybooker/~internal/types";
 import { getUIStore } from "../utils/ui-store.ts";
 import { LinkButton } from "./button.tsx";
 import { ErrorMessage } from "./error-message.tsx";

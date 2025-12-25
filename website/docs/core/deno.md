@@ -14,11 +14,11 @@ Run following with `deno serve -REW server.ts`
 ```ts
 // server.ts
 
-import { createHonoRouter } from "jsr:storybooker";
+import { createHonoRouter } from "jsr:@storybooker/core";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "jsr:storybooker/adapter/fs";
+} from "jsr:@storybooker/core/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker router

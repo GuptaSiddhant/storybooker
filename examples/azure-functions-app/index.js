@@ -3,10 +3,10 @@
 import { TableClient, TableServiceClient } from "@azure/data-tables";
 import { app } from "@azure/functions";
 import { BlobServiceClient } from "@azure/storage-blob";
-import { AzureBlobStorageService } from "@storybooker/core/adapter/azure-blob-storage";
-import { AzureDataTablesDatabaseService } from "@storybooker/core/adapter/azure-data-tables";
-import { registerStoryBookerRouter } from "@storybooker/core/adapter/azure-functions";
 import { createBasicUIAdapter } from "@storybooker/ui";
+import { AzureBlobStorageService } from "storybooker/azure-blob-storage";
+import { AzureDataTablesDatabaseService } from "storybooker/azure-data-tables";
+import { registerStoryBookerRouter } from "storybooker/azure-functions";
 
 const storageConnectionString = process.env["AzureWebJobsStorage"];
 if (!storageConnectionString) {

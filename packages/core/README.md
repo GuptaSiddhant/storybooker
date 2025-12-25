@@ -15,7 +15,7 @@ import { createHonoRouter } from "storybooker";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "storybooker/adapter/fs";
+} from "storybooker/fs";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
 const app = createHonoRouter({
@@ -36,7 +36,7 @@ import { createHonoRouter } from "jsr:@storybooker/core";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "jsr:@storybooker/core/adapter/fs";
+} from "jsr:@storybooker/core/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 const app = createHonoRouter({

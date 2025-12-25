@@ -17,7 +17,7 @@ npm i storybooker @aws-sdk/client-dynamodb
 
 ```js
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { AwsDynamoDatabaseService } from "storybooker/adapter/aws-dynamodb";
+import { AwsDynamoDatabaseService } from "storybooker/aws-dynamodb";
 
 // Initialize the DynamoDBClient
 const client = new DynamoDBClient(...)

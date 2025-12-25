@@ -17,7 +17,7 @@ npm i storybooker @google-cloud/bigtable
 
 ```js
 import { Bigtable } from "@google-cloud/bigtable";
-import { GcpBigtableDatabaseService } from "storybooker/adapter/gcp-big-table";
+import { GcpBigtableDatabaseService } from "storybooker/gcp-big-table";
 
 // Initialize the Bigtable client
 const client = new Bigtable();

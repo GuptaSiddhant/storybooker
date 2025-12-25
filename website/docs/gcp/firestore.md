@@ -17,7 +17,7 @@ npm i storybooker @google-cloud/firestore
 
 ```js
 import { Firestore } from "@google-cloud/firestore";
-import { GcpFirestoreDatabaseService } from "storybooker/adapter/gcp-firestore";
+import { GcpFirestoreDatabaseService } from "storybooker/gcp-firestore";
 
 // Initialize the Firestore client
 const client = new Firestore();

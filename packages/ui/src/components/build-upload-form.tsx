@@ -1,5 +1,5 @@
-import { buildUploadVariants } from "storybooker/constants";
-import type { BuildType, BuildUploadVariant } from "storybooker/types";
+import { buildUploadVariants } from "storybooker/~internal/constants";
+import type { BuildType, BuildUploadVariant } from "storybooker/~internal/types";
 import { CLIENT_SCRIPTS } from "../scripts/_scripts.ts";
 import { getUIStore } from "../utils/ui-store.ts";
 import { LinkButton } from "./button.tsx";

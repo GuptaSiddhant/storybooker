@@ -1,4 +1,4 @@
-import type { BuildStoryType, BuildType } from "storybooker/types";
+import type { BuildStoryType, BuildType } from "storybooker/~internal/types";
 import { groupStoriesByTitle } from "../utils/story-utils.ts";
 import { getUIStore } from "../utils/ui-store.ts";
 import { Card, CardRow } from "./card.tsx";

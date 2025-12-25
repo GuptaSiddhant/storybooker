@@ -1,5 +1,5 @@
-import type { RenderedContent } from "storybooker/adapter/~ui";
-import type { ProjectType } from "storybooker/types";
+import type { RenderedContent } from "storybooker/~internal/adapter/ui";
+import type { ProjectType } from "storybooker/~internal/types";
 import { BuildCreateForm } from "../components/build-create-form.tsx";
 import {
   DocumentHeader,

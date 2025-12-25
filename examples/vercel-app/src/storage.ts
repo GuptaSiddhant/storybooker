@@ -7,7 +7,7 @@
 import { del, head, list, put, type PutBlobResult } from "@vercel/blob";
 import { Readable } from "node:stream";
 import type { ReadableStream as ReadableStreamWeb } from "node:stream/web";
-import { StorageAdapterErrors, type StorageAdapter } from "storybooker/adapter/~storage";
+import { StorageAdapterErrors, type StorageAdapter } from "storybooker/~internal/adapter/storage";
 
 export class VercelBlobService implements StorageAdapter {
   #token: string;

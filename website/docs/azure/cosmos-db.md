@@ -17,7 +17,7 @@ npm i storybooker @azure/cosmos
 
 ```js
 import { CosmosClient } from "@azure/cosmos";
-import { AzureCosmosDatabaseService } from "storybooker/adapter/azure-cosmos-db";
+import { AzureCosmosDatabaseService } from "storybooker/azure-cosmos-db";
 
 // Your connection string
 const connectionString = process.env["AZURE_COSMOS_CONNECTION_STRING"];

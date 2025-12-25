@@ -17,7 +17,7 @@ npm i storybooker @google-cloud/storage
 
 ```js
 import { Storage } from "@google-cloud/storage";
-import { GoogleCloudStorageService } from "storybooker/adapter/gcp-storage";
+import { GoogleCloudStorageService } from "storybooker/gcp-storage";
 
 // Initialize the Storage client
 const client = new Storage();

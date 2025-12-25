@@ -17,7 +17,7 @@ npm i storybooker @azure/data-tables
 
 ```js
 import { TableClient, TableServiceClient } from "@azure/data-tables";
-import { AzureDataTablesDatabaseService } from "storybooker/adapter/azure/data-tables";
+import { AzureDataTablesDatabaseService } from "storybooker/azure/data-tables";
 
 // Your connection string
 const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];
