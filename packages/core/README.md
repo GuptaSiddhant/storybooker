@@ -3,7 +3,7 @@
 The core contains the routing logic and UI for StoryBooker.
 The core can be extended to be used with any platform that supports standard fetch (Request+Response) or Hono server.
 
-Core Docs: https://storybooker.js.org/docs/core
+Docs: https://storybooker.js.org/docs/
 
 ## Running on basic Node server
 
@@ -11,11 +11,11 @@ Core Docs: https://storybooker.js.org/docs/core
 
 ```js
 import { serve } from "@hono/node-server";
-import { createHonoRouter } from "@storybooker/core";
+import { createHonoRouter } from "storybooker";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "@storybooker/core/adapter/fs";
+} from "storybooker/fs";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
 const app = createHonoRouter({
@@ -36,7 +36,7 @@ import { createHonoRouter } from "jsr:@storybooker/core";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "jsr:@storybooker/core/adapter/fs";
+} from "jsr:@storybooker/core/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 const app = createHonoRouter({

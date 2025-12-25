@@ -10,14 +10,14 @@ The Google Firestore can be used as database for StoryBooker.
 ## Install
 
 ```sh
-npm i @storybooker/gcp @google-cloud/firestore
+npm i storybooker @google-cloud/firestore
 ```
 
 ## Usage
 
 ```js
 import { Firestore } from "@google-cloud/firestore";
-import { GcpFirestoreDatabaseService } from "@storybooker/gcp/firestore";
+import { GcpFirestoreDatabaseService } from "storybooker/gcp-firestore";
 
 // Initialize the Firestore client
 const client = new Firestore();

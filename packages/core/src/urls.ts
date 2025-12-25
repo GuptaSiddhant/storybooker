@@ -4,8 +4,6 @@ import type { TagVariant } from "./models/tags-schema.ts";
 import { getStore } from "./utils/store.ts";
 import { linkRoute, urlJoin } from "./utils/url-utils.ts";
 
-export { urlJoin };
-
 /**
  * URL builder for the Storybooks router.
  */
@@ -325,3 +323,5 @@ export class UrlBuilder {
 
 /** @private */
 export const urlBuilder: UrlBuilder = new UrlBuilder(true);
+/** @private */
+export const urlBuilderWithoutStore: UrlBuilder = new UrlBuilder(false);

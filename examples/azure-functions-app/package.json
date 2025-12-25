@@ -11,8 +11,8 @@
     "@azure/data-tables": "^13.0.0",
     "@azure/functions": "^4.0.0",
     "@azure/storage-blob": "^12.0.0",
-    "@storybooker/azure": "workspace:*",
-    "@storybooker/ui": "workspace:*"
+    "@storybooker/ui": "workspace:*",
+    "storybooker": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0"

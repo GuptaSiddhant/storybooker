@@ -2,19 +2,13 @@
 
 Adapters to use GCP services with StoryBooker.
 
-## Install
-
-```sh
-npm i @storybooker/gcp
-```
-
 ## Adapters
 
 ### Hosting
 
 Refer Hono docs for deployment instructions: https://hono.dev/docs/getting-started/google-cloud-run
 
-The hono app-router should be created using the `createHonoRouter` function from the [`@storybooker/core`](../core) package.
+The hono app-router should be created using the `createHonoRouter` function from the [`storybooker`](../core) package.
 
 ### Database
 

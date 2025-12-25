@@ -1,8 +1,8 @@
 {
-  "name": "@storybooker/core",
-  "version": "0.21.0",
+  "name": "storybooker",
+  "version": "0.23.0",
   "type": "module",
-  "description": "Storybooker platform agnostic router core.",
+  "description": "Manage Storybook instances on your own infrastructure with ease.",
   "author": {
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"
@@ -14,6 +14,7 @@
     "directory": "packages/core"
   },
   "files": [
+    "adapters",
     "src",
     "dist",
     "openapi.json"
@@ -41,6 +42,15 @@
     "zod": "^4.2.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@azure/cosmos": "^4.5.1",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/storage": "^7.0.0",
     "@types/decompress": "^4.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
@@ -49,8 +59,53 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
+    "redis": "^5.10.0",
     "tsdown": "catalog:",
     "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@azure/cosmos": "^4.0.0",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/storage": "^7.0.0",
+    "redis": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-dynamodb": {
+      "optional": true
+    },
+    "@aws-sdk/client-s3": {
+      "optional": true
+    },
+    "@azure/cosmos": {
+      "optional": true
+    },
+    "@azure/data-tables": {
+      "optional": true
+    },
+    "@azure/functions": {
+      "optional": true
+    },
+    "@azure/storage-blob": {
+      "optional": true
+    },
+    "@google-cloud/bigtable": {
+      "optional": true
+    },
+    "@google-cloud/firestore": {
+      "optional": true
+    },
+    "@google-cloud/storage": {
+      "optional": true
+    },
+    "redis": {
+      "optional": true
+    }
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -60,76 +115,132 @@
       "source": "./src/index.ts",
       "default": "./dist/index.mjs"
     },
-    "./adapter": {
-      "source": "./src/adapters/index.ts",
-      "default": "./dist/adapter.mjs"
+    "./_internal/adapter": {
+      "source": "./src/adapters/_internal/index.ts",
+      "default": "./dist/_internal/adapter.mjs"
     },
-    "./adapter/auth": {
-      "source": "./src/adapters/auth.ts",
-      "default": "./dist/adapter/auth.mjs"
+    "./_internal/adapter/auth": {
+      "source": "./src/adapters/_internal/auth.ts",
+      "default": "./dist/_internal/adapter/auth.mjs"
     },
-    "./adapter/database": {
-      "source": "./src/adapters/database.ts",
-      "default": "./dist/adapter/database.mjs"
+    "./_internal/adapter/database": {
+      "source": "./src/adapters/_internal/database.ts",
+      "default": "./dist/_internal/adapter/database.mjs"
     },
-    "./adapter/fs": {
-      "source": "./src/adapters/_fs-adapters.ts",
-      "default": "./dist/adapter/fs.mjs"
+    "./_internal/adapter/logger": {
+      "source": "./src/adapters/_internal/logger.ts",
+      "default": "./dist/_internal/adapter/logger.mjs"
     },
-    "./adapter/logger": {
-      "source": "./src/adapters/logger.ts",
-      "default": "./dist/adapter/logger.mjs"
+    "./_internal/adapter/storage": {
+      "source": "./src/adapters/_internal/storage.ts",
+      "default": "./dist/_internal/adapter/storage.mjs"
     },
-    "./adapter/storage": {
-      "source": "./src/adapters/storage.ts",
-      "default": "./dist/adapter/storage.mjs"
+    "./_internal/adapter/ui": {
+      "source": "./src/adapters/_internal/ui.ts",
+      "default": "./dist/_internal/adapter/ui.mjs"
     },
-    "./adapter/ui": {
-      "source": "./src/adapters/ui.ts",
-      "default": "./dist/adapter/ui.mjs"
-    },
-    "./constants": {
+    "./_internal/constants": {
       "source": "./src/utils/constants.ts",
-      "default": "./dist/constants.mjs"
+      "default": "./dist/_internal/constants.mjs"
     },
-    "./mimes": {
+    "./_internal/mimes": {
       "source": "./src/utils/mime-utils.ts",
-      "default": "./dist/mimes.mjs"
+      "default": "./dist/_internal/mimes.mjs"
     },
-    "./router": {
+    "./_internal/router": {
       "source": "./src/routers/_app-router.ts",
-      "default": "./dist/router.mjs"
+      "default": "./dist/_internal/router.mjs"
     },
-    "./types": {
+    "./_internal/types": {
       "source": "./src/types.ts",
-      "default": "./dist/types.mjs"
+      "default": "./dist/_internal/types.mjs"
     },
-    "./url": {
-      "source": "./src/urls.ts",
-      "default": "./dist/url.mjs"
-    },
-    "./utils": {
+    "./_internal/utils": {
       "source": "./src/utils/index.ts",
-      "default": "./dist/utils.mjs"
+      "default": "./dist/_internal/utils.mjs"
     },
-    "./package.json": "./package.json"
+    "./aws-dynamodb": {
+      "source": "./src/adapters/aws-dynamodb.ts",
+      "default": "./dist/aws-dynamodb.mjs"
+    },
+    "./aws-s3": {
+      "source": "./src/adapters/aws-s3.ts",
+      "default": "./dist/aws-s3.mjs"
+    },
+    "./azure-blob-storage": {
+      "source": "./src/adapters/azure-blob-storage.ts",
+      "default": "./dist/azure-blob-storage.mjs"
+    },
+    "./azure-cosmos-db": {
+      "source": "./src/adapters/azure-cosmos-db.ts",
+      "default": "./dist/azure-cosmos-db.mjs"
+    },
+    "./azure-data-tables": {
+      "source": "./src/adapters/azure-data-tables.ts",
+      "default": "./dist/azure-data-tables.mjs"
+    },
+    "./azure-easy-auth": {
+      "source": "./src/adapters/azure-easy-auth.ts",
+      "default": "./dist/azure-easy-auth.mjs"
+    },
+    "./azure-functions": {
+      "source": "./src/adapters/azure-functions.ts",
+      "default": "./dist/azure-functions.mjs"
+    },
+    "./fs": {
+      "source": "./src/adapters/fs.ts",
+      "default": "./dist/fs.mjs"
+    },
+    "./gcp-big-table": {
+      "source": "./src/adapters/gcp-big-table.ts",
+      "default": "./dist/gcp-big-table.mjs"
+    },
+    "./gcp-firestore": {
+      "source": "./src/adapters/gcp-firestore.ts",
+      "default": "./dist/gcp-firestore.mjs"
+    },
+    "./gcp-storage": {
+      "source": "./src/adapters/gcp-storage.ts",
+      "default": "./dist/gcp-storage.mjs"
+    },
+    "./mysql": {
+      "source": "./src/adapters/mysql.ts",
+      "default": "./dist/mysql.mjs"
+    },
+    "./redis": {
+      "source": "./src/adapters/redis.ts",
+      "default": "./dist/redis.mjs"
+    },
+    "./package.json": "./package.json",
+    "./openapi.json": "./openapi.json"
   },
   "publishConfig": {
     "exports": {
       ".": "./dist/index.mjs",
-      "./adapter": "./dist/adapter.mjs",
-      "./adapter/auth": "./dist/adapter/auth.mjs",
-      "./adapter/database": "./dist/adapter/database.mjs",
-      "./adapter/fs": "./dist/adapter/fs.mjs",
-      "./adapter/logger": "./dist/adapter/logger.mjs",
-      "./adapter/storage": "./dist/adapter/storage.mjs",
-      "./adapter/ui": "./dist/adapter/ui.mjs",
-      "./constants": "./dist/constants.mjs",
-      "./mimes": "./dist/mimes.mjs",
-      "./router": "./dist/router.mjs",
-      "./types": "./dist/types.mjs",
-      "./url": "./dist/url.mjs",
-      "./utils": "./dist/utils.mjs",
+      "./_internal/adapter": "./dist/_internal/adapter.mjs",
+      "./_internal/adapter/auth": "./dist/_internal/adapter/auth.mjs",
+      "./_internal/adapter/database": "./dist/_internal/adapter/database.mjs",
+      "./_internal/adapter/logger": "./dist/_internal/adapter/logger.mjs",
+      "./_internal/adapter/storage": "./dist/_internal/adapter/storage.mjs",
+      "./_internal/adapter/ui": "./dist/_internal/adapter/ui.mjs",
+      "./_internal/constants": "./dist/_internal/constants.mjs",
+      "./_internal/mimes": "./dist/_internal/mimes.mjs",
+      "./_internal/router": "./dist/_internal/router.mjs",
+      "./_internal/types": "./dist/_internal/types.mjs",
+      "./_internal/utils": "./dist/_internal/utils.mjs",
+      "./aws-dynamodb": "./dist/aws-dynamodb.mjs",
+      "./aws-s3": "./dist/aws-s3.mjs",
+      "./azure-blob-storage": "./dist/azure-blob-storage.mjs",
+      "./azure-cosmos-db": "./dist/azure-cosmos-db.mjs",
+      "./azure-data-tables": "./dist/azure-data-tables.mjs",
+      "./azure-easy-auth": "./dist/azure-easy-auth.mjs",
+      "./azure-functions": "./dist/azure-functions.mjs",
+      "./fs": "./dist/fs.mjs",
+      "./gcp-big-table": "./dist/gcp-big-table.mjs",
+      "./gcp-firestore": "./dist/gcp-firestore.mjs",
+      "./gcp-storage": "./dist/gcp-storage.mjs",
+      "./mysql": "./dist/mysql.mjs",
+      "./redis": "./dist/redis.mjs",
       "./package.json": "./package.json"
     }
   }

@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/ui",
-  "version": "0.21.0",
+  "version": "0.23.0",
   "type": "module",
   "description": "Basic UI for Storybooker app",
   "author": {
@@ -27,8 +27,8 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
-    "@storybooker/core": "workspace:*",
-    "hono": "^4.11.0"
+    "hono": "^4.11.0",
+    "storybooker": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

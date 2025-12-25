@@ -4,7 +4,7 @@ import fs from "node:fs";
 import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { StoryBookerFile } from "../adapters/storage.ts";
+import type { StoryBookerFile } from "../adapters/_internal/storage.ts";
 import { BuildsModel } from "../models/builds-model.ts";
 import type { BuildUploadVariant } from "../models/builds-schema.ts";
 import { generateStorageContainerId } from "../utils/adapter-utils.ts";

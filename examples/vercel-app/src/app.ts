@@ -1,6 +1,6 @@
 import "hono"; // import hono to trick vercel into recognizing hono app
-import { createHonoRouter } from "@storybooker/core";
 import { createBasicUIAdapter } from "@storybooker/ui";
+import { createHonoRouter } from "storybooker";
 import { VercelEdgeConfigDatabaseService } from "./database.ts";
 import { VercelBlobService } from "./storage.ts";
 

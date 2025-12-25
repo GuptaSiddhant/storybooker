@@ -34,11 +34,11 @@
     "@docusaurus/module-type-aliases": "3.9.2",
     "@docusaurus/tsconfig": "3.9.2",
     "@docusaurus/types": "3.9.2",
-    "@storybooker/core": "workspace:*",
     "@types/react": "^19.0.0",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
+    "storybooker": "workspace:*",
     "typescript": "^5.9.2"
   },
   "imports": {

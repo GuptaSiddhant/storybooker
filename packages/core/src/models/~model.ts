@@ -6,7 +6,7 @@ import type {
   StorageAdapterOptions,
   StoryBookerDatabaseDocument,
   StoryBookerPermissionAction,
-} from "../adapters/index.ts";
+} from "../adapters/_internal/index.ts";
 import { parseErrorMessage } from "../utils/error.ts";
 import { getStore } from "../utils/store.ts";
 

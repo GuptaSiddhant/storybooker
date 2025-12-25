@@ -2,7 +2,7 @@ import { SuperHeaders } from "@remix-run/headers";
 import { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
 import type { TimingVariables } from "hono/timing";
-import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters/index.ts";
+import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters/_internal/index.ts";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge.ts";
 import { appRouter } from "./routers/_app-router.ts";
 import type { PurgeHandlerOptions, RouterOptions } from "./types.ts";

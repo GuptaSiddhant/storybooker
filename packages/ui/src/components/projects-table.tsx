@@ -1,5 +1,5 @@
-import { DEFAULT_GITHUB_BRANCH } from "@storybooker/core/constants";
-import type { ProjectType } from "@storybooker/core/types";
+import { DEFAULT_GITHUB_BRANCH } from "storybooker/_internal/constants";
+import type { ProjectType } from "storybooker/_internal/types";
 import { getUIStore } from "../utils/ui-store.ts";
 import { LatestBuild } from "./latest-build.tsx";
 import { Table } from "./table.tsx";

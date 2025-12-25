@@ -8,9 +8,9 @@
     "start": "vercel dev --listen 5005"
   },
   "dependencies": {
-    "@storybooker/core": "workspace:*",
     "@storybooker/ui": "workspace:*",
-    "@vercel/blob": "^2.0.0"
+    "@vercel/blob": "^2.0.0",
+    "storybooker": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

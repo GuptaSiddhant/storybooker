@@ -1,4 +1,4 @@
-import type { BuildStoryType } from "@storybooker/core/types";
+import type { BuildStoryType } from "storybooker/_internal/types";
 
 type GroupedStories = Record<string, Record<string, BuildStoryType[]>>;
 

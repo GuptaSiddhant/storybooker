@@ -1,5 +1,6 @@
 import type { Context } from "hono";
-import type { UIAdapterOptions, UIResult } from "../adapters/ui.ts";
+import type { UIAdapterOptions, UIResult } from "../adapters/_internal/ui.ts";
+import { urlBuilderWithoutStore } from "../urls.ts";
 import { getStore } from "./store.ts";
 
 export function createUIAdapterOptions(): UIAdapterOptions {
@@ -10,6 +11,7 @@ export function createUIAdapterOptions(): UIAdapterOptions {
     locale,
     logger,
     url,
+    urlBuilder: urlBuilderWithoutStore,
     user,
     adaptersMetadata: {
       auth: auth?.metadata,
@@ -21,25 +23,35 @@ export function createUIAdapterOptions(): UIAdapterOptions {
   };
 }
 
-export async function createUIResultResponse<Props>(
+// oxlint-disable-next-line max-params
+export function createUIResultResponse<Props>(
   ctx: Context,
   render: (props: Props, options: UIAdapterOptions) => UIResult,
   props: NoInfer<Props>,
+  init?: ResInit,
 ): Promise<Response> {
-  let result = render(props, createUIAdapterOptions());
+  return uiResultResponse(ctx, render(props, createUIAdapterOptions()), init);
+}
 
+export async function uiResultResponse(
+  ctx: Context,
+  result: UIResult,
+  init?: ResInit,
+): Promise<Response> {
   if (result instanceof Promise) {
-    result = await result;
-    if (result instanceof Response) {
-      return result;
+    const awaitedResult = await result;
+    if (awaitedResult instanceof Response) {
+      return awaitedResult;
     }
 
-    return ctx.html(result);
+    return ctx.html(awaitedResult);
   }
 
   if (result instanceof Response) {
     return result;
   }
 
-  return ctx.html(result);
+  return ctx.html(result, init);
 }
+
+type ResInit = Parameters<Context["html"]>[1];

@@ -6,7 +6,7 @@ import type {
   StorageAdapter,
   StoryBookerUser,
   UIAdapter,
-} from "./adapters/index.ts";
+} from "./adapters/_internal/index.ts";
 import type { ErrorParser } from "./utils/error.ts";
 
 export type {
@@ -15,7 +15,7 @@ export type {
   StoryBookerPermissionKey,
   StoryBookerPermissionResource,
   StoryBookerPermissionWithKey,
-} from "./adapters/auth.ts";
+} from "./adapters/_internal/auth.ts";
 export type {
   BuildCreateType,
   BuildStoryType,
@@ -41,6 +41,7 @@ export type {
   TagsListResultType,
 } from "./models/tags-schema.ts";
 export type { ErrorParser, ParsedError } from "./utils/error.ts";
+export type { UrlBuilder } from "./urls.ts";
 
 /**
  * Options for creating a router.

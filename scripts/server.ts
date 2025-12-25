@@ -6,14 +6,14 @@
 import { poweredBy } from "hono/powered-by";
 import { timing } from "hono/timing";
 import {
-  createLocalFileDatabaseAdapter,
-  createLocalFileStorageAdapter,
-} from "../packages/core/src/adapters/_fs-adapters.ts";
-import {
   type AuthAdapter,
   type StoryBookerUser,
   StoryBookerPermissionsAllEnabled,
-} from "../packages/core/src/adapters/index.ts";
+} from "../packages/core/src/adapters/_internal/index.ts";
+import {
+  createLocalFileDatabaseAdapter,
+  createLocalFileStorageAdapter,
+} from "../packages/core/src/adapters/fs.ts";
 import { createHonoRouter } from "../packages/core/src/index.ts";
 import { createBasicUIAdapter } from "../packages/ui/src/index.tsx";
 

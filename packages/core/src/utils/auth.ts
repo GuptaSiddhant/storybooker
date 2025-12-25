@@ -1,5 +1,8 @@
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermission, StoryBookerPermissionKey } from "../adapters/auth.ts";
+import type {
+  StoryBookerPermission,
+  StoryBookerPermissionKey,
+} from "../adapters/_internal/auth.ts";
 import { getStore } from "../utils/store.ts";
 
 export function authenticateOrThrow(permission: StoryBookerPermission): void {

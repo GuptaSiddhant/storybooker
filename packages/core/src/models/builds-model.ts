@@ -1,7 +1,7 @@
 // oxlint-disable switch-case-braces
 
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
+import type { StoryBookerPermissionAction } from "../adapters/_internal/auth.ts";
 import { handleProcessZip } from "../handlers/handle-process-zip.ts";
 import { urlBuilder } from "../urls.ts";
 import {

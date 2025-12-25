@@ -10,7 +10,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "@storybooker/core/adapter";
+} from "storybooker/~internal/adapter/database";
 
 /**
  * Vercel Edge Config database adapter for StoryBooker.

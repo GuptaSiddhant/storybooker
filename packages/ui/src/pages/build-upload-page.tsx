@@ -1,5 +1,5 @@
-import type { RenderedContent } from "@storybooker/core/adapter";
-import type { BuildType, BuildUploadVariant, ProjectType } from "@storybooker/core/types";
+import type { RenderedContent } from "storybooker/_internal/adapter/ui";
+import type { BuildType, BuildUploadVariant, ProjectType } from "storybooker/_internal/types";
 import { BuildUploadForm } from "../components/build-upload-form.tsx";
 import {
   DocumentHeader,

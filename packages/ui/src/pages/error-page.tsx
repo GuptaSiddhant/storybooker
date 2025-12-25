@@ -1,5 +1,5 @@
-import type { RenderedContent } from "@storybooker/core/adapter";
-import type { ParsedError } from "@storybooker/core/types";
+import type { RenderedContent } from "storybooker/_internal/adapter/ui";
+import type { ParsedError } from "storybooker/_internal/types";
 import {
   DocumentHeader,
   DocumentLayout,

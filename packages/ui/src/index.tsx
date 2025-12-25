@@ -1,24 +1,10 @@
-import type { UIAdapter } from "@storybooker/core/adapter";
+import type { UIAdapter } from "storybooker/_internal/adapter/ui";
 import pkg from "../package.json" with { type: "json" };
-import { handleStaticFileRoute } from "./handlers/handle-static-file-route.ts";
-import { AccountPage } from "./pages/account-page.tsx";
-import { BuildCreatePage } from "./pages/build-create-page.tsx";
-import { BuildDetailsPage } from "./pages/build-details-page.tsx";
-import { BuildUploadPage } from "./pages/build-upload-page.tsx";
-import { BuildsListPage } from "./pages/builds-list-page.tsx";
-import { ErrorPage } from "./pages/error-page.tsx";
-import { ProjectCreatePage } from "./pages/project-create-page.tsx";
-import { ProjectDetailsPage } from "./pages/project-details-page.tsx";
-import { ProjectUpdatePage } from "./pages/project-update-page.tsx";
-import { ProjectsListPage } from "./pages/projects-list-page.tsx";
-import { RootPage } from "./pages/root-page.tsx";
-import { TagCreatePage } from "./pages/tag-create-page.tsx";
-import { TagDetailsPage } from "./pages/tag-details-page.tsx";
-import { TagUpdatePage } from "./pages/tag-update-page.tsx";
-import { TagsListPage } from "./pages/tags-list-pages.tsx";
 import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./styles/theme.ts";
 import { DEFAULT_STATIC_DIRS } from "./utils/constants.ts";
 import { withStore } from "./utils/ui-store.ts";
+
+export type { BrandTheme };
 
 export interface BasicUIOptions {
   /** Valid HTML string to place a logo/text in Header. */
@@ -52,30 +38,72 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
       theme: { dark: darkTheme, light: lightTheme },
     },
 
-    renderHomePage: withStore(options, RootPage),
-    renderErrorPage: withStore(options, ErrorPage),
-    renderAccountsPage: withStore(options, AccountPage),
-    handleUnhandledRoute: withStore(options, (filepath) =>
-      handleStaticFileRoute(filepath, {
-        darkTheme,
-        lightTheme,
-        staticDirs,
-      }),
-    ),
+    renderHomePage: withStore(options, async (props) => {
+      const { RootPage } = await import("./pages/root-page.tsx");
+      return RootPage(props);
+    }),
+    renderErrorPage: withStore(options, async (props) => {
+      const { ErrorPage } = await import("./pages/error-page.tsx");
+      return ErrorPage(props);
+    }),
+    renderAccountsPage: withStore(options, async (props) => {
+      const { AccountPage } = await import("./pages/account-page.tsx");
+      return AccountPage(props);
+    }),
+    handleUnhandledRoute: withStore(options, async (filepath) => {
+      const { handleStaticFileRoute } = await import("./handlers/handle-static-file-route.ts");
+      return await handleStaticFileRoute(filepath, { darkTheme, lightTheme, staticDirs });
+    }),
 
-    renderBuildCreatePage: withStore(options, BuildCreatePage),
-    renderBuildDetailsPage: withStore(options, BuildDetailsPage),
-    renderBuildUploadPage: withStore(options, BuildUploadPage),
-    renderBuildsListPage: withStore(options, BuildsListPage),
+    renderBuildCreatePage: withStore(options, async (props) => {
+      const { BuildCreatePage } = await import("./pages/build-create-page.tsx");
+      return BuildCreatePage(props);
+    }),
+    renderBuildDetailsPage: withStore(options, async (props) => {
+      const { BuildDetailsPage } = await import("./pages/build-details-page.tsx");
+      return BuildDetailsPage(props);
+    }),
+    renderBuildUploadPage: withStore(options, async (props) => {
+      const { BuildUploadPage } = await import("./pages/build-upload-page.tsx");
+      return BuildUploadPage(props);
+    }),
+    renderBuildsListPage: withStore(options, async (props) => {
+      const { BuildsListPage } = await import("./pages/builds-list-page.tsx");
+      return BuildsListPage(props);
+    }),
 
-    renderProjectCreatePage: withStore(options, ProjectCreatePage),
-    renderProjectDetailsPage: withStore(options, ProjectDetailsPage),
-    renderProjectUpdatePage: withStore(options, ProjectUpdatePage),
-    renderProjectsListPage: withStore(options, ProjectsListPage),
+    renderProjectCreatePage: withStore(options, async () => {
+      const { ProjectCreatePage } = await import("./pages/project-create-page.tsx");
+      return ProjectCreatePage();
+    }),
+    renderProjectDetailsPage: withStore(options, async (props) => {
+      const { ProjectDetailsPage } = await import("./pages/project-details-page.tsx");
+      return ProjectDetailsPage(props);
+    }),
+    renderProjectUpdatePage: withStore(options, async (props) => {
+      const { ProjectUpdatePage } = await import("./pages/project-update-page.tsx");
+      return ProjectUpdatePage(props);
+    }),
+    renderProjectsListPage: withStore(options, async (props) => {
+      const { ProjectsListPage } = await import("./pages/projects-list-page.tsx");
+      return ProjectsListPage(props);
+    }),
 
-    renderTagCreatePage: withStore(options, TagCreatePage),
-    renderTagDetailsPage: withStore(options, TagDetailsPage),
-    renderTagUpdatePage: withStore(options, TagUpdatePage),
-    renderTagsListPage: withStore(options, TagsListPage),
+    renderTagCreatePage: withStore(options, async (props) => {
+      const { TagCreatePage } = await import("./pages/tag-create-page.tsx");
+      return TagCreatePage(props);
+    }),
+    renderTagDetailsPage: withStore(options, async (props) => {
+      const { TagDetailsPage } = await import("./pages/tag-details-page.tsx");
+      return TagDetailsPage(props);
+    }),
+    renderTagUpdatePage: withStore(options, async (props) => {
+      const { TagUpdatePage } = await import("./pages/tag-update-page.tsx");
+      return TagUpdatePage(props);
+    }),
+    renderTagsListPage: withStore(options, async (props) => {
+      const { TagsListPage } = await import("./pages/tags-list-page.tsx");
+      return TagsListPage(props);
+    }),
   } satisfies UIAdapter;
 }
