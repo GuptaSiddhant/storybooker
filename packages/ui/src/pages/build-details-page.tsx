@@ -1,5 +1,5 @@
-import type { RenderedContent } from "@storybooker/core/adapter/~ui";
-import type { BuildStoryType, BuildType, ProjectType } from "@storybooker/core/types";
+import type { RenderedContent } from "storybooker/adapter/~ui";
+import type { BuildStoryType, BuildType, ProjectType } from "storybooker/types";
 import { BuildLinksFooter } from "../components/build-links.tsx";
 import { BuildProcessStatus } from "../components/build-process.tsx";
 import { BuildStories } from "../components/build-stories.tsx";

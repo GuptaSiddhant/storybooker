@@ -1,5 +1,5 @@
-import type { RenderedContent } from "@storybooker/core/adapter/~ui";
-import type { BuildType, ProjectType } from "@storybooker/core/types";
+import type { RenderedContent } from "storybooker/adapter/~ui";
+import type { BuildType, ProjectType } from "storybooker/types";
 import { BuildsTable } from "../components/builds-table.tsx";
 import { LinkButton } from "../components/button.tsx";
 import {

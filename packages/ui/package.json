@@ -27,8 +27,8 @@
     "lint:fix": "yarn lint --fix"
   },
   "dependencies": {
-    "@storybooker/core": "workspace:*",
-    "hono": "^4.11.0"
+    "hono": "^4.11.0",
+    "storybooker": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "catalog:",

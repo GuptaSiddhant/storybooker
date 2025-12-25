@@ -2,7 +2,7 @@
 
 Core is the heart of StoryBooker. It provides the routing and rendering logic for StoryBooker, and is framework agnostic.
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/)
+> [API Docs](https://jsr.io/storybooker/doc/)
 
 It also provides
 
@@ -12,14 +12,14 @@ It also provides
 ## Install
 
 ```sh
-npm i @storybooker/core
+npm i storybooker
 ```
 
 ## API
 
 ### `createHonoRouter`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/~/createHonoRouter)
+> [API Docs](https://jsr.io/storybooker/doc/~/createHonoRouter)
 
 Callback to create a Hono router that can be used as a request handler.
 
@@ -29,7 +29,7 @@ The Hono router can be deployed to any platform that supports Hono framework.
 
 ### `createPurgeHandler`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/~/createPurgeHandler)
+> [API Docs](https://jsr.io/storybooker/doc/~/createPurgeHandler)
 
 Callback to create a purge-handler based on provided options.
 
@@ -41,13 +41,13 @@ Purging deletes all builds older than certain days based on Project's configurat
 
 ### `createLocalFileStorageAdapter`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/adapter/fs/~/createLocalFileStorageAdapter)
+> [API Docs](https://jsr.io/storybooker/doc/adapter/fs/~/createLocalFileStorageAdapter)
 
 A simple database adapter that uses local file to store data. Defaults to `./db.json` file.
 
 ### `createLocalFileStorageAdapter`
 
-> [API Docs](https://jsr.io/@storybooker/core/doc/adapter/fs/~/createLocalFileStorageAdapter)
+> [API Docs](https://jsr.io/storybooker/doc/adapter/fs/~/createLocalFileStorageAdapter)
 
 A simple storage adapter that uses local folder to store files. Defaults to current folder.
 

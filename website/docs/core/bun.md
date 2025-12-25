@@ -12,11 +12,11 @@ Run following with `bun run --hot server.ts`
 ```ts
 // server.ts
 
-import { createHonoRouter } from "@storybooker/core";
+import { createHonoRouter } from "storybooker";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "@storybooker/core/adapter/fs";
+} from "storybooker/adapter/fs";
 import { createBasicUIAdapter } from "@storybooker/ui";
 
 // Create StoryBooker router

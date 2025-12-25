@@ -1,6 +1,6 @@
-import type { RenderedContent } from "@storybooker/core/adapter/~ui";
-import { TagTypes } from "@storybooker/core/constants";
-import type { ProjectType, TagType } from "@storybooker/core/types";
+import type { RenderedContent } from "storybooker/adapter/~ui";
+import { TagTypes } from "storybooker/constants";
+import type { ProjectType, TagType } from "storybooker/types";
 import { LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,

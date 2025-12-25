@@ -1,4 +1,4 @@
-import type { RenderedContent } from "@storybooker/core/adapter/~ui";
+import type { RenderedContent } from "storybooker/adapter/~ui";
 import {
   DocumentHeader,
   DocumentLayout,

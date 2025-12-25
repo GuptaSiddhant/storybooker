@@ -1,6 +1,6 @@
-import type { UIAdapterOptions } from "@storybooker/core/adapter/~ui";
-import { UrlBuilder } from "@storybooker/core/url";
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { UIAdapterOptions } from "storybooker/adapter/~ui";
+import { UrlBuilder } from "storybooker/url";
 import type { BasicUIOptions } from "../index.tsx";
 
 interface UIStore extends UIAdapterOptions {

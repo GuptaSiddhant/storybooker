@@ -10,13 +10,13 @@ The MySQL database can be used as database for StoryBooker.
 ## Install
 
 ```sh
-npm i @storybooker/core mysql
+npm i storybooker mysql
 ```
 
 ## Usage
 
 ```js
-import { MySQLDatabaseAdapter } from "@storybooker/core/adapter/mysql";
+import { MySQLDatabaseAdapter } from "storybooker/adapter/mysql";
 import mysql from "mysql";
 
 // Initialize the SQL client

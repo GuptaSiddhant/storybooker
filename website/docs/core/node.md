@@ -15,11 +15,11 @@ Run following with `node server.mjs`
 // server.mjs
 
 import { serve } from "@hono/node-server";
-import { createHonoRouter } from "@storybooker/core";
+import { createHonoRouter } from "storybooker";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "@storybooker/core/adapter/fs";
+} from "storybooker/adapter/fs";
 import { createBasicUIAdapter } from "npm:@storybooker/ui";
 
 // Create StoryBooker Hono router

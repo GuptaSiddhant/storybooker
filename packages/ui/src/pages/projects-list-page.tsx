@@ -1,5 +1,5 @@
-import type { RenderedContent } from "@storybooker/core/adapter/~ui";
-import type { ProjectType } from "@storybooker/core/types";
+import type { RenderedContent } from "storybooker/adapter/~ui";
+import type { ProjectType } from "storybooker/types";
 import { DestructiveButton, LinkButton } from "../components/button.tsx";
 import {
   DocumentHeader,

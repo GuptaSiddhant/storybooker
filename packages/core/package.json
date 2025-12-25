@@ -1,8 +1,8 @@
 {
-  "name": "@storybooker/core",
+  "name": "storybooker",
   "version": "0.21.0",
   "type": "module",
-  "description": "Storybooker platform agnostic router core.",
+  "description": "Manage Storybook instances on your own infrastructure with ease.",
   "author": {
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"

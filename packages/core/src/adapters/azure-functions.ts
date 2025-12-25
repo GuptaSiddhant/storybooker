@@ -19,7 +19,7 @@ import type { LoggerAdapter } from "./_internal/logger.ts";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
-export type * from "@storybooker/core/types";
+export type * from "storybooker/types";
 
 /**
  * Minimal representation of Azure Functions App namespace

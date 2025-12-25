@@ -10,7 +10,7 @@ The Azure EasyAuth provides quick way to setup auth for Azure Functions
 ## Install
 
 ```sh
-npm i @storybooker/core
+npm i storybooker
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ npm i @storybooker/core
 import {
   AzureEasyAuthService,
   type AuthServiceAuthorise,
-} from "@storybooker/core/adapter/azure-easy-auth";
+} from "storybooker/adapter/azure-easy-auth";
 
 // Optionally create a custom authorise function
 // to handle permission checks

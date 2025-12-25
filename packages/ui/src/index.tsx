@@ -1,4 +1,4 @@
-import type { UIAdapter } from "@storybooker/core/adapter/~ui";
+import type { UIAdapter } from "storybooker/adapter/~ui";
 import pkg from "../package.json" with { type: "json" };
 import { handleStaticFileRoute } from "./handlers/handle-static-file-route.ts";
 import { AccountPage } from "./pages/account-page.tsx";

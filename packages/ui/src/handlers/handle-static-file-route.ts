@@ -1,11 +1,11 @@
 // oxlint-disable max-params
 
-import { SERVICE_NAME } from "@storybooker/core/constants";
-import { getMimeType, mimes } from "@storybooker/core/mimes";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
+import { SERVICE_NAME } from "storybooker/constants";
+import { getMimeType, mimes } from "storybooker/mimes";
 import { icons } from "../icons/_icons.ts";
 import { generateGlobalStyleSheet } from "../styles/global-style.ts";
 import type { BrandTheme } from "../styles/theme.ts";

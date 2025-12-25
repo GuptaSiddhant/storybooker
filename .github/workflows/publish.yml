@@ -103,7 +103,7 @@ jobs:
       - name: Setup Turbo
         id: setup
         run: |
-          npx -y turbo@canary prune @storybooker/core
+          npx -y turbo@canary prune storybooker
           node scripts/prune-jsr-pkg-json.ts ./out/package.json
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json

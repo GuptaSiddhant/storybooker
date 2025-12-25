@@ -10,14 +10,14 @@ The AWS DynamoDB can be used as database for StoryBooker.
 ## Install
 
 ```sh
-npm i @storybooker/core @aws-sdk/client-dynamodb
+npm i storybooker @aws-sdk/client-dynamodb
 ```
 
 ## Usage
 
 ```js
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { AwsDynamoDatabaseService } from "@storybooker/core/adapter/aws-dynamodb";
+import { AwsDynamoDatabaseService } from "storybooker/adapter/aws-dynamodb";
 
 // Initialize the DynamoDBClient
 const client = new DynamoDBClient(...)
