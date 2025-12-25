@@ -1,5 +1,6 @@
 import type { BuildType, ProjectType, TagType } from "@storybooker/core/types";
 import { getUIStore } from "../utils/ui-store.ts";
+import { Icon } from "./icon.tsx";
 import { Table } from "./table.tsx";
 
 export interface BuildsTableProps {
@@ -124,12 +125,12 @@ export function BuildsTable({
           header: "GitHub",
           cell: (item) => {
             return (
-              <div style={{ display: "flex", gap: "1rem" }}>
+              <div style={{ display: "flex", gap: "1rem", fontSize: "0.9em" }}>
                 <a
                   href={urlBuilder.gitHub(project.gitHubRepository, "commit", item.id)}
                   target="_blank"
                 >
-                  Commit
+                  Commit <Icon name="externalLink" label="Open link" />
                 </a>
               </div>
             );

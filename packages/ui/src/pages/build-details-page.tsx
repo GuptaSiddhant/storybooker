@@ -40,7 +40,10 @@ export function BuildDetailsPage({
   return (
     <DocumentLayout title={build.id.slice(0, 7)}>
       <DocumentHeader
-        breadcrumbs={[project.id, "Builds"]}
+        breadcrumbs={[
+          { label: project.name, href: urlBuilder.projectDetails(project.id) },
+          { label: "Builds", href: urlBuilder.buildsList(project.id) },
+        ]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             {shouldShowUploadButton ? (

@@ -1,6 +1,7 @@
 import type { ProjectType, TagType } from "@storybooker/core/types";
 import { urlJoin } from "@storybooker/core/url";
 import { getUIStore } from "../utils/ui-store.ts";
+import { Icon } from "./icon.tsx";
 import { LatestBuild } from "./latest-build.tsx";
 import { Table } from "./table.tsx";
 
@@ -37,14 +38,15 @@ export function TagsTable({ tags, project, toolbar, caption }: TagsTableProps): 
         },
         {
           id: "id",
-          header: "ID",
+          header: "Tag",
           cell: (item) => {
-            return <a href={urlBuilder.tagDetails(project.id, item.id)}>{item.id}</a>;
+            return <a href={urlBuilder.tagDetails(project.id, item.id)}>{item.value}</a>;
           },
         },
         {
-          id: "value",
-          header: "Tag",
+          id: "type",
+          header: "Type",
+          style: { fontFamily: "monospace", fontSize: "0.9em" },
           cell: (item) => {
             let href = "";
             switch (item.type) {
@@ -64,20 +66,15 @@ export function TagsTable({ tags, project, toolbar, caption }: TagsTableProps): 
             }
 
             if (!href) {
-              return <>{item.value}</>;
+              return <span>{item.type}</span>;
             }
 
             return (
-              <a href={href} target="_blank">
-                {item.value}
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {item.type} <Icon name="externalLink" label="Open link" />
               </a>
             );
           },
-        },
-        {
-          id: "type",
-          header: "Type",
-          style: { fontFamily: "monospace", fontSize: "0.9em" },
         },
         {
           id: "builds",

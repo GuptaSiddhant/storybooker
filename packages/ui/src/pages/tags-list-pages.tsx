@@ -28,7 +28,7 @@ export function TagsListPage({
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
-        breadcrumbs={[project.name]}
+        breadcrumbs={[{ label: project.name, href: urlBuilder.projectDetails(project.id) }]}
         toolbar={<LinkButton href={urlBuilder.tagCreate(project.id)}>+ Create</LinkButton>}
       >
         {title}

@@ -1,5 +1,4 @@
 import { SERVICE_NAME } from "@storybooker/core/constants";
-import { urlJoin } from "@storybooker/core/url";
 import { css, Style } from "hono/css";
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
@@ -147,26 +146,20 @@ export function DocumentHeader({
   children,
   toolbar,
 }: {
-  breadcrumbs?: string[] | Array<{ label: string; href?: string }>;
+  breadcrumbs?: { label: string; href?: string }[];
   children: JSXChildren;
   toolbar?: JSXElement | null;
 }): JSXElement {
-  const store = getUIStore();
-
   return (
     <header>
       <div class="page-heading" style={{ flex: 1 }}>
         {breadcrumbs.length > 0 ? (
           <ul>
-            {breadcrumbs.map((crumb, index, arr) => {
-              const href =
-                (typeof crumb === "object" ? crumb.href : "") ??
-                urlJoin(store.url, ...Array.from({ length: arr.length - index }).map(() => ".."));
+            {breadcrumbs.map((crumb) => {
+              const href = typeof crumb === "object" ? crumb.href : "";
               return (
                 <li>
-                  <a safe href={href}>
-                    {typeof crumb === "object" ? crumb.label : crumb}
-                  </a>
+                  <a href={href}>{typeof crumb === "object" ? crumb.label : crumb}</a>
                   <span class={css`display: inline-block; padding: 0 0.25rem; opacity: 0.5;`}>
                     /
                   </span>

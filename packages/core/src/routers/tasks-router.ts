@@ -39,8 +39,7 @@ export const tasksRouter = new OpenAPIHono()
 
       await handlePurge({ projectId }, { abortSignal: context.req.raw.signal });
 
-      context.status(204);
-      return context.res;
+      return new Response(null, { status: 204 });
     },
   )
   .openapi(

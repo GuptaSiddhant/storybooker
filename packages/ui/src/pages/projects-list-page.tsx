@@ -20,7 +20,7 @@ export function ProjectsListPage({ projects }: { projects: ProjectType[] }): Ren
   return (
     <DocumentLayout title={title}>
       <DocumentHeader
-        breadcrumbs={["Home"]}
+        breadcrumbs={[{ href: urlBuilder.homepage(), label: "Home" }]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             <LinkButton href={urlBuilder.projectCreate()}>+ Create</LinkButton>

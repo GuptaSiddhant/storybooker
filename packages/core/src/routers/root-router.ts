@@ -9,7 +9,7 @@ import { mimes } from "../utils/mime-utils.ts";
 import { openapiResponsesHtml } from "../utils/openapi-utils.ts";
 import { checkIsHTMLRequest } from "../utils/request.ts";
 import { getStore } from "../utils/store.ts";
-import { createUIAdapterOptions } from "../utils/ui-utils.ts";
+import { createUIResultResponse } from "../utils/ui-utils.ts";
 
 /**
  * @private
@@ -44,7 +44,7 @@ export const rootRouter = new OpenAPIHono()
         authenticateOrThrow({ action: "read", resource: "project", projectId: undefined });
         const projects = await new ProjectsModel().list({ limit: 5 });
 
-        return context.html(ui.renderHomePage({ projects }, createUIAdapterOptions()));
+        return createUIResultResponse(context, ui.renderHomePage, { projects });
       }
 
       const urls: Record<string, string> = {};

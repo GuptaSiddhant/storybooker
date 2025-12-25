@@ -24,7 +24,7 @@ import {
 } from "../utils/openapi-utils.ts";
 import { checkIsHTMLRequest } from "../utils/request.ts";
 import { getStore } from "../utils/store.ts";
-import { createUIAdapterOptions } from "../utils/ui-utils.ts";
+import { createUIResultResponse } from "../utils/ui-utils.ts";
 
 const tagsTag = "Tags";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
@@ -75,12 +75,11 @@ export const tagsRouter = new OpenAPIHono()
       if (ui?.renderTagsListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return context.html(
-          ui.renderTagsListPage(
-            { project, tags: filteredTags, defaultType: type },
-            createUIAdapterOptions(),
-          ),
-        );
+        return createUIResultResponse(context, ui.renderTagsListPage, {
+          project,
+          tags: filteredTags,
+          defaultType: type,
+        });
       }
 
       return context.json({ tags: filteredTags });
@@ -117,7 +116,7 @@ export const tagsRouter = new OpenAPIHono()
 
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui?.renderTagCreatePage({ project }, createUIAdapterOptions()));
+      return createUIResultResponse(context, ui.renderTagCreatePage, { project });
     },
   )
   .openapi(
@@ -212,9 +211,7 @@ export const tagsRouter = new OpenAPIHono()
         const project = await new ProjectsModel().get(projectId);
         const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
-        return context.html(
-          ui.renderTagDetailsPage({ builds, project, tag }, createUIAdapterOptions()),
-        );
+        return createUIResultResponse(context, ui.renderTagDetailsPage, { builds, project, tag });
       }
 
       return context.json({ tag });
@@ -290,7 +287,7 @@ export const tagsRouter = new OpenAPIHono()
       const tag = await new TagsModel(projectId).get(tagId);
       const project = await new ProjectsModel().get(projectId);
 
-      return context.html(ui.renderTagUpdatePage({ project, tag }, createUIAdapterOptions()));
+      return createUIResultResponse(context, ui.renderTagUpdatePage, { project, tag });
     },
   )
   .openapi(

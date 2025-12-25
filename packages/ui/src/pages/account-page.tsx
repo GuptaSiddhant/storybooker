@@ -22,7 +22,9 @@ export function AccountPage({ children }: { children: string | undefined }): Ren
 
   return (
     <DocumentLayout title={pageTitle}>
-      <DocumentHeader breadcrumbs={["Home"]}>{pageTitle}</DocumentHeader>
+      <DocumentHeader breadcrumbs={[{ href: urlBuilder.homepage(), label: "Home" }]}>
+        {pageTitle}
+      </DocumentHeader>
 
       <DocumentMain style={children ? {} : { padding: "1rem" }}>
         {children ? (

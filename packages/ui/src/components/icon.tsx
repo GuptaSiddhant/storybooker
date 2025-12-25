@@ -18,8 +18,19 @@ export function Icon({ name, label, style, ...props }: IconProps): JSXElement {
   const styleObj = typeof style === "object" ? style : {};
 
   return (
-    <div {...props} style={{ display: "inline-block", position: "relative", ...styleObj }}>
-      <svg aria-hidden style="width:100%;height:100%">
+    <div
+      title={label}
+      {...props}
+      style={{
+        display: "inline-block",
+        position: "relative",
+        overflow: "hidden",
+        height: "1em",
+        width: "1em",
+        ...styleObj,
+      }}
+    >
+      <svg aria-hidden style="width:100%;height:100%;">
         <use href={href} />
       </svg>
       <span

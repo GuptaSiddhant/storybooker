@@ -64,17 +64,29 @@ export async function handleStaticFileRoute(
 }
 
 function generateGlobalSpriteResponse(): Response {
+  const symbols = Object.entries(icons).map(([name, icon]) => {
+    let symbol = String(icon)
+      .replace("<svg", `<symbol id="${name}"`)
+      .replace("</svg>", "</symbol>");
+
+    if (!symbol.includes("fill=")) {
+      symbol = symbol.replace("<symbol ", `<symbol fill="currentColor" `);
+    }
+    if (symbol.includes(" width=")) {
+      symbol = symbol.replace(/width="[^"]*"/, "");
+    }
+    if (symbol.includes(" height=")) {
+      symbol = symbol.replace(/height="[^"]*"/, "");
+    }
+
+    return symbol;
+  });
+
   return new Response(
     `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="0" height="0">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
-    ${Object.entries(icons)
-      .map(([name, icon]) => {
-        return String(icon)
-          .replace("<svg", `<symbol id="${name}" fill="currentcolor"`)
-          .replace("</svg>", "</symbol>");
-      })
-      .join("\n")}
+    ${symbols.join("\n")}
   </defs>
 </svg>`,
     {

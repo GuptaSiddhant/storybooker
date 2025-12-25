@@ -8,7 +8,7 @@ import {
   openapiResponsesHtml,
 } from "../utils/openapi-utils.ts";
 import { getStore } from "../utils/store.ts";
-import { createUIAdapterOptions } from "../utils/ui-utils.ts";
+import { createUIResultResponse } from "../utils/ui-utils.ts";
 
 const accountTag = "Account";
 
@@ -52,7 +52,7 @@ export const accountRouter = new OpenAPIHono()
         request,
       });
 
-      return context.html(ui.renderAccountsPage({ children }, createUIAdapterOptions()));
+      return createUIResultResponse(context, ui.renderAccountsPage, { children });
     },
   )
   .openapi(

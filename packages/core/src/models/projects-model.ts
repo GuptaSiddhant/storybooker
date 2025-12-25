@@ -143,7 +143,7 @@ export class ProjectsModel extends Model<ProjectType> {
     this.debug("Delete project entry '%s' in collection", id);
     await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
 
-    this.debug("Create project-builds collection");
+    this.debug("Delete project-builds collection");
     await this.database.deleteCollection(
       generateDatabaseCollectionId(id, "Builds"),
       this.dbOptions,
@@ -152,7 +152,7 @@ export class ProjectsModel extends Model<ProjectType> {
     this.debug("Delete project-tags collection");
     await this.database.deleteCollection(generateDatabaseCollectionId(id, "Tags"), this.dbOptions);
 
-    this.debug("Create project container");
+    this.debug("Delete project container");
     await this.storage.deleteContainer(generateStorageContainerId(id), this.storageOptions);
   }
 

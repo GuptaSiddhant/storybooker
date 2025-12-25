@@ -1,4 +1,5 @@
-import type { UIAdapterOptions } from "../adapters/ui.ts";
+import type { Context } from "hono";
+import type { UIAdapterOptions, UIResult } from "../adapters/ui.ts";
 import { getStore } from "./store.ts";
 
 export function createUIAdapterOptions(): UIAdapterOptions {
@@ -18,4 +19,27 @@ export function createUIAdapterOptions(): UIAdapterOptions {
       ui: ui?.metadata,
     },
   };
+}
+
+export async function createUIResultResponse<Props>(
+  ctx: Context,
+  render: (props: Props, options: UIAdapterOptions) => UIResult,
+  props: NoInfer<Props>,
+): Promise<Response> {
+  let result = render(props, createUIAdapterOptions());
+
+  if (result instanceof Promise) {
+    result = await result;
+    if (result instanceof Response) {
+      return result;
+    }
+
+    return ctx.html(result);
+  }
+
+  if (result instanceof Response) {
+    return result;
+  }
+
+  return ctx.html(result);
 }

@@ -39,7 +39,9 @@ export function ProjectDetailsPage({
               method="post"
               action={purgeUrl}
               hx-post={purgeUrl}
-              hx-confirm={"Are you sure about purging this project?"}
+              hx-confirm={
+                "Are you sure about purging this project? Purge will remove all builds older than the configured retention period."
+              }
             >
               <DestructiveButton>Purge</DestructiveButton>
             </form>

@@ -28,7 +28,10 @@ export function TagDetailsPage({
   return (
     <DocumentLayout title={`Tag ${tag.value}`}>
       <DocumentHeader
-        breadcrumbs={[project.name, "Tags"]}
+        breadcrumbs={[
+          { label: project.name, href: urlBuilder.projectDetails(project.id) },
+          { label: "Tags", href: urlBuilder.tagsList(project.id) },
+        ]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
             <LinkButton href={urlBuilder.buildCreate(project.id, tag.id)}>

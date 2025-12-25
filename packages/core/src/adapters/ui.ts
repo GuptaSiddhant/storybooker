@@ -11,6 +11,7 @@ import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger";
 
 export type RenderedContent = string | Promise<string>;
+export type UIResult = Response | Promise<Response> | RenderedContent;
 
 /**
  * Adapter for creating UI for StoryBooker service.
@@ -30,89 +31,51 @@ export interface UIAdapter {
    */
   handleUnhandledRoute?(filepath: string, options: UIAdapterOptions): Response | Promise<Response>;
 
-  renderHomePage?(props: { projects: ProjectType[] }, options: UIAdapterOptions): RenderedContent;
-  renderErrorPage?(props: ParsedError, options: UIAdapterOptions): RenderedContent;
-  renderAccountsPage?(
-    props: { children: string | undefined },
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  renderHomePage?(props: { projects: ProjectType[] }, options: UIAdapterOptions): UIResult;
+  renderErrorPage?(props: ParsedError, options: UIAdapterOptions): UIResult;
+  renderAccountsPage?(props: { children: string | undefined }, options: UIAdapterOptions): UIResult;
 
   // Projects
-  renderProjectsListPage?(
-    props: { projects: ProjectType[] },
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  renderProjectsListPage?(props: { projects: ProjectType[] }, options: UIAdapterOptions): UIResult;
   renderProjectDetailsPage?(
-    props: {
-      project: ProjectType;
-      recentBuilds: BuildType[];
-      recentTags: TagType[];
-    },
+    props: { project: ProjectType; recentBuilds: BuildType[]; recentTags: TagType[] },
     options: UIAdapterOptions,
-  ): RenderedContent;
-  renderProjectCreatePage?(props: unknown, options: UIAdapterOptions): RenderedContent;
-  renderProjectUpdatePage?(
-    props: { project: ProjectType },
-    options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
+  renderProjectCreatePage?(props: unknown, options: UIAdapterOptions): UIResult;
+  renderProjectUpdatePage?(props: { project: ProjectType }, options: UIAdapterOptions): UIResult;
 
   // Tags
   renderTagsListPage?(
-    props: {
-      tags: TagType[];
-      project: ProjectType;
-      defaultType?: string | null;
-    },
+    props: { tags: TagType[]; project: ProjectType; defaultType?: string | null },
     options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
   renderTagDetailsPage?(
-    props: {
-      tag: TagType;
-      project: ProjectType;
-      builds: BuildType[];
-    },
+    props: { tag: TagType; project: ProjectType; builds: BuildType[] },
     options: UIAdapterOptions,
-  ): RenderedContent;
-  renderTagCreatePage?(props: { project: ProjectType }, options: UIAdapterOptions): RenderedContent;
+  ): UIResult;
+  renderTagCreatePage?(props: { project: ProjectType }, options: UIAdapterOptions): UIResult;
   renderTagUpdatePage?(
-    props: {
-      tag: TagType;
-      project: ProjectType;
-    },
+    props: { tag: TagType; project: ProjectType },
     options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
 
   // Builds
   renderBuildsListPage?(
-    props: {
-      builds: BuildType[];
-      project: ProjectType;
-    },
+    props: { builds: BuildType[]; project: ProjectType },
     options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
   renderBuildDetailsPage?(
-    props: {
-      build: BuildType;
-      project: ProjectType;
-      stories: BuildStoryType[] | null;
-    },
+    props: { build: BuildType; project: ProjectType; stories: BuildStoryType[] | null },
     options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
   renderBuildCreatePage?(
-    props: {
-      project: ProjectType;
-      tagId?: string;
-    },
+    props: { project: ProjectType; tagId?: string },
     options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
   renderBuildUploadPage?(
-    props: {
-      build: BuildType;
-      project: ProjectType;
-      uploadVariant?: BuildUploadVariant;
-    },
+    props: { build: BuildType; project: ProjectType; uploadVariant?: BuildUploadVariant },
     options: UIAdapterOptions,
-  ): RenderedContent;
+  ): UIResult;
 }
 
 /** Common UI adapter options.  */
