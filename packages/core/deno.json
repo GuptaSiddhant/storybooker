@@ -1,10 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/denoland/deno/main/cli/schemas/config-file.v1.json",
   "name": "@storybooker/core",
-  "version": "0.22.2-canary.0",
+  "version": "0.22.2-canary.1",
   "license": "MIT",
   "publish": {
     "include": ["src", "README.md", "openapi.json"]
+  },
+  "imports": {
+    "@azure/core-rest-pipeline": "npm:@azure/core-rest-pipeline"
   },
   "exports": {
     ".": "./src/index.ts",

@@ -39,8 +39,6 @@ jobs:
       - name: Install dependencies
         working-directory: ./out
         run: yarn install --immutable
-        env:
-          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
       - name: Build app
         working-directory: ./out
