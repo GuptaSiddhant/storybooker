@@ -79,6 +79,8 @@ jobs:
         run: |
           echo "Publishing with tag: $NPM_TAG"
           yarn workspaces foreach -A --no-private npm publish --tolerate-republish --provenance --access public --tag ${NPM_TAG:-latest}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
@@ -125,5 +127,4 @@ jobs:
 
       - name: Publish on JSR - Core
         working-directory: ./out/packages/core
-        continue-on-error: true
         run: npx -y jsr publish --allow-slow-types --allow-dirty --token ${{ secrets.JSR_API_TOKEN }}
