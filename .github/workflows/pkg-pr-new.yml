@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   build:
+    name: Build and Publish Packages
     runs-on: ubuntu-latest
 
     steps:
@@ -42,4 +43,4 @@ jobs:
       - name: Verify
         run: yarn verify
 
-      - run: pnpm dlx pkg-pr-new publish ./packages --template './examples/*'
+      - run: npx -y pkg-pr-new publish ./packages/* --template './examples/*'
