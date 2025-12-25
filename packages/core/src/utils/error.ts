@@ -1,12 +1,13 @@
 import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
-import type { ContentfulStatusCode } from "hono/utils/http-status";
+import type { ServerErrorStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
-import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters/index.ts";
+import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters/_internal/index.ts";
 import type { RouterOptions, StoryBookerUser } from "../types.ts";
 import { getStoreOrNull } from "../utils/store.ts";
 import { DEFAULT_LOCALE } from "./constants.ts";
 import { checkIsHTMLRequest } from "./request.ts";
+import { uiResultResponse } from "./ui-utils.ts";
 
 /**
  * A function type for parsing custom errors.
@@ -97,17 +98,18 @@ export function onUnhandledErrorHandler<User extends StoryBookerUser>(
     logger.error(`[${errorType}:${errorStatus}] ${errorMessage}`);
 
     if (options?.ui?.renderErrorPage && checkIsHTMLRequest(false, ctx.req.raw)) {
-      return ctx.html(
-        options.ui.renderErrorPage(parsedError, {
-          isAuthEnabled: Boolean(options.auth),
-          locale: DEFAULT_LOCALE,
-          logger,
-          url: ctx.req.url,
-          user: null,
-          adaptersMetadata: {},
-        }),
-        (errorStatus as ContentfulStatusCode) ?? 500,
-      );
+      const result = options.ui.renderErrorPage(parsedError, {
+        isAuthEnabled: Boolean(options.auth),
+        locale: DEFAULT_LOCALE,
+        logger,
+        url: ctx.req.url,
+        user: null,
+        adaptersMetadata: {},
+      });
+
+      return uiResultResponse(ctx, result, {
+        status: (errorStatus as ServerErrorStatusCode) ?? 500,
+      });
     }
 
     return new Response(errorMessage, { status: errorStatus ?? 500, statusText: errorType });

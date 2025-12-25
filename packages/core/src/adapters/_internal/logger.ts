@@ -1,4 +1,4 @@
-import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
+import type { StoryBookerAdapterMetadata } from "../../utils/adapter-utils.ts";
 
 // oxlint-disable no-console
 /**

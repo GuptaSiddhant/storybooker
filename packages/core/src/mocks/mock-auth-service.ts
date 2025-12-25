@@ -4,7 +4,7 @@ import {
   StoryBookerPermissionsAllEnabled,
   type AuthAdapter,
   type StoryBookerUser,
-} from "../adapters/auth.ts";
+} from "../adapters/_internal/auth.ts";
 
 export const mockUser: StoryBookerUser = {
   displayName: "Test User",

@@ -6,9 +6,9 @@ import type {
   ProjectType,
   StoryBookerUser,
   TagType,
-} from "../types";
-import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
-import type { LoggerAdapter } from "./logger";
+} from "../../types.ts";
+import type { StoryBookerAdapterMetadata } from "../../utils/adapter-utils.ts";
+import type { LoggerAdapter } from "./logger.ts";
 
 export type RenderedContent = string | Promise<string>;
 export type UIResult = Response | Promise<Response> | RenderedContent;

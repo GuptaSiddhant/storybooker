@@ -1,4 +1,4 @@
-import type { LoggerAdapter } from "../adapters/logger";
+import type { LoggerAdapter } from "../adapters/_internal/logger.ts";
 import { BuildsModel } from "../models/builds-model.ts";
 import { ProjectsModel } from "../models/projects-model.ts";
 import type { ProjectType } from "../models/projects-schema.ts";

@@ -1,5 +1,6 @@
 // oxlint-disable class-methods-use-this
 
+import { Buffer } from "node:buffer";
 import {
   StoryBookerPermissionsList,
   StoryBookerPermissionsAllEnabled,
@@ -9,8 +10,7 @@ import {
   type StoryBookerPermissionResource,
   type StoryBookerPermissionWithKey,
   type StoryBookerUser,
-} from "@storybooker/core/adapter/auth";
-import { Buffer } from "node:buffer";
+} from "./_internal/auth.ts";
 
 export type {
   StoryBookerPermission,
@@ -18,7 +18,7 @@ export type {
   StoryBookerPermissionKey,
   StoryBookerPermissionResource,
   StoryBookerPermissionWithKey,
-} from "@storybooker/core/adapter/auth";
+} from "./_internal/auth.ts";
 
 export interface AzureEasyAuthClientPrincipal {
   claims: { typ: string; val: string }[];

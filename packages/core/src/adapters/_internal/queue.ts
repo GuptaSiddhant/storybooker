@@ -1,5 +1,5 @@
-import type { StoryBookerAdapterMetadata } from "../utils/adapter-utils.ts";
-import type { LoggerAdapter } from "./logger";
+import type { StoryBookerAdapterMetadata } from "../../utils/adapter-utils.ts";
+import type { LoggerAdapter } from "./logger.ts";
 
 /**
  * Service adapter to interact with queueing service.

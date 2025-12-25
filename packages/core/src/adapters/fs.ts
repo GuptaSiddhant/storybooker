@@ -16,7 +16,7 @@ import {
   type DatabaseAdapterOptions,
   type StorageAdapter,
   type StoryBookerDatabaseDocument,
-} from "./index";
+} from "./_internal/index.ts";
 
 /**
  * Database adapter for StoryBooker while uses a file (json) in

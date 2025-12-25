@@ -1,11 +1,21 @@
-import * as S3 from "@aws-sdk/client-s3";
-import { StorageAdapterErrors, type StorageAdapter } from "@storybooker/core/adapter";
+import {
+  type S3Client,
+  CreateBucketCommand,
+  DeleteBucketCommand,
+  ListBucketsCommand,
+  ListObjectsV2Command,
+  DeleteObjectsCommand,
+  PutObjectCommand,
+  HeadObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { Buffer } from "node:buffer";
+import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
 
 export class AwsS3StorageService implements StorageAdapter {
-  #client: S3.S3Client;
+  #client: S3Client;
 
-  constructor(client: S3.S3Client) {
+  constructor(client: S3Client) {
     this.#client = client;
   }
 
@@ -14,9 +24,7 @@ export class AwsS3StorageService implements StorageAdapter {
   createContainer: StorageAdapter["createContainer"] = async (containerId, options) => {
     try {
       await this.#client.send(
-        new S3.CreateBucketCommand({
-          Bucket: genBucketNameFromContainerId(containerId),
-        }),
+        new CreateBucketCommand({ Bucket: genBucketNameFromContainerId(containerId) }),
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
@@ -27,9 +35,7 @@ export class AwsS3StorageService implements StorageAdapter {
   deleteContainer: StorageAdapter["deleteContainer"] = async (containerId, options) => {
     try {
       await this.#client.send(
-        new S3.DeleteBucketCommand({
-          Bucket: genBucketNameFromContainerId(containerId),
-        }),
+        new DeleteBucketCommand({ Bucket: genBucketNameFromContainerId(containerId) }),
         { abortSignal: options.abortSignal },
       );
     } catch (error) {
@@ -38,7 +44,7 @@ export class AwsS3StorageService implements StorageAdapter {
   };
 
   hasContainer: StorageAdapter["hasContainer"] = async (containerId, options) => {
-    const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
+    const buckets = await this.#client.send(new ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
     return Boolean(
@@ -47,7 +53,7 @@ export class AwsS3StorageService implements StorageAdapter {
   };
 
   listContainers: StorageAdapter["listContainers"] = async (options) => {
-    const buckets = await this.#client.send(new S3.ListBucketsCommand({}), {
+    const buckets = await this.#client.send(new ListBucketsCommand({}), {
       abortSignal: options.abortSignal,
     });
     // oxlint-disable-next-line no-non-null-assertion
@@ -60,7 +66,7 @@ export class AwsS3StorageService implements StorageAdapter {
       let objects: { Key: string }[] = [];
       if (typeof filePathsOrPrefix === "string") {
         const resp = await this.#client.send(
-          new S3.ListObjectsV2Command({
+          new ListObjectsV2Command({
             Bucket: bucket,
             Prefix: filePathsOrPrefix,
           }),
@@ -76,7 +82,7 @@ export class AwsS3StorageService implements StorageAdapter {
       }
 
       await this.#client.send(
-        new S3.DeleteObjectsCommand({
+        new DeleteObjectsCommand({
           Bucket: bucket,
           Delete: { Objects: objects },
         }),
@@ -97,7 +103,7 @@ export class AwsS3StorageService implements StorageAdapter {
     const promises = files.map(async ({ content, path, mimeType }) => {
       await this.#client
         .send(
-          new S3.PutObjectCommand({
+          new PutObjectCommand({
             Body: typeof content === "string" ? Buffer.from(content) : content,
             Bucket: bucket,
             ContentType: mimeType,
@@ -116,7 +122,7 @@ export class AwsS3StorageService implements StorageAdapter {
   hasFile: StorageAdapter["hasFile"] = async (containerId, filepath, options) => {
     try {
       await this.#client.send(
-        new S3.HeadObjectCommand({
+        new HeadObjectCommand({
           Bucket: genBucketNameFromContainerId(containerId),
           Key: filepath,
         }),
@@ -130,10 +136,9 @@ export class AwsS3StorageService implements StorageAdapter {
 
   downloadFile: StorageAdapter["downloadFile"] = async (containerId, filepath, options) => {
     const bucket = genBucketNameFromContainerId(containerId);
-    const resp = await this.#client.send(
-      new S3.GetObjectCommand({ Bucket: bucket, Key: filepath }),
-      { abortSignal: options.abortSignal },
-    );
+    const resp = await this.#client.send(new GetObjectCommand({ Bucket: bucket, Key: filepath }), {
+      abortSignal: options.abortSignal,
+    });
 
     if (!resp.Body) {
       throw new StorageAdapterErrors.FileDoesNotExistError(containerId, filepath);

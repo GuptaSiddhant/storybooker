@@ -1,5 +1,5 @@
 import { HTTPException } from "hono/http-exception";
-import type { StoryBookerPermissionAction } from "../adapters/auth.ts";
+import type { StoryBookerPermissionAction } from "../adapters/_internal/auth.ts";
 import {
   generateDatabaseCollectionId,
   generateStorageContainerId,

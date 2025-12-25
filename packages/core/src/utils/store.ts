@@ -6,7 +6,7 @@ import {
   createConsoleLoggerAdapter,
   type AuthAdapter,
   type LoggerAdapter,
-} from "../adapters/index.ts";
+} from "../adapters/_internal/index.ts";
 import type { RouterOptions, StoryBookerUser } from "../types.ts";
 import type { ErrorParser } from "../utils/error.ts";
 import { DEFAULT_LOCALE } from "./constants.ts";
