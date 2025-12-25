@@ -99,7 +99,7 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
     // Decode and parse the claims
     const decodedPrincipal = Buffer.from(principalHeader, "base64").toString("utf8");
 
-    const clientPrincipal: AzureEasyAuthClientPrincipal = JSON.parse(decodedPrincipal);
+    const clientPrincipal = JSON.parse(decodedPrincipal) as AzureEasyAuthClientPrincipal;
     const claims = clientPrincipal?.claims ?? [];
 
     const azpToken = claims.find((claim) => claim.typ === "azp")?.val;

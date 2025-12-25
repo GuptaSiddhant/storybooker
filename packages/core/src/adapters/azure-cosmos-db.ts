@@ -87,7 +87,7 @@ export class AzureCosmosDatabaseService implements DatabaseAdapter {
     try {
       const item = this.#db.container(collectionId).item(documentId);
       const response = await item.read({ abortSignal: options.abortSignal });
-      const document: Document = response.resource;
+      const document = response.resource as Document;
       document.id = documentId;
       return document;
     } catch (error) {

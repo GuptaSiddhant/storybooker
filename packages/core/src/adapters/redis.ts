@@ -129,8 +129,8 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
       } else if (listOptions.sort === "latest") {
         // Assume documents have a createdAt or similar timestamp field
         filteredDocs.sort((docA, docB) => {
-          const aTime = (docA as any).createdAt ?? (docA as any).timestamp ?? 0;
-          const bTime = (docB as any).createdAt ?? (docB as any).timestamp ?? 0;
+          const aTime = new Date(docA.createdAt).valueOf();
+          const bTime = new Date(docB.createdAt).valueOf();
           return bTime - aTime; // Descending order (latest first)
         });
       }
@@ -172,8 +172,7 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
       throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
-    const document: Document = JSON.parse(value);
-    return document;
+    return JSON.parse(value) as Document;
   };
 
   hasDocument: DatabaseAdapter["hasDocument"] = async (collectionId, documentId, _options) => {
@@ -220,7 +219,7 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
       throw new DatabaseAdapterErrors.DocumentDoesNotExistError(collectionId, documentId);
     }
 
-    const existingDoc = JSON.parse(existingValue);
+    const existingDoc = JSON.parse(existingValue) as Record<string, unknown>;
     const updatedDoc = { ...existingDoc, ...documentData };
 
     const value = JSON.stringify(updatedDoc);

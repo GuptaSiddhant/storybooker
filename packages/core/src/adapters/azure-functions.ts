@@ -19,8 +19,6 @@ import type { LoggerAdapter } from "./_internal/logger.ts";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
-export type * from "storybooker/types";
-
 /**
  * Minimal representation of Azure Functions App namespace
  * to register HTTP and Timer functions.
@@ -205,7 +203,7 @@ function parseCookieString(cookieString: string): Cookie {
     .map(([key, value]) => [key?.trim().toLowerCase(), value ?? "true"]);
 
   const [name, encodedValue] = first ?? [];
-  const attrs: Record<string, string> = Object.fromEntries(attributesArray);
+  const attrs = Object.fromEntries(attributesArray) as Record<string, string>;
 
   return {
     domain: attrs["domain"],

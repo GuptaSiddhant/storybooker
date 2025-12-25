@@ -4,6 +4,7 @@ import type { ServerErrorStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters/_internal/index.ts";
 import type { RouterOptions, StoryBookerUser } from "../types.ts";
+import { urlBuilderWithoutStore } from "../urls.ts";
 import { getStoreOrNull } from "../utils/store.ts";
 import { DEFAULT_LOCALE } from "./constants.ts";
 import { checkIsHTMLRequest } from "./request.ts";
@@ -105,6 +106,7 @@ export function onUnhandledErrorHandler<User extends StoryBookerUser>(
         url: ctx.req.url,
         user: null,
         adaptersMetadata: {},
+        urlBuilder: urlBuilderWithoutStore,
       });
 
       return uiResultResponse(ctx, result, {

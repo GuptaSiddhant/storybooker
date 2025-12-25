@@ -181,20 +181,19 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
       documents.sort(listOptions.sort);
     }
 
-    // Apply field selection (projection)
-    if (listOptions?.select && listOptions.select.length > 0) {
-      documents = documents.map((doc) => {
-        const projected = { id: doc.id } as Document;
-        // oxlint-disable-next-line no-non-null-assertion
-        for (const field of listOptions.select!) {
-          if (field in doc) {
-            // oxlint-disable-next-line no-explicit-any
-            (projected as any)[field] = (doc as any)[field];
-          }
-        }
-        return projected;
-      });
-    }
+    // // Apply field selection (projection)
+    // if (listOptions?.select && listOptions.select.length > 0) {
+    //   documents = documents.map((doc) => {
+    //     const projected = { id: doc.id } as Document;
+    //     // oxlint-disable-next-line no-non-null-assertion
+    //     for (const field of listOptions.select!) {
+    //       if (field in doc) {
+    //         projected[field] = doc[field];
+    //       }
+    //     }
+    //     return projected;
+    //   });
+    // }
 
     return documents;
   };
@@ -269,7 +268,9 @@ export class MySQLDatabaseAdapter implements DatabaseAdapter {
     }
 
     const existingData =
-      "data" in row && typeof row["data"] === "string" ? JSON.parse(row["data"]) : null;
+      "data" in row && typeof row["data"] === "string"
+        ? (JSON.parse(row["data"]) as Record<string, unknown>)
+        : null;
     const updatedData = { ...existingData, ...documentData };
 
     await this.#connection.execute(`UPDATE \`${tableName}\` SET data = ? WHERE id = ?`, [
