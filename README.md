@@ -4,6 +4,8 @@ Host your own StoryBooks management solution.
 
 Docs: https://storybooker.js.org
 
+[![pkg.pr.new](https://pkg.pr.new/badge/GuptaSiddhant/storybooker)](https://pkg.pr.new/~/GuptaSiddhant/storybooker)
+
 ## Supported hosts
 
 ### Azure Functions
