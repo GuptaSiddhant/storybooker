@@ -1,7 +1,7 @@
 import { css, Style } from "hono/css";
 import { html } from "hono/html";
 import type { JSX } from "hono/jsx";
-import { SERVICE_NAME } from "storybooker/~internal/constants";
+import { SERVICE_NAME } from "storybooker/_internal/constants";
 import { ASSETS } from "../utils/constants.ts";
 import { getUIStore } from "../utils/ui-store.ts";
 import { Icon } from "./icon.tsx";

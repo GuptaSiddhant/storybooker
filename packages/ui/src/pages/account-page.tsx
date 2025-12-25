@@ -1,5 +1,5 @@
-import type { RenderedContent } from "storybooker/~internal/adapter/ui";
-import type { StoryBookerUser } from "storybooker/~internal/types";
+import type { RenderedContent } from "storybooker/_internal/adapter/ui";
+import type { StoryBookerUser } from "storybooker/_internal/types";
 import { DestructiveButton } from "../components/button.tsx";
 import {
   DocumentHeader,

@@ -1,4 +1,4 @@
-import type { UIAdapter } from "storybooker/~internal/adapter/ui";
+import type { UIAdapter } from "storybooker/_internal/adapter/ui";
 import pkg from "../package.json" with { type: "json" };
 import { DEFAULT_DARK_THEME, DEFAULT_LIGHT_THEME, type BrandTheme } from "./styles/theme.ts";
 import { DEFAULT_STATIC_DIRS } from "./utils/constants.ts";

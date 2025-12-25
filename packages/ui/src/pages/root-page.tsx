@@ -1,7 +1,7 @@
 import { css } from "hono/css";
-import type { RenderedContent } from "storybooker/~internal/adapter/ui";
-import { SERVICE_NAME } from "storybooker/~internal/constants";
-import type { ProjectType } from "storybooker/~internal/types";
+import type { RenderedContent } from "storybooker/_internal/adapter/ui";
+import { SERVICE_NAME } from "storybooker/_internal/constants";
+import type { ProjectType } from "storybooker/_internal/types";
 import { Badge } from "../components/badge.tsx";
 import {
   DocumentHeader,

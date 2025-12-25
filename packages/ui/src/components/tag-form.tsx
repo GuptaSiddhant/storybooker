@@ -1,5 +1,5 @@
-import { TagTypes } from "storybooker/~internal/constants";
-import type { TagType } from "storybooker/~internal/types";
+import { TagTypes } from "storybooker/_internal/constants";
+import type { TagType } from "storybooker/_internal/types";
 import { getUIStore } from "../utils/ui-store.ts";
 import { LinkButton } from "./button.tsx";
 import { ErrorMessage } from "./error-message.tsx";

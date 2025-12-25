@@ -1,4 +1,4 @@
-import type { ProjectType } from "storybooker/~internal/types";
+import type { ProjectType } from "storybooker/_internal/types";
 import { getUIStore } from "../utils/ui-store.ts";
 import { Card, CardGrid } from "./card.tsx";
 import { LatestBuild } from "./latest-build.tsx";

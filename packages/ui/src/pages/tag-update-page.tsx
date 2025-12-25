@@ -1,5 +1,5 @@
-import type { RenderedContent } from "storybooker/~internal/adapter/ui";
-import type { ProjectType, TagType } from "storybooker/~internal/types";
+import type { RenderedContent } from "storybooker/_internal/adapter/ui";
+import type { ProjectType, TagType } from "storybooker/_internal/types";
 import {
   DocumentHeader,
   DocumentLayout,
