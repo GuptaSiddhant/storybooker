@@ -10,14 +10,14 @@ The Google BigTable can be used as database for StoryBooker.
 ## Install
 
 ```sh
-npm i @storybooker/gcp @google-cloud/bigtable
+npm i @storybooker/core @google-cloud/bigtable
 ```
 
 ## Usage
 
 ```js
 import { Bigtable } from "@google-cloud/bigtable";
-import { GcpBigtableDatabaseService } from "@storybooker/gcp/big-table";
+import { GcpBigtableDatabaseService } from "@storybooker/core/adapter/gcp-big-table";
 
 // Initialize the Bigtable client
 const client = new Bigtable();

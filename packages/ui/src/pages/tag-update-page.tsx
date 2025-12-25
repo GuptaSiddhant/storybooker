@@ -1,4 +1,4 @@
-import type { RenderedContent } from "@storybooker/core/adapter";
+import type { RenderedContent } from "@storybooker/core/adapter/~ui";
 import type { ProjectType, TagType } from "@storybooker/core/types";
 import {
   DocumentHeader,

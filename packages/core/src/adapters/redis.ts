@@ -1,14 +1,14 @@
 // oxlint-disable no-explicit-any
 // oxlint-disable no-unsafe-member-access
 
+import type { RedisClientType } from "redis";
 import {
   DatabaseAdapterErrors,
   type DatabaseAdapter,
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "@storybooker/core/adapter";
-import type { RedisClientType } from "redis";
+} from "./_internal/database.ts";
 
 /**
  * Redis database adapter for StoryBooker.

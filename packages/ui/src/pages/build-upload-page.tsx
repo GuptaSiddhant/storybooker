@@ -1,4 +1,4 @@
-import type { RenderedContent } from "@storybooker/core/adapter";
+import type { RenderedContent } from "@storybooker/core/adapter/~ui";
 import type { BuildType, BuildUploadVariant, ProjectType } from "@storybooker/core/types";
 import { BuildUploadForm } from "../components/build-upload-form.tsx";
 import {

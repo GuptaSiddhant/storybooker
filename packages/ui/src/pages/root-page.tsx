@@ -1,4 +1,4 @@
-import type { RenderedContent } from "@storybooker/core/adapter";
+import type { RenderedContent } from "@storybooker/core/adapter/~ui";
 import { SERVICE_NAME } from "@storybooker/core/constants";
 import type { ProjectType } from "@storybooker/core/types";
 import { css } from "hono/css";

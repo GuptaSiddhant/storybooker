@@ -44,6 +44,13 @@
   "devDependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
     "@aws-sdk/client-s3": "^3.0.0",
+    "@azure/cosmos": "^4.5.1",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/storage": "^7.0.0",
     "@types/decompress": "^4.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
@@ -52,18 +59,51 @@
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
+    "redis": "^5.10.0",
     "tsdown": "catalog:",
     "vitest": "catalog:"
   },
   "peerDependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/client-s3": "^3.0.0"
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@azure/cosmos": "^4.0.0",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/storage": "^7.0.0",
+    "redis": "^5.0.0"
   },
   "peerDependenciesMeta": {
     "@aws-sdk/client-dynamodb": {
       "optional": true
     },
     "@aws-sdk/client-s3": {
+      "optional": true
+    },
+    "@azure/cosmos": {
+      "optional": true
+    },
+    "@azure/data-tables": {
+      "optional": true
+    },
+    "@azure/functions": {
+      "optional": true
+    },
+    "@azure/storage-blob": {
+      "optional": true
+    },
+    "@google-cloud/bigtable": {
+      "optional": true
+    },
+    "@google-cloud/firestore": {
+      "optional": true
+    },
+    "@google-cloud/storage": {
+      "optional": true
+    },
+    "redis": {
       "optional": true
     }
   },
@@ -131,6 +171,26 @@
       "source": "./src/adapters/fs.ts",
       "default": "./dist/adapter/fs.mjs"
     },
+    "./adapter/gcp-big-table": {
+      "source": "./src/adapters/gcp-big-table.ts",
+      "default": "./dist/adapter/gcp-big-table.mjs"
+    },
+    "./adapter/gcp-firestore": {
+      "source": "./src/adapters/gcp-firestore.ts",
+      "default": "./dist/adapter/gcp-firestore.mjs"
+    },
+    "./adapter/gcp-storage": {
+      "source": "./src/adapters/gcp-storage.ts",
+      "default": "./dist/adapter/gcp-storage.mjs"
+    },
+    "./adapter/mysql": {
+      "source": "./src/adapters/mysql.ts",
+      "default": "./dist/adapter/mysql.mjs"
+    },
+    "./adapter/redis": {
+      "source": "./src/adapters/redis.ts",
+      "default": "./dist/adapter/redis.mjs"
+    },
     "./constants": {
       "source": "./src/utils/constants.ts",
       "default": "./dist/constants.mjs"
@@ -175,6 +235,11 @@
       "./adapter/azure-easy-auth": "./dist/adapter/azure-easy-auth.mjs",
       "./adapter/azure-functions": "./dist/adapter/azure-functions.mjs",
       "./adapter/fs": "./dist/adapter/fs.mjs",
+      "./adapter/gcp-big-table": "./dist/adapter/gcp-big-table.mjs",
+      "./adapter/gcp-firestore": "./dist/adapter/gcp-firestore.mjs",
+      "./adapter/gcp-storage": "./dist/adapter/gcp-storage.mjs",
+      "./adapter/mysql": "./dist/adapter/mysql.mjs",
+      "./adapter/redis": "./dist/adapter/redis.mjs",
       "./constants": "./dist/constants.mjs",
       "./mimes": "./dist/mimes.mjs",
       "./router": "./dist/router.mjs",

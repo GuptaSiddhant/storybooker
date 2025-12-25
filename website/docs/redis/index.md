@@ -10,13 +10,13 @@ The Redis database can be used as database for StoryBooker.
 ## Install
 
 ```sh
-npm i @storybooker/redis redis
+npm i @storybooker/core redis
 ```
 
 ## Usage
 
 ```js
-import { RedisDatabaseService } from "@storybooker/redis";
+import { RedisDatabaseService } from "@storybooker/core/adapter/redis";
 import { createClient } from "redis";
 
 // Your connection string

@@ -2,12 +2,6 @@
 
 Adapters to use GCP services with StoryBooker.
 
-## Install
-
-```sh
-npm i @storybooker/gcp
-```
-
 ## Adapters
 
 ### Hosting

@@ -26,7 +26,7 @@ To setup a simple app with StoryBooker and Azure Functions, create a new Azure F
   "main": "index.js",
   "dependencies": {
     "@azure/functions": "^4.0.0",
-    "@storybooker/azure": "latest"
+    "@storybooker/core": "latest"
   }
 }
 ```
@@ -37,7 +37,7 @@ To setup a simple app with StoryBooker and Azure Functions, create a new Azure F
 // @ts-check
 
 import { app } from "@azure/functions";
-import { registerStoryBookerRouter } from "@storybooker/azure/functions";
+import { registerStoryBookerRouter } from "@storybooker/core/adapter/azure-functions";
 
 registerStoryBookerRouter(app, {
   // provide your adapters here.
@@ -76,7 +76,7 @@ Add a settings file for local development to provide environment variables.
 
 ### Run Azure functions utility
 
-Install Azure Functions Core Tools: https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local
+Install Azure Functions Core Tools: https://learn.microsoft.com/en-us/core/core-functions/functions-run-local
 
 Run the following command to start the function app locally:
 

@@ -2,12 +2,6 @@
 
 Adapters to use Azure services with StoryBooker.
 
-## Install
-
-```sh
-npm i @storybooker/azure
-```
-
 ## Adapters
 
 ### Hosting

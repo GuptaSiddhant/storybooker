@@ -1,4 +1,4 @@
-import type { RenderedContent } from "@storybooker/core/adapter";
+import type { RenderedContent } from "@storybooker/core/adapter/~ui";
 import type { BuildStoryType, BuildType, ProjectType } from "@storybooker/core/types";
 import { BuildLinksFooter } from "../components/build-links.tsx";
 import { BuildProcessStatus } from "../components/build-process.tsx";

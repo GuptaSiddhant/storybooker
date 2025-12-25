@@ -10,14 +10,14 @@ The Azure Storage provides DataTables which can be used as database for StoryBoo
 ## Install
 
 ```sh
-npm i @storybooker/azure @azure/data-tables
+npm i @storybooker/core @azure/data-tables
 ```
 
 ## Usage
 
 ```js
 import { TableClient, TableServiceClient } from "@azure/data-tables";
-import { AzureDataTablesDatabaseService } from "@storybooker/azure/data-tables";
+import { AzureDataTablesDatabaseService } from "@storybooker/core/adapter/azure/data-tables";
 
 // Your connection string
 const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];

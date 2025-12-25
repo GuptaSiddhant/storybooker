@@ -2,12 +2,6 @@
 
 Adapters to use AWS services with StoryBooker.
 
-## Install
-
-```sh
-npm i @storybooker/aws
-```
-
 ## Adapters
 
 ### Hosting

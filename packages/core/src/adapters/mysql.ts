@@ -7,7 +7,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "@storybooker/core/adapter";
+} from "./_internal/database.ts";
 
 // Define a generic SQL connection interface that works with multiple MySQL libraries
 export interface MySQLConnection {
