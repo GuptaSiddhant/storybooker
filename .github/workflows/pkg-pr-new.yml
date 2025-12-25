@@ -1,5 +1,8 @@
-name: Publish Any Commit
-on: [push, pull_request]
+name: Pkg-PR-New
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
 
 permissions: {}
 
