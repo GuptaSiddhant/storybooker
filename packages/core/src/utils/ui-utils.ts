@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import type { UIAdapterOptions, UIResult } from "../adapters/_internal/ui.ts";
+import { urlBuilderWithoutStore } from "../urls.ts";
 import { getStore } from "./store.ts";
 
 export function createUIAdapterOptions(): UIAdapterOptions {
@@ -10,6 +11,7 @@ export function createUIAdapterOptions(): UIAdapterOptions {
     locale,
     logger,
     url,
+    urlBuilder: urlBuilderWithoutStore,
     user,
     adaptersMetadata: {
       auth: auth?.metadata,

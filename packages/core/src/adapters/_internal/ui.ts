@@ -7,6 +7,7 @@ import type {
   StoryBookerUser,
   TagType,
 } from "../../types.ts";
+import type { UrlBuilder } from "../../urls.ts";
 import type { StoryBookerAdapterMetadata } from "../../utils/adapter-utils.ts";
 import type { LoggerAdapter } from "./logger.ts";
 
@@ -89,6 +90,8 @@ export interface UIAdapterOptions {
   url: string;
   /** Current locale */
   locale: string;
+  /** URL builder */
+  urlBuilder: UrlBuilder;
   /** Metadata about all adapters */
   adaptersMetadata: {
     auth?: StoryBookerAdapterMetadata;

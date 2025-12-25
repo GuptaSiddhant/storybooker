@@ -1,5 +1,5 @@
 import type { ProjectType, TagType } from "storybooker/~internal/types";
-import { urlJoin } from "storybooker/~internal/url";
+import { urlJoin } from "storybooker/~internal/utils";
 import { getUIStore } from "../utils/ui-store.ts";
 import { Icon } from "./icon.tsx";
 import { LatestBuild } from "./latest-build.tsx";

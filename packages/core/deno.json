@@ -18,7 +18,6 @@
     "./~internal/mimes": "./src/utils/mime-utils.ts",
     "./~internal/router": "./src/routers/_app-router.ts",
     "./~internal/types": "./src/types.ts",
-    "./~internal/url": "./src/urls.ts",
     "./~internal/utils": "./src/utils/index.ts",
     "./aws-dynamodb": "./src/adapters/aws-dynamodb.ts",
     "./aws-s3": "./src/adapters/aws-s3.ts",

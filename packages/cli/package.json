@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/cli",
-  "version": "0.21.0",
+  "version": "0.22.0-canary.0",
   "type": "module",
   "bin": "./dist/index.js",
   "description": "Storybooker CLI for uploading builds and files.",

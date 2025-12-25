@@ -41,6 +41,7 @@ export type {
   TagsListResultType,
 } from "./models/tags-schema.ts";
 export type { ErrorParser, ParsedError } from "./utils/error.ts";
+export type { UrlBuilder } from "./urls.ts";
 
 /**
  * Options for creating a router.

@@ -1,6 +1,6 @@
 {
   "name": "storybooker",
-  "version": "0.21.0",
+  "version": "0.22.0-canary.0",
   "type": "module",
   "description": "Manage Storybook instances on your own infrastructure with ease.",
   "author": {
@@ -155,10 +155,6 @@
       "source": "./src/types.ts",
       "default": "./dist/~internal/types.mjs"
     },
-    "./~internal/url": {
-      "source": "./src/urls.ts",
-      "default": "./dist/~internal/url.mjs"
-    },
     "./~internal/utils": {
       "source": "./src/utils/index.ts",
       "default": "./dist/~internal/utils.mjs"
@@ -231,7 +227,6 @@
       "./~internal/mimes": "./dist/~internal/mimes.mjs",
       "./~internal/router": "./dist/~internal/router.mjs",
       "./~internal/types": "./dist/~internal/types.mjs",
-      "./~internal/url": "./dist/~internal/url.mjs",
       "./~internal/utils": "./dist/~internal/utils.mjs",
       "./aws-dynamodb": "./dist/aws-dynamodb.mjs",
       "./aws-s3": "./dist/aws-s3.mjs",

@@ -33,10 +33,14 @@ jobs:
           pkgDirs=($(ls -d ./packages/*/))
           for i in "${pkgDirs[@]}"; do
             dirname=$(basename "$i")
-            pkgNames+=("@storybooker/$dirname")            
+            if [[ "$dirname" == "core" ]]; then
+              pkgNames+=("storybooker")
+            else
+              pkgNames+=("@storybooker/$dirname")            
+            fi
           done
 
-          npx -y turbo@canary prune ${pkgNames[@]}           
+          npx -y turbo prune ${pkgNames[@]}           
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts
@@ -103,7 +107,7 @@ jobs:
       - name: Setup Turbo
         id: setup
         run: |
-          npx -y turbo@canary prune storybooker
+          npx -y turbo prune storybooker
           node scripts/prune-jsr-pkg-json.ts ./out/package.json
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
