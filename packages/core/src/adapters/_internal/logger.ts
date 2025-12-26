@@ -28,14 +28,15 @@ export interface LoggerAdapter {
   log: (...args: unknown[]) => void;
 }
 
-export function createConsoleLoggerAdapter(): LoggerAdapter {
-  return {
-    metadata: {
-      name: "console",
-    },
+/**
+ * Logger adapter that logs to console.
+ */
+export const consoleLoggerAdapter: LoggerAdapter = {
+  metadata: {
+    name: "console",
+  },
 
-    debug: console.debug.bind(console),
-    error: console.error.bind(console),
-    log: console.log.bind(console),
-  };
-}
+  debug: console.debug.bind(console),
+  error: console.error.bind(console),
+  log: console.log.bind(console),
+};

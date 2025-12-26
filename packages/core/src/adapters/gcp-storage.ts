@@ -4,9 +4,43 @@ import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
 
+/**
+ * Google Cloud Storage implementation of the StorageAdapter interface.
+ *
+ * @classdesc
+ * Provides file storage operations for StoryBooker using Google Cloud Storage as the backend.
+ * Supports bucket and object management with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { Storage } from "@google-cloud/storage";
+ * import { GcpGcsStorageService } from "storybooker/gcp-storage";
+ *
+ * // Create Cloud Storage client
+ * const client = new Storage({ projectId: "my-project" });
+ * // Initialize the storage adapter
+ * const storage = new GcpGcsStorageService(client);
+ * // Use the storage adapter with StoryBooker
+ * const router = createHonoRouter({ storage });
+ * ```
+ *
+ * @see {@link https://cloud.google.com/storage/docs | Google Cloud Storage Documentation}
+ */
 export class GcpGcsStorageService implements StorageAdapter {
   #client: Storage;
 
+  /**
+   * Creates a new Google Cloud Storage adapter instance.
+   *
+   * @param client - The authenticated Storage client instance for connecting to Google Cloud Storage
+   *
+   * @example
+   * ```ts
+   * import { Storage } from "@google-cloud/storage";
+   * const client = new Storage({ projectId: "my-project" });
+   * const storage = new GcpGcsStorageService(client);
+   * ```
+   */
   constructor(client: Storage) {
     this.#client = client;
   }

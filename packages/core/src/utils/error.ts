@@ -2,7 +2,7 @@ import type { ErrorHandler, MiddlewareHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
 import type { ServerErrorStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
-import { createConsoleLoggerAdapter, type LoggerAdapter } from "../adapters/_internal/index.ts";
+import { consoleLoggerAdapter, type LoggerAdapter } from "../adapters/_internal/logger.ts";
 import type { RouterOptions, StoryBookerUser } from "../types.ts";
 import { urlBuilderWithoutStore } from "../urls.ts";
 import { getStoreOrNull } from "../utils/store.ts";
@@ -92,7 +92,7 @@ export function onUnhandledErrorHandler<User extends StoryBookerUser>(
     if (error instanceof Response) {
       return error;
     }
-    const logger = options.logger ?? createConsoleLoggerAdapter();
+    const logger = options.logger ?? consoleLoggerAdapter;
 
     const parsedError = parseErrorMessage(error);
     const { errorMessage, errorStatus, errorType } = parsedError;

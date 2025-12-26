@@ -9,9 +9,43 @@ import {
   type StoryBookerDatabaseDocument,
 } from "./_internal/database.ts";
 
+/**
+ * AWS DynamoDB implementation of the DatabaseAdapter interface.
+ *
+ * @classdesc
+ * Provides database operations for StoryBooker using AWS DynamoDB as the backend.
+ * Supports NoSQL tables and items with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+ * import { AwsDynamoDatabaseService } from "storybooker/aws-dynamodb";
+ *
+ * // Create DynamoDB client
+ * const client = new DynamoDBClient({ region: "us-east-1" });
+ * // Initialize the database adapter
+ * const database = new AwsDynamoDatabaseService(client);
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://docs.aws.amazon.com/dynamodb/ | AWS DynamoDB Documentation}
+ */
 export class AwsDynamoDatabaseService implements DatabaseAdapter {
   #client: Dynamo.DynamoDBClient;
 
+  /**
+   * Creates a new AWS DynamoDB database adapter instance.
+   *
+   * @param client - The authenticated DynamoDBClient instance for connecting to AWS DynamoDB
+   *
+   * @example
+   * ```ts
+   * import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+   * const client = new DynamoDBClient({ region: "us-east-1" });
+   * const database = new AwsDynamoDatabaseService(client);
+   * ```
+   */
   constructor(client: Dynamo.DynamoDBClient) {
     this.#client = client;
   }

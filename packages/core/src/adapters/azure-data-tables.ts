@@ -7,12 +7,52 @@ import {
   type StoryBookerDatabaseDocument,
 } from "./_internal/database.ts";
 
+/**
+ * Factory function type for creating Azure Table clients.
+ */
 export type TableClientGenerator = (tableName: string) => TableClient;
 
+/**
+ * Azure Data Tables implementation of the DatabaseAdapter interface.
+ *
+ * @classdesc
+ * Provides database operations for StoryBooker using Azure Data Tables as the backend.
+ * Supports NoSQL tables and entities with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { TableServiceClient, AzureNamedKeyCredential } from "@azure/data-tables";
+ * import { AzureDataTablesDatabaseService } from "storybooker/azure-data-tables";
+ *
+ * // Create Azure Tables client
+ * const credential = new AzureNamedKeyCredential(accountName, accountKey);
+ * const serviceClient = new TableServiceClient(endpoint, credential);
+ * const tableClientGenerator = (tableName) => serviceClient.getTableClient(tableName);
+ * // Initialize the database adapter
+ * const database = new AzureDataTablesDatabaseService(serviceClient, tableClientGenerator);
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://docs.microsoft.com/azure/storage/tables/ | Azure Data Tables Documentation}
+ */
 export class AzureDataTablesDatabaseService implements DatabaseAdapter {
   #serviceClient: TableServiceClient;
   #tableClientGenerator: TableClientGenerator;
 
+  /**
+   * Creates a new Azure Data Tables database adapter instance.
+   *
+   * @param serviceClient - The authenticated TableServiceClient instance for connecting to Azure Data Tables
+   * @param tableClientGenerator - A factory function to generate TableClient instances for specific tables
+   *
+   * @example
+   * ```ts
+   * const serviceClient = new TableServiceClient(endpoint, credential);
+   * const tableClientGenerator = (tableName) => serviceClient.getTableClient(tableName);
+   * const database = new AzureDataTablesDatabaseService(serviceClient, tableClientGenerator);
+   * ```
+   */
   constructor(serviceClient: TableServiceClient, tableClientGenerator: TableClientGenerator) {
     this.#serviceClient = serviceClient;
     this.#tableClientGenerator = tableClientGenerator;

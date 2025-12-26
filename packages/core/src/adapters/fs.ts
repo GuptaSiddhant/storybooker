@@ -11,12 +11,11 @@ import { Readable, type Stream } from "node:stream";
 import type { ReadableStream as WebReadableStream } from "node:stream/web";
 import {
   DatabaseAdapterErrors,
-  StorageAdapterErrors,
   type DatabaseAdapter,
   type DatabaseAdapterOptions,
-  type StorageAdapter,
   type StoryBookerDatabaseDocument,
-} from "./_internal/index.ts";
+} from "./_internal/database.ts";
+import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
 
 /**
  * Database adapter for StoryBooker while uses a file (json) in

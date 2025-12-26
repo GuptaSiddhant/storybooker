@@ -19,7 +19,6 @@
       "outputLogs": "new-only"
     },
     "lint": {
-      "dependsOn": ["^build"],
       "outputLogs": "new-only"
     },
     "publish:jsr": { "cache": false },

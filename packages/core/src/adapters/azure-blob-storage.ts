@@ -3,9 +3,43 @@ import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
 import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
 
+/**
+ * Azure Blob Storage implementation of the StorageAdapter interface.
+ *
+ * @classdesc
+ * Provides file storage operations for StoryBooker using Azure Blob Storage as the backend.
+ * Supports container and blob management with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { BlobServiceClient } from "@azure/storage-blob";
+ * import { AzureBlobStorageService } from "storybooker/azure-blob-storage";
+ *
+ * // Create Blob Storage client
+ * const client = BlobServiceClient.fromConnectionString(connectionString);
+ * // Initialize the storage adapter
+ * const storage = new AzureBlobStorageService(client);
+ * // Use the storage adapter with StoryBooker
+ * const router = createHonoRouter({ storage });
+ * ```
+ *
+ * @see {@link https://docs.microsoft.com/azure/storage/blobs/ | Azure Blob Storage Documentation}
+ */
 export class AzureBlobStorageService implements StorageAdapter {
   #client: BlobServiceClient;
 
+  /**
+   * Creates a new Azure Blob Storage adapter instance.
+   *
+   * @param client - The authenticated BlobServiceClient instance for connecting to Azure Blob Storage
+   *
+   * @example
+   * ```ts
+   * import { BlobServiceClient } from "@azure/storage-blob";
+   * const client = BlobServiceClient.fromConnectionString(connectionString);
+   * const storage = new AzureBlobStorageService(client);
+   * ```
+   */
   constructor(client: BlobServiceClient) {
     this.#client = client;
   }

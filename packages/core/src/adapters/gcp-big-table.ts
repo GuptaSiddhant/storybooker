@@ -10,9 +10,45 @@ import {
 type ColumnFamily = "cf1";
 const COLUMN_FAMILY: ColumnFamily = "cf1";
 
+/**
+ * Google Cloud Bigtable implementation of the DatabaseAdapter interface.
+ *
+ * @classdesc
+ * Provides database operations for StoryBooker using Google Cloud Bigtable as the backend.
+ * Supports NoSQL tables and rows with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { Bigtable } from "@google-cloud/bigtable";
+ * import { GcpBigtableDatabaseAdapter } from "storybooker/gcp-big-table";
+ *
+ * // Create Bigtable client
+ * const client = new Bigtable({ projectId: "my-project" });
+ * // Initialize the database adapter
+ * const database = new GcpBigtableDatabaseAdapter(client, "MyInstance");
+ * await database.init({ abortSignal });
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://cloud.google.com/bigtable/docs | Google Cloud Bigtable Documentation}
+ */
 export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
   #instance: Instance;
 
+  /**
+   * Creates a new Google Cloud Bigtable database adapter instance.
+   *
+   * @param client - The authenticated Bigtable client instance for connecting to Google Cloud Bigtable
+   * @param instanceName - The name of the Bigtable instance to use (defaults to "StoryBooker")
+   *
+   * @example
+   * ```ts
+   * import { Bigtable } from "@google-cloud/bigtable";
+   * const client = new Bigtable({ projectId: "my-project" });
+   * const database = new GcpBigtableDatabaseAdapter(client, "MyInstance");
+   * ```
+   */
   constructor(client: Bigtable, instanceName = "StoryBooker") {
     this.#instance = client.instance(instanceName);
   }

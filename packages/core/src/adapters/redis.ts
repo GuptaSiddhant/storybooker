@@ -11,18 +11,49 @@ import {
 } from "./_internal/database.ts";
 
 /**
- * Redis database adapter for StoryBooker.
- * Uses key prefixes to simulate collections since Redis is key-value store.
+ * Redis implementation of the DatabaseAdapter interface.
  *
- * Key structure: `collection:{collectionId}:doc:{documentId}`
- * Collections list key: `collections`
+ * @classdesc
+ * Provides database operations for StoryBooker using Redis as the backend.
+ * Uses key prefixes to simulate collections since Redis is a key-value store.
+ * Compatible with all Redis services (Redis Cloud, AWS ElastiCache, Azure Cache, etc.).
  *
- * Compatible with all Redis services (Redis Cloud, AWS ElastiCache, Azure Cache, etc.)
+ * Key structure:
+ * - Collections list: `{prefix}:collections`
+ * - Documents: `{prefix}:collection:{collectionId}:doc:{documentId}`
+ *
+ * @example
+ * ```ts
+ * import { createClient } from "redis";
+ * import { RedisDatabaseAdapter } from "storybooker/redis";
+ *
+ * // Create Redis client
+ * const client = createClient({ url: "redis://localhost:6379" });
+ * // Initialize the database adapter
+ * const database = new RedisDatabaseAdapter(client, "sbr");
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://redis.io/docs/ | Redis Documentation}
  */
 export class RedisDatabaseAdapter implements DatabaseAdapter {
   #client: RedisClientType;
   #keyPrefix: string;
 
+  /**
+   * Creates a new Redis database adapter instance.
+   *
+   * @param client - The authenticated RedisClientType instance for connecting to Redis
+   * @param keyPrefix - The prefix for all keys stored in Redis (defaults to "sbr")
+   *
+   * @example
+   * ```ts
+   * import { createClient } from "redis";
+   * const client = createClient({ url: "redis://localhost:6379" });
+   * const database = new RedisDatabaseAdapter(client, "storybooker");
+   * ```
+   */
   constructor(client: RedisClientType, keyPrefix = "sbr") {
     this.#client = client;
     this.#keyPrefix = keyPrefix;

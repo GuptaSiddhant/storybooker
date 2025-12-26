@@ -9,7 +9,12 @@ import {
   type StoryBookerDatabaseDocument,
 } from "./_internal/database.ts";
 
-// Define a generic SQL connection interface that works with multiple MySQL libraries
+/**
+ * Generic SQL connection interface compatible with multiple MySQL libraries.
+ *
+ * This interface works with mysql2, mysql, and other MySQL libraries
+ * that implement execute() and query() methods.
+ */
 export interface MySQLConnection {
   connect?(): Promise<void>;
   execute<Data>(query: string, params?: unknown[]): Promise<[Data]>;
@@ -18,21 +23,57 @@ export interface MySQLConnection {
 }
 
 /**
- * MySQL database adapter for StoryBooker.
+ * MySQL implementation of the DatabaseAdapter interface.
+ *
+ * @classdesc
+ * Provides database operations for StoryBooker using MySQL as the backend.
  * Uses tables to represent collections and rows to represent documents.
+ * Compatible with mysql2, mysql, and other MySQL libraries.
  *
  * Table structure:
- * - Each collection becomes a table with name: `sb_{collectionId}`
- * - Each table has columns: id (VARCHAR PRIMARY KEY), data (JSON), created_at (TIMESTAMP), updated_at (TIMESTAMP)
- * - Collections metadata stored in `sb_collections` table
+ * - Collections metadata: `{prefix}_collections`
+ * - Collection tables: `{prefix}_{collectionId}`
+ * - Each table has columns: id (VARCHAR PRIMARY KEY), data (JSON), created_at, updated_at
  *
- * Compatible with mysql2, mysql, and other MySQL libraries that implement the connection interface.
+ * @example
+ * ```ts
+ * import mysql from "mysql2/promise";
+ * import { MySQLDatabaseAdapter } from "storybooker/mysql";
+ *
+ * // Create MySQL connection
+ * const connection = await mysql.createConnection({
+ *   host: "localhost",
+ *   user: "root",
+ *   password: "password",
+ *   database: "storybooker",
+ * });
+ * // Initialize the database adapter
+ * const database = new MySQLDatabaseAdapter(connection, "sb");
+ * await database.init({ abortSignal });
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://dev.mysql.com/doc/ | MySQL Documentation}
  */
 export class MySQLDatabaseAdapter implements DatabaseAdapter {
   #connection: MySQLConnection;
   #tablePrefix: string;
 
-  constructor(connection: MySQLConnection, tablePrefix = "sb") {
+  /**
+   * Creates a new MySQL database adapter instance.
+   *
+   * @param connection - The MySQL connection object implementing the MySQLConnection interface
+   * @param tablePrefix - The prefix for all tables created in MySQL (defaults to "sbr")
+   *
+   * @example
+   * ```ts
+   * import mysql from "mysql2/promise";
+   * const connection = await mysql.createConnection({ host, user, password, database });
+   * const database = new MySQLDatabaseAdapter(connection, "sbr");
+   * ```
+   */
+  constructor(connection: MySQLConnection, tablePrefix = "sbr") {
     this.#connection = connection;
     this.#tablePrefix = tablePrefix;
   }

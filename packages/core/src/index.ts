@@ -2,7 +2,8 @@ import { SuperHeaders } from "@remix-run/headers";
 import { Hono } from "hono";
 import { logger as loggerMiddleware } from "hono/logger";
 import type { TimingVariables } from "hono/timing";
-import { createConsoleLoggerAdapter, type StoryBookerUser } from "./adapters/_internal/index.ts";
+import type { StoryBookerUser } from "./adapters/_internal/auth.ts";
+import { consoleLoggerAdapter } from "./adapters/_internal/logger.ts";
 import { handlePurge, type HandlePurge } from "./handlers/handle-purge.ts";
 import { appRouter } from "./routers/_app-router.ts";
 import type { PurgeHandlerOptions, RouterOptions } from "./types.ts";
@@ -28,7 +29,7 @@ export { appRouter, openapiConfig } from "./routers/_app-router.ts";
 export function createHonoRouter<User extends StoryBookerUser>(
   options: RouterOptions<User>,
 ): Hono<{ Variables: TimingVariables }> {
-  const logger = options.logger ?? createConsoleLoggerAdapter();
+  const logger = options.logger ?? consoleLoggerAdapter;
   const middlewares = options.config?.middlewares ?? [];
   const initPromises = Promise.allSettled([
     options.auth?.init?.({ logger }).catch(logger.error),
@@ -55,7 +56,7 @@ export function createHonoRouter<User extends StoryBookerUser>(
  * Note: The latest build on project's default branch is not deleted.
  */
 export function createPurgeHandler(options: PurgeHandlerOptions): HandlePurge {
-  const logger = options.logger ?? createConsoleLoggerAdapter();
+  const logger = options.logger ?? consoleLoggerAdapter;
 
   return async (...params: Parameters<HandlePurge>): Promise<void> => {
     const dummyRequest = new Request("http://0.0.0.0/");

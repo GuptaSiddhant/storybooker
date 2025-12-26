@@ -20,6 +20,13 @@ export type {
   StoryBookerPermissionWithKey,
 } from "./_internal/auth.ts";
 
+/**
+ * Azure Easy Auth client principal structure.
+ *
+ * @description
+ * Represents the decoded user principal object from Azure Easy Auth.
+ * This is extracted from the `x-ms-client-principal` header.
+ */
 export interface AzureEasyAuthClientPrincipal {
   claims: { typ: string; val: string }[];
   auth_typ: string;
@@ -27,26 +34,52 @@ export interface AzureEasyAuthClientPrincipal {
   role_typ: string;
 }
 
+/**
+ * Extended user object for Azure Easy Auth.
+ *
+ * @description
+ * Extends StoryBookerUser with Azure Easy Auth-specific properties
+ * including roles, user type, and the original client principal.
+ */
 export interface AzureEasyAuthUser extends StoryBookerUser {
   roles: string[] | null;
   type: "application" | "user";
   clientPrincipal?: AzureEasyAuthClientPrincipal;
 }
 
-export type AuthAdapterAuthorise<AuthUser extends StoryBookerUser = StoryBookerUser> = (
+/**
+ * Custom authorization function for Azure Easy Auth.
+ *
+ * @description
+ * Function to determine if a user has permission to perform a specific action.
+ * Called for each permission during user authentication.
+ *
+ * @param permission - The permission being checked
+ * @param user - The user object (without permissions)
+ * @returns `true` if the user is authorized, `false` otherwise
+ */
+export type AzureEasyAuthAdapterAuthorise<AuthUser extends StoryBookerUser = StoryBookerUser> = (
   permission: StoryBookerPermissionWithKey,
   user: Omit<AuthUser, "permissions">,
 ) => boolean;
 
 /**
- * Modify the final user details object created from EasyAuth Client Principal.
+ * Function to modify user details after authentication.
+ *
+ * @description
+ * Allows customization of the user object created from Azure Easy Auth.
+ * Can be used to add additional properties or transform existing ones.
+ *
+ * @param user - The user object created from the client principal
+ * @param options - Common options like abortSignal
+ * @returns The modified user object
  */
-export type ModifyUserDetails = <User extends Omit<AzureEasyAuthUser, "permissions">>(
+export type AzureEasyAuthModifyUserDetails = <User extends Omit<AzureEasyAuthUser, "permissions">>(
   user: User,
   options: AuthAdapterOptions,
 ) => User | Promise<User>;
 
-const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = (permission, user) => {
+const DEFAULT_AUTHORISE: AzureEasyAuthAdapterAuthorise<AzureEasyAuthUser> = (permission, user) => {
   if (!user) {
     return false;
   }
@@ -58,31 +91,75 @@ const DEFAULT_AUTHORISE: AuthAdapterAuthorise<AzureEasyAuthUser> = (permission, 
   return Boolean(user.roles && user.roles.length > 0);
 };
 
-const DEFAULT_MODIFY_USER: ModifyUserDetails = (user) => user;
+const DEFAULT_MODIFY_USER: AzureEasyAuthModifyUserDetails = (user) => user;
 
 /**
- * StoryBooker Auth adapter for Azure EasyAuth.
+ * Azure Easy Auth implementation of the AuthAdapter interface.
+ *
+ * @classdesc
+ * Provides authentication for StoryBooker using Azure Easy Auth (App Service Authentication).
+ * Handles user authentication through Azure AD, social providers, or custom authentication
+ * configured in Azure App Service.
  *
  * @example
  * ```ts
+ * import { AzureEasyAuthService } from "storybooker/azure-easy-auth";
+ *
+ * // Basic usage with default settings
  * const auth = new AzureEasyAuthService();
+ *
+ * // With custom authorization logic
+ * const auth = new AzureEasyAuthService({
+ *   authorise: (permission, user) => {
+ *     // Custom permission logic
+ *     if (permission.action === "write") {
+ *       return user.roles?.includes("admin") ?? false;
+ *     }
+ *     return true;
+ *   },
+ * });
+ *
+ * // Use with StoryBooker
+ * const router = createHonoRouter({ auth });
  * ```
+ *
+ * @see {@link https://learn.microsoft.com/azure/app-service/overview-authentication-authorization | Azure Easy Auth Documentation}
  */
 export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
-  #authorise: AuthAdapterAuthorise<AzureEasyAuthUser>;
-  #modifyUserDetails: ModifyUserDetails;
+  #authorise: AzureEasyAuthAdapterAuthorise<AzureEasyAuthUser>;
+  #modifyUserDetails: AzureEasyAuthModifyUserDetails;
 
   metadata: AuthAdapter["metadata"] = { name: "Azure Easy Auth" };
 
+  /**
+   * Creates a new Azure Easy Auth adapter instance.
+   *
+   * @param options - Configuration options for the adapter
+   * @param options.authorise - Custom function to authorize permissions for users (defaults to allowing reads for all, writes for users with roles)
+   * @param options.modifyUserDetails - Function to modify user details after authentication (defaults to no modification)
+   *
+   * @example
+   * ```ts
+   * const auth = new AzureEasyAuthService({
+   *   authorise: (permission, user) => {
+   *     return user.roles?.includes("editor") ?? false;
+   *   },
+   *   modifyUserDetails: async (user, options) => {
+   *     // Fetch additional user data
+   *     return { ...user, customField: "value" };
+   *   },
+   * });
+   * ```
+   */
   constructor(options?: {
     /**
      * Custom function to authorise permission for user
      */
-    authorise?: AuthAdapterAuthorise<AzureEasyAuthUser>;
+    authorise?: AzureEasyAuthAdapterAuthorise<AzureEasyAuthUser>;
     /**
      * Modify the final user details object created from EasyAuth Client Principal.
      */
-    modifyUserDetails?: ModifyUserDetails;
+    modifyUserDetails?: AzureEasyAuthModifyUserDetails;
   }) {
     this.#authorise = options?.authorise ?? DEFAULT_AUTHORISE;
     this.#modifyUserDetails = options?.modifyUserDetails ?? DEFAULT_MODIFY_USER;
@@ -156,7 +233,7 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
 }
 
 function authoriseUserPermissions(
-  authorise: AuthAdapterAuthorise<AzureEasyAuthUser>,
+  authorise: AzureEasyAuthAdapterAuthorise<AzureEasyAuthUser>,
   user: Omit<AzureEasyAuthUser, "permissions">,
 ): AzureEasyAuthUser["permissions"] {
   const permissions: AzureEasyAuthUser["permissions"] = {};

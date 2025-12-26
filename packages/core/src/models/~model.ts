@@ -1,12 +1,11 @@
+import type { StoryBookerPermissionAction } from "../adapters/_internal/auth.ts";
 import type {
   DatabaseAdapter,
   DatabaseAdapterOptions,
-  LoggerAdapter,
-  StorageAdapter,
-  StorageAdapterOptions,
   StoryBookerDatabaseDocument,
-  StoryBookerPermissionAction,
-} from "../adapters/_internal/index.ts";
+} from "../adapters/_internal/database.ts";
+import type { LoggerAdapter } from "../adapters/_internal/logger.ts";
+import type { StorageAdapter, StorageAdapterOptions } from "../adapters/_internal/storage.ts";
 import { parseErrorMessage } from "../utils/error.ts";
 import { getStore } from "../utils/store.ts";
 

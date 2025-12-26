@@ -12,9 +12,43 @@ import {
 import { Buffer } from "node:buffer";
 import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
 
+/**
+ * AWS S3 implementation of the StorageAdapter interface.
+ *
+ * @classdesc
+ * Provides file storage operations for StoryBooker using AWS S3 as the backend.
+ * Supports bucket and object management with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { S3Client } from "@aws-sdk/client-s3";
+ * import { AwsS3StorageService } from "storybooker/aws-s3";
+ *
+ * // Create S3 client
+ * const client = new S3Client({ region: "us-east-1" });
+ * // Initialize the storage adapter
+ * const storage = new AwsS3StorageService(client);
+ * // Use the storage adapter with StoryBooker
+ * const router = createHonoRouter({ storage });
+ * ```
+ *
+ * @see {@link https://docs.aws.amazon.com/s3/ | AWS S3 Documentation}
+ */
 export class AwsS3StorageService implements StorageAdapter {
   #client: S3Client;
 
+  /**
+   * Creates a new AWS S3 storage adapter instance.
+   *
+   * @param client - The authenticated S3Client instance for connecting to AWS S3
+   *
+   * @example
+   * ```ts
+   * import { S3Client } from "@aws-sdk/client-s3";
+   * const client = new S3Client({ region: "us-east-1" });
+   * const storage = new AwsS3StorageService(client);
+   * ```
+   */
   constructor(client: S3Client) {
     this.#client = client;
   }

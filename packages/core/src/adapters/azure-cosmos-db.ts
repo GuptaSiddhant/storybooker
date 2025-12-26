@@ -7,9 +7,44 @@ import {
   type StoryBookerDatabaseDocument,
 } from "./_internal/database.ts";
 
+/**
+ * Azure Cosmos DB implementation of the DatabaseAdapter interface.
+ *
+ * @classdesc
+ * Provides database operations for StoryBooker using Azure Cosmos DB as the backend.
+ * Supports NoSQL collections and documents with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { CosmosClient } from "@azure/cosmos";
+ * import { AzureCosmosDatabaseService } from "storybooker/azure-cosmos-db";
+ *
+ * // Create Cosmos DB client
+ * const client = new CosmosClient();
+ * // Initialize the database adapter
+ * const database = new AzureCosmosDatabaseService(client);
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://docs.microsoft.com/azure/cosmos-db/ | Azure Cosmos DB Documentation}
+ */
 export class AzureCosmosDatabaseService implements DatabaseAdapter {
   #db: Database;
 
+  /**
+   * Creates a new Azure Cosmos DB database adapter instance.
+   *
+   * @param client - The authenticated CosmosClient instance for connecting to Azure Cosmos DB
+   * @param dbName - The name of the database to use (defaults to "StoryBooker")
+   *
+   * @example
+   * ```ts
+   * import { CosmosClient } from "@azure/cosmos";
+   * const client = new CosmosClient({ endpoint, key });
+   * const database = new AzureCosmosDatabaseService(client, "MyDatabase");
+   * ```
+   */
   constructor(client: CosmosClient, dbName = "StoryBooker") {
     this.#db = client.database(dbName);
   }

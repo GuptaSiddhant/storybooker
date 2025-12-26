@@ -7,9 +7,43 @@ import {
   type StoryBookerDatabaseDocument,
 } from "./_internal/database.ts";
 
+/**
+ * Google Cloud Firestore implementation of the DatabaseAdapter interface.
+ *
+ * @classdesc
+ * Provides database operations for StoryBooker using Google Cloud Firestore as the backend.
+ * Supports NoSQL collections and documents with automatic error handling.
+ *
+ * @example
+ * ```ts
+ * import { Firestore } from "@google-cloud/firestore";
+ * import { GcpFirestoreDatabaseAdapter } from "storybooker/gcp-firestore";
+ *
+ * // Create Firestore instance
+ * const firestore = new Firestore({ projectId: "my-project" });
+ * // Initialize the database adapter
+ * const database = new GcpFirestoreDatabaseAdapter(firestore);
+ * // Use the database adapter with StoryBooker
+ * const router = createHonoRouter({ database });
+ * ```
+ *
+ * @see {@link https://cloud.google.com/firestore/docs | Google Cloud Firestore Documentation}
+ */
 export class GcpFirestoreDatabaseAdapter implements DatabaseAdapter {
   #instance: Firestore;
 
+  /**
+   * Creates a new Google Cloud Firestore database adapter instance.
+   *
+   * @param instance - The authenticated Firestore instance for connecting to Google Cloud Firestore
+   *
+   * @example
+   * ```ts
+   * import { Firestore } from "@google-cloud/firestore";
+   * const firestore = new Firestore({ projectId: "my-project" });
+   * const database = new GcpFirestoreDatabaseAdapter(firestore);
+   * ```
+   */
   constructor(instance: Firestore) {
     this.#instance = instance;
   }

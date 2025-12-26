@@ -1,12 +1,9 @@
 import type { MiddlewareHandler } from "hono";
-import type {
-  AuthAdapter,
-  DatabaseAdapter,
-  LoggerAdapter,
-  StorageAdapter,
-  StoryBookerUser,
-  UIAdapter,
-} from "./adapters/_internal/index.ts";
+import type { AuthAdapter, StoryBookerUser } from "./adapters/_internal/auth.ts";
+import type { DatabaseAdapter } from "./adapters/_internal/database.ts";
+import type { LoggerAdapter } from "./adapters/_internal/logger.ts";
+import type { StorageAdapter } from "./adapters/_internal/storage.ts";
+import type { UIAdapter } from "./adapters/_internal/ui.ts";
 import type { ErrorParser } from "./utils/error.ts";
 
 export type {
