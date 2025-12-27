@@ -34,6 +34,7 @@ export interface LoggerAdapter {
 export const consoleLoggerAdapter: LoggerAdapter = {
   metadata: {
     name: "console",
+    description: "Logger that outputs to the console.",
   },
 
   debug: console.debug.bind(console),

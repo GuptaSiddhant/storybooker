@@ -1,7 +1,5 @@
 // oxlint-disable no-await-in-loop
-// oxlint-disable max-params
 // oxlint-disable require-await
-// oxlint-disable no-unsafe-assignment
 
 import type { Buffer } from "node:buffer";
 import * as fs from "node:fs";
@@ -16,6 +14,8 @@ import {
   type StoryBookerDatabaseDocument,
 } from "./_internal/database.ts";
 import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
+
+type DB = Record<string, Record<string, StoryBookerDatabaseDocument>>;
 
 /**
  * Database adapter for StoryBooker while uses a file (json) in
@@ -32,7 +32,7 @@ import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.t
  */
 export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAdapter {
   const filepath = path.resolve(filename);
-  let db: Record<string, Record<string, StoryBookerDatabaseDocument>> | undefined = undefined;
+  let db: DB | undefined = undefined;
 
   const readFromFile = async (options: DatabaseAdapterOptions): Promise<void> => {
     try {
@@ -40,7 +40,7 @@ export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAd
         encoding: "utf8",
         signal: options.abortSignal,
       });
-      db = newDB ? JSON.parse(newDB) : {};
+      db = newDB ? (JSON.parse(newDB) as DB) : {};
     } catch {
       db = {};
     }
@@ -61,6 +61,7 @@ export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAd
     metadata: {
       name: "Local File",
       description: "A file based database stored in a single JSON file.",
+      url: filepath,
     },
 
     async init(options) {
@@ -221,6 +222,7 @@ export function createLocalFileDatabaseAdapter(filename = "db.json"): DatabaseAd
       await saveToFile(options);
     },
 
+    // oxlint-disable-next-line max-params
     async updateDocument(collectionId, documentId, documentData, options) {
       if (!db) {
         throw new DatabaseAdapterErrors.DatabaseNotInitializedError();
@@ -269,6 +271,7 @@ export function createLocalFileStorageAdapter(pathPrefix = "."): StorageAdapter 
     metadata: {
       name: "Local File System",
       description: "A storage adapter that uses the local file system to store files.",
+      url: basePath,
     },
 
     init: async (_options) => {

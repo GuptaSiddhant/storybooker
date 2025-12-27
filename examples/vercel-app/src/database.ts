@@ -10,7 +10,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "storybooker/~internal/adapter/database";
+} from "storybooker/_internal/adapter/database";
 
 /**
  * Vercel Edge Config database adapter for StoryBooker.
@@ -41,9 +41,14 @@ export class VercelEdgeConfigDatabaseService implements DatabaseAdapter {
     this.#keyPrefix = options?.keyPrefix || "sbr";
   }
 
-  metadata: DatabaseAdapter["metadata"] = {
-    name: "Vercel Edge Config",
-  };
+  get metadata(): DatabaseAdapter["metadata"] {
+    return {
+      name: "Vercel Edge Config",
+      description: "Key-value database using Vercel Edge Config with simulated collections.",
+      id: this.#configId,
+      data: { prefix: this.#keyPrefix, teamId: this.#teamId },
+    };
+  }
 
   init: DatabaseAdapter["init"] = async (_options) => {
     // Edge Config doesn't require explicit initialization

@@ -26,7 +26,7 @@ export function mockAuthService(
   };
 
   return {
-    metadata: { name: "MockAuthService" },
+    metadata: { name: "MockAuthService", description: "Mock authentication service for testing." },
 
     init: async (_options): Promise<void> => {
       // Mock init logic if needed

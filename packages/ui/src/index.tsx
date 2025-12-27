@@ -25,7 +25,6 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
     darkTheme = DEFAULT_DARK_THEME,
     lightTheme = DEFAULT_LIGHT_THEME,
     staticDirs = DEFAULT_STATIC_DIRS,
-    logo,
   } = options;
 
   return {
@@ -33,9 +32,7 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
       name: "Basic UI",
       description: "Basic server-rendered UI for StoryBooker.",
       version: pkg.version,
-      logo,
-      staticDirs,
-      theme: { dark: darkTheme, light: lightTheme },
+      data: { ...options },
     },
 
     renderHomePage: withStore(options, async (props) => {

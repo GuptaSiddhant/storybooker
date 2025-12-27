@@ -59,7 +59,15 @@ export class RedisDatabaseAdapter implements DatabaseAdapter {
     this.#keyPrefix = keyPrefix;
   }
 
-  metadata: DatabaseAdapter["metadata"] = { name: "Redis" };
+  get metadata(): DatabaseAdapter["metadata"] {
+    return {
+      name: "Redis",
+      description: "Key-value database using Redis with simulated collections.",
+      id: this.#client.options.database?.toString(),
+      url: this.#client.options.url,
+      data: { prefix: this.#keyPrefix },
+    };
+  }
 
   init: DatabaseAdapter["init"] = async (_options) => {
     // Ensure Redis connection is ready

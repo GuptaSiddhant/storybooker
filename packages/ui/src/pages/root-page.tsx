@@ -76,18 +76,33 @@ export function RootPage({ projects }: RootPageProps): RenderedContent {
                 {adapterId}
               </summary>
               <div
-                class={css`
-                  display: flex;
-                  flex-direction: column;
-                  gap: 0.2em;
-                  margin-top: 0.5em;
-                `}
+                class={css` display: flex; flex-direction: column; gap: 0.2em; margin-top: 0.5em;`}
               >
                 <span style={{ fontSize: "0.9em" }}>{metadata.name}</span>
-                {metadata.version && <Badge>{metadata.version}</Badge>}
+                {metadata.version ? <Badge>{metadata.version}</Badge> : null}
                 {metadata.description && (
                   <span style={{ margin: 0, fontSize: "0.8em" }}>{metadata.description}</span>
                 )}
+                {metadata.id ? (
+                  <span class={css`font-size: 0.75em;`}>
+                    <strong>ID</strong>: {metadata.id}
+                  </span>
+                ) : null}
+                {metadata.url ? (
+                  <span class={css`font-size: 0.75em; word-break: break-all;`}>
+                    <strong>URL</strong>: {metadata.url}
+                  </span>
+                ) : null}
+                {metadata.data ? (
+                  <details>
+                    <summary class={css`font-size: 0.8em; font-weight: bold;`}>Data</summary>
+                    <pre
+                      class={css` background-color: var(--color-bg-secondary); padding: 0.5em; border-radius: 4px; font-size:0.75em; overflow: auto;`}
+                    >
+                      {JSON.stringify(metadata.data, null, 2)}
+                    </pre>
+                  </details>
+                ) : null}
               </div>
             </details>
           ))}

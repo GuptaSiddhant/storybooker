@@ -149,7 +149,12 @@ function createAzureContextLogger(context: InvocationContext): LoggerAdapter {
     debug: context.debug.bind(context),
     error: context.error.bind(context),
     log: context.log.bind(context),
-    metadata: { name: "Azure Functions" },
+    metadata: {
+      name: "Azure Functions",
+      description: "Azure Insights Logger using Azure Functions context.",
+      id: context.invocationId,
+      data: { functionName: context.functionName },
+    },
   };
 }
 

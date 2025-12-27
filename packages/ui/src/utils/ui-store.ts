@@ -1,9 +1,11 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { UIAdapterOptions } from "storybooker/_internal/adapter/ui";
+import type { UrlBuilder } from "storybooker/_internal/types";
 import type { BasicUIOptions } from "../index.tsx";
 
 interface UIStore extends UIAdapterOptions {
   logo?: string;
+  urlBuilder: UrlBuilder;
 }
 
 const uiStoreContext = new AsyncLocalStorage<UIStore>();

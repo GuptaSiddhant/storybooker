@@ -53,7 +53,14 @@ export class GcpBigtableDatabaseAdapter implements DatabaseAdapter {
     this.#instance = client.instance(instanceName);
   }
 
-  metadata: DatabaseAdapter["metadata"] = { name: "Google Cloud Bigtable" };
+  get metadata(): DatabaseAdapter["metadata"] {
+    return {
+      name: "Google Cloud Bigtable",
+      description: "NoSQL database using Google Cloud Bigtable tables and rows.",
+      id: this.#instance.id,
+      data: { ...this.#instance.metadata },
+    };
+  }
 
   init: DatabaseAdapter["init"] = async (_options) => {
     // Bigtable instances are typically created outside of app code (via console/IaC)

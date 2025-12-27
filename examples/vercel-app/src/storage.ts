@@ -7,7 +7,7 @@
 import { del, head, list, put, type PutBlobResult } from "@vercel/blob";
 import { Readable } from "node:stream";
 import type { ReadableStream as ReadableStreamWeb } from "node:stream/web";
-import { StorageAdapterErrors, type StorageAdapter } from "storybooker/~internal/adapter/storage";
+import { StorageAdapterErrors, type StorageAdapter } from "storybooker/_internal/adapter/storage";
 
 export class VercelBlobService implements StorageAdapter {
   #token: string;
@@ -18,9 +18,13 @@ export class VercelBlobService implements StorageAdapter {
     this.#baseUrl = baseUrl;
   }
 
-  metadata: StorageAdapter["metadata"] = {
-    name: "Vercel Storage",
-  };
+  get metadata(): StorageAdapter["metadata"] {
+    return {
+      description: "Object storage using Vercel Blob service.",
+      name: "Vercel Storage",
+      url: this.#baseUrl,
+    };
+  }
 
   createContainer: StorageAdapter["createContainer"] = async (_containerId, _options) => {
     // Vercel Blob doesn't have explicit container creation

@@ -12,7 +12,7 @@ export const mockStore: Store = {
   auth: mockAuthService(),
   headers: new SuperHeaders(),
   logger: {
-    metadata: { name: "Mock Logger" },
+    metadata: { name: "Mock Logger", description: "Logger for testing purposes." },
     debug: vi.fn(),
     error: vi.fn(),
     log: vi.fn(),

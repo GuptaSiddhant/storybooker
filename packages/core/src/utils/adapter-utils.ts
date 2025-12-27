@@ -18,9 +18,19 @@ export function generateStorageContainerId(projectId: string): string {
 /**
  * Metadata information about a StoryBooker adapter.
  */
-export interface StoryBookerAdapterMetadata {
-  name: string;
-  description?: string;
-  version?: string;
-  [key: string]: unknown;
+export interface StoryBookerAdapterMetadata<
+  Data extends Record<string, unknown> = Record<string, unknown>,
+> {
+  /** Name of the service/adapter */
+  readonly name: string;
+  /** Description of the service/adapter */
+  readonly description: string;
+  /** API version of the service/SDK */
+  readonly version?: string;
+  /** Unique identifier for the service/adapter */
+  readonly id?: string;
+  /** URL of the service/adapter */
+  readonly url?: string;
+  /** Additional data about the service/adapter */
+  readonly data?: Data;
 }

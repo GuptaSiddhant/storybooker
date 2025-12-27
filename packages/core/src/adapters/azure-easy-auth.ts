@@ -129,7 +129,10 @@ export class AzureEasyAuthService implements AuthAdapter<AzureEasyAuthUser> {
   #authorise: AzureEasyAuthAdapterAuthorise<AzureEasyAuthUser>;
   #modifyUserDetails: AzureEasyAuthModifyUserDetails;
 
-  metadata: AuthAdapter["metadata"] = { name: "Azure Easy Auth" };
+  metadata: AuthAdapter["metadata"] = {
+    name: "Azure Easy Auth",
+    description: "Authentication using Azure App Service Easy Auth.",
+  };
 
   /**
    * Creates a new Azure Easy Auth adapter instance.

@@ -50,7 +50,13 @@ export class AwsDynamoDatabaseService implements DatabaseAdapter {
     this.#client = client;
   }
 
-  metadata: DatabaseAdapter["metadata"] = { name: "AWS DynamoDB" };
+  get metadata(): DatabaseAdapter["metadata"] {
+    return {
+      name: "AWS DynamoDB",
+      description: "NoSQL database using AWS DynamoDB tables and items.",
+      id: this.#client.config.accountId?.toString(),
+    };
+  }
 
   listCollections: DatabaseAdapter["listCollections"] = async (options) => {
     const response = await this.#client.send(new Dynamo.ListTablesCommand({}), {

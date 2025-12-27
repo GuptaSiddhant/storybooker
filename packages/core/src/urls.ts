@@ -322,6 +322,6 @@ export class UrlBuilder {
 }
 
 /** @private */
-export const urlBuilder: UrlBuilder = new UrlBuilder(true);
+export const urlBuilder = new UrlBuilder(true);
 /** @private */
-export const urlBuilderWithoutStore: UrlBuilder = new UrlBuilder(false);
+export const urlBuilderWithoutStore = new UrlBuilder(false);
