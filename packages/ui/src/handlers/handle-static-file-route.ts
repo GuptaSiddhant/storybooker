@@ -1,11 +1,11 @@
 // oxlint-disable max-params
 
+import { getMimeType } from "hono/utils/mime";
 import fs from "node:fs";
 import fsp from "node:fs/promises";
 import path from "node:path";
 import { Readable } from "node:stream";
 import { SERVICE_NAME } from "storybooker/_internal/constants";
-import { getMimeType, mimes } from "storybooker/_internal/mimes";
 import { icons } from "../icons/_icons.ts";
 import { generateGlobalStyleSheet } from "../styles/global-style.ts";
 import type { BrandTheme } from "../styles/theme.ts";
@@ -27,7 +27,7 @@ export async function handleStaticFileRoute(
     return new Response(generateGlobalStyleSheet({ darkTheme, lightTheme }), {
       headers: new Headers({
         "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
-        "content-type": mimes.css,
+        "content-type": "text/css",
       }),
       status: 200,
     });
@@ -48,8 +48,7 @@ export async function handleStaticFileRoute(
     return new Response(`[${SERVICE_NAME}] Matching route not found.`, { status: 404 });
   }
 
-  const contentType = getMimeType(staticFilepath);
-
+  const contentType = getMimeType(staticFilepath) ?? "application/octet-stream";
   logger.log("%s: '%s' (%s)", "Serving static file from disk.", staticFilepath, contentType);
 
   const fileHandle = await fsp.open(staticFilepath, "r");
@@ -92,7 +91,7 @@ function generateGlobalSpriteResponse(): Response {
     {
       headers: new Headers({
         "cache-control": CACHE_CONTROL_PUBLIC_WEEK,
-        "content-type": mimes.svg,
+        "content-type": "image/svg+xml",
       }),
       status: 200,
     },
