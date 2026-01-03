@@ -11,6 +11,7 @@ import {
 import { checkAuthorisation } from "../utils/auth.ts";
 import { mimes } from "../utils/mime-utils.ts";
 import { getStore } from "../utils/store.ts";
+import { dispatchWebhooks } from "../utils/webhooks.ts";
 import {
   BuildSchema,
   type BuildCreateType,
@@ -82,6 +83,14 @@ export class BuildsModel extends Model<BuildType> {
       try {
         const projectsModel = new ProjectsModel();
         const project = await projectsModel.get(this.projectId);
+
+        // Do not await, fire and forget
+        dispatchWebhooks("build:created", {
+          projectId: this.projectId,
+          payload: build,
+          projectHooks: project.webhooks,
+        });
+
         if (tags.includes(project.gitHubDefaultBranch)) {
           await projectsModel.update(this.projectId, { latestBuildId: id });
         }
@@ -125,6 +134,13 @@ export class BuildsModel extends Model<BuildType> {
       { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
+
+    // Do not await, fire and forget
+    dispatchWebhooks("build:updated", {
+      projectId: this.projectId,
+      payload: data,
+      projectHooks: await new ProjectsModel().getWebhooks(this.projectId),
+    });
   }
 
   async delete(buildId: string, updateTag = true): Promise<void> {
@@ -166,6 +182,14 @@ export class BuildsModel extends Model<BuildType> {
     try {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
+
+      // Do not await, fire and forget
+      dispatchWebhooks("build:deleted", {
+        projectId: project.id,
+        payload: build,
+        projectHooks: project.webhooks,
+      });
+
       if (project.latestBuildId === buildId) {
         this.debug("Update project for build '%s'", buildId);
         await projectsModel.update(this.projectId, {

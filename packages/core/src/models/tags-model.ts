@@ -2,6 +2,7 @@ import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/_internal/auth.ts";
 import { generateDatabaseCollectionId } from "../utils/adapter-utils.ts";
 import { checkAuthorisation } from "../utils/auth.ts";
+import { dispatchWebhooks } from "../utils/webhooks.ts";
 import { BuildsModel } from "./builds-model.ts";
 import { ProjectsModel } from "./projects-model.ts";
 import { TagSchema, type TagCreateType, type TagType, type TagUpdateType } from "./tags-schema.ts";
@@ -41,6 +42,13 @@ export class TagsModel extends Model<TagType> {
       };
       await this.database.createDocument(this.collectionId, tag, this.dbOptions);
 
+      // Do not await, fire and forget
+      dispatchWebhooks("tag:updated", {
+        projectId: this.projectId,
+        payload: tag,
+        projectHooks: await new ProjectsModel().getWebhooks(this.projectId),
+      });
+
       return tag;
     } catch (error) {
       throw new HTTPException(500, {
@@ -76,19 +84,34 @@ export class TagsModel extends Model<TagType> {
       { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
+
+    // Do not await, fire and forget
+    dispatchWebhooks("tag:updated", {
+      projectId: this.projectId,
+      payload: data,
+      projectHooks: await new ProjectsModel().getWebhooks(this.projectId),
+    });
   }
 
   async delete(id: string): Promise<void> {
     this.log("Delete tag '%s'...", id);
+    const tag = await this.get(id);
 
-    const { gitHubDefaultBranch } = await new ProjectsModel().get(this.projectId);
-    if (id === TagsModel.createId(gitHubDefaultBranch)) {
-      const message = `Cannot delete the tag associated with default branch (${gitHubDefaultBranch}) of the project '${this.projectId}'.`;
+    const project = await new ProjectsModel().get(this.projectId);
+    if (id === TagsModel.createId(project.gitHubDefaultBranch)) {
+      const message = `Cannot delete the tag associated with default branch (${project.gitHubDefaultBranch}) of the project '${this.projectId}'.`;
       this.error(message);
       throw new Error(message);
     }
 
     await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
+
+    // Do not await, fire and forget
+    dispatchWebhooks("tag:updated", {
+      projectId: this.projectId,
+      payload: tag,
+      projectHooks: project.webhooks,
+    });
 
     try {
       this.debug("Delete builds associated with tag '%s'...", id);

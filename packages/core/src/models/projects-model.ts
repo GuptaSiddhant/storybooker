@@ -5,6 +5,7 @@ import {
   generateStorageContainerId,
 } from "../utils/adapter-utils.ts";
 import { checkAuthorisation } from "../utils/auth.ts";
+import { dispatchWebhooks, type WebhookEntry } from "../utils/webhooks.ts";
 import {
   ProjectSchema,
   type ProjectCreateType,
@@ -87,6 +88,13 @@ export class ProjectsModel extends Model<ProjectType> {
       };
       await this.database.createDocument(this.collectionId, project, this.dbOptions);
 
+      // Do not await, fire and forget
+      dispatchWebhooks("project:created", {
+        projectId: project.id,
+        payload: project,
+        projectHooks: project.webhooks,
+      });
+
       return project;
     } catch (error) {
       throw new HTTPException(500, {
@@ -124,6 +132,13 @@ export class ProjectsModel extends Model<ProjectType> {
       this.dbOptions,
     );
 
+    // Do not await, fire and forget
+    dispatchWebhooks("project:updated", {
+      projectId: id,
+      payload: data,
+      projectHooks: await this.getWebhooks(id),
+    });
+
     if (data.gitHubDefaultBranch) {
       try {
         this.debug("Create default-branch tag '%s'...", data.gitHubDefaultBranch);
@@ -139,9 +154,17 @@ export class ProjectsModel extends Model<ProjectType> {
 
   async delete(id: string): Promise<void> {
     this.log("Delete project '%s'...", id);
+    const project = await this.get(id);
 
     this.debug("Delete project entry '%s' in collection", id);
     await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
+
+    // Do not await, fire and forget
+    dispatchWebhooks("project:deleted", {
+      projectId: id,
+      payload: project,
+      projectHooks: project.webhooks,
+    });
 
     this.debug("Delete project-builds collection");
     await this.database.deleteCollection(
@@ -174,4 +197,9 @@ export class ProjectsModel extends Model<ProjectType> {
       update: this.update.bind(this, id),
     };
   };
+
+  async getWebhooks(projectOrId: string | { webhooks?: WebhookEntry[] }): Promise<WebhookEntry[]> {
+    const project = typeof projectOrId === "string" ? await this.get(projectOrId) : projectOrId;
+    return project.webhooks || [];
+  }
 }

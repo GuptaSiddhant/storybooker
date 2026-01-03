@@ -1,5 +1,6 @@
 import { z } from "@hono/zod-openapi";
 import { DEFAULT_GITHUB_BRANCH, DEFAULT_PURGE_AFTER_DAYS } from "../utils/constants.ts";
+import { WEBHOOK_EVENTS } from "../utils/webhooks.ts";
 import { BuildIdSchema, ProjectIdSchema } from "./~shared-schema.ts";
 
 export { ProjectIdSchema };
@@ -38,6 +39,16 @@ export const ProjectSchema = z
     }),
 
     updatedAt: z.iso.datetime().default(new Date().toISOString()),
+
+    webhooks: z
+      .array(
+        z.object({
+          headers: z.record(z.string(), z.string()).optional(),
+          events: z.array(z.enum(WEBHOOK_EVENTS)).optional(),
+          url: z.url(),
+        }),
+      )
+      .optional(),
   })
   .meta({ id: "Project", title: "StoryBooker project" });
 

@@ -135,7 +135,6 @@
     "./gcp-storage": "./dist/gcp-storage.mjs",
     "./mysql": "./dist/mysql.mjs",
     "./redis": "./dist/redis.mjs",
-    "./package.json": "./package.json",
-    "./openapi.json": "./openapi.json"
+    "./package.json": "./package.json"
   }
 }
