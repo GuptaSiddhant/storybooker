@@ -102,5 +102,10 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
       const { TagsListPage } = await import("./pages/tags-list-page.tsx");
       return TagsListPage(props);
     }),
+
+    renderWebhooksListPage: withStore(options, async (props) => {
+      const { WebhooksListPage } = await import("./pages/webhooks-list-page.tsx");
+      return WebhooksListPage(props);
+    }),
   } satisfies UIAdapter;
 }

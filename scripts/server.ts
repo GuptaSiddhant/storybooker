@@ -24,14 +24,14 @@ const router = createHonoRouter({
     queueLargeZipFileProcessing: true,
     webhooks: [
       {
-        url: "https://webhook.site/d80c03c7-8cd4-49b9-bc13-778736819f3a",
+        url: "https://localhost:8000/webhooks/?id=d80c03c7-8cd4-49b9-bc13-778736819f3a",
         headers: { "x-custom-header": "custom-value" },
       },
     ],
   },
   database: createLocalFileDatabaseAdapter(".server/db.json"),
   storage: createLocalFileStorageAdapter(".server"),
-  ui: createBasicUIAdapter({ logo: "/SBR_white_128.jpg", staticDirs: [".server"] }),
+  ui: createBasicUIAdapter({ staticDirs: [".server"] }),
 });
 
 export default router;

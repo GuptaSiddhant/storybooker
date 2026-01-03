@@ -2,10 +2,10 @@ import { HTTPException } from "hono/http-exception";
 import type { StoryBookerPermissionAction } from "../adapters/_internal/auth.ts";
 import { generateDatabaseCollectionId } from "../utils/adapter-utils.ts";
 import { checkAuthorisation } from "../utils/auth.ts";
-import { dispatchWebhooks } from "../utils/webhooks.ts";
 import { BuildsModel } from "./builds-model.ts";
 import { ProjectsModel } from "./projects-model.ts";
 import { TagSchema, type TagCreateType, type TagType, type TagUpdateType } from "./tags-schema.ts";
+import { WebhooksModel } from "./webhooks-model.ts";
 import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 
 export class TagsModel extends Model<TagType> {
@@ -43,11 +43,7 @@ export class TagsModel extends Model<TagType> {
       await this.database.createDocument(this.collectionId, tag, this.dbOptions);
 
       // Do not await, fire and forget
-      dispatchWebhooks("tag:updated", {
-        projectId: this.projectId,
-        payload: tag,
-        projectHooks: await new ProjectsModel().getWebhooks(this.projectId),
-      });
+      new WebhooksModel(this.projectId).dispatchEvent("tag:created", tag);
 
       return tag;
     } catch (error) {
@@ -86,11 +82,7 @@ export class TagsModel extends Model<TagType> {
     );
 
     // Do not await, fire and forget
-    dispatchWebhooks("tag:updated", {
-      projectId: this.projectId,
-      payload: data,
-      projectHooks: await new ProjectsModel().getWebhooks(this.projectId),
-    });
+    new WebhooksModel(this.projectId).dispatchEvent("tag:updated", data);
   }
 
   async delete(id: string): Promise<void> {
@@ -107,11 +99,7 @@ export class TagsModel extends Model<TagType> {
     await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
 
     // Do not await, fire and forget
-    dispatchWebhooks("tag:updated", {
-      projectId: this.projectId,
-      payload: tag,
-      projectHooks: project.webhooks,
-    });
+    new WebhooksModel(this.projectId).dispatchEvent("tag:deleted", tag);
 
     try {
       this.debug("Delete builds associated with tag '%s'...", id);
@@ -131,12 +119,7 @@ export class TagsModel extends Model<TagType> {
 
   id: BaseModel<TagType>["id"] = (id: string) => {
     return {
-      checkAuth: (action) =>
-        checkAuthorisation({
-          action,
-          projectId: this.projectId,
-          resource: "tag",
-        }),
+      checkAuth: this.checkAuth.bind(this),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
       has: this.has.bind(this, id),

@@ -114,6 +114,20 @@ export function ProjectForm({ actionUrl, project }: ProjectsFormProps): JSXEleme
         </div>
       </fieldset>
 
+      {/* <fieldset>
+        <legend>Webhooks</legend>
+        <span class={"description"}>Optional. URL to receive webhook events for the project.</span>
+        {project?.webhooks?.map((hook, index) => (
+          <WebhookFormFieldset
+            id={`webhooks[${index}]`}
+            hook={hook}
+            legend={`Existing webhook ${index + 1}`}
+          />
+        ))}
+
+        <WebhookFormFieldset id={`webhooks[-1]`} legend={`New webhook`} hook={undefined} />
+      </fieldset> */}
+
       <div style={{ display: "flex", gap: "1rem" }}>
         <button type="submit">{project ? "Update" : "Create"} Project</button>
         <button type="reset">Reset</button>
@@ -128,3 +142,25 @@ export function ProjectForm({ actionUrl, project }: ProjectsFormProps): JSXEleme
     </form>
   );
 }
+
+// function WebhookFormFieldset({
+//   id,
+//   legend,
+//   hook,
+// }: {
+//   id: string;
+//   legend: string;
+//   hook: WebhookEntry | undefined;
+// }): JSXElement {
+//   const urlInputName = `${id}.url`;
+
+//   return (
+//     <fieldset>
+//       <legend>{legend}</legend>
+//       <div class="field">
+//         <label for={urlInputName}>URL</label>
+//         <input id={urlInputName} name={urlInputName} value={hook?.url} placeholder="https://" />
+//       </div>
+//     </fieldset>
+//   );
+// }

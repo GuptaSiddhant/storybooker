@@ -2,7 +2,7 @@ import { SERVICE_NAME } from "../utils/constants.ts";
 
 export function generateDatabaseCollectionId(
   projectId: string,
-  suffix: "Tags" | "Builds" | "",
+  suffix: "Tags" | "Builds" | "Webhooks" | "",
 ): string {
   if (!suffix) {
     return `${SERVICE_NAME}-${projectId}`;

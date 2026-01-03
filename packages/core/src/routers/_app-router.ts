@@ -10,6 +10,7 @@ import { projectsRouter } from "./projects-router.ts";
 import { rootRouter } from "./root-router.ts";
 import { tagsRouter } from "./tags-router.ts";
 import { tasksRouter } from "./tasks-router.ts";
+import { webhooksRouter } from "./webhooks-router.ts";
 
 type OpenAPIObjectConfig<Configure extends OpenAPIObjectConfigure<Env, "">> = Configure extends (
   context: Context,
@@ -45,6 +46,7 @@ export const appRouter = new OpenAPIHono({ strict: false })
   .route("/", projectsRouter)
   .route("/", buildsRouter)
   .route("/", tagsRouter)
+  .route("/", webhooksRouter)
   .route("/tasks", tasksRouter)
   .route("/account", accountRouter)
   .get("/:filepath{.+}", async (context) => {

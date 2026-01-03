@@ -1,20 +1,19 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
-import { BuildsModel } from "../models/builds-model.ts";
 import { ProjectsModel } from "../models/projects-model.ts";
 import { ProjectIdSchema } from "../models/projects-schema.ts";
-import { TagsModel } from "../models/tags-model.ts";
+import { TagSchema } from "../models/tags-schema.ts";
+import { WebhooksModel } from "../models/webhooks-model.ts";
 import {
-  TagCreateSchema,
-  TagIdSchema,
-  TagsGetResultSchema,
-  TagsListResultSchema,
-  TagTypes,
-  TagUpdateSchema,
-} from "../models/tags-schema.ts";
+  WebhookCreateSchema,
+  WebhooksGetResultSchema,
+  WebhooksListResultSchema,
+  WebhookUpdateSchema,
+} from "../models/webhooks-schema.ts";
 import { urlBuilder } from "../urls.ts";
 import { authenticateOrThrow } from "../utils/auth.ts";
+import { WEBHOOK_EVENTS } from "../utils/constants.ts";
 import { mimes } from "../utils/mime-utils.ts";
 import {
   openapiCommonErrorResponses,
@@ -26,32 +25,32 @@ import { checkIsHTMLRequest } from "../utils/request.ts";
 import { getStore } from "../utils/store.ts";
 import { createUIResultResponse } from "../utils/ui-utils.ts";
 
-const tagsTag = "Tags";
+const webhooksTag = "Webhooks";
 const projectIdPathParams = z.object({ projectId: ProjectIdSchema });
-const tagIdPathParams = z.object({
+const webhookIdPathParams = z.object({
   projectId: ProjectIdSchema,
-  tagId: TagIdSchema,
+  webhookId: TagSchema._zod.def.shape.id,
 });
 
 /**
  * @private
  */
-export const tagsRouter = new OpenAPIHono()
+export const webhooksRouter = new OpenAPIHono()
   .openapi(
     createRoute({
-      summary: "List tags",
+      summary: "List webhooks",
       method: "get",
-      path: "/projects/{projectId}/tags",
-      tags: [tagsTag],
+      path: "/projects/{projectId}/webhooks",
+      tags: [webhooksTag],
       request: {
         params: projectIdPathParams,
-        query: z.object({ type: z.union([z.enum(TagTypes), z.literal("")]) }).partial(),
+        query: z.object({ event: z.union([z.enum(WEBHOOK_EVENTS), z.literal("")]) }).partial(),
       },
       responses: {
         200: {
-          description: "A list of tags in the project.",
+          description: "A list of webhooks in the project.",
           content: {
-            [mimes.json]: { schema: TagsListResultSchema },
+            [mimes.json]: { schema: WebhooksListResultSchema },
             ...openapiResponsesHtml,
           },
         },
@@ -65,36 +64,38 @@ export const tagsRouter = new OpenAPIHono()
       authenticateOrThrow({
         action: "read",
         projectId,
-        resource: "tag",
+        resource: "project",
       });
 
-      const { type } = context.req.valid("query");
-      const tags = await new TagsModel(projectId).list();
-      const filteredTags = type ? tags.filter((tag) => tag.type === type) : tags;
+      const { event } = context.req.valid("query");
+      const webhooks = await new WebhooksModel(projectId).list();
+      const filteredWebhooks = event
+        ? webhooks.filter((tag) => tag.events?.includes(event))
+        : webhooks;
 
-      if (ui?.renderTagsListPage && checkIsHTMLRequest()) {
+      if (ui?.renderWebhooksListPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
 
-        return createUIResultResponse(context, ui.renderTagsListPage, {
+        return createUIResultResponse(context, ui.renderWebhooksListPage, {
           project,
-          tags: filteredTags,
-          defaultType: type,
+          webhooks: filteredWebhooks,
+          defaultEvent: event,
         });
       }
 
-      return context.json({ tags: filteredTags });
+      return context.json({ webhooks: filteredWebhooks });
     },
   )
   .openapi(
     createRoute({
-      summary: "Create tag - UI",
+      summary: "Create webhook - UI",
       method: "get",
-      path: "/projects/{projectId}/tags/create",
-      tags: [tagsTag],
+      path: "/projects/{projectId}/webhooks/create",
+      tags: [webhooksTag],
       request: { params: projectIdPathParams },
       responses: {
         200: {
-          description: "UI to create tag",
+          description: "UI to create webhook",
           content: openapiResponsesHtml,
         },
         ...openapiCommonErrorResponses,
@@ -102,45 +103,45 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui?.renderTagCreatePage) {
+      if (!ui?.renderWebhookCreatePage) {
         throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
       const { projectId } = context.req.valid("param");
 
       authenticateOrThrow({
-        action: "create",
+        action: "update",
         projectId,
-        resource: "tag",
+        resource: "project",
       });
 
       const project = await new ProjectsModel().get(projectId);
 
-      return createUIResultResponse(context, ui.renderTagCreatePage, { project });
+      return createUIResultResponse(context, ui.renderWebhookCreatePage, { project });
     },
   )
   .openapi(
     createRoute({
-      summary: "Create tag - action",
+      summary: "Create webhook - action",
       method: "post",
-      path: "/projects/{projectId}/tags/create",
-      tags: [tagsTag],
+      path: "/projects/{projectId}/webhooks/create",
+      tags: [webhooksTag],
       request: {
         params: projectIdPathParams,
         body: {
-          content: { [mimes.formEncoded]: { schema: TagCreateSchema } },
+          content: { [mimes.formEncoded]: { schema: WebhookCreateSchema } },
           required: true,
         },
       },
       responses: {
         201: {
-          description: "Tag created successfully",
-          content: { [mimes.json]: { schema: TagsGetResultSchema } },
+          description: "Webhook created successfully",
+          content: { [mimes.json]: { schema: WebhooksGetResultSchema } },
         },
-        303: openapiResponseRedirect("Redirect to tag."),
+        303: openapiResponseRedirect("Redirect to webhook."),
         409: {
           content: openapiErrorResponseContent,
-          description: "Tag already exists.",
+          description: "Webhook already exists.",
         },
         415: {
           content: openapiErrorResponseContent,
@@ -158,33 +159,33 @@ export const tagsRouter = new OpenAPIHono()
       }
 
       authenticateOrThrow({
-        action: "create",
+        action: "update",
         projectId,
-        resource: "tag",
+        resource: "project",
       });
 
       const data = context.req.valid("form");
-      const tag = await new TagsModel(projectId).create(data);
+      const webhook = await new WebhooksModel(projectId).create(data);
 
       if (checkIsHTMLRequest(true)) {
-        return context.redirect(urlBuilder.tagDetails(projectId, tag.id), 303);
+        return context.redirect(urlBuilder.webhookDetails(projectId, webhook.id), 303);
       }
 
-      return context.json({ tag }, 201);
+      return context.json({ webhook }, 201);
     },
   )
   .openapi(
     createRoute({
       summary: "Tag details",
       method: "get",
-      path: "/projects/{projectId}/tags/{tagId}",
-      tags: [tagsTag],
-      request: { params: tagIdPathParams },
+      path: "/projects/{projectId}/webhooks/{webhookId}",
+      tags: [webhooksTag],
+      request: { params: webhookIdPathParams },
       responses: {
         200: {
           description: "Details of the tag",
           content: {
-            [mimes.json]: { schema: TagsGetResultSchema },
+            [mimes.json]: { schema: WebhooksGetResultSchema },
             ...openapiResponsesHtml,
           },
         },
@@ -197,7 +198,7 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      const { projectId, tagId } = context.req.valid("param");
+      const { projectId, webhookId } = context.req.valid("param");
 
       authenticateOrThrow({
         action: "read",
@@ -205,47 +206,49 @@ export const tagsRouter = new OpenAPIHono()
         resource: "tag",
       });
 
-      const tag = await new TagsModel(projectId).get(tagId);
+      const webhook = await new WebhooksModel(projectId).get(webhookId);
 
-      if (ui?.renderTagDetailsPage && checkIsHTMLRequest()) {
+      if (ui?.renderWebhookDetailsPage && checkIsHTMLRequest()) {
         const project = await new ProjectsModel().get(projectId);
-        const builds = await new BuildsModel(projectId).listByTag(tag.id);
 
-        return createUIResultResponse(context, ui.renderTagDetailsPage, { builds, project, tag });
+        return createUIResultResponse(context, ui.renderWebhookDetailsPage, {
+          project,
+          webhook,
+        });
       }
 
-      return context.json({ tag });
+      return context.json({ webhook });
     },
   )
   .openapi(
     createRoute({
-      summary: "Delete tag - action",
+      summary: "Delete webhook - action",
       method: "post",
-      path: "/projects/{projectId}/tags/{tagId}/delete",
-      tags: [tagsTag],
-      request: { params: tagIdPathParams },
+      path: "/projects/{projectId}/webhooks/{webhookId}/delete",
+      tags: [webhooksTag],
+      request: { params: webhookIdPathParams },
       responses: {
-        204: { description: "Tag deleted successfully." },
-        303: openapiResponseRedirect("Redirect to tags list."),
+        204: { description: "Webhook deleted successfully." },
+        303: openapiResponseRedirect("Redirect to webhooks list."),
         404: {
-          description: "Matching tag not found.",
+          description: "Matching webhook not found.",
           content: openapiErrorResponseContent,
         },
         ...openapiCommonErrorResponses,
       },
     }),
     async (context) => {
-      const { projectId, tagId } = context.req.valid("param");
+      const { projectId, webhookId } = context.req.valid("param");
       authenticateOrThrow({
-        action: "delete",
+        action: "update",
         projectId,
-        resource: "tag",
+        resource: "project",
       });
 
-      await new TagsModel(projectId).delete(tagId);
+      await new WebhooksModel(projectId).delete(webhookId);
 
       if (checkIsHTMLRequest(true)) {
-        return context.redirect(urlBuilder.tagsList(projectId), 303);
+        return context.redirect(urlBuilder.webhooksList(projectId), 303);
       }
 
       return new Response(null, { status: 204 });
@@ -253,18 +256,18 @@ export const tagsRouter = new OpenAPIHono()
   )
   .openapi(
     createRoute({
-      summary: "Update tag - UI",
+      summary: "Update webhook - UI",
       method: "get",
-      path: "/projects/{projectId}/tags/{tagId}/update",
-      tags: [tagsTag],
-      request: { params: tagIdPathParams },
+      path: "/projects/{projectId}/webhooks/{webhookId}/update",
+      tags: [webhooksTag],
+      request: { params: webhookIdPathParams },
       responses: {
         200: {
-          description: "UI to update tag",
+          description: "UI to update webhook",
           content: openapiResponsesHtml,
         },
         404: {
-          description: "Matching tag not found.",
+          description: "Matching webhook not found.",
           content: openapiErrorResponseContent,
         },
         ...openapiCommonErrorResponses,
@@ -272,11 +275,11 @@ export const tagsRouter = new OpenAPIHono()
     }),
     async (context) => {
       const { ui } = getStore();
-      if (!ui?.renderTagUpdatePage) {
+      if (!ui?.renderWebhookUpdatePage) {
         throw new HTTPException(405, { message: "UI not available for this route." });
       }
 
-      const { tagId, projectId } = context.req.valid("param");
+      const { webhookId, projectId } = context.req.valid("param");
 
       authenticateOrThrow({
         action: "update",
@@ -284,30 +287,30 @@ export const tagsRouter = new OpenAPIHono()
         resource: "tag",
       });
 
-      const tag = await new TagsModel(projectId).get(tagId);
+      const webhook = await new WebhooksModel(projectId).get(webhookId);
       const project = await new ProjectsModel().get(projectId);
 
-      return createUIResultResponse(context, ui.renderTagUpdatePage, { project, tag });
+      return createUIResultResponse(context, ui.renderWebhookUpdatePage, { project, webhook });
     },
   )
   .openapi(
     createRoute({
-      summary: "Update tag - action",
+      summary: "Update webhook - action",
       method: "post",
-      path: "/projects/{projectId}/tags/{tagId}/update",
-      tags: [tagsTag],
+      path: "/projects/{projectId}/webhooks/{webhookId}/update",
+      tags: [webhooksTag],
       request: {
-        params: tagIdPathParams,
+        params: webhookIdPathParams,
         body: {
-          content: { [mimes.formEncoded]: { schema: TagUpdateSchema } },
+          content: { [mimes.formEncoded]: { schema: WebhookUpdateSchema } },
           required: true,
         },
       },
       responses: {
-        202: { description: "Tag updated successfully" },
-        303: openapiResponseRedirect("Redirect to tag."),
+        202: { description: "Webhook updated successfully" },
+        303: openapiResponseRedirect("Redirect to webhook."),
         404: {
-          description: "Matching project or tag not found.",
+          description: "Matching project or webhook not found.",
           content: openapiErrorResponseContent,
         },
         415: {
@@ -318,20 +321,19 @@ export const tagsRouter = new OpenAPIHono()
       },
     }),
     async (context) => {
-      const { tagId, projectId } = context.req.valid("param");
+      const { webhookId, projectId } = context.req.valid("param");
 
-      const tagsModel = new TagsModel(projectId);
       authenticateOrThrow({
         action: "update",
         projectId,
-        resource: "tag",
+        resource: "project",
       });
 
       const data = context.req.valid("form");
-      await tagsModel.update(tagId, data);
+      await new WebhooksModel(projectId).update(webhookId, data);
 
       if (checkIsHTMLRequest(true)) {
-        return context.redirect(urlBuilder.tagDetails(projectId, tagId), 303);
+        return context.redirect(urlBuilder.webhookDetails(projectId, webhookId), 303);
       }
 
       return new Response(null, { status: 202 });

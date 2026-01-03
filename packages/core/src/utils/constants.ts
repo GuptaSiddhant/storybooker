@@ -29,3 +29,15 @@ export const PATTERNS = {
 
 export const TagTypes = ["branch", "pr", "jira"] as const;
 export const buildUploadVariants = ["storybook", "testReport", "coverage", "screenshots"] as const;
+
+export const WEBHOOK_EVENTS = [
+  "build:created",
+  "build:deleted",
+  "build:updated",
+  "project:created",
+  "project:deleted",
+  "project:updated",
+  "tag:created",
+  "tag:deleted",
+  "tag:updated",
+] as const;

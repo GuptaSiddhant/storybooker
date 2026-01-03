@@ -195,6 +195,54 @@ export class UrlBuilder {
   //   );
   // },
 
+  // tags
+  webhooksList(projectId: string, event?: WebhookEvent | ""): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].webhooks.$url({
+          param: { projectId },
+          query: { event },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  webhookCreate(projectId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].webhooks.create.$url({
+          param: { projectId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  webhookDetails(projectId: string, webhookId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].webhooks[":webhookId"].$url({
+          param: { projectId, webhookId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  webhookDelete(projectId: string, webhookId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].webhooks[":webhookId"].delete.$url({
+          param: { projectId, webhookId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  webhookUpdate(projectId: string, webhookId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].webhooks[":webhookId"].update.$url({
+          param: { projectId, webhookId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+
   // tasks
   taskPurge(projectId?: string): string {
     return linkRoute((client) => client.tasks.purge.$url({ query: { projectId } }), {

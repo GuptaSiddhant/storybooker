@@ -27,6 +27,8 @@
     "release": "node ./scripts/release.ts",
     "server": "NODE_ENV=development OTEL_DENO=true deno serve -REW --watch ./scripts/server.ts",
     "test": "turbo test",
+    "ui:build": "yarn workspace @storybooker/ui build",
+    "ui:dev": "yarn workspace @storybooker/ui dev",
     "verify": "turbo verify --filter='./packages/*'"
   },
   "devDependencies": {
