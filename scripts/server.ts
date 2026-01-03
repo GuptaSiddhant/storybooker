@@ -5,28 +5,40 @@
 
 import { poweredBy } from "hono/powered-by";
 import { timing } from "hono/timing";
-import { createHonoRouter } from "../packages/core/dist/index.mjs";
 import {
   type AuthAdapter,
   type StoryBookerUser,
   StoryBookerPermissionsAllEnabled,
-} from "../packages/core/src/adapters/_internal/auth.ts";
+} from "../packages/core/dist/_internal/adapter/auth.mjs";
 import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
-} from "../packages/core/src/adapters/fs.ts";
-import { createBasicUIAdapter } from "../packages/ui/src/index.tsx";
+} from "../packages/core/dist/fs.mjs";
+import { createHonoRouter } from "../packages/core/dist/index.mjs";
+import { createBasicUIAdapter } from "../packages/ui/dist/index.mjs";
 
-export default createHonoRouter({
+const router = createHonoRouter({
   auth: createLocalAuthAdapter(),
   config: {
     middlewares: [poweredBy({ serverName: "SBR" }), timing()],
     queueLargeZipFileProcessing: true,
+    webhooks: [
+      {
+        url: "https://webhook.site/d80c03c7-8cd4-49b9-bc13-778736819f3a",
+        headers: { "x-custom-header": "custom-value" },
+      },
+    ],
   },
   database: createLocalFileDatabaseAdapter(".server/db.json"),
   storage: createLocalFileStorageAdapter(".server"),
   ui: createBasicUIAdapter({ logo: "/SBR_white_128.jpg", staticDirs: [".server"] }),
 });
+
+export default router;
+
+// serve({ fetch: router.fetch, port: 8000 }, (info) => {
+//   console.log(`🚀 StoryBooker server running at http://${info.address}:${info.port}`);
+// });
 
 function createLocalAuthAdapter(): AuthAdapter {
   let auth = true;

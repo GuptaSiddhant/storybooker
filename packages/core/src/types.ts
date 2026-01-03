@@ -5,6 +5,7 @@ import type { LoggerAdapter } from "./adapters/_internal/logger.ts";
 import type { StorageAdapter } from "./adapters/_internal/storage.ts";
 import type { UIAdapter } from "./adapters/_internal/ui.ts";
 import type { ErrorParser } from "./utils/error.ts";
+import type { WebhookEntry } from "./utils/webhooks.ts";
 
 export type {
   StoryBookerUser,
@@ -101,4 +102,8 @@ export interface RouterConfig {
    * Add Hono middlewares to the router before any endpoint is registered/invoked.
    */
   middlewares?: MiddlewareHandler[];
+  /**
+   * Pre-configured webhooks to use for dispatching events (all projects).
+   */
+  webhooks?: WebhookEntry[];
 }

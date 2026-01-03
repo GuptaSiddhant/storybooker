@@ -25,7 +25,7 @@
     "lint": "turbo lint",
     "prepare": "husky",
     "release": "node ./scripts/release.ts",
-    "server": "NODE_ENV=development OTEL_DENO=true deno serve -REW --unstable-raw-imports --watch ./scripts/server.ts",
+    "server": "NODE_ENV=development OTEL_DENO=true deno serve -REW --watch ./scripts/server.ts",
     "test": "turbo test",
     "verify": "turbo verify --filter='./packages/*'"
   },

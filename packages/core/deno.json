@@ -37,7 +37,6 @@
     "./gcp-firestore": "./dist/gcp-firestore.mjs",
     "./gcp-storage": "./dist/gcp-storage.mjs",
     "./mysql": "./dist/mysql.mjs",
-    "./redis": "./dist/redis.mjs",
-    "./openapi.json": "./openapi.json"
+    "./redis": "./dist/redis.mjs"
   }
 }
