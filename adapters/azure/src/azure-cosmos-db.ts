@@ -5,7 +5,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "storybooker//adapter/database";
+} from "storybooker/adapter/database";
 
 /**
  * Azure Cosmos DB implementation of the DatabaseAdapter interface.

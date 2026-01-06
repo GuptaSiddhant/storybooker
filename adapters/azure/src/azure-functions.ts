@@ -12,10 +12,10 @@ import type {
   TimerFunctionOptions,
 } from "@azure/functions";
 import { createHonoRouter, createPurgeHandler } from "storybooker";
-import type { AuthAdapter } from "storybooker//adapter/auth";
-import type { LoggerAdapter } from "storybooker//adapter/logger";
-import type { ErrorParser, RouterOptions, StoryBookerUser } from "storybooker//types";
-import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "storybooker//utils";
+import type { AuthAdapter } from "storybooker/adapter/auth";
+import type { LoggerAdapter } from "storybooker/adapter/logger";
+import type { ErrorParser, RouterOptions, StoryBookerUser } from "storybooker/types";
+import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "storybooker/utils";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 

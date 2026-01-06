@@ -5,7 +5,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "storybooker//adapter/database";
+} from "storybooker/adapter/database";
 
 /**
  * Factory function type for creating Azure Table clients.

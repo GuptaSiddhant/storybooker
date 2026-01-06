@@ -15,7 +15,7 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "build:pkg": "turbo build --filter='./packages/*'",
+    "build:pkg": "turbo build --filter='./packages/*' --filter='./adapters/*'",
     "core:build": "yarn workspace storybooker build",
     "core:dev": "yarn workspace storybooker dev",
     "cli": "yarn workspace @storybooker/cli start",
@@ -30,7 +30,7 @@
     "test": "turbo test",
     "ui:build": "yarn workspace @storybooker/ui build",
     "ui:dev": "yarn workspace @storybooker/ui dev",
-    "verify": "turbo verify --filter='./packages/*'"
+    "verify": "turbo verify --filter='./packages/*' --filter='./adapters/*'"
   },
   "devDependencies": {
     "husky": "^9.1.7",
