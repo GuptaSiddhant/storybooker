@@ -6921,6 +6921,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybooker/azure@workspace:adapters/azure":
+  version: 0.0.0-use.local
+  resolution: "@storybooker/azure@workspace:adapters/azure"
+  dependencies:
+    "@azure/cosmos": "npm:^4.5.1"
+    "@azure/data-tables": "npm:^13.0.0"
+    "@azure/functions": "npm:^4.0.0"
+    "@azure/storage-blob": "npm:^12.0.0"
+    oxfmt: "catalog:"
+    oxlint: "catalog:"
+    oxlint-tsgolint: "catalog:"
+    storybooker: "workspace:*"
+    tsdown: "catalog:"
+  peerDependencies:
+    "@azure/cosmos": ^4.0.0
+    "@azure/data-tables": ^13.0.0
+    "@azure/functions": ^4.0.0
+    "@azure/storage-blob": ^12.0.0
+  peerDependenciesMeta:
+    "@azure/cosmos":
+      optional: true
+    "@azure/data-tables":
+      optional: true
+    "@azure/functions":
+      optional: true
+    "@azure/storage-blob":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@storybooker/cli@workspace:packages/cli":
   version: 0.0.0-use.local
   resolution: "@storybooker/cli@workspace:packages/cli"

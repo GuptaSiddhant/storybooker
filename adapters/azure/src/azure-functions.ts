@@ -11,11 +11,11 @@ import type {
   SetupOptions,
   TimerFunctionOptions,
 } from "@azure/functions";
-import { createHonoRouter, createPurgeHandler } from "../index.ts";
-import type { ErrorParser, RouterOptions, StoryBookerUser } from "../types.ts";
-import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "../utils/index.ts";
-import type { AuthAdapter } from "./_internal/auth.ts";
-import type { LoggerAdapter } from "./_internal/logger.ts";
+import { createHonoRouter, createPurgeHandler } from "storybooker";
+import type { AuthAdapter } from "storybooker//adapter/auth";
+import type { LoggerAdapter } from "storybooker//adapter/logger";
+import type { ErrorParser, RouterOptions, StoryBookerUser } from "storybooker//types";
+import { generatePrefixFromBaseRoute, SERVICE_NAME, urlJoin } from "storybooker//utils";
 
 const DEFAULT_PURGE_SCHEDULE_CRON = "0 0 0 * * *";
 
@@ -150,10 +150,10 @@ function createAzureContextLogger(context: InvocationContext): LoggerAdapter {
     error: context.error.bind(context),
     log: context.log.bind(context),
     metadata: {
-      name: "Azure Functions",
+      data: { functionName: context.functionName },
       description: "Azure Insights Logger using Azure Functions context.",
       id: context.invocationId,
-      data: { functionName: context.functionName },
+      name: "Azure Functions",
     },
   };
 }
@@ -169,7 +169,7 @@ function newRequestFromAzureFunctions(request: HttpRequest): Request {
   return new Request(request.url, {
     headers: headersToObject(request.headers),
     method: request.method,
-    ...(hasBody ? { body: request.body as ReadableStream, duplex: "half" } : {}),
+    ...(hasBody ? { body: request.body as unknown as ReadableStream, duplex: "half" } : {}),
   });
 }
 

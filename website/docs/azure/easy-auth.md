@@ -10,7 +10,7 @@ The Azure EasyAuth provides quick way to setup auth for Azure Functions
 ## Install
 
 ```sh
-npm i storybooker
+npm i @storybooker/azure
 ```
 
 ## Usage
@@ -19,7 +19,7 @@ npm i storybooker
 import {
   AzureEasyAuthService,
   type AuthServiceAuthorise,
-} from "storybooker/azure-easy-auth";
+} from "@storybooker/azure/easy-auth";
 
 // Optionally create a custom authorise function
 // to handle permission checks
@@ -79,7 +79,7 @@ Once the auth-token is generated, it can be used for authenticating with StoryBo
 const authorizationHeaderValue = await getEntraIdAppAuthToken(
   "<tenantId>",
   "<clientId>",
-  "<clientSecret>",
+  "<clientSecret>"
 );
 
 const response = await fetch(`https://<your-storybooker-domain>/health`, {

@@ -10,14 +10,14 @@ The Azure Storage provides BlobStorage which can be used as storage for StoryBoo
 ## Install
 
 ```sh
-npm i storybooker @azure/storage-blob
+npm i @storybooker/azure @azure/storage-blob
 ```
 
 ## Usage
 
 ```js
 import { BlobServiceClient } from "@azure/storage-blob";
-import { AzureBlobStorageService } from "storybooker/azure-blob-storage";
+import { AzureBlobStorageService } from "@storybooker/azure/blob-storage";
 
 // Your connection string
 const connectionString = process.env["AZURE_STORAGE_CONNECTION_STRING"];

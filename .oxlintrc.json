@@ -15,15 +15,31 @@
   },
   "rules": {
     "arrow-body-style": "allow",
-    "id-length": ["warn", { "exceptions": ["z"] }],
-    "func-style": ["allow"],
+    "id-length": [
+      "warn",
+      {
+        "exceptions": [
+          "z"
+        ]
+      }
+    ],
+    "func-style": [
+      "allow"
+    ],
     "max-lines-per-function": [
       "warn",
-      { "max": 50, "skipBlankLines": true, "skipComments": true }
+      {
+        "max": 50,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
     ],
     "import/consistent-type-specifier-style": "allow",
     "import/exports-last": "allow",
-    "import/extensions": ["deny", "always"],
+    "import/extensions": [
+      "deny",
+      "always"
+    ],
     "import/group-exports": "allow",
     "import/max-dependencies": "allow",
     "import/no-cycle": "warn",
@@ -44,13 +60,18 @@
     "only-throw-error": "allow",
     "return-await": "allow",
     "sort-imports": "allow",
+    "sort-keys": "allow",
     "switch-exhaustiveness-check": "warn",
     "strict-boolean-expressions": "allow",
     "typescript/strict-boolean-expressions": "allow"
   },
   "overrides": [
     {
-      "files": ["**/*.test.ts", "**/*.spec.ts", "**/mocks/**"],
+      "files": [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/mocks/**"
+      ],
       "rules": {
         "typescript/no-confusing-void-expression": "allow"
       }

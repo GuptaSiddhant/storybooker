@@ -1,0 +1,80 @@
+{
+  "name": "@storybooker/azure",
+  "version": "0.24.0",
+  "type": "module",
+  "description": "Azure adapters for Storybooker",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "homepage": "https://storybooker.js.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GuptaSiddhant/storybooker",
+    "directory": "adapters/azure"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "license": "MIT",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w",
+    "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
+    "lint": "oxlint -c ../../.oxlintrc.json --type-aware --type-check --import-plugin ./src",
+    "lint:fix": "yarn lint --fix"
+  },
+  "dependencies": {
+    "storybooker": "workspace:*"
+  },
+  "devDependencies": {
+    "@azure/cosmos": "^4.5.1",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "tsdown": "catalog:"
+  },
+  "peerDependencies": {
+    "@azure/cosmos": "^4.0.0",
+    "@azure/data-tables": "^13.0.0",
+    "@azure/functions": "^4.0.0",
+    "@azure/storage-blob": "^12.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@azure/cosmos": {
+      "optional": true
+    },
+    "@azure/data-tables": {
+      "optional": true
+    },
+    "@azure/functions": {
+      "optional": true
+    },
+    "@azure/storage-blob": {
+      "optional": true
+    }
+  },
+  "exports": {
+    "./blob-storage": "./dist/blob-storage.mjs",
+    "./cosmos-db": "./dist/cosmos-db.mjs",
+    "./data-tables": "./dist/data-tables.mjs",
+    "./easy-auth": "./dist/easy-auth.mjs",
+    "./functions": "./dist/functions.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      "./blob-storage": "./dist/blob-storage.mjs",
+      "./cosmos-db": "./dist/cosmos-db.mjs",
+      "./data-tables": "./dist/data-tables.mjs",
+      "./easy-auth": "./dist/easy-auth.mjs",
+      "./functions": "./dist/functions.mjs",
+      "./package.json": "./package.json"
+    }
+  }
+}

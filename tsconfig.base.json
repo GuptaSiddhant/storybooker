@@ -39,8 +39,5 @@
     "verbatimModuleSyntax": true,
     "outDir": "dist",
     "rootDir": "src",
-    "customConditions": [
-      "source"
-    ]
   }
 }

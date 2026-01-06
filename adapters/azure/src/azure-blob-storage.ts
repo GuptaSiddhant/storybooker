@@ -1,7 +1,7 @@
 import type { BlobClient, BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
 import { Readable } from "node:stream";
 import type streamWeb from "node:stream/web";
-import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
+import { StorageAdapterErrors, type StorageAdapter } from "storybooker/adapter/storage";
 
 /**
  * Azure Blob Storage implementation of the StorageAdapter interface.

@@ -10,7 +10,7 @@ import {
   type StoryBookerPermissionResource,
   type StoryBookerPermissionWithKey,
   type StoryBookerUser,
-} from "./_internal/auth.ts";
+} from "storybooker//adapter/auth";
 
 export type {
   StoryBookerPermission,
@@ -18,7 +18,7 @@ export type {
   StoryBookerPermissionKey,
   StoryBookerPermissionResource,
   StoryBookerPermissionWithKey,
-} from "./_internal/auth.ts";
+} from "storybooker//adapter/auth";
 
 /**
  * Azure Easy Auth client principal structure.

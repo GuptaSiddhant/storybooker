@@ -6,7 +6,7 @@ export default defineConfig({
   clean: !argv.includes("-w"),
   dts: { tsgo: true },
   entry: { index: "./src/index.tsx" },
-  exports: { devExports: "source" },
+  exports: {},
   format: ["esm"],
   platform: "node",
   sourcemap: true,
