@@ -93,7 +93,7 @@ export class ProjectsModel extends Model<ProjectType> {
       };
       await this.database.createDocument(this.collectionId, project, this.dbOptions);
 
-      // Do not await, fire and forget
+      // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
       new WebhooksModel(project.id).dispatchEvent("project:created", project, {
         skipProjectHooks: true,
       });
@@ -135,7 +135,7 @@ export class ProjectsModel extends Model<ProjectType> {
       this.dbOptions,
     );
 
-    // Do not await, fire and forget
+    // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
     new WebhooksModel(id).dispatchEvent("project:updated", data);
 
     if (data.gitHubDefaultBranch) {
@@ -153,7 +153,7 @@ export class ProjectsModel extends Model<ProjectType> {
 
   async delete(id: string): Promise<void> {
     this.log("Delete project '%s'...", id);
-    // Do not await, fire and forget
+    // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
     new WebhooksModel(id).dispatchEvent("project:deleted", { id });
 
     this.debug("Delete project entry '%s' in collection", id);

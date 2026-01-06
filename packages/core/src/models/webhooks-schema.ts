@@ -7,7 +7,7 @@ export type WebhookType = z.infer<typeof WebhookSchema>;
 export const WebhookSchema = z
   .object({
     id: z.string().meta({ description: "The unique identifier for the webhook." }),
-    url: z.string().url().meta({ description: "The URL to send the webhook to." }),
+    url: z.url().meta({ description: "The URL to send the webhook to." }),
     secret: z.string().meta({ description: "Secret to generate webhook signature." }),
     events: z.enum(WEBHOOK_EVENTS).array().optional().meta({
       description: "The events that will trigger the webhook.",

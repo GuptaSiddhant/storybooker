@@ -101,7 +101,7 @@ export class WebhooksModel extends Model<WebhookType> {
       config?.webhooks?.filter((hook) => !hook.events || hook.events.includes(event)) ?? [];
     const projectHooks: WebhookType[] = skipProjectHooks
       ? []
-      : await this.list().catch((error) => {
+      : await this.list().catch((error: unknown) => {
           logger?.error?.(error);
           return [];
         });
@@ -187,10 +187,11 @@ export class WebhooksModel extends Model<WebhookType> {
     const bodyHeadersValue = payload?.["headers"];
     if (bodyHeadersValue && typeof bodyHeadersValue === "object") {
       const headersValue: Record<string, string> = {};
-      for (const valueObj of Object.values(bodyHeadersValue)) {
+      for (const key of Object.keys(bodyHeadersValue)) {
+        const valueObj: unknown = (bodyHeadersValue as Record<string, unknown>)[key];
         if (valueObj && typeof valueObj === "object" && "name" in valueObj && "value" in valueObj) {
           const { name, value } = valueObj;
-          if (value && name) {
+          if (value && name && typeof name === "string" && typeof value === "string") {
             headersValue[name] = secret ? encrypt(secret, value) : value;
           }
         }

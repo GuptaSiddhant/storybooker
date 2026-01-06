@@ -42,7 +42,7 @@ export class TagsModel extends Model<TagType> {
       };
       await this.database.createDocument(this.collectionId, tag, this.dbOptions);
 
-      // Do not await, fire and forget
+      // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
       new WebhooksModel(this.projectId).dispatchEvent("tag:created", tag);
 
       return tag;
@@ -81,7 +81,7 @@ export class TagsModel extends Model<TagType> {
       this.dbOptions,
     );
 
-    // Do not await, fire and forget
+    // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
     new WebhooksModel(this.projectId).dispatchEvent("tag:updated", data);
   }
 
@@ -98,7 +98,7 @@ export class TagsModel extends Model<TagType> {
 
     await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
 
-    // Do not await, fire and forget
+    // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
     new WebhooksModel(this.projectId).dispatchEvent("tag:deleted", tag);
 
     try {

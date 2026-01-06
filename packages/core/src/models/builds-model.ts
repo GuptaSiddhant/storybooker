@@ -80,7 +80,7 @@ export class BuildsModel extends Model<BuildType> {
       };
       await this.database.createDocument(this.collectionId, build, this.dbOptions);
 
-      // Do not await, fire and forget
+      // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
       new WebhooksModel(this.projectId).dispatchEvent("build:created", build);
 
       try {
@@ -131,7 +131,7 @@ export class BuildsModel extends Model<BuildType> {
       this.dbOptions,
     );
 
-    // Do not await, fire and forget
+    // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
     new WebhooksModel(this.projectId).dispatchEvent("build:updated", data);
   }
 
@@ -143,7 +143,7 @@ export class BuildsModel extends Model<BuildType> {
     this.debug("Delete document '%s'", buildId);
     await this.database.deleteDocument(this.collectionId, buildId, this.dbOptions);
 
-    // Do not await, fire and forget
+    // oxlint-disable-next-line typescript/no-floating-promises - fire and forget
     new WebhooksModel(this.projectId).dispatchEvent("build:deleted", build);
 
     try {
