@@ -1,10 +1,11 @@
 import type { WebhookEvent } from "../types.ts";
 import { generateDatabaseCollectionId } from "../utils/adapter-utils.ts";
 import { checkAuthorisation } from "../utils/auth.ts";
+import { decrypt, encrypt, generateHMAC } from "../utils/crypto-utils.ts";
 import { getStore } from "../utils/store.ts";
 import {
-  type WebhookCreateType,
   WebhookSchema,
+  type WebhookCreateType,
   type WebhookUpdateType,
   type WebhookType,
 } from "./webhooks-schema.ts";
@@ -30,7 +31,6 @@ export class WebhooksModel extends Model<WebhookType> {
     const now = new Date().toISOString();
     const webhook: WebhookType = {
       ...data,
-      id: crypto.randomUUID(),
       createdAt: now,
       updatedAt: now,
     };
@@ -43,7 +43,11 @@ export class WebhooksModel extends Model<WebhookType> {
     this.log("Get webhook '%s'...", id);
     const item = await this.database.getDocument(this.collectionId, id, this.dbOptions);
 
-    return WebhookSchema.parse(item);
+    const { config } = getStore();
+    const webhook = WebhookSchema.parse(item);
+    webhook.secret = config?.secret ? decrypt(config.secret, webhook.secret) : webhook.secret;
+
+    return webhook;
   }
 
   async has(id: string): Promise<boolean> {
@@ -87,7 +91,7 @@ export class WebhooksModel extends Model<WebhookType> {
 
   async dispatchEvent(
     event: WebhookEvent,
-    payload: Record<string, unknown>,
+    payload: unknown,
     options?: { skipProjectHooks?: boolean; timeoutMs?: number },
   ): Promise<void> {
     const { logger, config } = getStore();
@@ -110,23 +114,91 @@ export class WebhooksModel extends Model<WebhookType> {
 
     // Run in parallel but don't throw — we only want best-effort delivery here
     await Promise.allSettled(
-      allHooks.map(async (hook) => {
-        const { url, headers } = hook;
-
-        try {
-          const res = await fetch(url, {
-            method: "POST",
-            headers: { ...headers, "content-type": "application/json", "x-webhook-event": event },
-            body: JSON.stringify({ event, projectId: this.projectId, payload }),
-            signal: AbortSignal.timeout(timeoutMs),
-          });
-          logger?.log?.("[webhook] (%s) %s - %s", event, url, res.status);
-          return { url, ok: res.ok, status: res.status };
-        } catch (error) {
-          logger?.error?.("[webhook] ERROR (%s) %s - $s", event, url, error);
-          return { url, ok: false, error: error instanceof Error ? error.message : String(error) };
-        }
-      }),
+      allHooks.map((hook) => this.dispatchEventToHook(event, hook, { payload, timeoutMs })),
     );
+  }
+
+  async dispatchEventToHook(
+    event: WebhookEvent,
+    hook: WebhookCreateType,
+    options: { payload: unknown; timeoutMs?: number },
+  ): Promise<{ url: string; ok: boolean; status: number; error?: string }> {
+    const { logger } = getStore();
+    const { timeoutMs = 5000, payload } = options;
+    const { id, url, secret } = hook;
+    const body = JSON.stringify({ event, projectId: this.projectId, payload });
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-webhook-id": id,
+          "x-webhook-event": event,
+          "x-webhook-project-id": this.projectId,
+          "x-webhook-signature": generateHMAC(secret, body),
+        },
+        body,
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+      logger?.log?.("[webhook] (%s) %s - %s", event, id, res.status);
+      return { url, ok: res.ok, status: res.status };
+    } catch (error) {
+      logger?.error?.("[webhook] ERROR (%s) %s - $s", event, id, error);
+      return {
+        url,
+        ok: false,
+        status: 500,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  static sanitisePayload(payload: Record<string, unknown>): Record<string, unknown> {
+    const store = getStore();
+    const secret = store.config?.secret;
+
+    if (!payload || typeof payload !== "object") {
+      return payload;
+    }
+
+    const bodySecretValue = payload?.["secret"];
+    if (bodySecretValue && typeof bodySecretValue === "string" && secret) {
+      payload["secret"] = encrypt(secret, bodySecretValue);
+    }
+
+    const bodyEventsValue = payload?.["events"];
+    if (typeof bodyEventsValue === "string") {
+      payload["events"] = [bodyEventsValue];
+    }
+
+    /**
+     * Convert headers from this format:
+        ```js
+        headers: [Object: null prototype] {
+          "0": [Object: null prototype] { name: "Authorization", value: "xas" },
+          "1": [Object: null prototype] { name: "", value: "" },
+          "2": [Object: null prototype] { name: "", value: "" }
+        }
+        ```
+     * to this format:
+        `headers: { "Authorization": "xas" }`
+    */
+    const bodyHeadersValue = payload?.["headers"];
+    if (bodyHeadersValue && typeof bodyHeadersValue === "object") {
+      const headersValue: Record<string, string> = {};
+      for (const valueObj of Object.values(bodyHeadersValue)) {
+        if (valueObj && typeof valueObj === "object" && "name" in valueObj && "value" in valueObj) {
+          const { name, value } = valueObj;
+          if (value && name) {
+            headersValue[name] = secret ? encrypt(secret, value) : value;
+          }
+        }
+      }
+
+      payload["headers"] = headersValue;
+    }
+
+    return payload;
   }
 }

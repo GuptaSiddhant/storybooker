@@ -32,7 +32,7 @@ export default defineConfig({
     mysql: "./src/adapters/mysql.ts",
     redis: "./src/adapters/redis.ts",
   },
-  exports: {},
+  exports: { devExports: "source" },
   platform: "node",
   sourcemap: true,
   target: "node22",
@@ -42,6 +42,7 @@ export default defineConfig({
   skipNodeModulesBundle: true,
   failOnWarn: true,
   shims: true,
+  clean: !isWatchMode,
   onSuccess: async (config) => {
     if (isWatchMode) {
       return;

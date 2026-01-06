@@ -1,5 +1,6 @@
 import type { ProjectType, WebhookType } from "storybooker/_internal/types";
 import { getUIStore } from "../utils/ui-store.ts";
+import { Badge } from "./badge.tsx";
 import { Table } from "./table.tsx";
 
 export interface WebhooksTableProps {
@@ -46,18 +47,22 @@ export function WebhooksTable({
           },
         },
         {
-          id: "events",
-          header: "Events",
-          style: { fontFamily: "monospace", fontSize: "0.9em" },
-          cell: (item) => {
-            return <span>{item.events?.map((event) => <span>{event}</span>) || null}</span>;
-          },
+          id: "url",
+          header: "URL",
         },
         {
-          id: "actions",
-          header: "Actions",
+          id: "events",
+          header: "Events",
           cell: (item) => {
-            return <a href={urlBuilder.webhookDetails(project.id, item.id)}>View builds</a>;
+            return (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "2px" }}>
+                {item.events && item.events.length > 0 ? (
+                  item.events.map((event) => <Badge>{event}</Badge>)
+                ) : (
+                  <Badge>All events</Badge>
+                )}
+              </div>
+            );
           },
         },
       ]}

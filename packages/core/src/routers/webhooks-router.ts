@@ -1,5 +1,6 @@
 import { createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { HTTPException } from "hono/http-exception";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 import { ProjectsModel } from "../models/projects-model.ts";
 import { ProjectIdSchema } from "../models/projects-schema.ts";
@@ -153,8 +154,7 @@ export const webhooksRouter = new OpenAPIHono()
     async (context) => {
       const { projectId } = context.req.valid("param");
 
-      const projectModel = new ProjectsModel().id(projectId);
-      if (!(await projectModel.has())) {
+      if (!(await new ProjectsModel().has(projectId))) {
         throw new HTTPException(404, { message: `The project '${projectId}' does not exist.` });
       }
 
@@ -164,7 +164,9 @@ export const webhooksRouter = new OpenAPIHono()
         resource: "project",
       });
 
-      const data = context.req.valid("form");
+      const body = await context.req.parseBody({ dot: true, all: true });
+      const data = WebhookCreateSchema.parse(WebhooksModel.sanitisePayload(body));
+
       const webhook = await new WebhooksModel(projectId).create(data);
 
       if (checkIsHTMLRequest(true)) {
@@ -329,7 +331,9 @@ export const webhooksRouter = new OpenAPIHono()
         resource: "project",
       });
 
-      const data = context.req.valid("form");
+      const body = await context.req.parseBody({ dot: true, all: true });
+      const data = WebhookUpdateSchema.parse(WebhooksModel.sanitisePayload(body));
+
       await new WebhooksModel(projectId).update(webhookId, data);
 
       if (checkIsHTMLRequest(true)) {
@@ -337,5 +341,66 @@ export const webhooksRouter = new OpenAPIHono()
       }
 
       return new Response(null, { status: 202 });
+    },
+  )
+  .openapi(
+    createRoute({
+      summary: "Test webhook - action",
+      method: "post",
+      path: "/projects/{projectId}/webhooks/{webhookId}/test",
+      tags: [webhooksTag],
+      request: {
+        params: webhookIdPathParams,
+        body: {
+          content: {
+            [mimes.formEncoded]: {
+              schema: z.object({ event: z.enum(WEBHOOK_EVENTS), payload: z.unknown() }),
+            },
+          },
+        },
+      },
+      responses: {
+        204: { description: "Webhook request sent successfully" },
+        404: {
+          description: "Matching project or webhook not found.",
+          content: openapiErrorResponseContent,
+        },
+        415: {
+          content: openapiErrorResponseContent,
+          description: "Unsupported Media Type",
+        },
+        ...openapiCommonErrorResponses,
+      },
+    }),
+    async (context) => {
+      const { webhookId, projectId } = context.req.valid("param");
+      const { event, payload } = context.req.valid("form");
+
+      authenticateOrThrow({
+        action: "read",
+        projectId,
+        resource: "project",
+      });
+
+      const webhookModel = new WebhooksModel(projectId);
+      const webhook = await webhookModel.get(webhookId);
+
+      const { ok, status, error } = await webhookModel.dispatchEventToHook(event, webhook, {
+        payload,
+      });
+
+      if (!ok) {
+        throw new HTTPException(status as ContentfulStatusCode, {
+          message: `Failed to send test webhook: ${error ?? "Unknown error"}`,
+        });
+      }
+
+      if (checkIsHTMLRequest(true)) {
+        const redirectUrl =
+          context.req.query("redirect") ?? urlBuilder.webhookDetails(projectId, webhookId);
+        return context.redirect(redirectUrl, 303);
+      }
+
+      return new Response(null, { status });
     },
   );

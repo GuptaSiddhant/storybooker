@@ -40,11 +40,12 @@ export function WebhooksListPage({
         <form style={{ display: "flex", gap: "1rem" }}>
           <div class="field" style={{ minWidth: "100px" }}>
             <label for="filter-event">Event</label>
-            <select id="filter-event" name="type">
-              <option value="">All Events</option>
+            <select id="filter-event" name="event">
+              <option value="">-</option>
+
               {WEBHOOK_EVENTS.map((event) => (
                 <option value={event} selected={defaultEvent === event}>
-                  {event.toUpperCase()}
+                  {event}
                 </option>
               ))}
             </select>
@@ -52,7 +53,7 @@ export function WebhooksListPage({
 
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <button style={{ height: "max-content" }}>Filter</button>
-            <LinkButton href={urlBuilder.tagsList(project.id)} class="outline">
+            <LinkButton href={urlBuilder.webhooksList(project.id)} class="outline">
               Clear
             </LinkButton>
           </div>

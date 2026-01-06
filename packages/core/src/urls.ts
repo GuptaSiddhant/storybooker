@@ -1,6 +1,7 @@
 import path from "node:path";
 import type { BuildUploadVariant } from "./models/builds-schema.ts";
 import type { TagVariant } from "./models/tags-schema.ts";
+import type { WebhookEvent } from "./models/webhooks-schema.ts";
 import { getStore } from "./utils/store.ts";
 import { linkRoute, urlJoin } from "./utils/url-utils.ts";
 
@@ -237,6 +238,15 @@ export class UrlBuilder {
     return linkRoute(
       (client) =>
         client.projects[":projectId"].webhooks[":webhookId"].update.$url({
+          param: { projectId, webhookId },
+        }),
+      { baseUrl: this.#baseUrl },
+    );
+  }
+  webhookTest(projectId: string, webhookId: string): string {
+    return linkRoute(
+      (client) =>
+        client.projects[":projectId"].webhooks[":webhookId"].test.$url({
           param: { projectId, webhookId },
         }),
       { baseUrl: this.#baseUrl },

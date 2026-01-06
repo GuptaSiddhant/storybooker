@@ -95,19 +95,26 @@ export interface RouterConfig {
    */
   maxInlineUploadProcessingSizeInBytes?: number;
   /**
+   * Convey URL prefix to the service if the router is not hosted on the root.
+   */
+  prefix?: string;
+  /**
    * Enable queueing of zip file processing for files larger than the maximum inline upload processing size.
    * Requires QueueAdapter and other setup.
    * @default false
    */
   queueLargeZipFileProcessing?: boolean;
   /**
-   * Convey URL prefix to the service if the router is not hosted on the root.
-   */
-  prefix?: string;
-  /**
    * Add Hono middlewares to the router before any endpoint is registered/invoked.
    */
   middlewares?: MiddlewareHandler[];
+  /**
+   * SECRET key used for encrypting sensitive values stored in database.
+   * E.g. webhook headers.
+   *
+   * If not provided, sensitive values will be stored in plain text.
+   */
+  secret?: string;
   /**
    * Pre-configured webhooks to use for dispatching events (all projects).
    */

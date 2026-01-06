@@ -107,5 +107,17 @@ export function createBasicUIAdapter(options: BasicUIOptions = {}): UIAdapter {
       const { WebhooksListPage } = await import("./pages/webhooks-list-page.tsx");
       return WebhooksListPage(props);
     }),
+    renderWebhookDetailsPage: withStore(options, async (props) => {
+      const { WebhookDetailsPage } = await import("./pages/webhook-details-page.tsx");
+      return WebhookDetailsPage(props);
+    }),
+    renderWebhookCreatePage: withStore(options, async (props) => {
+      const { WebhookCreatePage } = await import("./pages/webhook-create-page.tsx");
+      return WebhookCreatePage(props);
+    }),
+    renderWebhookUpdatePage: withStore(options, async (props) => {
+      const { WebhookUpdatePage } = await import("./pages/webhook-update-page.tsx");
+      return WebhookUpdatePage(props);
+    }),
   } satisfies UIAdapter;
 }
