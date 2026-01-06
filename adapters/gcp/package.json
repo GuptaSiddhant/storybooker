@@ -1,8 +1,8 @@
 {
-  "name": "@storybooker/aws",
+  "name": "@storybooker/gcp",
   "version": "0.24.0",
   "type": "module",
-  "description": "AWS adapters for Storybooker",
+  "description": "GCP adapters for Storybooker",
   "author": {
     "name": "Siddhant Gupta",
     "url": "https://guptasiddhant.com"
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/GuptaSiddhant/storybooker",
-    "directory": "adapters/aws"
+    "directory": "adapters/gcp"
   },
   "files": [
     "src",
@@ -27,45 +27,42 @@
     "lint:fix": "yarn lint --fix"
   },
   "tsdown-entry": {
-    "dynamodb": "./src/aws-dynamodb.ts",
-    "s3": "./src/aws-s3.ts"
+    "big-table": "./src/gcp-big-table.ts",
+    "firestore": "./src/gcp-firestore.ts",
+    "storage": "./src/gcp-storage.ts"
   },
   "dependencies": {
     "storybooker": "workspace:*"
   },
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/client-s3": "^3.0.0",
+    "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/storage": "^7.0.0",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
     "tsdown": "catalog:"
   },
   "peerDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/client-s3": "^3.0.0"
+    "@google-cloud/bigtable": "^6.0.0",
+    "@google-cloud/firestore": "^7.0.0",
+    "@google-cloud/storage": "^7.0.0"
   },
   "peerDependenciesMeta": {
-    "@aws-sdk/client-dynamodb": {
+    "@google-cloud/bigtable": {
       "optional": true
     },
-    "@aws-sdk/client-s3": {
+    "@google-cloud/firestore": {
+      "optional": true
+    },
+    "@google-cloud/storage": {
       "optional": true
     }
   },
   "exports": {
-    "./dynamodb": "./dist/dynamodb.mjs",
-    "./s3": "./dist/s3.mjs",
+    "./big-table": "./dist/big-table.mjs",
+    "./firestore": "./dist/firestore.mjs",
+    "./storage": "./dist/storage.mjs",
     "./package.json": "./package.json"
-  },
-  "publishConfig": {
-    "exports": {
-      "./blob-storage": "./dist/blob-storage.mjs",
-      "./cosmos-db": "./dist/cosmos-db.mjs",
-      "./data-tables": "./dist/data-tables.mjs",
-      "./easy-auth": "./dist/easy-auth.mjs",
-      "./functions": "./dist/functions.mjs",
-      "./package.json": "./package.json"
-    }
   }
 }

@@ -5,7 +5,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "./_internal/database.ts";
+} from "storybooker/adapter/database";
 
 /**
  * Google Cloud Firestore implementation of the DatabaseAdapter interface.

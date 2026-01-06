@@ -41,9 +41,6 @@
     "zod": "^4.2.0"
   },
   "devDependencies": {
-    "@google-cloud/bigtable": "^6.0.0",
-    "@google-cloud/firestore": "^7.0.0",
-    "@google-cloud/storage": "^7.0.0",
     "@types/decompress": "^4.0.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "catalog:",
@@ -55,26 +52,6 @@
     "redis": "^5.10.0",
     "tsdown": "catalog:",
     "vitest": "catalog:"
-  },
-  "peerDependencies": {
-    "@google-cloud/bigtable": "^6.0.0",
-    "@google-cloud/firestore": "^7.0.0",
-    "@google-cloud/storage": "^7.0.0",
-    "redis": "^5.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@google-cloud/bigtable": {
-      "optional": true
-    },
-    "@google-cloud/firestore": {
-      "optional": true
-    },
-    "@google-cloud/storage": {
-      "optional": true
-    },
-    "redis": {
-      "optional": true
-    }
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",

@@ -5,7 +5,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "./_internal/database.ts";
+} from "storybooker/adapter/database";
 
 type ColumnFamily = "cf1";
 const COLUMN_FAMILY: ColumnFamily = "cf1";
