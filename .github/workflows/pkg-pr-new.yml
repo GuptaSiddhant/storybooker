@@ -36,7 +36,7 @@ jobs:
           path: |
             node_modules/
             packages/core/node_modules/
-          key: ${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-pkg-${{ hashFiles('yarn.lock') }}
 
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'

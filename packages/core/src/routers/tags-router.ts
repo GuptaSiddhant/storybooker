@@ -260,7 +260,7 @@ export const tagsRouter = new OpenAPIHono()
       request: { params: tagIdPathParams },
       responses: {
         200: {
-          description: "UI to upload tag",
+          description: "UI to update tag",
           content: openapiResponsesHtml,
         },
         404: {

@@ -12,6 +12,7 @@ import {
   type ProjectUpdateType,
 } from "./projects-schema.ts";
 import { TagsModel } from "./tags-model.ts";
+import { WebhooksModel } from "./webhooks-model.ts";
 import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 
 export class ProjectsModel extends Model<ProjectType> {
@@ -67,6 +68,11 @@ export class ProjectsModel extends Model<ProjectType> {
         this.dbOptions,
       );
 
+      await this.database.createCollection(
+        generateDatabaseCollectionId(projectId, "Webhooks"),
+        this.dbOptions,
+      );
+
       this.debug("Creating default branch (%s) tag", data.gitHubDefaultBranch);
       await new TagsModel(projectId)
         .create({
@@ -86,6 +92,11 @@ export class ProjectsModel extends Model<ProjectType> {
         updatedAt: now,
       };
       await this.database.createDocument(this.collectionId, project, this.dbOptions);
+
+      // Do not await, fire and forget
+      new WebhooksModel(project.id).dispatchEvent("project:created", project, {
+        skipProjectHooks: true,
+      });
 
       return project;
     } catch (error) {
@@ -124,6 +135,9 @@ export class ProjectsModel extends Model<ProjectType> {
       this.dbOptions,
     );
 
+    // Do not await, fire and forget
+    new WebhooksModel(id).dispatchEvent("project:updated", data);
+
     if (data.gitHubDefaultBranch) {
       try {
         this.debug("Create default-branch tag '%s'...", data.gitHubDefaultBranch);
@@ -139,6 +153,8 @@ export class ProjectsModel extends Model<ProjectType> {
 
   async delete(id: string): Promise<void> {
     this.log("Delete project '%s'...", id);
+    // Do not await, fire and forget
+    new WebhooksModel(id).dispatchEvent("project:deleted", { id });
 
     this.debug("Delete project entry '%s' in collection", id);
     await this.database.deleteDocument(this.collectionId, id, this.dbOptions);
@@ -151,6 +167,12 @@ export class ProjectsModel extends Model<ProjectType> {
 
     this.debug("Delete project-tags collection");
     await this.database.deleteCollection(generateDatabaseCollectionId(id, "Tags"), this.dbOptions);
+
+    this.debug("Delete project-webhooks collection");
+    await this.database.deleteCollection(
+      generateDatabaseCollectionId(id, "Webhooks"),
+      this.dbOptions,
+    );
 
     this.debug("Delete project container");
     await this.storage.deleteContainer(generateStorageContainerId(id), this.storageOptions);
@@ -166,7 +188,7 @@ export class ProjectsModel extends Model<ProjectType> {
 
   id: BaseModel<ProjectType>["id"] = (id: string) => {
     return {
-      checkAuth: (action) => checkAuthorisation({ action, projectId: id, resource: "project" }),
+      checkAuth: (action) => this.checkAuth(action, id),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
       has: this.has.bind(this, id),

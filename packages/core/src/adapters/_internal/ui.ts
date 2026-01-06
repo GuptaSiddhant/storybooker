@@ -6,6 +6,8 @@ import type {
   ProjectType,
   StoryBookerUser,
   TagType,
+  WebhookEvent,
+  WebhookType,
 } from "../../types.ts";
 import type { UrlBuilder } from "../../urls.ts";
 import type { StoryBookerAdapterMetadata } from "../../utils/adapter-utils.ts";
@@ -75,6 +77,25 @@ export interface UIAdapter {
   ): UIResult;
   renderBuildUploadPage?(
     props: { build: BuildType; project: ProjectType; uploadVariant?: BuildUploadVariant },
+    options: UIAdapterOptions,
+  ): UIResult;
+
+  // Webhooks
+  renderWebhooksListPage?(
+    props: {
+      project: ProjectType;
+      webhooks: WebhookType[];
+      defaultEvent?: WebhookEvent | "" | null;
+    },
+    options: UIAdapterOptions,
+  ): UIResult;
+  renderWebhookCreatePage?(props: { project: ProjectType }, options: UIAdapterOptions): UIResult;
+  renderWebhookUpdatePage?(
+    props: { project: ProjectType; webhook: WebhookType },
+    options: UIAdapterOptions,
+  ): UIResult;
+  renderWebhookDetailsPage?(
+    props: { project: ProjectType; webhook: WebhookType },
     options: UIAdapterOptions,
   ): UIResult;
 }

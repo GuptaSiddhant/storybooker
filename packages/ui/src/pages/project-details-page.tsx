@@ -28,12 +28,19 @@ export function ProjectDetailsPage({
   const purgeUrl = urlBuilder.taskPurge(project.id);
 
   return (
-    <DocumentLayout title={project.name}>
+    <DocumentLayout
+      title={project.name}
+      footer={
+        <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
+          <LinkButton href={urlBuilder.webhooksList(project.id)}>Webhooks</LinkButton>
+          <LinkButton href={urlBuilder.buildCreate(project.id)}>+ Create Build</LinkButton>
+        </div>
+      }
+    >
       <DocumentHeader
         breadcrumbs={[{ href: urlBuilder.projectsList(), label: "Projects" }]}
         toolbar={
           <div style={{ alignItems: "center", display: "flex", gap: "1rem" }}>
-            <LinkButton href={urlBuilder.buildCreate(project.id)}>+ Create Build</LinkButton>
             <LinkButton href={urlBuilder.projectUpdate(project.id)}>Edit</LinkButton>
             <form
               method="post"

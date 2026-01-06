@@ -5,7 +5,6 @@
 
 import { poweredBy } from "hono/powered-by";
 import { timing } from "hono/timing";
-import { createHonoRouter } from "../packages/core/dist/index.mjs";
 import {
   type AuthAdapter,
   type StoryBookerUser,
@@ -15,6 +14,7 @@ import {
   createLocalFileDatabaseAdapter,
   createLocalFileStorageAdapter,
 } from "../packages/core/src/adapters/fs.ts";
+import { createHonoRouter } from "../packages/core/src/index.ts";
 import { createBasicUIAdapter } from "../packages/ui/src/index.tsx";
 
 export default createHonoRouter({
@@ -25,8 +25,12 @@ export default createHonoRouter({
   },
   database: createLocalFileDatabaseAdapter(".server/db.json"),
   storage: createLocalFileStorageAdapter(".server"),
-  ui: createBasicUIAdapter({ logo: "/SBR_white_128.jpg", staticDirs: [".server"] }),
+  ui: createBasicUIAdapter({ staticDirs: [".server"] }),
 });
+
+// serve({ fetch: router.fetch, port: 8000 }, (info) => {
+//   console.log(`🚀 StoryBooker server running at http://${info.address}:${info.port}`);
+// });
 
 function createLocalAuthAdapter(): AuthAdapter {
   let auth = true;

@@ -4,6 +4,7 @@ import type { DatabaseAdapter } from "./adapters/_internal/database.ts";
 import type { LoggerAdapter } from "./adapters/_internal/logger.ts";
 import type { StorageAdapter } from "./adapters/_internal/storage.ts";
 import type { UIAdapter } from "./adapters/_internal/ui.ts";
+import type { WebhookCreateType } from "./models/webhooks-schema.ts";
 import type { ErrorParser } from "./utils/error.ts";
 
 export type {
@@ -39,6 +40,12 @@ export type {
 } from "./models/tags-schema.ts";
 export type { ErrorParser, ParsedError } from "./utils/error.ts";
 export type { UrlBuilder } from "./urls.ts";
+export type {
+  WebhookEvent,
+  WebhookType,
+  WebhookCreateType,
+  WebhookUpdateType,
+} from "./models/webhooks-schema.ts";
 
 /**
  * Options for creating a router.
@@ -88,17 +95,28 @@ export interface RouterConfig {
    */
   maxInlineUploadProcessingSizeInBytes?: number;
   /**
+   * Convey URL prefix to the service if the router is not hosted on the root.
+   */
+  prefix?: string;
+  /**
    * Enable queueing of zip file processing for files larger than the maximum inline upload processing size.
    * Requires QueueAdapter and other setup.
    * @default false
    */
   queueLargeZipFileProcessing?: boolean;
   /**
-   * Convey URL prefix to the service if the router is not hosted on the root.
-   */
-  prefix?: string;
-  /**
    * Add Hono middlewares to the router before any endpoint is registered/invoked.
    */
   middlewares?: MiddlewareHandler[];
+  /**
+   * SECRET key used for encrypting sensitive values stored in database.
+   * E.g. webhook headers.
+   *
+   * If not provided, sensitive values will be stored in plain text.
+   */
+  secret?: string;
+  /**
+   * Pre-configured webhooks to use for dispatching events (all projects).
+   */
+  webhooks?: WebhookCreateType[];
 }

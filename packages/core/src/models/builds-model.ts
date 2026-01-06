@@ -22,6 +22,7 @@ import {
 import { ProjectsModel } from "./projects-model.ts";
 import { TagsModel } from "./tags-model.ts";
 import type { TagVariant } from "./tags-schema.ts";
+import { WebhooksModel } from "./webhooks-model.ts";
 import { Model, type BaseModel, type ListOptions } from "./~model.ts";
 
 export class BuildsModel extends Model<BuildType> {
@@ -79,9 +80,13 @@ export class BuildsModel extends Model<BuildType> {
       };
       await this.database.createDocument(this.collectionId, build, this.dbOptions);
 
+      // Do not await, fire and forget
+      new WebhooksModel(this.projectId).dispatchEvent("build:created", build);
+
       try {
         const projectsModel = new ProjectsModel();
         const project = await projectsModel.get(this.projectId);
+
         if (tags.includes(project.gitHubDefaultBranch)) {
           await projectsModel.update(this.projectId, { latestBuildId: id });
         }
@@ -125,6 +130,9 @@ export class BuildsModel extends Model<BuildType> {
       { ...data, updatedAt: new Date().toISOString() },
       this.dbOptions,
     );
+
+    // Do not await, fire and forget
+    new WebhooksModel(this.projectId).dispatchEvent("build:updated", data);
   }
 
   async delete(buildId: string, updateTag = true): Promise<void> {
@@ -134,6 +142,9 @@ export class BuildsModel extends Model<BuildType> {
 
     this.debug("Delete document '%s'", buildId);
     await this.database.deleteDocument(this.collectionId, buildId, this.dbOptions);
+
+    // Do not await, fire and forget
+    new WebhooksModel(this.projectId).dispatchEvent("build:deleted", build);
 
     try {
       this.debug("Delete files '%s'", buildId);
@@ -166,6 +177,7 @@ export class BuildsModel extends Model<BuildType> {
     try {
       const projectsModel = new ProjectsModel();
       const project = await projectsModel.get(this.projectId);
+
       if (project.latestBuildId === buildId) {
         this.debug("Update project for build '%s'", buildId);
         await projectsModel.update(this.projectId, {
@@ -223,12 +235,7 @@ export class BuildsModel extends Model<BuildType> {
 
   id: BaseModel<BuildType>["id"] = (id: string) => {
     return {
-      checkAuth: (action) =>
-        checkAuthorisation({
-          action,
-          projectId: this.projectId,
-          resource: "build",
-        }),
+      checkAuth: this.checkAuth.bind(this),
       delete: this.delete.bind(this, id),
       get: this.get.bind(this, id),
       has: this.has.bind(this, id),

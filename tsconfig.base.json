@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": ["es2024", "DOM", "DOM.Iterable"],
+    "lib": [
+      "es2024",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "moduleResolution": "Bundler",
     "module": "Preserve",
     "declaration": true,
@@ -10,7 +14,6 @@
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
     "noEmit": true,
-
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -28,15 +31,16 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "listEmittedFiles": false,
-
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "noEmitOnError": true,
     "erasableSyntaxOnly": true,
     "isolatedDeclarations": false,
     "verbatimModuleSyntax": true,
-
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "customConditions": [
+      "source"
+    ]
   }
 }
