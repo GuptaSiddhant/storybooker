@@ -6921,9 +6921,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybooker/aws@workspace:adapters/aws":
+"@storybooker/aws@workspace:packages/aws":
   version: 0.0.0-use.local
-  resolution: "@storybooker/aws@workspace:adapters/aws"
+  resolution: "@storybooker/aws@workspace:packages/aws"
   dependencies:
     "@aws-sdk/client-dynamodb": "npm:^3.0.0"
     "@aws-sdk/client-s3": "npm:^3.0.0"
@@ -6943,9 +6943,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/azure@workspace:adapters/azure":
+"@storybooker/azure@workspace:packages/azure":
   version: 0.0.0-use.local
-  resolution: "@storybooker/azure@workspace:adapters/azure"
+  resolution: "@storybooker/azure@workspace:packages/azure"
   dependencies:
     "@azure/cosmos": "npm:^4.5.1"
     "@azure/data-tables": "npm:^13.0.0"
@@ -6994,9 +6994,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/gcp@workspace:adapters/gcp":
+"@storybooker/gcp@workspace:packages/gcp":
   version: 0.0.0-use.local
-  resolution: "@storybooker/gcp@workspace:adapters/gcp"
+  resolution: "@storybooker/gcp@workspace:packages/gcp"
   dependencies:
     "@google-cloud/bigtable": "npm:^6.0.0"
     "@google-cloud/firestore": "npm:^7.0.0"
@@ -7020,9 +7020,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/ui@workspace:*, @storybooker/ui@workspace:adapters/ui":
+"@storybooker/ui@workspace:*, @storybooker/ui@workspace:packages/ui":
   version: 0.0.0-use.local
-  resolution: "@storybooker/ui@workspace:adapters/ui"
+  resolution: "@storybooker/ui@workspace:packages/ui"
   dependencies:
     "@types/node": "catalog:"
     "@typescript/native-preview": "catalog:"

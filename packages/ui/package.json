@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/ui",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "type": "module",
   "description": "Basic UI for Storybooker app",
   "author": {
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/GuptaSiddhant/storybooker",
-    "directory": "adapters/ui"
+    "directory": "packages/ui"
   },
   "files": [
     "src",

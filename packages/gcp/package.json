@@ -1,6 +1,6 @@
 {
   "name": "@storybooker/gcp",
-  "version": "0.24.0",
+  "version": "0.25.0",
   "type": "module",
   "description": "GCP adapters for Storybooker",
   "author": {
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/GuptaSiddhant/storybooker",
-    "directory": "adapters/gcp"
+    "directory": "packages/gcp"
   },
   "files": [
     "src",
