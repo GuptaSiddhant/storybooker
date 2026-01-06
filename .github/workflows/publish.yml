@@ -29,18 +29,12 @@ jobs:
       - name: Setup Turbo
         id: setup
         run: |
-          pkgNames=()
-          pkgDirs=($(ls -d ./packages/*/))
-          for i in "${pkgDirs[@]}"; do
-            dirname=$(basename "$i")
-            if [[ "$dirname" == "core" ]]; then
-              pkgNames+=("storybooker")
-            else
-              pkgNames+=("@storybooker/$dirname")            
-            fi
-          done
-
-          npx -y turbo prune ${pkgNames[@]}           
+          npx -y turbo prune storybooker \
+            @storybooker/ui \
+            @storybooker/aws \
+            @storybooker/azure \
+            @storybooker/gcp \
+            @storybooker/cli
           cp tsconfig.base.json out/tsconfig.base.json
           cp .oxlintrc.json out/.oxlintrc.json
           cp -R scripts out/scripts

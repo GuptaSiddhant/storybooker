@@ -31,17 +31,7 @@ jobs:
           node-version-file: ".nvmrc"
           cache: "yarn"
 
-      - name: Cache deps
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules/
-            packages/core/node_modules/
-          key: ${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: yarn install --immutable
 
       - name: Verify

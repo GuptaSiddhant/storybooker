@@ -7020,9 +7020,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storybooker/ui@workspace:*, @storybooker/ui@workspace:packages/ui":
+"@storybooker/ui@workspace:*, @storybooker/ui@workspace:adapters/ui":
   version: 0.0.0-use.local
-  resolution: "@storybooker/ui@workspace:packages/ui"
+  resolution: "@storybooker/ui@workspace:adapters/ui"
   dependencies:
     "@types/node": "catalog:"
     "@typescript/native-preview": "catalog:"

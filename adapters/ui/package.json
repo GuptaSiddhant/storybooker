@@ -1,0 +1,49 @@
+{
+  "name": "@storybooker/ui",
+  "version": "0.24.0",
+  "type": "module",
+  "description": "Basic UI for Storybooker app",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "homepage": "https://storybooker.js.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GuptaSiddhant/storybooker",
+    "directory": "adapters/ui"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "license": "MIT",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w ./src",
+    "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
+    "lint": "oxlint --type-aware --type-check ./src",
+    "lint:fix": "yarn lint --fix"
+  },
+  "dependencies": {
+    "hono": "^4.11.0",
+    "storybooker": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "tsdown": "catalog:",
+    "unplugin-raw": "^0.6.3"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  }
+}
