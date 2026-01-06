@@ -1,18 +1,22 @@
 export async function updateDenoJsonToMatchPkgJson(
-  logger?: { success: (message: string) => void },
-  signal?: AbortSignal,
+  entry: Record<string, string>,
+  options?: {
+    logger?: { success: (message: string) => void };
+    signal?: AbortSignal;
+    additionalExports?: Record<string, string>;
+  },
 ): Promise<void> {
+  const { logger, signal, additionalExports } = options || {};
   const { readFile, writeFile } = await import("node:fs/promises");
   const pkgJsonPath = "./package.json";
   const pkgJson = JSON.parse(await readFile(pkgJsonPath, { encoding: "utf8", signal }));
-  const exports: Record<string, string | { source: string }> = pkgJson["exports"] || {};
 
-  const denoExports: Record<string, string> = {};
-  for (const [key, value] of Object.entries(exports)) {
-    const source = typeof value === "string" ? value : value.source;
-    if (source !== pkgJsonPath) {
-      denoExports[key] = source;
+  const denoExports: Record<string, string> = { ...additionalExports };
+  for (const [key, value] of Object.entries(entry)) {
+    if (key === "index") {
+      denoExports["."] = value;
     }
+    denoExports[`./${key}`] = value;
   }
 
   const denoJsonPath = "./deno.json";

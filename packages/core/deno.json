@@ -8,23 +8,21 @@
       "src",
       "README.md",
       "openapi.json"
-    ],
-    "exclude": [
-      "dist"
     ]
   },
   "exports": {
-    ".": "./dist/index.mjs",
-    "./adapter": "./dist/adapter.mjs",
-    "./adapter/auth": "./dist/adapter/auth.mjs",
-    "./adapter/database": "./dist/adapter/database.mjs",
-    "./adapter/logger": "./dist/adapter/logger.mjs",
-    "./adapter/storage": "./dist/adapter/storage.mjs",
-    "./adapter/ui": "./dist/adapter/ui.mjs",
-    "./constants": "./dist/constants.mjs",
-    "./router": "./dist/router.mjs",
-    "./types": "./dist/types.mjs",
-    "./utils": "./dist/utils.mjs",
-    "./openapi.json": "./openapi.json"
+    "./openapi.json": "./openapi.json",
+    ".": "./src/index.ts",
+    "./index": "./src/index.ts",
+    "./adapter": "./src/adapters/_internal/index.ts",
+    "./adapter/auth": "./src/adapters/_internal/auth.ts",
+    "./adapter/database": "./src/adapters/_internal/database.ts",
+    "./adapter/logger": "./src/adapters/_internal/logger.ts",
+    "./adapter/storage": "./src/adapters/_internal/storage.ts",
+    "./adapter/ui": "./src/adapters/_internal/ui.ts",
+    "./constants": "./src/utils/constants.ts",
+    "./router": "./src/routers/_app-router.ts",
+    "./types": "./src/types.ts",
+    "./utils": "./src/utils/index.ts"
   }
 }
