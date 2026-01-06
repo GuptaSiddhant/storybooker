@@ -6921,6 +6921,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybooker/aws@workspace:adapters/aws":
+  version: 0.0.0-use.local
+  resolution: "@storybooker/aws@workspace:adapters/aws"
+  dependencies:
+    "@aws-sdk/client-dynamodb": "npm:^3.0.0"
+    "@aws-sdk/client-s3": "npm:^3.0.0"
+    oxfmt: "catalog:"
+    oxlint: "catalog:"
+    oxlint-tsgolint: "catalog:"
+    storybooker: "workspace:*"
+    tsdown: "catalog:"
+  peerDependencies:
+    "@aws-sdk/client-dynamodb": ^3.0.0
+    "@aws-sdk/client-s3": ^3.0.0
+  peerDependenciesMeta:
+    "@aws-sdk/client-dynamodb":
+      optional: true
+    "@aws-sdk/client-s3":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@storybooker/azure@workspace:adapters/azure":
   version: 0.0.0-use.local
   resolution: "@storybooker/azure@workspace:adapters/azure"
@@ -20300,12 +20322,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "storybooker@workspace:packages/core"
   dependencies:
-    "@aws-sdk/client-dynamodb": "npm:^3.0.0"
-    "@aws-sdk/client-s3": "npm:^3.0.0"
-    "@azure/cosmos": "npm:^4.5.1"
-    "@azure/data-tables": "npm:^13.0.0"
-    "@azure/functions": "npm:^4.0.0"
-    "@azure/storage-blob": "npm:^12.0.0"
     "@google-cloud/bigtable": "npm:^6.0.0"
     "@google-cloud/firestore": "npm:^7.0.0"
     "@google-cloud/storage": "npm:^7.0.0"
@@ -20328,29 +20344,11 @@ __metadata:
     vitest: "catalog:"
     zod: "npm:^4.2.0"
   peerDependencies:
-    "@aws-sdk/client-dynamodb": ^3.0.0
-    "@aws-sdk/client-s3": ^3.0.0
-    "@azure/cosmos": ^4.0.0
-    "@azure/data-tables": ^13.0.0
-    "@azure/functions": ^4.0.0
-    "@azure/storage-blob": ^12.0.0
     "@google-cloud/bigtable": ^6.0.0
     "@google-cloud/firestore": ^7.0.0
     "@google-cloud/storage": ^7.0.0
     redis: ^5.0.0
   peerDependenciesMeta:
-    "@aws-sdk/client-dynamodb":
-      optional: true
-    "@aws-sdk/client-s3":
-      optional: true
-    "@azure/cosmos":
-      optional: true
-    "@azure/data-tables":
-      optional: true
-    "@azure/functions":
-      optional: true
-    "@azure/storage-blob":
-      optional: true
     "@google-cloud/bigtable":
       optional: true
     "@google-cloud/firestore":

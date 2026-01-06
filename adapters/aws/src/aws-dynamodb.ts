@@ -7,7 +7,7 @@ import {
   type DatabaseAdapterOptions,
   type DatabaseDocumentListOptions,
   type StoryBookerDatabaseDocument,
-} from "./_internal/database.ts";
+} from "storybooker/adapter/database";
 
 /**
  * AWS DynamoDB implementation of the DatabaseAdapter interface.

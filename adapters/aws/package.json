@@ -1,0 +1,67 @@
+{
+  "name": "@storybooker/aws",
+  "version": "0.24.0",
+  "type": "module",
+  "description": "AWS adapters for Storybooker",
+  "author": {
+    "name": "Siddhant Gupta",
+    "url": "https://guptasiddhant.com"
+  },
+  "homepage": "https://storybooker.js.org",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GuptaSiddhant/storybooker",
+    "directory": "adapters/aws"
+  },
+  "files": [
+    "src",
+    "dist"
+  ],
+  "license": "MIT",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown -w",
+    "fmt": "oxfmt -c ../../.oxfmtrc.json ./src",
+    "lint": "oxlint -c ../../.oxlintrc.json --type-aware --type-check --import-plugin ./src",
+    "lint:fix": "yarn lint --fix"
+  },
+  "dependencies": {
+    "storybooker": "workspace:*"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "oxfmt": "catalog:",
+    "oxlint": "catalog:",
+    "oxlint-tsgolint": "catalog:",
+    "tsdown": "catalog:"
+  },
+  "peerDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@aws-sdk/client-dynamodb": {
+      "optional": true
+    },
+    "@aws-sdk/client-s3": {
+      "optional": true
+    }
+  },
+  "exports": {
+    "./dynamodb": "./dist/dynamodb.mjs",
+    "./s3": "./dist/s3.mjs",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      "./blob-storage": "./dist/blob-storage.mjs",
+      "./cosmos-db": "./dist/cosmos-db.mjs",
+      "./data-tables": "./dist/data-tables.mjs",
+      "./easy-auth": "./dist/easy-auth.mjs",
+      "./functions": "./dist/functions.mjs",
+      "./package.json": "./package.json"
+    }
+  }
+}

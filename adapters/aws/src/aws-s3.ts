@@ -10,7 +10,7 @@ import {
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
 import { Buffer } from "node:buffer";
-import { StorageAdapterErrors, type StorageAdapter } from "./_internal/storage.ts";
+import { StorageAdapterErrors, type StorageAdapter } from "storybooker/adapter/storage";
 
 /**
  * AWS S3 implementation of the StorageAdapter interface.

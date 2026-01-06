@@ -41,8 +41,6 @@
     "zod": "^4.2.0"
   },
   "devDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/client-s3": "^3.0.0",
     "@google-cloud/bigtable": "^6.0.0",
     "@google-cloud/firestore": "^7.0.0",
     "@google-cloud/storage": "^7.0.0",
@@ -59,20 +57,12 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/client-s3": "^3.0.0",
     "@google-cloud/bigtable": "^6.0.0",
     "@google-cloud/firestore": "^7.0.0",
     "@google-cloud/storage": "^7.0.0",
     "redis": "^5.0.0"
   },
   "peerDependenciesMeta": {
-    "@aws-sdk/client-dynamodb": {
-      "optional": true
-    },
-    "@aws-sdk/client-s3": {
-      "optional": true
-    },
     "@google-cloud/bigtable": {
       "optional": true
     },
